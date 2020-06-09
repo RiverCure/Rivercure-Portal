@@ -1,14 +1,15 @@
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.contrib.gis import admin		
+from leaflet.admin import LeafletGeoAdmin
 from .models import e_User, e_City, e_District, e_Municipality, e_Parish, e_HydroFeature, e_Organization
 
 
-admin.site.register(e_City,admin.GeoModelAdmin)
-admin.site.register(e_District,admin.GeoModelAdmin)
-admin.site.register(e_Municipality,admin.GeoModelAdmin)
-admin.site.register(e_Parish,admin.GeoModelAdmin)
-admin.site.register(e_HydroFeature,admin.GeoModelAdmin)
+admin.site.register(e_City, LeafletGeoAdmin)
+admin.site.register(e_District, LeafletGeoAdmin)
+admin.site.register(e_Municipality, LeafletGeoAdmin)
+admin.site.register(e_Parish, LeafletGeoAdmin)
+admin.site.register(e_HydroFeature, LeafletGeoAdmin)
 
 admin.site.register(e_Organization)
 

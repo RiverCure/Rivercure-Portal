@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 	'rivercureportal',
 	'django.contrib.gis',
 	'suit',
+    'leaflet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
