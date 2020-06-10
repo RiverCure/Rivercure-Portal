@@ -40,8 +40,6 @@ METRICKIND_CHOICES = (  ('sec','Sec'),  ('min','Min'),  ('hour','Hour'),  ('day'
 COLOURKIND_CHOICES = (  ('red','Red'),  ('yellow','Yellow'),  ('green','Green'),  )
 
 class e_Country(models.Model):
-
-	
 	code_regex = RegexValidator(
 		regex=r'^[a-zA-Z0-9]*$',  #temporarly this expression by default
 		message="",
@@ -57,93 +55,90 @@ class e_Country(models.Model):
 	geom = models.MultiPolygonField()
 
 class e_District(models.Model):
-
-	
 	code_regex = RegexValidator(
 		regex=r'^[a-zA-Z0-9]*$',  #temporarly this expression by default
 		message="",
 		code="invalid_field")#true
-	code = models.CharField(max_length=20,validators=[code_regex])
-
+	code = models.CharField(max_length=20,validators=[code_regex], primary_key=True)
 
 	Name = models.CharField(max_length=20)
 
-	capital = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_District_capital')
+	capital = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_District_capital', blank=True, null=True)
 
-	country = models.ForeignKey('e_Country', on_delete=models.CASCADE, related_name='e_District_country')
+	country = models.ForeignKey('e_Country', on_delete=models.CASCADE, related_name='e_District_country', blank=True, null=True)
 
 #TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
+	def __str__(self):
+		return self.Name
+
 class e_Municipality(models.Model):
+	code = models.CharField(max_length=20, primary_key=True)
 
-	
-
-	code = models.CharField(max_length=20)
-
-
-	Name = models.CharField(max_length=20)
+	Name = models.CharField(max_length=100)
 
 	district = models.ForeignKey('e_District', on_delete=models.CASCADE, related_name='e_Municipality_district')
 
-	capital = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_Municipality_capital')
+	capital = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_Municipality_capital', blank=True, null=True)
 
-#TYPE GEOGRAFICO
+	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
+	def __str__(self):
+		return self.Name
+
 class e_Parish(models.Model):
+	code = models.CharField(max_length=20, primary_key=True)
 
-	
-
-	code = models.CharField(max_length=20)
-
-
-	Name = models.CharField(max_length=20)
+	Name = models.CharField(max_length=150)
 
 	municipality = models.ForeignKey('e_Municipality', on_delete=models.CASCADE, related_name='e_Parish_municipality')
 
-#TYPE GEOGRAFICO
+	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
+	def __str__(self):
+		return self.Name
+
 class e_City(models.Model):
-
-	
-
 	code = models.CharField(max_length=20)
 
-
-	Name = models.CharField(max_length=20)
+	Name = models.CharField(max_length=100)
 
 	type = models.CharField(max_length=15, choices=CITYKIND_CHOICES)
 
-	municipality = models.ForeignKey('e_Municipality', on_delete=models.CASCADE, related_name='e_City_municipality')
+	municipality = models.ForeignKey('e_Municipality', on_delete=models.CASCADE, related_name='e_City_municipality', blank=True, null=True)
 
-#TYPE GEOGRAFICO
+	#TYPE GEOGRAFICO
 	geom = models.PointField()
 
+	def __str__(self):
+		return self.Name
+
 class e_HydroFeature(models.Model):
-
-	
-
 	code = models.CharField(max_length=20)
 
 
-	Name = models.CharField(max_length=20)
+	Name = models.CharField(max_length=100)
 
-	type = models.CharField(max_length=15, choices=HYDROFEATUREKIND_CHOICES)
-
-
-	area = models.DecimalField(max_digits=5, decimal_places=2)
+	type = models.CharField(max_length=100, choices=HYDROFEATUREKIND_CHOICES)
 
 
-	length = models.DecimalField(max_digits=5, decimal_places=2)
+	area = models.FloatField()
 
-	PartOf = models.ForeignKey('e_HydroFeature', on_delete=models.CASCADE, related_name='e_HydroFeature_PartOf')
 
-	flowsInto = models.ForeignKey('e_HydroFeature', on_delete=models.CASCADE, related_name='e_HydroFeature_flowsInto')
+	length = models.FloatField()
 
-#TYPE GEOGRAFICO
+	PartOf = models.ForeignKey('e_HydroFeature', on_delete=models.CASCADE, related_name='e_HydroFeature_PartOf', blank=True, null=True)
+
+	flowsInto = models.ForeignKey('e_HydroFeature', on_delete=models.CASCADE, related_name='e_HydroFeature_flowsInto', blank=True, null=True)
+
+	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
+
+	def __str__(self):
+		return self.Name
 
 class e_Organization(models.Model):
 
