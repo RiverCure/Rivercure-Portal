@@ -165,13 +165,3 @@ class e_Organization(models.Model):
 
 #TYPE GEOGRAFICO
 	geom = models.PointField()
-
-class e_User(models.Model):
-
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	password = models.CharField(max_length=20)
-	Name = models.TextField()
-	email = models.EmailField(max_length=254)
-	emails = models.EmailField(max_length=254)
-	phoneNumbers = models.CharField(max_length=20)
-

@@ -46,7 +46,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-	'rivercureportal',
+	'rivercureportal.apps.RivercureportalConfig',
 	'django.contrib.gis',
 	'suit',
     'leaflet',
