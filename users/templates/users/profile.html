@@ -1,0 +1,6 @@
+{% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1> Welcome, {{ user.profile.first_name }} from {{user.profile.institution}}!</h1>
+{% endblock content %}

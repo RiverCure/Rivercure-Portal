@@ -51,6 +51,9 @@ class e_Country(models.Model):
 
 	capital = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_Country_capital')
 
+	class Meta:
+		verbose_name_plural = "e_Countries"
+
 #TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
@@ -67,6 +70,7 @@ class e_District(models.Model):
 
 	country = models.ForeignKey('e_Country', on_delete=models.CASCADE, related_name='e_District_country', blank=True, null=True)
 
+	
 #TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
@@ -85,6 +89,9 @@ class e_Municipality(models.Model):
 	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
+	class Meta:
+		verbose_name_plural = "e_Municipalities"
+
 	def __str__(self):
 		return self.Name
 
@@ -97,6 +104,9 @@ class e_Parish(models.Model):
 
 	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
+
+	class Meta:
+		verbose_name_plural = "e_Parishes"
 
 	def __str__(self):
 		return self.Name
@@ -112,6 +122,9 @@ class e_City(models.Model):
 
 	#TYPE GEOGRAFICO
 	geom = models.PointField()
+
+	class Meta:
+		verbose_name_plural = "e_Cities"
 
 	def __str__(self):
 		return self.Name

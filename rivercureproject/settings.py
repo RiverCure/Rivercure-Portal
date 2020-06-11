@@ -47,6 +47,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 	'rivercureportal.apps.RivercureportalConfig',
+    'users.apps.UsersConfig',
+    'crispy_forms',
 	'django.contrib.gis',
 	'suit',
     'leaflet',
@@ -141,3 +143,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'rivercure-home'
+LOGIN_URL = 'login'

@@ -1,9 +1,15 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-        <h1>RIVERCURE PORTAL</h1>
-    </body>
-</html>
+{% extends "rivercureportal/base.html" %}
+
+{% block content %}
+
+{% for district in districts %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">{{ district.Name }}</a>
+      </div>
+      <p><a class="article-title" href="#">{{ district.country }}</a></p>
+    </div>
+</article>
+{% endfor %}
+{% endblock content %}
