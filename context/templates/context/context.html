@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
 {% load leaflet_tags %}
 {% load static %}
 
@@ -60,5 +61,21 @@
 {% endblock %}
 
 {% block content %}
+
+    <h1><small>Create your context </small></h1>
+    <div class="content-section">
+        <form method='POST'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Create</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+        </div>
+    </div>
+
     {% leaflet_map "my_map" %}
+
+    
 {% endblock %}
