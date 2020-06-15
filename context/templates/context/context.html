@@ -1,0 +1,64 @@
+{% extends "rivercureportal/base.html" %}
+{% load leaflet_tags %}
+{% load static %}
+
+{% block scripts %}
+    {% leaflet_js plugins="ALL" %}
+    {% leaflet_css plugins="ALL" %}
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener("map:init", e => {
+                const map = e.detail.map;
+
+                //create a div on the map to see the current mouse lat and lon
+                latlngDiv = document.createElement("div");
+                latlngDiv.setAttribute("class", "leaflet-control-scale");
+                latlngDivContent = document.createElement("div");
+                latlngDiv.setAttribute("id", "mouse-latlng");
+                latlngDiv.append(latlngDivContent);
+
+                document.querySelector(".leaflet-bottom.leaflet-bottom").append(latlngDiv);
+                //add the listener to update the values
+                map.addEventListener('mousemove', e => {
+                    document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5);
+                });
+
+                drawnPolygn = new L.FeatureGroup();
+                map.addLayer(drawnPolygn);
+                drawControl = new L.Control.Draw({
+                    //leave only polygon option in the control
+                    draw: { 
+                        marker: false,
+                        circlemarker: false,
+                        rectangle: false,
+                        circle: false,
+                        polygon: { //set the properties of the polygon
+                            showArea: true,
+                            shapeOptions: {
+                                fill: false
+                            }
+                        },
+                        polyline: {
+                            allowIntersection: false
+                        },
+                    },
+                    edit: {
+                        featureGroup: drawnPolygn,
+                        allowIntersection: false,
+                    }
+                });
+                map.addControl(drawControl);
+
+                map.on("draw:created", e => {
+                    drawnPolygn.addLayer(e.layer);
+                });
+
+            }, false);
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% leaflet_map "my_map" %}
+{% endblock %}

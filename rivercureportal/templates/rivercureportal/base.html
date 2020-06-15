@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'rivercureportal/main.css' %}">
 
-    
+    {% block scripts %}{% endblock scripts %}
   </head>
   <body>
     <header class="site-header">
@@ -24,6 +24,7 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href=" {% url 'rivercure-home' %}">Home</a>
+              <a class="nav-item nav-link" href=" {% url 'context' %}">Context</a>
               <a class="nav-item nav-link" href="{% url 'rivercure-about' %}">About</a>
             </div>
             <!-- Navbar Right Side -->

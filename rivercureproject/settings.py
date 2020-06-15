@@ -46,12 +46,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-	'rivercureportal.apps.RivercureportalConfig',
+	'leaflet',
+    'rivercureportal.apps.RivercureportalConfig',
     'users.apps.UsersConfig',
+    'context.apps.ContextConfig',
     'crispy_forms',
 	'django.contrib.gis',
 	'suit',
-    'leaflet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,6 +138,15 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Leaftlet configurations
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (38.707616,-9.1365), #Lisbon coordinates
+    'DEFAULT_ZOOM': 6,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 18,
+    'RESET_VIEW': False,
+}
 
 
 # Static files (CSS, JavaScript, Images)
