@@ -1,15 +1,14 @@
 from django import forms
-from django.forms import Form
+from django.forms import ModelForm
+from django.contrib.gis.forms import fields
 from .models import e_Context
 from .models import e_HydroFeature
+from leaflet.forms.widgets import LeafletWidget
 
-class ContextForm(Form):
-    code = forms.CharField(required=True)
-    Name = forms.CharField(required=True)
-    hydroFeature = forms.ModelChoiceField(
-        required=True,
-        queryset=e_HydroFeature.objects.all()
+class ContextForm(ModelForm):
+    class Meta:
+        model = e_Context
+        fields = ('code', 'Name', 'hydroFeature', 'geom')
+        widgets = {#'hydroFeature': LeafletWidget(),
+                    'geom': LeafletWidget()}
         
-    )
-
- 

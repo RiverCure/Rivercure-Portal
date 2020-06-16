@@ -1,12 +1,8 @@
-#my_map {
-  height: 500px;
-  cursor: pointer;
-  margin-bottom: 100px;
-}
-#my_map .django-leaflet-raw-textarea {
+.django-leaflet-raw-textarea {
   width: 100%;
 }
-#my_map #mouse-latlng {
+
+#mouse-latlng {
   border: 2px solid #777;
   border-top-color: #777777;
   border-top-style: solid;

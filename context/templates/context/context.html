@@ -7,11 +7,12 @@
     {% leaflet_js plugins="ALL" %}
     {% leaflet_css plugins="ALL" %}
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+    {% comment %} <script type='text/javascript' src={% static 'context/js/context.js' %}> {% endcomment %}
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;
-
                 //create a div on the map to see the current mouse lat and lon
                 latlngDiv = document.createElement("div");
                 latlngDiv.setAttribute("class", "leaflet-control-scale");
@@ -23,39 +24,8 @@
                 //add the listener to update the values
                 map.addEventListener('mousemove', e => {
                     document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5);
-                });
-
-                drawnPolygn = new L.FeatureGroup();
-                map.addLayer(drawnPolygn);
-                drawControl = new L.Control.Draw({
-                    //leave only polygon option in the control
-                    draw: { 
-                        marker: false,
-                        circlemarker: false,
-                        rectangle: false,
-                        circle: false,
-                        polygon: { //set the properties of the polygon
-                            showArea: true,
-                            shapeOptions: {
-                                fill: false
-                            }
-                        },
-                        polyline: {
-                            allowIntersection: false
-                        },
-                    },
-                    edit: {
-                        featureGroup: drawnPolygn,
-                        allowIntersection: false,
-                    }
-                });
-                map.addControl(drawControl);
-
-                map.on("draw:created", e => {
-                    drawnPolygn.addLayer(e.layer);
-                });
-
-            }, false);
+                });       
+            });
         });
     </script>
 {% endblock %}
@@ -68,14 +38,10 @@
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Create</button>
+                <button id="submit-btn" class="btn btn-outline-info" type="submit">Create</button>
             </div>
         </form>
         <div class="border-top pt-3">
         </div>
     </div>
-
-    {% leaflet_map "my_map" %}
-
-    
 {% endblock %}
