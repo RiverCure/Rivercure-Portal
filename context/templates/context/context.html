@@ -32,7 +32,7 @@
 
 {% block content %}
 
-    <h1><small>Create your context </small></h1>
+    <h1><small>Create your context here</small></h1>
     <div class="content-section">
         <form method='POST'>
             {% csrf_token %}
@@ -44,4 +44,12 @@
         <div class="border-top pt-3">
         </div>
     </div>
+    <h1>Existent contexts:</h1>
+    {% for context in contexts %}
+      <div>
+        <a>{{ context.Name }}</a>
+      </div>
+    {% endfor %}
+
+
 {% endblock %}
