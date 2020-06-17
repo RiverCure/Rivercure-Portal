@@ -13,7 +13,7 @@ class Profile(models.Model):
         return f'{self.user.username} profile'
 
     #SAVE ALWAYS RUNS BUT WE'RE ADDING THE RESIZE FUNCTION
-    def save(self):
+    def save(self, *args, **kwargs):
         super().save()
 
         img = Image.open(self.image.path)
