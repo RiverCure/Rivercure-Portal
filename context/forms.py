@@ -8,7 +8,7 @@ from leaflet.forms.widgets import LeafletWidget
 class ContextForm(ModelForm):
     class Meta:
         model = e_Context
-        fields = ('code', 'Name', 'hydroFeature', 'geom')
-        widgets = {#'hydroFeature': LeafletWidget(),
-                    'geom': LeafletWidget()}
+        fields = ('code', 'Name', 'hydroFeature')
+        # widgets = {'hydroFeature': LeafletWidget(),
+        #             'geom': LeafletWidget()}
         

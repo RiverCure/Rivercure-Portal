@@ -1,8 +1,12 @@
-.django-leaflet-raw-textarea {
+#my_map {
+  height: 500px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+#my_map .django-leaflet-raw-textarea {
   width: 100%;
 }
-
-#mouse-latlng {
+#my_map #mouse-latlng {
   border: 2px solid #777;
   border-top-color: #777777;
   border-top-style: solid;
@@ -16,6 +20,10 @@
   overflow: hidden;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.5);
+}
+
+select {
+  margin-bottom: 50px;
 }
 
 /*# sourceMappingURL=style.css.map */
