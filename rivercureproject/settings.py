@@ -146,6 +146,8 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
     'RESET_VIEW': False,
+    'TILES': [('Satellite', 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {'attribution': '&copy; <a href="https://www.hatarilabs.com/ih-en/how-to-add-a-google-map-in-qgis-3-tutorial">Google</a>'}),
+            ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'})]
 }
 
 
