@@ -9,38 +9,14 @@
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
     {% comment %} <script src='https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js'></script> {% endcomment %}
     {% comment %} <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY" async defer></script> {% endcomment %}
-    {% comment %} <script type='text/javascript' src={% static 'context/js/context.js' %}> {% endcomment %}
+    <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            //const polygonType = {"Domain", "Boundary", "River", "RiverBorders"};
-
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;
-                //create a div on the map to see the current mouse lat and lon
-                latlngDiv = document.createElement("div");
-                latlngDiv.setAttribute("class", "leaflet-control-scale");
-                latlngDivContent = document.createElement("div");
-                latlngDiv.setAttribute("id", "mouse-latlng");
-                latlngDiv.append(latlngDivContent);
-
-                document.querySelector(".leaflet-bottom.leaflet-bottom").append(latlngDiv);
-                //add the listener to update the values
-                map.addEventListener('mousemove', e => {
-                    document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5);
-                }); 
-
-
-                //add controls for layers
-                //var satellite = L.gridLayer.googleMutant({type: 'roadmap'});
-                /*var satellite = L.tileLayer('http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}').addTo(map);
-                var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'});
-
-                var baseLayers = {
-                    "Satellite": satellite,
-                    "OpenStreetMaps": osm
-                }
-                L.control.layers(baseLayers).addTo(map);*/
+                //function to draw mouse position on the map
+                MyFunctions.showMousePosition(map);
 
                 //Polygon drawing controls
                 drawnPolygn = new L.FeatureGroup();
@@ -58,7 +34,7 @@
                             }
                         },
                         polyline: {
-                            allowIntersection: false
+                            allowIntersection: false,
                         },
                     },
                     edit: {
@@ -67,11 +43,13 @@
                     }
                 });
                 map.addControl(drawControl);
-
+                //event to enable the dropdown selection for the polygon type
+                map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
                 map.on("draw:drawstart", e => {
-                    let polygonType = document.querySelector("#polygon-type").value;
+                    let polygonType = document.querySelector("#polygon-type"); //select the dropdown element of the polygon type
+                    polygonType.disabled = true; //disable the selection of the polygon type again
 
-                    switch(polygonType) {
+                    switch(polygonType.value) {
                         case "none":
                             alert("Please select a polygon type");
                             //stop drawing
@@ -96,44 +74,49 @@
 
                 map.on("draw:created", e => {
                     drawnPolygn.addLayer(e.layer);
+                    let polygonType = document.querySelector("#polygon-type").value;
+
+                    //save the polygon in the appropriate variable
+                    switch(polygonType) {                    
+                        case "Domain":
+                            break;
+                        case "Boundary":
+                            break;
+                        case "River":
+                            break;
+                        case "Refinement":
+                            break;
+                    }
                 });
 
-                //function to enable polygon drawing and disable polyline
-                function enablePolygon() {
-                    drawControl.setDrawingOptions({
-                        polygon: {
-                            shapeOptions: {
-                                fill: true
-                            }
-                        },
-                    });
-                }
-                //function to enable polyline drawing and disable polygon
-                function enablePolyline() {
-                    drawControl.setDrawingOptions({
-                        polyline: {
-                            allowIntersection: false
-                        },
-                    });
-                }
+                //event for when a vertex is added to a polygon
+                map.on("draw:drawvertex", e => {
+                    let polygonType = document.querySelector("#polygon-type").value;
+
+                    if(polygonType == 'Boundary') {
+                        //mark the vertex with a marker
+                    }
+                });
+
+                
 
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {
                     switch(e.target.value) {
                         case "none":
                             alert("Please select a polygon type");
-                            //stop drawing
-                            e.stopPropagation();
                             break;
                         case "Domain":
-                            enablePolygon();
+                            MyFunctions.enablePolygon(drawControl, '#C0C0C0', true);
                             break;
                         case "Boundary":
+                            MyFunctions.enablePolyline(drawControl, '#0000A0');
                             break;
                         case "River":
-                            enablePolyline();
+                            MyFunctions.enablePolyline(drawControl, '#FFFF00');
                             break;
                         case "Refinement":
+                            MyFunctions.enablePolygon(drawControl, '#FFA500', true);
                             break;
                     }
                 });
