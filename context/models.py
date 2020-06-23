@@ -7,7 +7,9 @@ EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipita
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
 
-BOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), )
+CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
+
+CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'h'), ('Q', 'q'), )
 
 class e_Context(models.Model):
 	code = models.CharField(max_length=100, unique=True)
@@ -18,6 +20,8 @@ class e_Context(models.Model):
 
 	#GEOPOLYGON
 	geom = models.MultiPolygonField(null=True)
+
+	#NEW BOUNDARY ATTRIBUTES TO BE DEFINED
 
 	def __str__(self):
 		return self.Name
@@ -36,7 +40,7 @@ class e_ContextBoundaryCondition(models.Model):
 
 	geom = models.MultiLineStringField(null=True) #TEMPORARY CHOICE
 	
-	type = models.CharField(max_length=30, choices=BOUNDARY_CHOICES)
+	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
 	
 class e_ContextEvent(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
@@ -51,3 +55,16 @@ class e_ContextEvent(models.Model):
 	endDatetime = models.DateTimeField()    #always bigger than starttime
 
 	description = models.TextField()
+
+
+#DataEntity e_ContextBoundaryLine : Master 
+	
+#DataEntity e_ContextBoundaryPoint : Master 
+	
+#DataEntity e_ContextBoundaryPointSensor : Master 
+	
+#DataEntity e_ContextSensor "ContextSensor" : Master 
+
+#DataEntity e_ContextOrganization "ContextOrganization" : Parameter [
+
+#DataEntity e_ContextOrganizationUser "ContextOrganizationUser" : Parameter [

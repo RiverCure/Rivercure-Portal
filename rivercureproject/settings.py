@@ -47,6 +47,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 	'leaflet',
+    'sensors.apps.SensorsConfig',
     'rivercureportal.apps.RivercureportalConfig',
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
