@@ -15,111 +15,23 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;
+                //vars with created polygons
+                var createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "River": null};
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition(map);
-
                 //Polygon drawing controls
                 drawnPolygn = new L.FeatureGroup();
                 map.addLayer(drawnPolygn);
-                drawControl = new L.Control.Draw({
-                    //leave only polygon option in the control
-                    draw: { 
-                        marker: false,
-                        circlemarker: false,
-                        rectangle: false,
-                        circle: false,
-                        polygon: {
-                            shapeOptions: {
-                                fill: false
-                            }
-                        },
-                        polyline: {
-                            allowIntersection: false,
-                        },
-                    },
-                    edit: {
-                        featureGroup: drawnPolygn,
-                        allowIntersection: false,
-                    }
-                });
+                drawControl = MyFunctions.drawControlConfig(drawnPolygn);
                 map.addControl(drawControl);
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
-                map.on("draw:drawstart", e => {
-                    let polygonType = document.querySelector("#polygon-type"); //select the dropdown element of the polygon type
-                    polygonType.disabled = true; //disable the selection of the polygon type again
-
-                    switch(polygonType.value) {
-                        case "none":
-                            alert("Please select a polygon type");
-                            //stop drawing
-                            document.querySelector('a[title="Cancel drawing"]').click();       
-                            break;
-                        case "River":
-                        case "Boundary":
-                            if(e.layerType == "polygon") {
-                                alert("Invalid shape for selected polygon");
-                                //stop drawing
-                                document.querySelector('a[title="Cancel drawing"]').click();       
-                            }
-                            break;
-                        default:
-                            if(e.layerType == "polyline") {
-                                alert("Invalid shape for selected polygon");
-                                //stop drawing
-                                document.querySelector('a[title="Cancel drawing"]').click();            
-                            }
-                    }
-                });
-
-                map.on("draw:created", e => {
-                    drawnPolygn.addLayer(e.layer);
-                    let polygonType = document.querySelector("#polygon-type").value;
-
-                    //save the polygon in the appropriate variable
-                    switch(polygonType) {                    
-                        case "Domain":
-                            break;
-                        case "Boundary":
-                            break;
-                        case "River":
-                            break;
-                        case "Refinement":
-                            break;
-                    }
-                });
-
+                map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
+                map.on("draw:created", e => {MyFunctions.drawCreated(e, createdPolygons)});
                 //event for when a vertex is added to a polygon
-                map.on("draw:drawvertex", e => {
-                    let polygonType = document.querySelector("#polygon-type").value;
-
-                    if(polygonType == 'Boundary') {
-                        //mark the vertex with a marker
-                    }
-                });
-
-                
-
+                map.on("draw:drawvertex", e => {MyFunctions.drawBoundaryMarkers(e, map, createdPolygons.Domain);});
                 //enable controls when users changes the select polygon
-                document.querySelector("#polygon-type").addEventListener("change", e => {
-                    switch(e.target.value) {
-                        case "none":
-                            alert("Please select a polygon type");
-                            break;
-                        case "Domain":
-                            MyFunctions.enablePolygon(drawControl, '#C0C0C0', true);
-                            break;
-                        case "Boundary":
-                            MyFunctions.enablePolyline(drawControl, '#0000A0');
-                            break;
-                        case "River":
-                            MyFunctions.enablePolyline(drawControl, '#FFFF00');
-                            break;
-                        case "Refinement":
-                            MyFunctions.enablePolygon(drawControl, '#FFA500', true);
-                            break;
-                    }
-                });
+                document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl, createdPolygons.Domain);});
             });
         });
     </script>
