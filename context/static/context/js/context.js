@@ -3,8 +3,48 @@ var MyFunctions = {
     // //Polygns to store
     // Domain: null,
     // Boundary: null,
-    // River: null,
+    // Alignment: null,
     // Refinement: null,
+    //Variable to store boundary polyline being drawn
+    boundaryPolyline: null,
+    //Geojson structure to send to the server with the defined geometries
+    geojson: {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"Name": "Domain"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": []
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {"Name": "Refinement"},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": []
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {"Name": "Alignment"},
+                "geometry": {
+                    "type": "MultiLineString",
+                    "coordinates": []
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {"Name": "Boundary"},
+                "geometry": {
+                    "type": "MultiLineString",
+                    "coordinates": []
+                }
+            }
+        ]
+    },
     //function to configure draw control
     drawControlConfig: (drawnPolygn) => {
         return new L.Control.Draw({
@@ -54,7 +94,6 @@ var MyFunctions = {
     },
     //enable controls when users changes the select polygon
     polygonTypeChange: (e, drawControl, domain) => {
-        console.log(domain);
         switch(e.target.value) {
             case "none":
                 alert("Please select a polygon type");
@@ -69,7 +108,7 @@ var MyFunctions = {
                     e.target.selectedIndex = "0";
                 }
                 break;
-            case "River":
+            case "Alignment":
                 MyFunctions.enablePolyline(drawControl, '#FFFF00');
                 break;
             case "Refinement":
@@ -93,14 +132,30 @@ var MyFunctions = {
         });
     },
     //function to add markers when drawing the boundary
-    drawBoundaryMarkers: (e, map, domain) => {
+    vertexAdded: (e, map, domain) => {
         let polygonType = document.querySelector("#polygon-type").value;
         let lat = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lat;
         let lng = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lng;
-        if(polygonType == 'Boundary') {
+        if(polygonType == 'Domain') { //if we're drawing the domain then
             //mark the vertex with a marker
-            L.marker([lat, lng]).addTo(map);
-            console.log(domain.getBounds());
+            let marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup("<h1><small>Water entry point</small></h1>");
+            marker.bindTooltip("Pick boundary and click me!");
+            //add the logic to draw the boundary based on the domain polygon vertex
+            marker.on('click', () => {
+                if(document.querySelector("#polygon-type").value == 'Boundary') {
+                    marker.closePopup(); //close the popup that opens automatically
+                    if(MyFunctions.boundaryPolyline == null) { //if it's the first point of the polyline being added to the map then
+                        MyFunctions.boundaryPolyline = [[lat,lng]];
+                    }
+                    else { //if there are already defined points then draw the polyline
+                        //add some logic to guarantee that the points are sequential in the array
+                        MyFunctions.boundaryPolyline.push([lat, lng]);
+                        L.polyline(MyFunctions.boundaryPolyline, color='#0000A0' ).addTo(map);
+                    }
+                }
+            });
+            //console.log(domain.getBounds());
         }
     },
     //function to run on the begginning of a drawing
@@ -114,7 +169,7 @@ var MyFunctions = {
                 //stop drawing
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
-            case "River":
+            case "Alignment":
             case "Boundary":
                 if(e.layerType == "polygon") {
                     alert("Invalid shape for selected polygon");
@@ -144,8 +199,8 @@ var MyFunctions = {
             case "Boundary":
                 createdPolygons.Boundary = e.layer;
                 break;
-            case "River":
-                createdPolygons.River = e.layer;
+            case "Alignment":
+                createdPolygons.Alignment = e.layer;
                 break;
             case "Refinement":
                 createdPolygons.Refinement = e.layer;

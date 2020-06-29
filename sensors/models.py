@@ -25,7 +25,7 @@ class e_Sensor(models.Model):
 
     timeZoneAbbreviation = models.CharField(max_length=20)
 
-    timeZoneOffset = models.IntegerField(max_length=2)
+    timeZoneOffset = models.IntegerField()
 
     geom = models.PointField()
    

@@ -1,4 +1,4 @@
-{% extends "rivercureportal/base.html" %}
+{% extends "Rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
 {% load leaflet_tags %}
 {% load static %}
@@ -16,7 +16,7 @@
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;
                 //vars with created polygons
-                var createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "River": null};
+                var createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "Alignment": null};
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition(map);
                 //Polygon drawing controls
@@ -29,7 +29,7 @@
                 map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
                 map.on("draw:created", e => {MyFunctions.drawCreated(e, createdPolygons)});
                 //event for when a vertex is added to a polygon
-                map.on("draw:drawvertex", e => {MyFunctions.drawBoundaryMarkers(e, map, createdPolygons.Domain);});
+                map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map, createdPolygons.Domain);});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl, createdPolygons.Domain);});
             });
@@ -64,7 +64,7 @@
         <option value="none" selected disabled>Select the polygon to define</option>
         <option value="Domain">Domain</option>
         <option value="Boundary">Boundary</option>
-        <option value="River">River</option>
+        <option value="Alignment">Alignment</option>
         <option value="Refinement">Refinement</option>
     </select>
 
