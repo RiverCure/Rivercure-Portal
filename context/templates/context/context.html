@@ -19,6 +19,7 @@
                 var createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "Alignment": null};
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition(map);
+                MyFunctions.mouseMove(map);
                 //Polygon drawing controls
                 drawnPolygn = new L.FeatureGroup();
                 map.addLayer(drawnPolygn);
@@ -28,6 +29,7 @@
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
                 map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
                 map.on("draw:created", e => {MyFunctions.drawCreated(e, createdPolygons)});
+                map.on('click', e => {MyFunctions.mapClick(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map, createdPolygons.Domain);});
                 //enable controls when users changes the select polygon

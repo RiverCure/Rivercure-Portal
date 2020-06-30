@@ -7,6 +7,10 @@ var MyFunctions = {
     // Refinement: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
+    //Variable to store the drawn boundaries
+    boundaries: [],
+    //variable to store a temp polyline to serve as a visual aid to the user
+    tempPolyline: L.polyline([], {color: '#0000A0', opacity: 0.2}),
     //Geojson structure to send to the server with the defined geometries
     geojson: {
         "type": "FeatureCollection",
@@ -124,11 +128,21 @@ var MyFunctions = {
         latlngDiv.setAttribute("id", "mouse-latlng");
         latlngDiv.append(latlngDivContent);
 
-        document.querySelector(".leaflet-bottom.leaflet-bottom").append(latlngDiv);
-        
+        document.querySelector(".leaflet-bottom.leaflet-bottom").append(latlngDiv);                
+    },
+    mouseMove: (map) => {
+        MyFunctions.tempPolyline.addTo(map);
         //add the listener to update the values
         map.addEventListener('mousemove', e => {
-            document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5);
+            //update the lat and lng values of the div added on showMousePosition()
+            document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5); 
+
+            if(document.querySelector("#polygon-type").value == 'Boundary' && MyFunctions.boundaryPolyline != null) { //if the user is drawing the boundary
+                let aux = MyFunctions.boundaryPolyline.getLatLngs();
+                aux = aux[aux.length - 1];
+                //draw a polyline from the last point clicked to the mouse position
+                MyFunctions.tempPolyline.setLatLngs([aux, [e.latlng.lat, e.latlng.lng]]);
+            }
         });
     },
     //function to add markers when drawing the boundary
@@ -139,23 +153,40 @@ var MyFunctions = {
         if(polygonType == 'Domain') { //if we're drawing the domain then
             //mark the vertex with a marker
             let marker = L.marker([lat, lng]).addTo(map);
-            marker.bindPopup("<h1><small>Water entry point</small></h1>");
+            marker.bindPopup(`
+                <h1><small>Water entry point</small></h1>
+                <label for="water-entry-type">Choose a type:</label>
+                <select name="water-entry-type">
+                    <option value="h">H</option>
+                    <option value="q">Q</option>
+                </select>
+            `);
             marker.bindTooltip("Pick boundary and click me!");
             //add the logic to draw the boundary based on the domain polygon vertex
             marker.on('click', () => {
                 if(document.querySelector("#polygon-type").value == 'Boundary') {
                     marker.closePopup(); //close the popup that opens automatically
                     if(MyFunctions.boundaryPolyline == null) { //if it's the first point of the polyline being added to the map then
-                        MyFunctions.boundaryPolyline = [[lat,lng]];
+                        MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
                     }
                     else { //if there are already defined points then draw the polyline
                         //add some logic to guarantee that the points are sequential in the array
-                        MyFunctions.boundaryPolyline.push([lat, lng]);
-                        L.polyline(MyFunctions.boundaryPolyline, color='#0000A0' ).addTo(map);
+                        MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
+                        MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
                     }
                 }
             });
             //console.log(domain.getBounds());
+        }
+    },
+    //function when the user clicks on the map (to stop the boundary line)
+    mapClick: (e, map) => {
+        if(document.querySelector("#polygon-type").value == 'Boundary') { //this function is only used when the user is drawing the boundary
+            if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
+                MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaryPolyline = null; //restart the boundary draw
+                MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
+            }
         }
     },
     //function to run on the begginning of a drawing
