@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
+from sensors.models import e_Sensor
 
 EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  ('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  ('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
 
@@ -18,21 +19,19 @@ class e_Context(models.Model):
 
 	hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=False )
 
-	#GEOPOLYGON
-	geom = models.MultiPolygonField(null=True)
+	geomExternalBoundary = models.MultiPolygonField(null=True)  		#aka Domain
+	CLExternalBoundary  = models.BigIntegerField(null=True)  			#aka Domain's CL, characteristic lenght 
+	
+	geomInternalBoundary = models.MultiPolygonField(null=True) 					# aka Refinement
+	CLInternalBoundary  = models.BigIntegerField(null=True)  			#aka Refinement's CL
 
-	#NEW BOUNDARY ATTRIBUTES TO BE DEFINED
+	geomAlignment = models.MultiLineStringField(null=True)   		# aka Alignment
+	CLAlignment = models.BigIntegerField(null=True)   					# Alignment's CL
+
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 	def __str__(self):
 		return self.Name
-
-class e_ContextUser(models.Model):
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
-	
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-	def __str__(self):
-		return self.user.username
 
 
 class e_ContextBoundaryCondition(models.Model):
@@ -57,14 +56,36 @@ class e_ContextEvent(models.Model):
 	description = models.TextField()
 
 
-#DataEntity e_ContextBoundaryLine : Master 
-	
-#DataEntity e_ContextBoundaryPoint : Master 
-	
-#DataEntity e_ContextBoundaryPointSensor : Master 
-	
-#DataEntity e_ContextSensor "ContextSensor" : Master 
+class  e_ContextBoundaryLine(models.Model):
 
-#DataEntity e_ContextOrganization "ContextOrganization" : Parameter [
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
-#DataEntity e_ContextOrganizationUser "ContextOrganizationUser" : Parameter [
+	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
+	datakind = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES)
+	geom = models.MultiLineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
+	
+
+class  e_ContextBoundaryPoint(models.Model):
+
+	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False )
+
+	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
+
+
+class  e_ContextBoundaryPointSensor(models.Model):
+
+	point = models.IntegerField()
+
+	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
+	
+
+class e_ContextSensor(models.Model):
+
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
+	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
+	description = models.TextField()
+	#attribute associateDatetime "Associate Datetime" : Datetime [constraints(NotNull)]
+	#attribute associateUser "Associate User" : String [constraints(NotNull ForeignKey (e_User))]
+
+
+

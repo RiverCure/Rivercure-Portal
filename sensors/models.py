@@ -86,40 +86,5 @@ class e_SensorObservation(models.Model):
     startDatetime = models.DateTimeField()
 
     endDateTime = models.DateTimeField()
-# 	// TBD
-# 	attribute data "Data" : String  
 
-# 	// HydrometricSensor
-# 	attribute depth : Double  		// profundidade (m)
-# 	attribute discharge : Double	// caudal (m3/seg)
-# 	attribute volume : Double		// volume (m3)
-# 	attribute velocity : Double		// velocidade (m/seg)
-# 	attribute elevation : Double	// cota (m3)
-	
-# 	// WeatherSensorObservation
-# 	attribute rainfall : Double  			// precipitação (m)
-# 	attribute soilWaterContent : Double  	// teor em água do solo (%)
-	
-# 	//HumanSensorObservation
-# 	attribute photo : Image
-# 	attribute geom "Geometry"	: GeoPoint [constraints (NotNull)]
-# 	attribute elevation : Double [constraints (Derived ("ML techniques from Photo"))] 	// cota (m3)
-# 	attribute velocity : Double	[constraints (Derived ("ML techniques from Photo"))]	// velocidade (m/seg)
-
-# 	//RadarSensorObservation
-# 	// Mapa de valores
-# 	attribute rainfall : Double  			// precipitação (m)
-	
-# 	//TBD SensorObservation 
-# 	attribute isCummulative "is Cummulative" : Boolean [defaultValue "False"]
-# 	attribute nValueTotal "Total number of values" : Integer [constraints (NotNull)]
-
-# 	//e_PhotoSensorObservation
-# 	attribute url "URL" : URL
-# 	attribute fileName "File name" : String 
-# 	attribute height "Height" : Integer
-# 	attribute horizontalRes "Horizontal resolution" : Integer
-# 	attribute verticalRes "Vertical resolution" : Integer
-# 	attribute nBits "Number of bits" : Integer
-# 	attribute width "Width" : Integer
-# 	attribute fileFormat "File format" : String
+    #TBD

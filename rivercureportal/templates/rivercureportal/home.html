@@ -12,4 +12,15 @@
     </div>
 </article>
 {% endfor %}
+
+{% for context in contexts %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">{{ context.Name }}</a>
+      </div>
+      <p><a class="article-title" href="#">{{ context.code }}</a></p>
+    </div>
+</article>
+{% endfor %}
 {% endblock content %}
