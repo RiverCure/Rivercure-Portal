@@ -201,12 +201,16 @@ var MyFunctions = {
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
             case "Alignment":
-            case "Boundary":
                 if(e.layerType == "polygon") {
                     alert("Invalid shape for selected polygon");
                     //stop drawing
                     document.querySelector('a[title="Cancel drawing"]').click();       
                 }
+                break;
+            case "Boundary":
+                alert("Invalid shape for selected polygon\nClick on the domain markers to draw the boundary");
+                //stop drawing
+                document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
             default:
                 if(e.layerType == "polyline") {
