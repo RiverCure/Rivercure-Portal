@@ -7,12 +7,12 @@ var MyFunctions = {
     // Refinement: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
-    //Variable to store the drawn boundaries
-    boundaries: [],
     //variable to store a temp polyline to serve as a visual aid to the user
     tempPolyline: L.polyline([], {color: '#0000A0', opacity: 0.2}),
     //variable to store the domain markers
     domainMarkers: null,
+    //vars with created polygons
+    createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "Alignment": null},
     //Geojson structure to send to the server with the defined geometries
     geojson: {
         "type": "FeatureCollection",
@@ -99,7 +99,7 @@ var MyFunctions = {
         });
     },
     //enable controls when users changes the select polygon
-    polygonTypeChange: (e, drawControl, domain) => {
+    polygonTypeChange: (e, drawControl) => {
         switch(e.target.value) {
             case "none":
                 alert("Please select a polygon type");
@@ -108,7 +108,7 @@ var MyFunctions = {
                 MyFunctions.enablePolygon(drawControl, '#C0C0C0', true);
                 break;
             case "Boundary":
-                if(domain === null) { //Domain is not defined therefore disallow user from drawing the boundary
+                if(MyFunctions.createdPolygons.Domain === null) { //Domain is not defined therefore disallow user from drawing the boundary
                     alert("Define the Domain before defining the boundaries");
                     e.target.selectedIndex = "0";
                 }
@@ -147,7 +147,7 @@ var MyFunctions = {
         });
     },
     //function to add markers when drawing the boundary
-    vertexAdded: (e, map, domain) => {
+    vertexAdded: (e, map) => {
         let polygonType = document.querySelector("#polygon-type").value;
         let lat = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lat;
         let lng = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lng;
@@ -207,7 +207,7 @@ var MyFunctions = {
     mapClick: (e, map) => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
-                MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.createdPolygons.Boundary.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
                 MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             }
@@ -251,7 +251,7 @@ var MyFunctions = {
         }
     },
     //function to run when draw is created
-    drawCreated: (e, createdPolygons) => {
+    drawCreated: (e) => {
         drawnPolygn.addLayer(e.layer);
         let polygonType = document.querySelector("#polygon-type").value;
         // console.log(e.layer._bounds.contains([38.707616,-9.1365]));
@@ -259,16 +259,16 @@ var MyFunctions = {
         //save the polygon in the appropriate variable
         switch(polygonType) {                    
             case "Domain":
-                createdPolygons.Domain = e.layer;
+                MyFunctions.createdPolygons.Domain = e.layer;
                 break;
             case "Boundary":
-                createdPolygons.Boundary = e.layer;
+                MyFunctions.createdPolygons.Boundary = e.layer;
                 break;
             case "Alignment":
-                createdPolygons.Alignment = e.layer;
+                MyFunctions.createdPolygons.Alignment = e.layer;
                 break;
             case "Refinement":
-                createdPolygons.Refinement = e.layer;
+                MyFunctions.createdPolygons.Refinement = e.layer;
                 break;
         }
     },
