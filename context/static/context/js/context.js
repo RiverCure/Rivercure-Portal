@@ -11,6 +11,8 @@ var MyFunctions = {
     boundaries: [],
     //variable to store a temp polyline to serve as a visual aid to the user
     tempPolyline: L.polyline([], {color: '#0000A0', opacity: 0.2}),
+    //variable to store the domain markers
+    domainMarkers: null,
     //Geojson structure to send to the server with the defined geometries
     geojson: {
         "type": "FeatureCollection",
@@ -106,8 +108,7 @@ var MyFunctions = {
                 MyFunctions.enablePolygon(drawControl, '#C0C0C0', true);
                 break;
             case "Boundary":
-                if(domain != null) MyFunctions.enablePolyline(drawControl, '#0000A0'); //if domain is already defined then allow the drawing of the boundary
-                else { //Domain is not defined therefore disallow user from drawing the boundary
+                if(domain === null) { //Domain is not defined therefore disallow user from drawing the boundary
                     alert("Define the Domain before defining the boundaries");
                     e.target.selectedIndex = "0";
                 }
@@ -137,7 +138,7 @@ var MyFunctions = {
             //update the lat and lng values of the div added on showMousePosition()
             document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5); 
 
-            if(document.querySelector("#polygon-type").value == 'Boundary' && MyFunctions.boundaryPolyline != null) { //if the user is drawing the boundary
+            if(document.querySelector("#polygon-type").value === 'Boundary' && MyFunctions.boundaryPolyline != null) { //if the user is drawing the boundary
                 let aux = MyFunctions.boundaryPolyline.getLatLngs();
                 aux = aux[aux.length - 1];
                 //draw a polyline from the last point clicked to the mouse position
@@ -150,38 +151,61 @@ var MyFunctions = {
         let polygonType = document.querySelector("#polygon-type").value;
         let lat = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lat;
         let lng = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lng;
-        if(polygonType == 'Domain') { //if we're drawing the domain then
+        if(polygonType === 'Domain') { //if we're drawing the domain then
             //mark the vertex with a marker
-            let marker = L.marker([lat, lng]).addTo(map);
-            marker.bindPopup(`
-                <h1><small>Water entry point</small></h1>
-                <label for="water-entry-type">Choose a type:</label>
-                <select name="water-entry-type">
-                    <option value="h">H</option>
-                    <option value="q">Q</option>
-                </select>
-            `);
-            marker.bindTooltip("Pick boundary and click me!");
-            //add the logic to draw the boundary based on the domain polygon vertex
-            marker.on('click', () => {
-                if(document.querySelector("#polygon-type").value == 'Boundary') {
-                    marker.closePopup(); //close the popup that opens automatically
-                    if(MyFunctions.boundaryPolyline == null) { //if it's the first point of the polyline being added to the map then
-                        MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
-                    }
-                    else { //if there are already defined points then draw the polyline
-                        //add some logic to guarantee that the points are sequential in the array
-                        MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
-                        MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
-                    }
-                }
-            });
+            MyFunctions.addDomainMarker(map, lat, lng);
             //console.log(domain.getBounds());
         }
     },
+    //function to redraw the domain markers when the edit stops
+    editStop: (e, map) => {
+        let polygonType = document.querySelector("#polygon-type").value;
+        let coordinates = Object.values(e.layers._layers)[0]._latlngs[0];
+        if(polygonType === 'Domain') { //if we're drawing the domain then
+            for(let i = 0; i < coordinates.length; i++) //populate the vertices with markers again
+                MyFunctions.addDomainMarker(map, coordinates[i].lat, coordinates[i].lng);
+        }
+    },
+    //function to remove domain markers
+    removeDomainMarkers: () => {
+        MyFunctions.domainMarkers.clearLayers();
+    },
+    //function to add domain marker
+    addDomainMarker: (map, lat, lng) => {
+        let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
+        //add a popup to select CONTEXTBOUNDARYLINEDATAKIND_CHOICES present in the model
+        marker.bindPopup(`
+            <h1><small>Water entry point</small></h1>
+            <label for="water-entry-type">Choose a type:</label>
+            <select name="water-entry-type">
+                <option value="h">H</option>
+                <option value="q">Q</option>
+                <option value="">N</option>
+                <option value="">F</option>
+            </select>
+        `);
+        marker.bindTooltip("Pick boundary and click me!");
+        //add the logic to draw the boundary based on the domain polygon vertex
+        marker.on('click', () => {
+            if(document.querySelector("#polygon-type").value === 'Boundary') {
+                marker.closePopup(); //close the popup that opens automatically
+                if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
+                    MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
+                }
+                else { //if there are already defined points then draw the polyline
+                    //add some logic to guarantee that the points are sequential in the array
+                    MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
+                    MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
+                }
+            }
+        });
+        marker.on('dblclick', () => { //remove the marker on double click
+            marker.remove();
+        });
+    },
     //function when the user clicks on the map (to stop the boundary line)
     mapClick: (e, map) => {
-        if(document.querySelector("#polygon-type").value == 'Boundary') { //this function is only used when the user is drawing the boundary
+        if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
                 MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
@@ -190,7 +214,7 @@ var MyFunctions = {
         }
     },
     //function to run on the begginning of a drawing
-    drawStart: (e) => {
+    drawStart: (e, map) => {
         let polygonType = document.querySelector("#polygon-type"); //select the dropdown element of the polygon type
         polygonType.disabled = true; //disable the selection of the polygon type again
 
@@ -201,7 +225,7 @@ var MyFunctions = {
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
             case "Alignment":
-                if(e.layerType == "polygon") {
+                if(e.layerType === "polygon") {
                     alert("Invalid shape for selected polygon");
                     //stop drawing
                     document.querySelector('a[title="Cancel drawing"]').click();       
@@ -212,8 +236,14 @@ var MyFunctions = {
                 //stop drawing
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
+            case "Domain":
+                if(MyFunctions.domainMarkers === null) { //add the domain markers only once
+                    MyFunctions.domainMarkers = new L.layerGroup()
+                    MyFunctions.domainMarkers.addTo(map);
+                    map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
+                }
             default:
-                if(e.layerType == "polyline") {
+                if(e.layerType === "polyline") {
                     alert("Invalid shape for selected polygon");
                     //stop drawing
                     document.querySelector('a[title="Cancel drawing"]').click();            

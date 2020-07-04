@@ -14,7 +14,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
-                const map = e.detail.map;
+                const map = e.detail.map;    
                 //vars with created polygons
                 var createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "Alignment": null};
                 //function to draw mouse position on the map
@@ -27,11 +27,13 @@
                 map.addControl(drawControl);
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
-                map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
+                map.on("draw:drawstart", e => {MyFunctions.drawStart(e, map);});
                 map.on("draw:created", e => {MyFunctions.drawCreated(e, createdPolygons)});
                 map.on('click', e => {MyFunctions.mapClick(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map, createdPolygons.Domain);});
+                map.on("draw:editstart", e => {MyFunctions.removeDomainMarkers();});
+                map.on("draw:edited", e => {console.log(e); MyFunctions.editStop(e, map)});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl, createdPolygons.Domain);});
             });
