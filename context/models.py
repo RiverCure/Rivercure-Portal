@@ -8,9 +8,13 @@ EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipita
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
 
+EVENTSUBKIND_CHOICES = (  ('Real','real'),  ('simulation','Simulation'),  )
+
+EVENTSIMULATIONKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'), ('Planning','planning'),)
+
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
-CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'h'), ('Q', 'q'), )
+CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('Depth', 'H'), ('Discharge','Q'), ('Elevation', 'Z'), ('Velocity', 'V'), )
 
 class e_Context(models.Model):
 	code = models.CharField(max_length=100, unique=True)
@@ -33,14 +37,32 @@ class e_Context(models.Model):
 	def __str__(self):
 		return self.Name
 
+class  e_ContextBoundaryLine(models.Model):
 
-class e_ContextBoundaryCondition(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
-	geom = models.MultiLineStringField(null=True) #TEMPORARY CHOICE
-	
+	geom = models.MultiLineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
+
 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
+	dataType = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES, null=True)
 	
+class  e_ContextBoundaryPoint(models.Model):
+
+	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False )
+
+	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
+
+	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True)
+
+class e_ContextSensor(models.Model):
+
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
+	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
+	description = models.TextField()
+	
+	associateDatetime = models.DateTimeField(default=datetime.now)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
 class e_ContextEvent(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
@@ -55,37 +77,36 @@ class e_ContextEvent(models.Model):
 
 	description = models.TextField()
 
+	#Attributes for "Flood Simulation" event, with iStav
 
-class  e_ContextBoundaryLine(models.Model):
+	returnPeriod = models.IntegerField(default=1)
 
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
+	warmUp = models.BooleanField(default=False)
+	
+	simulationType = models.CharField(max_length=30, choices=EVENTSIMULATIONKIND_CHOICES, null=True)
 
-	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
-	datakind = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES)
-	geom = models.MultiLineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
+
 	
 
-class  e_ContextBoundaryPoint(models.Model):
-
-	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False )
-
-	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
 
-class  e_ContextBoundaryPointSensor(models.Model):
+#CONTEXT BOUNDARY POINT SENSOR?
 
-	point = models.IntegerField()
+#class  e_ContextBoundaryPointSensor(models.Model):
 
-	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
-	
+	#point = models.IntegerField()
 
-class e_ContextSensor(models.Model):
+	#sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
 
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
-	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
-	description = models.TextField()
-	#attribute associateDatetime "Associate Datetime" : Datetime [constraints(NotNull)]
-	#attribute associateUser "Associate User" : String [constraints(NotNull ForeignKey (e_User))]
+#CONTEXT BOUNDARY CONDITION?
 
+# class e_ContextBoundaryCondition(models.Model):
+# 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
+# 	geom = models.MultiLineStringField(null=True) #TEMPORARY CHOICE
+# 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
 
+#CONTEXT SIMULATION?
 
+#CONTEXT USER?
+
+#CONTEXT ORGANIZATION?

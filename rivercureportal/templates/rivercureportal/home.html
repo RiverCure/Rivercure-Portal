@@ -2,17 +2,6 @@
 
 {% block content %}
 
-{% for district in districts %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ district.Name }}</a>
-      </div>
-      <p><a class="article-title" href="#">{{ district.country }}</a></p>
-    </div>
-</article>
-{% endfor %}
-
 {% for context in contexts %}
 <article class="media content-section">
     <div class="media-body">
@@ -23,4 +12,9 @@
     </div>
 </article>
 {% endfor %}
+
 {% endblock content %}
+
+
+
+
