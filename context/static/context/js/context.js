@@ -12,7 +12,7 @@ var MyFunctions = {
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
-    createdPolygons = {"Domain": null, "Boundary": null, "Refinement": null, "Alignment": null},
+    createdPolygons: {"Domain": null, "Boundary": [], "Refinement": null, "Alignment": null},
     //Geojson structure to send to the server with the defined geometries
     geojson: {
         "type": "FeatureCollection",
