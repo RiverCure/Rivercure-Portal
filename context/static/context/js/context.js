@@ -282,6 +282,10 @@ var MyFunctions = {
         document.querySelector('#id_domain').value = domain;
         document.querySelector('#id_alignment').value = alignment;
         document.querySelector('#id_refinement').value = refinement;
+
+        // Change alert on form
+        document.querySelector('#load-status').innerHTML = "Context loaded";
+        document.querySelector('#load-status').className = "alert alert-success";
     }
 }
 

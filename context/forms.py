@@ -15,7 +15,7 @@ from leaflet.forms.widgets import LeafletWidget
 class ContextForm(forms.Form):
     code = forms.CharField()
     name = forms.CharField()
-    hydroFeature = forms.CharField()
+    hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all())
     domain = forms.CharField(widget=forms.HiddenInput())
     alignment = forms.CharField(widget=forms.HiddenInput())
     refinement = forms.CharField(widget=forms.HiddenInput())

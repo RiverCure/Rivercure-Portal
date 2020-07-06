@@ -32,6 +32,8 @@
                 map.on("draw:edited", e => {MyFunctions.editStop(e, map)});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
+                // load button action
+                document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
             });
         });
     </script>
@@ -47,6 +49,9 @@
             <input type="hidden" id="alignment" name="alignment" value="">
             <input type="hidden" id="refinement" name="refinement" value="">
             {{ form|crispy }}
+            <div id="load-status" class="alert alert-danger" role="alert">
+                Context not loaded!!!
+            </div>
             <div class="form-group">
                 <button id="submit-btn" class="btn btn-outline-info" type="submit">Create</button>
             </div>
@@ -54,16 +59,11 @@
         <div class="border-top pt-3">
         </div>
     </div>
-    <h1>Existent contexts:</h1>
-    {% for context in contexts %}
-      <div>
-        <a>{{ context.Name }}</a>
-      </div>
-    {% endfor %}
-
+    
 
     {% leaflet_map "my_map" %}
-    <div class="container">
+    <div class="container" style="display: flex">
+        <button type="button" id='load-btn' class="btn btn-outline-primary">Load Context</button>
         <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
             <option value="none" selected disabled>Select the polygon to define</option>
             <option value="Domain">Domain</option>
@@ -72,4 +72,11 @@
             <option value="Refinement">Refinement</option>
         </select>
     </div>
+
+    <h1>Existent contexts:</h1>
+    {% for context in contexts %}
+      <div>
+        <a>{{ context.Name }}</a>
+      </div>
+    {% endfor %}
 {% endblock %}
