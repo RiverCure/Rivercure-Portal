@@ -19,9 +19,7 @@
                 MyFunctions.showMousePosition(map);
                 MyFunctions.mouseMove(map);
                 //Polygon drawing controls
-                drawnPolygn = new L.FeatureGroup();
-                map.addLayer(drawnPolygn);
-                drawControl = MyFunctions.drawControlConfig(drawnPolygn);
+                drawControl = MyFunctions.drawControlConfig(map);
                 map.addControl(drawControl);
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});

@@ -5,6 +5,8 @@ var MyFunctions = {
     // Boundary: null,
     // Alignment: null,
     // Refinement: null,
+    //Variable to store the features for editing
+    drawnPolygn: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
     //variable to store a temp polyline to serve as a visual aid to the user
@@ -12,7 +14,8 @@ var MyFunctions = {
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
-    createdPolygons: {"Domain": null, "Boundary": [], "Refinement": null, "Alignment": null},
+    boundaries: [],
+    createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
     //Geojson structure to send to the server with the defined geometries
     geojson: {
         "type": "FeatureCollection",
@@ -52,7 +55,9 @@ var MyFunctions = {
         ]
     },
     //function to configure draw control
-    drawControlConfig: (drawnPolygn) => {
+    drawControlConfig: (map) => {
+        MyFunctions.drawnPolygn = new L.FeatureGroup();
+        map.addLayer(MyFunctions.drawnPolygn);
         return new L.Control.Draw({
             //leave only polygon option in the control
             draw: { 
@@ -70,7 +75,7 @@ var MyFunctions = {
                 },
             },
             edit: {
-                featureGroup: drawnPolygn,
+                featureGroup: MyFunctions.drawnPolygn,
                 allowIntersection: false,
             }
         });
@@ -159,12 +164,9 @@ var MyFunctions = {
     },
     //function to redraw the domain markers when the edit stops
     editStop: (e, map) => {
-        let polygonType = document.querySelector("#polygon-type").value;
-        let coordinates = Object.values(e.layers._layers)[0]._latlngs[0];
-        if(polygonType === 'Domain') { //if we're drawing the domain then
-            for(let i = 0; i < coordinates.length; i++) //populate the vertices with markers again
-                MyFunctions.addDomainMarker(map, coordinates[i].lat, coordinates[i].lng);
-        }
+        let coordinates = MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain]._latlngs[0];
+        for(let i = 0; i < coordinates.length; i++) //populate the vertices with markers again
+            MyFunctions.addDomainMarker(map, coordinates[i].lat, coordinates[i].lng);
     },
     //function to remove domain markers
     removeDomainMarkers: () => {
@@ -178,10 +180,10 @@ var MyFunctions = {
             <h1><small>Water entry point</small></h1>
             <label for="water-entry-type">Choose a type:</label>
             <select name="water-entry-type">
-                <option value="h">H</option>
-                <option value="q">Q</option>
-                <option value="">N</option>
-                <option value="">F</option>
+                <option value="Depth">H</option>
+                <option value="Discharge">Q</option>
+                <option value="Elevation">Z</option>
+                <option value="Velocity">V</option>
             </select>
         `);
         marker.bindTooltip("Pick boundary and click me!");
@@ -207,7 +209,7 @@ var MyFunctions = {
     mapClick: (e, map) => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
-                MyFunctions.createdPolygons.Boundary.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
                 MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             }
@@ -252,23 +254,20 @@ var MyFunctions = {
     },
     //function to run when draw is created
     drawCreated: (e) => {
-        drawnPolygn.addLayer(e.layer);
+        MyFunctions.drawnPolygn.addLayer(e.layer);
+        let layersKey = Object.keys(MyFunctions.drawnPolygn._layers);
+        let polygonKey = layersKey[layersKey.length - 1] //mapping to the object key which will contain the polygon
         let polygonType = document.querySelector("#polygon-type").value;
-        // console.log(e.layer._bounds.contains([38.707616,-9.1365]));
-        // console.log(e.layer.getBounds());
         //save the polygon in the appropriate variable
         switch(polygonType) {                    
             case "Domain":
-                MyFunctions.createdPolygons.Domain = e.layer;
-                break;
-            case "Boundary":
-                MyFunctions.createdPolygons.Boundary = e.layer;
+                MyFunctions.createdPolygons.Domain = polygonKey;
                 break;
             case "Alignment":
-                MyFunctions.createdPolygons.Alignment = e.layer;
+                MyFunctions.createdPolygons.Alignment = polygonKey;
                 break;
             case "Refinement":
-                MyFunctions.createdPolygons.Refinement = e.layer;
+                MyFunctions.createdPolygons.Refinement = polygonKey;
                 break;
         }
     },
