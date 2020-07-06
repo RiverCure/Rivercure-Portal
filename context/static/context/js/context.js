@@ -271,6 +271,18 @@ var MyFunctions = {
                 break;
         }
     },
+    //function to send the polygons to the web server
+    sendContext: () => {
+        // Save the polygons in geojsons and then serialize them to send to the web server
+        var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
+        var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
+        var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
+
+        // Fill the hidden form fields with the values
+        document.querySelector('#id_domain').value = domain;
+        document.querySelector('#id_alignment').value = alignment;
+        document.querySelector('#id_refinement').value = refinement;
+    }
 }
 
 
