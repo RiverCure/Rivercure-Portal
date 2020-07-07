@@ -136,7 +136,7 @@ var MyFunctions = {
         }
     },
     //function to hadle the showing of mouse position
-    showMousePosition: (map) => {
+    showMousePosition: () => {
         latlngDiv = document.createElement("div");
         latlngDiv.setAttribute("class", "leaflet-control-scale");
         latlngDivContent = document.createElement("div");
@@ -221,12 +221,12 @@ var MyFunctions = {
     //function when the user clicks on the map (to stop the boundary line)
     mapClick: (e, map) => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
-            if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
+            if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1) { //check if the user is currently drawing the boundary
                 MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
                 MyFunctions.boundaryPolylineMarkers.push(MyFunctions.boundaryPolylineMarkersTemp); //store the drawn markers
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
-                MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             }
+            MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
         }
     },
     //function to run on the begginning of a drawing
@@ -284,19 +284,43 @@ var MyFunctions = {
     },
     //function to send the polygons to the web server
     sendContext: () => {
-        // Save the polygons in geojsons and then serialize them to send to the web server
-        var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
-        var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
-        var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
+        //prepare the visualization of the operation result
+        let operationStatus = document.createElement("div");
+        operationStatus.setAttribute("class", "alert alert-danger");
+        try {
+            // Save the polygons in geojsons and then serialize them to send to the web server
+            var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
+            // var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
+            // var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
 
-        // Fill the hidden form fields with the values
-        document.querySelector('#id_domain').value = domain;
-        document.querySelector('#id_alignment').value = alignment;
-        document.querySelector('#id_refinement').value = refinement;
+            // Fill the hidden form fields with the values
+            document.querySelector('#id_domain').value = domain;
+            // document.querySelector('#id_alignment').value = alignment;
+            // document.querySelector('#id_refinement').value = refinement;
+            
+            console.log("Starting Boundaries");
+            
+            //Handle the boundaries
+            var boundaries = {"type": "FeatureCollection", "features": []};
+            MyFunctions.boundaries.forEach((element, index) => {
+                boundaryLine = element.toGeoJSON();
+                boundaryLine.properties['markers'] = MyFunctions.boundaryPolylineMarkers[index];
+                boundaries.features.push(boundaryLine);
+            });
+            console.log(boundaries);
+            document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
 
-        // Change alert on form
-        document.querySelector('#load-status').innerHTML = "Context loaded";
-        document.querySelector('#load-status').className = "alert alert-success";
+            // Change alert on form
+            document.querySelector('#load-status').innerHTML = operationStatus.innerHTML = "Context Loaded";
+            document.querySelector('#load-status').className = "alert alert-success";
+        }
+        catch(err) { //In case of invalid context
+            console.log(err);
+            operationStatus.innerHTML = "Invalid Context";
+        }
+        finally {
+            document.querySelector('#load-context-result').append(operationStatus);
+        }
     }
 }
 

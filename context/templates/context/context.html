@@ -16,7 +16,7 @@
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
                 //function to draw mouse position on the map
-                MyFunctions.showMousePosition(map);
+                MyFunctions.showMousePosition();
                 MyFunctions.mouseMove(map);
                 MyFunctions.setDomainMarkers(map);
                 //Polygon drawing controls
@@ -61,17 +61,22 @@
         </div>
     </div>
     
-
-    {% leaflet_map "my_map" %}
-    <div class="container" style="display: flex">
-        <button type="button" id='load-btn' class="btn btn-outline-primary">Load Context</button>
-        <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
-            <option value="none" selected disabled>Select the polygon to define</option>
-            <option value="Domain">Domain</option>
-            <option value="Boundary">Boundary</option>
-            <option value="Alignment">Alignment</option>
-            <option value="Refinement">Refinement</option>
-        </select>
+    <div id="map-container" class="container">
+        {% leaflet_map "my_map" %}
+    </div>
+    <div class="container">
+        <div class="container" style="display: flex">
+            <button type="button" id='load-btn' class="btn btn-outline-primary">Load Context</button>
+            <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
+                <option value="none" selected disabled>Select the polygon to define</option>
+                <option value="Domain">Domain</option>
+                <option value="Boundary">Boundary</option>
+                <option value="Alignment">Alignment</option>
+                <option value="Refinement">Refinement</option>
+            </select>
+        </div>
+            <div id="load-context-result" class="container">
+        </div>
     </div>
 
     <h1>Existent contexts:</h1>
