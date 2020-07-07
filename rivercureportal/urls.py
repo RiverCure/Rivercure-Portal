@@ -1,8 +1,12 @@
 from django.urls import path
 from . import views 
+from .views import ContextListView, ContextDetailView, HydroFeatureCreateView, HydroFeatureListView, HydroFeatureUpdateView
 
 urlpatterns = [
-    path('', views.home, name='rivercure-home'),
+    path('', ContextListView.as_view(), name='rivercure-home'),
+    path('context/<int:pk>', ContextDetailView.as_view(), name='context-detail'),
     path('about/', views.about, name='rivercure-about'),
-    path('hydrofeatures/', views.hydrofeatures, name='rivercure-hydrofeatures'),
+    path('hydrofeatures/', HydroFeatureListView.as_view(), name='rivercure-hydrofeatures'),
+    path('hydrofeature/new/', HydroFeatureCreateView.as_view(), name='hydrofeature-create'),
+    
 ]

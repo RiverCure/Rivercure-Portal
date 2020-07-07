@@ -1,0 +1,16 @@
+{% extends "rivercureportal/base.html" %}
+
+{% block content %}
+
+<h1>Hydrofeatures</h1>
+
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" >{{ object.Name }}</a>
+      </div>
+      <p><a class="article-title" href="#">{{ object.area }}</a></p>
+    </div>
+</article>
+
+{% endblock content %}

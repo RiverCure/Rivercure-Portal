@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib.gis.db import models
+from django.urls import reverse
 
 
 SENSORKIND_CHOICES = (  ('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor'),  ('tBD Sensor','TBD Sensor'),  )
@@ -45,7 +46,6 @@ class e_Country(models.Model):
 		message="",
 		code="invalid_field")#true
 	code = models.CharField(max_length=20,validators=[code_regex])
-
 
 	Name = models.CharField(max_length=20)
 
@@ -132,14 +132,11 @@ class e_City(models.Model):
 class e_HydroFeature(models.Model):
 	code = models.CharField(max_length=20)
 
-
 	Name = models.CharField(max_length=100)
 
 	type = models.CharField(max_length=100, choices=HYDROFEATUREKIND_CHOICES)
 
-
 	area = models.FloatField()
-
 
 	length = models.FloatField()
 
@@ -152,17 +149,17 @@ class e_HydroFeature(models.Model):
 
 	def __str__(self):
 		return self.Name
+	
+
+	
 
 class e_Organization(models.Model):
-
 
 	Name = models.CharField(max_length=20)
 
 	type = models.CharField(max_length=15, choices=ORGANIZATIONKIND_CHOICES)
 
-
 	sector = models.CharField(max_length=20)
-
 
 	address = models.CharField(max_length=20)
 
@@ -170,9 +167,7 @@ class e_Organization(models.Model):
 
 	country = models.ForeignKey('e_Country', on_delete=models.CASCADE, related_name='e_Organization_country')
 
-
 	email = models.EmailField(max_length=254)
-
 
 	phone = models.CharField(max_length=20)
 

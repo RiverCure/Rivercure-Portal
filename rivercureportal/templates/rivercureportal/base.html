@@ -23,7 +23,6 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href=" {% url 'rivercure-home' %}">Home</a>
               <a class="nav-item nav-link" href=" {% url 'context' %}">Context</a>
               <a class="nav-item nav-link" href="{% url 'rivercure-hydrofeatures' %}">Hydrofeatures</a>
               <a class="nav-item nav-link" href="{% url 'rivercure-about' %}">About</a>
@@ -31,6 +30,7 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if user.is_authenticated %}
+              <a class="nav-item nav-link" href="{% url 'hydrofeature-create' %}">New Hydrofeature</a>
               <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
               {% else %}

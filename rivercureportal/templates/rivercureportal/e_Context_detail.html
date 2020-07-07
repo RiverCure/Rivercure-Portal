@@ -2,18 +2,16 @@
 
 {% block content %}
 
-<h1>Contexts</h1>
-
-{% for context in contexts %}
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.id %}">{{ context.Name }}</a>
+        <a class="mr-2" href="#">{{ object.Name }}</a>
       </div>
-      <p><a class="article-title" href="#">{{ context.code }}</a></p>
+      <h2 class="article-title">{{object.Name}}</h2>
+      <p class="article-content">{{ object.code }}</p>
     </div>
 </article>
-{% endfor %}
+
 
 {% endblock content %}
 

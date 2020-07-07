@@ -1,21 +1,36 @@
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import e_District, e_HydroFeature
 from context.models import e_Context
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 
-def home(request):
-    context = {
-        'districts': e_District.objects.all(),
-        'contexts': e_Context.objects.all(),
-    }
-    return render(request, 'rivercureportal/home.html', context)
+class ContextListView(ListView):
+    model = e_Context
+    template_name = 'rivercureportal/home.html'
+    context_object_name = 'contexts'
+    ordering = ['Name']
+
+class ContextDetailView(DetailView):
+    model = e_Context
+    template_name = 'rivercureportal/e_Context_detail.html'
 
 def about(request):
     return render(request, 'rivercureportal/about.html')
 
-def hydrofeatures(request):
-    context = {
-        'hydrofeatures': e_HydroFeature.objects.all(), 
-    }
+class HydroFeatureListView(ListView):
+    model = e_HydroFeature
+    #context_object_name = 'e_Hydrofeatures'
+    
+class HydroFeatureCreateView(LoginRequiredMixin,CreateView):
+    model = e_HydroFeature
+    fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
+    #TO FIX
+    success_url = 'rivercure-hydrofeatures'
 
-    return render(request, 'rivercureportal/hydrofeatures.html', context)
+class HydroFeatureUpdateView(LoginRequiredMixin,UpdateView):
+    model = e_HydroFeature
+    fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
+    
+    #TO FIX
+    success_url = 'rivercure-hydrofeatures'
