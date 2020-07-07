@@ -3,7 +3,7 @@ from .forms import ContextForm
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
 from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
-from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString
+from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry
 import json
 
 def show_context(request):
@@ -18,10 +18,11 @@ def show_context(request):
 
         form = ContextForm(request.POST)
         if form.is_valid():
-            context_creation(form, request.user).save()
+            e_context = context_creation(form, request.user)
+            e_context.save()
 
             # initialize and save boundaries
-            # boundary = e_ContextBoundaryLine()
+            boundaryline_creation(form, e_context).save()
 
             # initialize and save boundaries point
             # boundary_point = e_ContextBoundaryPoint()
@@ -42,3 +43,15 @@ def context_creation(form, user): # function to initialize and save the context 
     context.user = user
 
     return context
+
+def boundaryline_creation(form, context):
+    boundary = e_ContextBoundaryLine()
+    boundary.context = context   
+    lineStrings = []
+    for feature in json.loads(form.cleaned_data['boundaries'])['features']:
+        lineStrings.append(LineString(feature['geometry']['coordinates']))
+
+    boundary.geom = MultiLineString(lineStrings)
+    boundary.type = 'Input' #temporary solution
+
+    return boundary

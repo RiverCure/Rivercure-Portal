@@ -213,6 +213,9 @@ var MyFunctions = {
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
             }
+            else {
+
+            }
         });
         marker.on('dblclick', () => { //remove the marker on double click
             marker.remove();
@@ -286,25 +289,26 @@ var MyFunctions = {
     sendContext: () => {
         //prepare the visualization of the operation result
         let operationStatus = document.createElement("div");
-        operationStatus.setAttribute("class", "alert alert-danger");
+        
         try {
             // Save the polygons in geojsons and then serialize them to send to the web server
             var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
-            // var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
-            // var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
+            var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
+            var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
 
             // Fill the hidden form fields with the values
             document.querySelector('#id_domain').value = domain;
-            // document.querySelector('#id_alignment').value = alignment;
-            // document.querySelector('#id_refinement').value = refinement;
-            
-            console.log("Starting Boundaries");
+            document.querySelector('#id_alignment').value = alignment;
+            document.querySelector('#id_refinement').value = refinement;
             
             //Handle the boundaries
             var boundaries = {"type": "FeatureCollection", "features": []};
             MyFunctions.boundaries.forEach((element, index) => {
                 boundaryLine = element.toGeoJSON();
-                boundaryLine.properties['markers'] = MyFunctions.boundaryPolylineMarkers[index];
+                // MyFunctions.boundaryPolylineMarkers[index].forEach((marker) => {
+                //     console.log(marker.getPopup().getContent());
+                // });
+                // boundaryLine.properties['markers'] = MyFunctions.boundaryPolylineMarkers[index];
                 boundaries.features.push(boundaryLine);
             });
             console.log(boundaries);
@@ -312,10 +316,11 @@ var MyFunctions = {
 
             // Change alert on form
             document.querySelector('#load-status').innerHTML = operationStatus.innerHTML = "Context Loaded";
-            document.querySelector('#load-status').className = "alert alert-success";
+            document.querySelector('#load-status').className = operationStatus.className = "alert alert-success";
         }
         catch(err) { //In case of invalid context
             console.log(err);
+            operationStatus.setAttribute("class", "alert alert-danger");
             operationStatus.innerHTML = "Invalid Context";
         }
         finally {
