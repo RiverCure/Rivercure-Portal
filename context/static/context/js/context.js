@@ -9,12 +9,15 @@ var MyFunctions = {
     drawnPolygn: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
+    boundaryPolylineMarkersTemp: null,
     //variable to store a temp polyline to serve as a visual aid to the user
     tempPolyline: L.polyline([], {color: '#0000A0', opacity: 0.2}),
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
     boundaries: [],
+    //variable to store the boundary markers in the same order as the domain
+    boundaryPolylineMarkers: [],
     createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
     //Geojson structure to send to the server with the defined geometries
     geojson: {
@@ -79,6 +82,12 @@ var MyFunctions = {
                 allowIntersection: false,
             }
         });
+    },
+    //function to set the domain markers layers visibility toggle
+    setDomainMarkers: (map) => {
+        MyFunctions.domainMarkers = new L.layerGroup();
+        MyFunctions.domainMarkers.addTo(map);
+        map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
     },
     //function to enable polygon drawing and disable polyline
     enablePolygon: (drawControl, polyColor, fillOption) => {
@@ -193,11 +202,15 @@ var MyFunctions = {
                 marker.closePopup(); //close the popup that opens automatically
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
                     MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
+                    //start saving the markers
+                    MyFunctions.boundaryPolylineMarkersTemp = []; 
+                    MyFunctions.boundaryPolylineMarkersTemp.push(marker);
                 }
                 else { //if there are already defined points then draw the polyline
                     //add some logic to guarantee that the points are sequential in the array
                     MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
                     MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
+                    MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
             }
         });
@@ -210,13 +223,14 @@ var MyFunctions = {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
                 MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaryPolylineMarkers.push(MyFunctions.boundaryPolylineMarkersTemp); //store the drawn markers
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
                 MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             }
         }
     },
     //function to run on the begginning of a drawing
-    drawStart: (e, map) => {
+    drawStart: (e) => {
         let polygonType = document.querySelector("#polygon-type"); //select the dropdown element of the polygon type
         polygonType.disabled = true; //disable the selection of the polygon type again
 
@@ -238,12 +252,6 @@ var MyFunctions = {
                 //stop drawing
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
-            case "Domain":
-                if(MyFunctions.domainMarkers === null) { //add the domain markers only once
-                    MyFunctions.domainMarkers = new L.layerGroup()
-                    MyFunctions.domainMarkers.addTo(map);
-                    map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
-                }
             default:
                 if(e.layerType === "polyline") {
                     alert("Invalid shape for selected polygon");
@@ -253,7 +261,7 @@ var MyFunctions = {
         }
     },
     //function to run when draw is created
-    drawCreated: (e) => {
+    drawCreated: (e, map) => {
         MyFunctions.drawnPolygn.addLayer(e.layer);
         let layersKey = Object.keys(MyFunctions.drawnPolygn._layers);
         let polygonKey = layersKey[layersKey.length - 1] //mapping to the object key which will contain the polygon
@@ -262,12 +270,15 @@ var MyFunctions = {
         switch(polygonType) {                    
             case "Domain":
                 MyFunctions.createdPolygons.Domain = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Domain");
                 break;
             case "Alignment":
                 MyFunctions.createdPolygons.Alignment = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Alignment");
                 break;
             case "Refinement":
                 MyFunctions.createdPolygons.Refinement = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Refinement");
                 break;
         }
     },

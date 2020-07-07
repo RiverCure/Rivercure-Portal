@@ -18,13 +18,14 @@
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition(map);
                 MyFunctions.mouseMove(map);
+                MyFunctions.setDomainMarkers(map);
                 //Polygon drawing controls
                 drawControl = MyFunctions.drawControlConfig(map);
                 map.addControl(drawControl);
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
-                map.on("draw:drawstart", e => {MyFunctions.drawStart(e, map);});
-                map.on("draw:created", e => {MyFunctions.drawCreated(e)});
+                map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
+                map.on("draw:created", e => {MyFunctions.drawCreated(e, map)});
                 map.on('click', e => {MyFunctions.mapClick(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
