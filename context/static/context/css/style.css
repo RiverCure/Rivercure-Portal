@@ -22,8 +22,9 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-select {
-  margin-bottom: 50px;
+#polygon-type {
+  margin-left: 10px;
+  max-width: 80%;
 }
 
 /*# sourceMappingURL=style.css.map */
