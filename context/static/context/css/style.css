@@ -22,12 +22,14 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-#polygon-type {
+#context-options {
+  margin-bottom: 50px;
+}
+#context-options #polygon-type {
   margin-left: 10px;
   max-width: 80%;
 }
-
-#load-context-result {
+#context-options #load-context-result {
   display: block;
   margin-top: 5px;
   text-align: center;

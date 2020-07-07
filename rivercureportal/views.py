@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import e_District, e_HydroFeature
 from context.models import e_Context
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from leaflet.forms.widgets import LeafletWidget
 
 
 class ContextListView(ListView):
@@ -25,12 +26,11 @@ class HydroFeatureListView(ListView):
 class HydroFeatureCreateView(LoginRequiredMixin,CreateView):
     model = e_HydroFeature
     fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
-    #TO FIX
+    widgets = {'geom': LeafletWidget()}
     success_url = 'rivercure-hydrofeatures'
 
 class HydroFeatureUpdateView(LoginRequiredMixin,UpdateView):
     model = e_HydroFeature
     fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
-    
-    #TO FIX
+    #widgets = {'geom': LeafletWidget()}
     success_url = 'rivercure-hydrofeatures'
