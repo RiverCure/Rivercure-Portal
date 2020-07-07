@@ -19,3 +19,4 @@ class ContextForm(forms.Form):
     domain = forms.CharField(widget=forms.HiddenInput())
     alignment = forms.CharField(widget=forms.HiddenInput())
     refinement = forms.CharField(widget=forms.HiddenInput())
+    boundaries = forms.CharField(widget=forms.HiddenInput())

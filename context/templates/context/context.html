@@ -16,15 +16,16 @@
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
                 //function to draw mouse position on the map
-                MyFunctions.showMousePosition(map);
+                MyFunctions.showMousePosition();
                 MyFunctions.mouseMove(map);
+                MyFunctions.setDomainMarkers(map);
                 //Polygon drawing controls
                 drawControl = MyFunctions.drawControlConfig(map);
                 map.addControl(drawControl);
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
-                map.on("draw:drawstart", e => {MyFunctions.drawStart(e, map);});
-                map.on("draw:created", e => {MyFunctions.drawCreated(e)});
+                map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
+                map.on("draw:created", e => {MyFunctions.drawCreated(e, map)});
                 map.on('click', e => {MyFunctions.mapClick(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
@@ -60,17 +61,22 @@
         </div>
     </div>
     
-
-    {% leaflet_map "my_map" %}
-    <div class="container" style="display: flex">
-        <button type="button" id='load-btn' class="btn btn-outline-primary">Load Context</button>
-        <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
-            <option value="none" selected disabled>Select the polygon to define</option>
-            <option value="Domain">Domain</option>
-            <option value="Boundary">Boundary</option>
-            <option value="Alignment">Alignment</option>
-            <option value="Refinement">Refinement</option>
-        </select>
+    <div id="map-container" class="container">
+        {% leaflet_map "my_map" %}
+    </div>
+    <div class="container">
+        <div class="container" style="display: flex">
+            <button type="button" id='load-btn' class="btn btn-outline-primary">Load Context</button>
+            <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
+                <option value="none" selected disabled>Select the polygon to define</option>
+                <option value="Domain">Domain</option>
+                <option value="Boundary">Boundary</option>
+                <option value="Alignment">Alignment</option>
+                <option value="Refinement">Refinement</option>
+            </select>
+        </div>
+            <div id="load-context-result" class="container">
+        </div>
     </div>
 
     

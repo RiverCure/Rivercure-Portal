@@ -9,12 +9,15 @@ var MyFunctions = {
     drawnPolygn: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
+    boundaryPolylineMarkersTemp: null,
     //variable to store a temp polyline to serve as a visual aid to the user
     tempPolyline: L.polyline([], {color: '#0000A0', opacity: 0.2}),
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
     boundaries: [],
+    //variable to store the boundary markers in the same order as the domain
+    boundaryPolylineMarkers: [],
     createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
     //Geojson structure to send to the server with the defined geometries
     geojson: {
@@ -80,6 +83,12 @@ var MyFunctions = {
             }
         });
     },
+    //function to set the domain markers layers visibility toggle
+    setDomainMarkers: (map) => {
+        MyFunctions.domainMarkers = new L.layerGroup();
+        MyFunctions.domainMarkers.addTo(map);
+        map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
+    },
     //function to enable polygon drawing and disable polyline
     enablePolygon: (drawControl, polyColor, fillOption) => {
         drawControl.setDrawingOptions({
@@ -127,7 +136,7 @@ var MyFunctions = {
         }
     },
     //function to hadle the showing of mouse position
-    showMousePosition: (map) => {
+    showMousePosition: () => {
         latlngDiv = document.createElement("div");
         latlngDiv.setAttribute("class", "leaflet-control-scale");
         latlngDivContent = document.createElement("div");
@@ -193,12 +202,19 @@ var MyFunctions = {
                 marker.closePopup(); //close the popup that opens automatically
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
                     MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
+                    //start saving the markers
+                    MyFunctions.boundaryPolylineMarkersTemp = []; 
+                    MyFunctions.boundaryPolylineMarkersTemp.push(marker);
                 }
                 else { //if there are already defined points then draw the polyline
                     //add some logic to guarantee that the points are sequential in the array
                     MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
                     MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
+                    MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
+            }
+            else {
+
             }
         });
         marker.on('dblclick', () => { //remove the marker on double click
@@ -208,15 +224,16 @@ var MyFunctions = {
     //function when the user clicks on the map (to stop the boundary line)
     mapClick: (e, map) => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
-            if(MyFunctions.boundaryPolyline != null) { //check if the user is currently drawing the boundary
+            if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1) { //check if the user is currently drawing the boundary
                 MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaryPolylineMarkers.push(MyFunctions.boundaryPolylineMarkersTemp); //store the drawn markers
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
-                MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             }
+            MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
         }
     },
     //function to run on the begginning of a drawing
-    drawStart: (e, map) => {
+    drawStart: (e) => {
         let polygonType = document.querySelector("#polygon-type"); //select the dropdown element of the polygon type
         polygonType.disabled = true; //disable the selection of the polygon type again
 
@@ -238,12 +255,6 @@ var MyFunctions = {
                 //stop drawing
                 document.querySelector('a[title="Cancel drawing"]').click();       
                 break;
-            case "Domain":
-                if(MyFunctions.domainMarkers === null) { //add the domain markers only once
-                    MyFunctions.domainMarkers = new L.layerGroup()
-                    MyFunctions.domainMarkers.addTo(map);
-                    map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
-                }
             default:
                 if(e.layerType === "polyline") {
                     alert("Invalid shape for selected polygon");
@@ -253,7 +264,7 @@ var MyFunctions = {
         }
     },
     //function to run when draw is created
-    drawCreated: (e) => {
+    drawCreated: (e, map) => {
         MyFunctions.drawnPolygn.addLayer(e.layer);
         let layersKey = Object.keys(MyFunctions.drawnPolygn._layers);
         let polygonKey = layersKey[layersKey.length - 1] //mapping to the object key which will contain the polygon
@@ -262,30 +273,59 @@ var MyFunctions = {
         switch(polygonType) {                    
             case "Domain":
                 MyFunctions.createdPolygons.Domain = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Domain");
                 break;
             case "Alignment":
                 MyFunctions.createdPolygons.Alignment = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Alignment");
                 break;
             case "Refinement":
                 MyFunctions.createdPolygons.Refinement = polygonKey;
+                map.layerscontrol.addOverlay(e.layer, "Refinement");
                 break;
         }
     },
     //function to send the polygons to the web server
     sendContext: () => {
-        // Save the polygons in geojsons and then serialize them to send to the web server
-        var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
-        var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
-        var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
+        //prepare the visualization of the operation result
+        let operationStatus = document.createElement("div");
+        
+        try {
+            // Save the polygons in geojsons and then serialize them to send to the web server
+            var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
+            var alignment = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Alignment].toGeoJSON());
+            var refinement = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Refinement].toGeoJSON());
 
-        // Fill the hidden form fields with the values
-        document.querySelector('#id_domain').value = domain;
-        document.querySelector('#id_alignment').value = alignment;
-        document.querySelector('#id_refinement').value = refinement;
+            // Fill the hidden form fields with the values
+            document.querySelector('#id_domain').value = domain;
+            document.querySelector('#id_alignment').value = alignment;
+            document.querySelector('#id_refinement').value = refinement;
+            
+            //Handle the boundaries
+            var boundaries = {"type": "FeatureCollection", "features": []};
+            MyFunctions.boundaries.forEach((element, index) => {
+                boundaryLine = element.toGeoJSON();
+                // MyFunctions.boundaryPolylineMarkers[index].forEach((marker) => {
+                //     console.log(marker.getPopup().getContent());
+                // });
+                // boundaryLine.properties['markers'] = MyFunctions.boundaryPolylineMarkers[index];
+                boundaries.features.push(boundaryLine);
+            });
+            console.log(boundaries);
+            document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
 
-        // Change alert on form
-        document.querySelector('#load-status').innerHTML = "Context loaded";
-        document.querySelector('#load-status').className = "alert alert-success";
+            // Change alert on form
+            document.querySelector('#load-status').innerHTML = operationStatus.innerHTML = "Context Loaded";
+            document.querySelector('#load-status').className = operationStatus.className = "alert alert-success";
+        }
+        catch(err) { //In case of invalid context
+            console.log(err);
+            operationStatus.setAttribute("class", "alert alert-danger");
+            operationStatus.innerHTML = "Invalid Context";
+        }
+        finally {
+            document.querySelector('#load-context-result').append(operationStatus);
+        }
     }
 }
 

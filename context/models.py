@@ -45,6 +45,10 @@ class  e_ContextBoundaryLine(models.Model):
 
 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
 	dataType = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES, null=True)
+
+	def __str__(self):
+		return f"{self.context} context boundary"
+		
 	
 class  e_ContextBoundaryPoint(models.Model):
 
