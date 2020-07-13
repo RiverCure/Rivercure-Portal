@@ -4,14 +4,15 @@
 
 <h1>Hydrofeatures</h1>
 
-
+{% for object in Hydrofeatures %}
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" >{{ object.Name }}</a>
       </div>
-      <p><a class="article-title" href="#">{{ object.area }}</a></p>
+      <p><a class="article-title">Type: {{ object.type }}</a></p>
     </div>
 </article>
+{% endfor %}
 
 {% endblock content %}

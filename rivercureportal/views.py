@@ -4,6 +4,7 @@ from .models import e_District, e_HydroFeature
 from context.models import e_Context
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from leaflet.forms.widgets import LeafletWidget
+from django import forms
 
 
 class ContextListView(ListView):
@@ -21,16 +22,22 @@ def about(request):
 
 class HydroFeatureListView(ListView):
     model = e_HydroFeature
-    #context_object_name = 'e_Hydrofeatures'
+    context_object_name = 'Hydrofeatures'
+
+class HydroFeatureForm(forms.ModelForm):
+    class Meta:
+        model = e_HydroFeature
+        fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
+        widgets = {'geom': LeafletWidget()}
     
 class HydroFeatureCreateView(LoginRequiredMixin,CreateView):
     model = e_HydroFeature
-    fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
-    widgets = {'geom': LeafletWidget()}
-    success_url = 'rivercure-hydrofeatures'
+    form_class = HydroFeatureForm
+    success_url = 'hydrofeature-list'
 
 class HydroFeatureUpdateView(LoginRequiredMixin,UpdateView):
     model = e_HydroFeature
     fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
-    #widgets = {'geom': LeafletWidget()}
-    success_url = 'rivercure-hydrofeatures'
+    success_url = 'hydrofeature-list'
+
+
