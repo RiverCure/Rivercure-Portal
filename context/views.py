@@ -3,12 +3,16 @@ from .forms import ContextForm
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
 from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
+from sensors.models import e_Sensor
+from rest_framework import viewsets
+from .serializers import ContextSerializer, ContextBoundarySerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry
 import json
 
 def show_context(request):
     context = {
         'contexts': e_Context.objects.all(),
+        'sensors': e_Sensor.objects.all(),
         'form': ContextForm()
     }
 
@@ -55,3 +59,8 @@ def boundaryline_creation(form, context):
     boundary.type = 'Input' #temporary solution
 
     return boundary
+
+class ContextViewSet(viewsets.ModelViewSet):
+    queryset = e_Context.objects.all()
+    lookup_field = 'Name'
+    serializer_class = ContextSerializer

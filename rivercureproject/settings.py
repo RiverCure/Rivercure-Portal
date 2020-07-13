@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'crispy_forms',
 	'django.contrib.gis',
 	'suit',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

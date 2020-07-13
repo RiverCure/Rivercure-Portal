@@ -32,14 +32,14 @@ class e_Context(models.Model):
 	geomAlignment = models.MultiLineStringField(null=True)   		# aka Alignment
 	CLAlignment = models.BigIntegerField(null=True)   					# Alignment's CL
 
-	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
 
 	def __str__(self):
 		return self.Name
 
 class  e_ContextBoundaryLine(models.Model):
 
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_boundaries')
 
 	geom = models.MultiLineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
 
@@ -52,7 +52,7 @@ class  e_ContextBoundaryLine(models.Model):
 	
 class  e_ContextBoundaryPoint(models.Model):
 
-	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False )
+	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False, related_name='context_boundary_points')
 
 	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
