@@ -7,8 +7,6 @@
     {% leaflet_js plugins="ALL" %}
     {% leaflet_css plugins="ALL" %}
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
-    {% comment %} <script src='https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js'></script> {% endcomment %}
-    {% comment %} <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY" async defer></script> {% endcomment %}
     <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
 
     <script>
@@ -42,8 +40,18 @@
 
 {% block content %}
 
-    <h1><small>Create your context here</small></h1>
-    <div class="content-section">
+    <h1><small>Edit your context here</small></h1>
+    <div id="map-container" class="container">
+        <label for="context-to-change">Choose a car:</label>
+        <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
+            {% for context_definition in contexts%}
+                <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+        
+    
+    <div id="form-data" class="content-section" style="display: none">
         <form method='POST'>
             {% csrf_token %}
             <input type="hidden" id="domain" name="domain" value="">
@@ -60,7 +68,8 @@
         <div class="border-top pt-3">
         </div>
     </div>
-    
+
+
     <div id="map-container" class="container">
         {% leaflet_map "my_map" %}
     </div>

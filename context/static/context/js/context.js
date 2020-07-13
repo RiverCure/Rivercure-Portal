@@ -326,6 +326,13 @@ var MyFunctions = {
         finally {
             document.querySelector('#load-context-result').append(operationStatus);
         }
+    },
+    //function to get a context to edit
+    getContext: (url) => {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", url, false); 
+        xmlHttp.send(null);
+        return xmlHttp.responseText; //
     }
 }
 
