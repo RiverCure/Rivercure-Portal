@@ -22,7 +22,8 @@ def about(request):
 
 class HydroFeatureListView(ListView):
     model = e_HydroFeature
-    context_object_name = 'Hydrofeatures'
+    context_object_name = 'hydrofeatures'
+    template_name = 'rivercureportal/e_HydroFeature_list.html'
 
 class HydroFeatureForm(forms.ModelForm):
     class Meta:
@@ -39,5 +40,10 @@ class HydroFeatureUpdateView(LoginRequiredMixin,UpdateView):
     model = e_HydroFeature
     fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
     success_url = 'hydrofeature-list'
+
+class HydroFeatureDetailView(DetailView):
+    model = e_HydroFeature
+    context_object_name = 'Hydrofeatures'
+    template_name = 'rivercureportal/e_HydroFeature_detail.html'
 
 
