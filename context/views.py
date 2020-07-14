@@ -7,13 +7,15 @@ from sensors.models import e_Sensor
 from rest_framework import viewsets
 from .serializers import ContextSerializer, ContextBoundarySerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry
-import json
+import json, os
 
 def show_context(request):
+    web_host = os.environ['WEB_SERVER_IP']
     context = {
         'contexts': e_Context.objects.all(),
         'sensors': e_Sensor.objects.all(),
-        'form': ContextForm()
+        'form': ContextForm(),
+        'api': f'http://{web_host}/context/api/context/'
     }
 
     if request.method == 'POST':
@@ -65,5 +67,5 @@ def boundaryline_creation(form, context):
 
 class ContextViewSet(viewsets.ModelViewSet):
     queryset = e_Context.objects.all()
-    lookup_field = 'Name'
+    lookup_field = 'code'
     serializer_class = ContextSerializer

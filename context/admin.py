@@ -4,13 +4,13 @@ from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 
 class ContextBoundaryPointInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextBoundaryPoint
-    classes = ['collapse']
+    # classes = ['collapse']
     fields = ['geom',]
     extra = 0
 
 class ContextBoundaryLineInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextBoundaryLine
-    classes = ['collapse']
+    # classes = ['collapse']
     fields = ['type', 'dataType', 'geom']
     extra = 0
 

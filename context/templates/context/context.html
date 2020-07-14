@@ -33,7 +33,11 @@
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action
                 document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
-            });
+                // Function to call the api for the context data when user selects a context
+                document.querySelector('#context-to-change').addEventListener('change', e => {
+                    MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value)
+                });
+            });            
         });
     </script>
 {% endblock %}
@@ -41,8 +45,8 @@
 {% block content %}
 
     <h1><small>Edit your context here</small></h1>
-    <div id="map-container" class="container">
-        <label for="context-to-change">Choose a car:</label>
+    <div class="container">
+        <label for="context-to-change">Choose a context:</label>
         <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
             {% for context_definition in contexts%}
                 <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>
