@@ -6,10 +6,13 @@ from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
 
 class ContextForm(forms.Form):
-    code = forms.CharField(readonly=True)
+    code = forms.CharField()
     name = forms.CharField()
     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all())
     domain = forms.CharField(widget=forms.HiddenInput())
+    CLExternalBoundary = forms.IntegerField()
     alignment = forms.CharField(widget=forms.HiddenInput())
+    CLAlignment = forms.IntegerField()
     refinement = forms.CharField(widget=forms.HiddenInput())
+    CLInternalBoundary = forms.IntegerField()
     boundaries = forms.CharField(widget=forms.HiddenInput())

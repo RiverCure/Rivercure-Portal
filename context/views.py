@@ -42,8 +42,11 @@ def context_creation(form, user): # function to initialize and save the context 
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
+    context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
     context.geomInternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['refinement'])['geometry']['coordinates'][0]))
+    context.CLInternalBoundary = form.cleaned_data['CLInternalBoundary']
     context.geomAlignment = MultiLineString(LineString(json.loads(form.cleaned_data['alignment'])['geometry']['coordinates']))
+    context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
     context.user = user
 
     return context
