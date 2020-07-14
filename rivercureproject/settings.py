@@ -46,21 +46,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-	'leaflet',
-    'sensors.apps.SensorsConfig',
-    'rivercureportal.apps.RivercureportalConfig',
-    'users.apps.UsersConfig',
-    'context.apps.ContextConfig',
-    'crispy_forms',
-	'django.contrib.gis',
-	'suit',
-    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'django.contrib.gis',
+    'leaflet',
+    'sensors.apps.SensorsConfig',
+    'rivercureportal.apps.RivercureportalConfig',
+    'users.apps.UsersConfig',
+    'context.apps.ContextConfig',
+    'crispy_forms',
+	'suit',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -148,8 +148,8 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
     'RESET_VIEW': False,
-    'TILES': [('Satellite', 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {'attribution': '&copy; <a href="https://www.hatarilabs.com/ih-en/how-to-add-a-google-map-in-qgis-3-tutorial">Google</a>'}),
-            ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'})]
+    'TILES': [('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
+                ('Satellite', 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {'attribution': '&copy; <a href="https://www.hatarilabs.com/ih-en/how-to-add-a-google-map-in-qgis-3-tutorial">Google</a>'})]
 }
 
 
