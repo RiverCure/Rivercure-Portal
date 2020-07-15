@@ -18,7 +18,6 @@ class ContextSerializer(serializers.ModelSerializer):
     hydroFeature = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = e_Context
-        fields = ['code', 'Name', 'hydroFeature', 'geomExternalBoundary', 'CLExternalBoundary', 
-                    'geomInternalBoundary', 'CLInternalBoundary',
-                    'geomAlignment', 'CLAlignment', 'context_boundaries']
+        fields = ['code', 'Name', 'hydroFeature', 'geomExternalBoundary', 
+                    'geomInternalBoundary', 'geomAlignment', 'context_boundaries']
 

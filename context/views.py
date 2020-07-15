@@ -12,7 +12,7 @@ import json, os
 def show_context(request):
     web_host = os.environ['CONTEXT_API']
     context = {
-        'contexts': e_Context.objects.all(),
+        'contexts': e_Context.objects.all().order_by('Name'),
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
         'api': f'http://{web_host}/context/api/context/'
@@ -44,12 +44,12 @@ def context_creation(form, user): # function to initialize and save the context 
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
-    context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
+    # context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
     context.geomInternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['refinement'])['geometry']['coordinates'][0]))
-    context.CLInternalBoundary = form.cleaned_data['CLInternalBoundary']
+    # context.CLInternalBoundary = form.cleaned_data['CLInternalBoundary']
     context.geomAlignment = MultiLineString(LineString(json.loads(form.cleaned_data['alignment'])['geometry']['coordinates']))
-    context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
-    context.user = user
+    # context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
+    # context.user = user
 
     return context
 

@@ -344,7 +344,7 @@ var MyFunctions = {
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
         document.querySelector('#id_code').value = response.code;
-        document.querySelector('#id_name').value = response.name;
+        document.querySelector('#id_name').value = response.Name;
         document.querySelector('#id_hydroFeature').value = response.hydroFeature;
         document.querySelector('#id_CLExternalBoundary').value = response.CLExternalBoundary;
         document.querySelector('#id_CLAlignment').value = response.CLAlignment;

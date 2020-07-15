@@ -147,12 +147,12 @@ class e_HydroFeature(models.Model):
 	#TYPE GEOGRAFICO
 	geom = models.MultiPolygonField()
 
+	class Meta:
+		ordering = ['Name']
+
 	def __str__(self):
 		return self.Name
 	
-
-	
-
 class e_Organization(models.Model):
 
 	Name = models.CharField(max_length=20)
