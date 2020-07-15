@@ -10,7 +10,7 @@ from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, Line
 import json, os
 
 def show_context(request):
-    web_host = os.environ['WEB_SERVER_IP']
+    web_host = os.environ['CONTEXT_API']
     context = {
         'contexts': e_Context.objects.all(),
         'sensors': e_Sensor.objects.all(),
