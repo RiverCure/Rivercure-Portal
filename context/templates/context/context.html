@@ -35,7 +35,8 @@
                 document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
                 // Function to call the api for the context data when user selects a context
                 document.querySelector('#context-to-change').addEventListener('change', e => {
-                    MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value)
+                    if(document.querySelector('#context-to-change').value !== "")
+                        MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
                 });
             });            
         });
@@ -48,6 +49,7 @@
     <div class="container">
         <label for="context-to-change">Choose a context:</label>
         <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
+            <option value="">-----</option>
             {% for context_definition in contexts%}
                 <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>
             {% endfor %}

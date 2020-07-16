@@ -151,3 +151,4 @@ dmypy.json
 *.map
 data/
 migrations/
+.vscode/

@@ -23,14 +23,14 @@ class e_Context(models.Model):
 
 	hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=False )
 
-	geomExternalBoundary = models.MultiPolygonField(null=True)  		#aka Domain
-	CLExternalBoundary  = models.BigIntegerField(null=True)  			#aka Domain's CL, characteristic lenght 
+	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
+	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
 	
-	geomInternalBoundary = models.MultiPolygonField(null=True) 					# aka Refinement
-	CLInternalBoundary  = models.BigIntegerField(null=True)  			#aka Refinement's CL
+	geomInternalBoundary = models.MultiPolygonField(null=True, blank=True) 					# aka Refinement
+	CLInternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Refinement's CL
 
-	geomAlignment = models.MultiLineStringField(null=True)   		# aka Alignment
-	CLAlignment = models.BigIntegerField(null=True)   					# Alignment's CL
+	geomAlignment = models.MultiLineStringField(null=True, blank=True)   		# aka Alignment
+	CLAlignment = models.BigIntegerField(null=True, blank=True)   					# Alignment's CL
 
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
 

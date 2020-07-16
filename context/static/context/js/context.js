@@ -19,44 +19,6 @@ var MyFunctions = {
     //variable to store the boundary markers in the same order as the domain
     boundaryPolylineMarkers: [],
     createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
-    //Geojson structure to send to the server with the defined geometries
-    geojson: {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {"Name": "Domain"},
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": []
-                }
-            },
-            {
-                "type": "Feature",
-                "properties": {"Name": "Refinement"},
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": []
-                }
-            },
-            {
-                "type": "Feature",
-                "properties": {"Name": "Alignment"},
-                "geometry": {
-                    "type": "MultiLineString",
-                    "coordinates": []
-                }
-            },
-            {
-                "type": "Feature",
-                "properties": {"Name": "Boundary"},
-                "geometry": {
-                    "type": "MultiLineString",
-                    "coordinates": []
-                }
-            }
-        ]
-    },
     //function to configure draw control
     drawControlConfig: (map) => {
         MyFunctions.drawnPolygn = new L.FeatureGroup();
@@ -328,7 +290,7 @@ var MyFunctions = {
         }
     },
     //function to get a context to edit
-    getContext: (url) => {
+    getContext: (url, map) => {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("GET", url, false); 
         xmlHttp.send(null);
@@ -340,15 +302,39 @@ var MyFunctions = {
         console.log(response);
 
         MyFunctions.fillForm(response);
+        MyFunctions.drawGeometries(response, map);
     },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
         document.querySelector('#id_code').value = response.code;
         document.querySelector('#id_name').value = response.Name;
         document.querySelector('#id_hydroFeature').value = response.hydroFeature;
-        document.querySelector('#id_CLExternalBoundary').value = response.CLExternalBoundary;
-        document.querySelector('#id_CLAlignment').value = response.CLAlignment;
-        document.querySelector('#id_CLInternalBoundary').value = response.CLInternalBoundary;
+        // document.querySelector('#id_CLExternalBoundary').value = response.CLExternalBoundary;
+        // document.querySelector('#id_CLAlignment').value = response.CLAlignment;
+        // document.querySelector('#id_CLInternalBoundary').value = response.CLInternalBoundary;
+    },
+    //function to draw the geometries in the context from API call
+    drawGeometries: (response, map) => {
+        //Domain
+        MyFunctions.drawnPolygn.addLayer(L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'})); //Domain
+        map.layerscontrol.addOverlay(Object.values(MyFunctions.drawnPolygn._layers)[Object.values(MyFunctions.drawnPolygn._layers).length - 1], "Domain"); //add the possibility to hide the layer
+        MyFunctions.createdPolygons.Domain = Object.keys(MyFunctions.drawnPolygn._layers)[Object.keys(MyFunctions.drawnPolygn._layers).length - 1];
+        //Refinement
+        MyFunctions.drawnPolygn.addLayer(L.polygon(MyFunctions.coordStringToArray(response.geomInternalBoundary), {color: '#FFA500'})); //Refinement
+        map.layerscontrol.addOverlay(Object.values(MyFunctions.drawnPolygn._layers)[Object.values(MyFunctions.drawnPolygn._layers).length - 1], "Refinement"); //add the possibility to hide the layer
+        MyFunctions.createdPolygons.Refinement = Object.keys(MyFunctions.drawnPolygn._layers)[Object.keys(MyFunctions.drawnPolygn._layers).length - 1];
+        //Alignment
+        MyFunctions.drawnPolygn.addLayer(L.polyline(MyFunctions.coordStringToArray(response.geomAlignment), {color: '#FFFF00'})); //Alignment
+        map.layerscontrol.addOverlay(Object.values(MyFunctions.drawnPolygn._layers)[Object.values(MyFunctions.drawnPolygn._layers).length - 1], "Alignment"); //add the possibility to hide the layer
+        MyFunctions.createdPolygons.Alignment = Object.keys(MyFunctions.drawnPolygn._layers)[Object.keys(MyFunctions.drawnPolygn._layers).length - 1];
+    },
+    //function to transform coordinate string into an array
+    coordStringToArray: (string) => {
+        let coordinates = [];
+        string = string.slice(string.lastIndexOf('(') + 1, string.indexOf('))')).split(',');
+        for(coord of string)
+            coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
+        return coordinates;
     },
 }
 
