@@ -9,7 +9,7 @@ SENSORMODALITYKIND_CHOICES = (  ('physicalFixed ','PhysicalFixed '),  ('physical
 COLOURKIND_CHOICES = (  ('red','Red'),  ('yellow','Yellow'),  ('green','Green'),  )
 
 class e_Sensor(models.Model):
-    code = models.CharField(max_length=100, unique=True)
+    code = models.CharField(primary_key=True, max_length=100, unique=True)
 
     Name = models.CharField(max_length=100)
 

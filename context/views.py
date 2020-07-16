@@ -12,12 +12,11 @@ import json, os
 def show_context(request):
     web_host = os.environ['CONTEXT_API']
     context = {
-        'contexts': e_Context.objects.all().order_by('Name'),
+        'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
         'api': f'http://{web_host}/context/api/context/'
     }
-
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
             return render(request, 'context/context.html', context)
