@@ -17,7 +17,7 @@ CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOut
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('Depth', 'H'), ('Discharge','Q'), ('Elevation', 'Z'), ('Velocity', 'V'), )
 
 class e_Context(models.Model):
-	code = models.CharField(max_length=100, unique=True)
+	code = models.CharField(primary_key=True, max_length=100, unique=True)
 
 	Name = models.CharField(max_length=100, unique=True)
 

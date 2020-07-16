@@ -19,7 +19,7 @@ var MyFunctions = {
     //function to draw sensors on the map
     drawSensors: (map, sensors, iconUrl) => {
         //icon for sensors
-        let sensorIcon = L.icon( {iconUrl: iconUrl, iconSize: [30, 30]});
+        let sensorIcon = L.icon( {iconUrl: iconUrl, iconSize: [50, 50]});
         let sensorMarker; //auxiliar variable
         for(sensor of sensors) {
             sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(MyFunctions.sensorsLayer);

@@ -4,7 +4,7 @@ from .views import ContextListView, ContextDetailView, HydroFeatureCreateView, H
 
 urlpatterns = [
     path('', ContextListView.as_view(), name='rivercure-home'),
-    path('context/<int:pk>', ContextDetailView.as_view(), name='context-detail'),
+    path('context/<str:pk>', ContextDetailView.as_view(), name='context-detail'),
     path('about/', views.about, name='rivercure-about'),
     path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
     path('hydrofeature/<int:pk>', HydroFeatureDetailView.as_view(), name='hydrofeature-detail'),
