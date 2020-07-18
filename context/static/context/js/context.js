@@ -12,7 +12,7 @@ var MyFunctions = {
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
-    boundaries: [],
+    boundaries: L.layerGroup(),
     //variable to store the boundary markers in the same order as the domain
     boundaryPolylineMarkers: [],
     createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
@@ -67,6 +67,8 @@ var MyFunctions = {
     drawControlConfig: (map) => {
         MyFunctions.drawnPolygn = new L.FeatureGroup();
         map.addLayer(MyFunctions.drawnPolygn);
+        map.addLayer(MyFunctions.boundaries);
+        map.layerscontrol.addOverlay(MyFunctions.boundaries, 'Boundaries');
         return new L.Control.Draw({
             //leave only polygon option in the control
             draw: { 
@@ -228,10 +230,10 @@ var MyFunctions = {
         });
     },
     //function when the user clicks on the map (to stop the boundary line)
-    mapClick: (e, map) => {
+    stopBoundaryDefinition: () => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1) { //check if the user is currently drawing the boundary
-                MyFunctions.boundaries.push(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaries.addLayer(MyFunctions.boundaryPolyline); //store the previously drawn boundary
                 MyFunctions.boundaryPolylineMarkers.push(MyFunctions.boundaryPolylineMarkersTemp); //store the drawn markers
                 MyFunctions.boundaryPolyline = null; //restart the boundary draw
             }
@@ -293,8 +295,6 @@ var MyFunctions = {
     //function to send the polygons to the web server
     sendContext: () => {
         //prepare the visualization of the operation result
-        let operationStatus = document.createElement("div");
-        
         try {
             // Save the polygons in geojsons and then serialize them to send to the web server
             var domain = JSON.stringify(MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain].toGeoJSON());
@@ -305,10 +305,9 @@ var MyFunctions = {
             document.querySelector('#id_domain').value = domain;
             document.querySelector('#id_alignment').value = alignment;
             document.querySelector('#id_refinement').value = refinement;
-            
             //Handle the boundaries
             var boundaries = {"type": "FeatureCollection", "features": []};
-            MyFunctions.boundaries.forEach((element, index) => {
+            MyFunctions.boundaries.getLayers().forEach((element, index) => {
                 boundaryLine = element.toGeoJSON();
                 // MyFunctions.boundaryPolylineMarkers[index].forEach((marker) => {
                 //     console.log(marker.getPopup().getContent());
@@ -318,18 +317,18 @@ var MyFunctions = {
             });
             console.log(boundaries);
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
-
+            
             // Change alert on form
-            document.querySelector('#load-status').innerHTML = operationStatus.innerHTML = "Context Loaded";
-            document.querySelector('#load-status').className = operationStatus.className = "alert alert-success";
+            document.querySelector('#load-status').innerHTML = document.querySelector('#load-context-result').innerHTML = "Context Loaded";
+            document.querySelector('#load-status').className = document.querySelector('#load-context-result').className = "alert alert-success";
         }
         catch(err) { //In case of invalid context
             console.log(err);
-            operationStatus.setAttribute("class", "alert alert-danger");
-            operationStatus.innerHTML = "Invalid Context";
+            document.querySelector('#load-context-result').setAttribute("class", "alert alert-danger");
+            document.querySelector('#load-context-result').innerHTML = "Invalid Context";
         }
         finally {
-            document.querySelector('#load-context-result').append(operationStatus);
+            document.querySelector('#load-context-result').style.display = 'block';
         }
     },
     //function to get a context to edit
@@ -341,7 +340,6 @@ var MyFunctions = {
 
         //show the form
         document.querySelector('#form-data').style.display = 'block';
-        document.querySelector('#id_code').disabled = true;
         console.log(response);
 
         MyFunctions.fillForm(response);
@@ -372,10 +370,18 @@ var MyFunctions = {
             MyFunctions.createdPolygons.Refinement = Object.keys(MyFunctions.drawnPolygn._layers)[Object.keys(MyFunctions.drawnPolygn._layers).length - 1];
         }
         //Alignment
-        if(response.geomExternalBoundary !== null) { //check if the alignment is defined in the database
+        if(response.geomAlignment !== null) { //check if the alignment is defined in the database
             MyFunctions.drawnPolygn.addLayer(L.polyline(MyFunctions.coordStringToArray(response.geomAlignment), {color: '#FFFF00'})); //Alignment
             map.layerscontrol.addOverlay(Object.values(MyFunctions.drawnPolygn._layers)[Object.values(MyFunctions.drawnPolygn._layers).length - 1], "Alignment"); //add the possibility to hide the layer
             MyFunctions.createdPolygons.Alignment = Object.keys(MyFunctions.drawnPolygn._layers)[Object.keys(MyFunctions.drawnPolygn._layers).length - 1];
+        }
+        //Boundaries
+        if(response.context_boundaries !== null && response.context_boundaries.length > 0) {
+            console.log('boundaries');
+            response.context_boundaries.forEach((element) => {
+                console.log(element.geom);
+                MyFunctions.boundaries.addLayer(L.polyline(MyFunctions.coordStringToArray(element.geom)));
+            });
         }
     },
     //function to transform coordinate string into an array
@@ -384,7 +390,7 @@ var MyFunctions = {
         string = string.slice(string.lastIndexOf('(') + 1, string.indexOf(')')).split(',');
         for(coord of string)
             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
-            console.log(coordinates);
+        console.log(coordinates);
         return coordinates;
     },
 }

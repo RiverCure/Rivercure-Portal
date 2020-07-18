@@ -6,7 +6,7 @@ from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
 
 class ContextForm(forms.Form):
-    code = forms.CharField()
+    code = forms.CharField(widget=forms.HiddenInput())
     name = forms.CharField()
     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all())
     domain = forms.CharField(widget=forms.HiddenInput())

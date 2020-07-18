@@ -26,7 +26,7 @@
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
                 map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
                 map.on("draw:created", e => {MyFunctions.drawCreated(e, map)});
-                map.on('click', e => {MyFunctions.mapClick(e, map)});
+                map.on('click', e => {MyFunctions.stopBoundaryDefinition(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
                 map.on("draw:editstart", e => {MyFunctions.removeDomainMarkers();});
@@ -102,9 +102,7 @@
                 <option value="Refinement">Refinement</option>
             </select>
         </div>
-            <div id="load-context-result" class="container">
-        </div>
+        <div id='load-context-result' style='display: none'></div>
     </div>
-
     
 {% endblock %}

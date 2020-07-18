@@ -30,8 +30,7 @@
   max-width: 80%;
 }
 #context-options #load-context-result {
-  display: block;
-  margin-top: 5px;
+  margin-top: 10px;
   text-align: center;
 }
 

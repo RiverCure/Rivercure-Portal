@@ -20,7 +20,7 @@ def show_context(request):
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
             return render(request, 'context/context.html', context)
-
+        
         form = ContextForm(request.POST)
         if form.is_valid():
             e_context = context_creation(form, request.user)
@@ -38,8 +38,8 @@ def show_context(request):
     return render(request, 'context/context.html', context)
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
-    context = e_Context()
-    context.code = form.cleaned_data['code']
+    context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
+    # context.code = form.cleaned_data['code']
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
