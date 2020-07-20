@@ -8,8 +8,12 @@
     {% leaflet_css plugins="ALL" %}
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
     <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
+    <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -25,6 +29,7 @@
                 drawControl = MyFunctions.drawControlConfig(map);
                 map.addControl(drawControl);
                 map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
+                MyFunctions.polygonsInit(map); //init the polygon storing system
                 MyFunctions.boundariesInit(map); //init the boundaries variables
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
@@ -33,8 +38,8 @@
                 map.on('click', e => {MyFunctions.stopBoundaryDefinition(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
-                map.on("draw:editstart", e => {MyFunctions.removeDomainMarkers();});
-                map.on("draw:edited", e => {MyFunctions.editStop(map)});
+                map.on("draw:editstart", e => {MyFunctions.clearLayers();});
+                map.on("draw:editstop", e => {MyFunctions.editStop(map)});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action

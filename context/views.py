@@ -26,11 +26,13 @@ def show_context(request):
             e_context = context_creation(form, request.user)
             e_context.save()
 
-            # initialize and save boundaries
-            boundaryline_creation(form, e_context)
+            # initialize and save refinement
+            refinement_creation(form, e_context)
+            # initialize and save alignment
+            alignment_creation(form, e_context)
 
-            # initialize and save boundaries point
-            # boundary_point = e_ContextBoundaryPoint()
+            # initialize and save boundaries & boundary points
+            boundaryline_creation(form, e_context)
 
             messages.success(request,f'Context created with success!') 
             return render(request, 'context/context.html', context)
@@ -39,26 +41,31 @@ def show_context(request):
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
-    # context.code = form.cleaned_data['code']
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
-    # context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
-    context.geomInternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['refinement'])['geometry']['coordinates'][0]))
-    # context.CLInternalBoundary = form.cleaned_data['CLInternalBoundary']
-    context.geomAlignment = MultiLineString(LineString(json.loads(form.cleaned_data['alignment'])['geometry']['coordinates']))
-    # context.CLExternalBoundary = form.cleaned_data['CLExternalBoundary']
-    # context.user = user
-
     return context
 
 def refinement_creation(form, context):
     e_ContextRefinement.objects.filter(context=context).delete()
-    refinement = e_ContextRefinement()
+    for feature in json.loads(form.cleaned_data['refinement'])['features']:
+        refinement = e_ContextRefinement()
+        refinement.context = context
+        refinement.CL = 0; #temporary solution
+        print('\n\n\n\n')
+        print(feature['geometry']['coordinates'])
+        refinement.geom = Polygon(feature['geometry']['coordinates'][0])
+        refinement.save()
 
 def alignment_creation(form, context):
     e_ContextAlignment.objects.filter(context=context).delete()
-    alignment = e_ContextAlignment()
+    for feature in json.loads(form.cleaned_data['alignment'])['features']:
+        alignment = e_ContextAlignment()
+        alignment.context = context
+        alignment.CL = 0; #temporary solution
+        alignment.geom = LineString(feature['geometry']['coordinates'])
+        alignment.save()
+
 
 def boundaryline_creation(form, context): # function to create the several lines
     e_ContextBoundaryLine.objects.filter(context=context).delete()

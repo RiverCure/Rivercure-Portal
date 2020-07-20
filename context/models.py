@@ -25,12 +25,6 @@ class e_Context(models.Model):
 
 	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
 	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
-	
-	geomInternalBoundary = models.MultiPolygonField(null=True, blank=True) 					# aka Refinement
-	CLInternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Refinement's CL
-
-	geomAlignment = models.MultiLineStringField(null=True, blank=True)   		# aka Alignment
-	CLAlignment = models.BigIntegerField(null=True, blank=True)   					# Alignment's CL
 
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
 
@@ -42,16 +36,22 @@ class e_ContextRefinement(models.Model):
 	geom = models.PolygonField(null=True, blank=True) 					# aka Refinement
 	CL  = models.BigIntegerField(null=True, blank=True)  			#aka Refinement's CL
 
+	def __str__(self):
+		return f"{self.context} context refinement"
+
 class e_ContextAlignment(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_alignment')
 	geom = models.LineStringField(null=True, blank=True)   		# aka Alignment
 	CL = models.BigIntegerField(null=True, blank=True)   					# Alignment's CL
 
+	def __str__(self):
+		return f"{self.context} context alignment"
+
 class  e_ContextBoundaryLine(models.Model):
 
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_boundaries')
 
-	geom = models.LineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
+	geom = models.LineStringField(null=True, blank=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
 
 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
 	dataType = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES, null=True)
@@ -64,7 +64,7 @@ class  e_ContextBoundaryPoint(models.Model):
 
 	contextBoundaryLine = models.ForeignKey('e_ContextBoundaryLine', on_delete=models.CASCADE, null=True, blank=False, related_name='context_boundary_points')
 
-	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
+	geom = models.PointField(null=True, blank=True) #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
 	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
 

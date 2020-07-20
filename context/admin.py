@@ -11,18 +11,20 @@ class ContextBoundaryPointInLine(LeafletGeoAdminMixin, admin.StackedInline):
 
 class ContextBoundaryLineInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextBoundaryLine
-    # classes = ['collapse']
+    classes = ['collapse']
     fields = ['type', 'dataType', 'geom']
     # readonly_fields = ['geom']
     extra = 0
 
 class ContextAlignmentInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextAlignment
+    classes = ['collapse']
     fields = ['geom', 'CL']
     extra = 0
 
 class ContextRefinementInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model =  e_ContextRefinement
+    classes = ['collapse']
     fields = ['geom', 'CL']
     extra = 0
 
