@@ -1,6 +1,6 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin, LeafletGeoAdminMixin
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextAlignment, e_ContextRefinement
 
 class ContextBoundaryPointInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextBoundaryPoint
@@ -16,14 +16,23 @@ class ContextBoundaryLineInLine(LeafletGeoAdminMixin, admin.StackedInline):
     # readonly_fields = ['geom']
     extra = 0
 
+class ContextAlignmentInLine(LeafletGeoAdminMixin, admin.StackedInline):
+    model = e_ContextAlignment
+    fields = ['geom', 'CL']
+    extra = 0
+
+class ContextRefinementInLine(LeafletGeoAdminMixin, admin.StackedInline):
+    model =  e_ContextRefinement
+    fields = ['geom', 'CL']
+    extra = 0
+
 class ContextBoundaryPointDetail(LeafletGeoAdmin):
     search_fields = ['contextBoundaryLine',]
     list_display = ['__str__', 'contextBoundaryLine', 'context']
 
     def context(self, obj):
         return obj.contextBoundaryLine.context.Name
-    context.short_description = 'Context'
-    
+    context.short_description = 'Context'  
 
 class ContextBoundaryDetail(LeafletGeoAdmin):
     inlines = [
@@ -34,6 +43,8 @@ class ContextBoundaryDetail(LeafletGeoAdmin):
 
 class ContextDetail(LeafletGeoAdmin):
     inlines = [
+        ContextRefinementInLine,
+        ContextAlignmentInLine,
         ContextBoundaryLineInLine,
     ]
     search_fields = ['code', 'Name']

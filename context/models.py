@@ -37,6 +37,16 @@ class e_Context(models.Model):
 	def __str__(self):
 		return self.Name
 
+class e_ContextRefinement(models.Model):
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_refinement')
+	geom = models.PolygonField(null=True, blank=True) 					# aka Refinement
+	CL  = models.BigIntegerField(null=True, blank=True)  			#aka Refinement's CL
+
+class e_ContextAlignment(models.Model):
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_alignment')
+	geom = models.LineStringField(null=True, blank=True)   		# aka Alignment
+	CL = models.BigIntegerField(null=True, blank=True)   					# Alignment's CL
+
 class  e_ContextBoundaryLine(models.Model):
 
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_boundaries')
