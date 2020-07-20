@@ -12,7 +12,7 @@ var MyFunctions = {
     //variable to store the domain markers
     domainMarkers: null,
     //vars with created polygons
-    boundaries: L.layerGroup(),
+    boundaries: null,
     //variable to store the boundary markers in the same order as the domain
     boundaryPolylineMarkers: [],
     createdPolygons: {"Domain": null, "Refinement": null, "Alignment": null},
@@ -67,8 +67,7 @@ var MyFunctions = {
     drawControlConfig: (map) => {
         MyFunctions.drawnPolygn = new L.FeatureGroup();
         map.addLayer(MyFunctions.drawnPolygn);
-        map.addLayer(MyFunctions.boundaries);
-        map.layerscontrol.addOverlay(MyFunctions.boundaries, 'Boundaries');
+        
         return new L.Control.Draw({
             //leave only polygon option in the control
             draw: { 
@@ -91,11 +90,51 @@ var MyFunctions = {
             }
         });
     },
+    //funtion to init the boundaries variable
+    boundariesInit: (map) => {
+        MyFunctions.boundaries = L.featureGroup();
+        map.addLayer(MyFunctions.boundaries);
+        map.layerscontrol.addOverlay(MyFunctions.boundaries, 'Boundaries');
+
+        //add a popup to select CONTEXTBOUNDARYLINEDATAKIND_CHOICES present in the model
+        MyFunctions.boundaries.bindPopup(`
+            <h1><small>Boundary</small></h1>
+            <label for="water-entry-type">Choose a type:</label>
+            <select name="water-entry-type">
+                <option value="Depth">H</option>
+                <option value="Discharge">Q</option>
+                <option value="Elevation">Z</option>
+                <option value="Velocity">V</option>
+            </select> <br>
+            <label for="water-entry-type">Choose a data type:</label>
+            <select name="water-entry-type">
+                <option value="Input">Input</option>
+                <option value="Output">Output</option>
+                <option value="InputOutput">Input Output</option>
+            </select> <br>
+            <button type="button" onclick="MyFunctions.saveBoundaryProperties(this)">Save</button>
+        `);
+
+        MyFunctions.boundaries.bindTooltip("Click to define variables");
+    },
+    //functions to save the boundary line variables
+    saveBoundaryProperties: (e) => {
+        console.log(e);
+
+    },
     //function to set the domain markers layers visibility toggle
     setDomainMarkers: (map) => {
-        MyFunctions.domainMarkers = new L.layerGroup();
+        MyFunctions.domainMarkers = L.featureGroup();
         MyFunctions.domainMarkers.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
+
+        //add a popup to select a sensor to associate
+        MyFunctions.domainMarkers.bindPopup(`
+            <h1><small>Water entry point</small></h1>
+            <label for="sensor-association">Choose a sensor:</label>
+            <input type="text" id="sensor-association" name="sensor-association">
+        `);
+        MyFunctions.domainMarkers.bindTooltip("Pick boundary and click me!");
     },
     //function to enable polygon drawing and disable polyline
     enablePolygon: (drawControl, polyColor, fillOption) => {
@@ -188,25 +227,18 @@ var MyFunctions = {
     //function to remove domain markers
     removeDomainMarkers: () => {
         MyFunctions.domainMarkers.clearLayers();
+        MyFunctions.boundaries.clearLayers();
     },
     //function to add domain marker
     addDomainMarker: (map, lat, lng) => {
         let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
-        //add a popup to select CONTEXTBOUNDARYLINEDATAKIND_CHOICES present in the model
-        marker.bindPopup(`
-            <h1><small>Water entry point</small></h1>
-            <label for="water-entry-type">Choose a type:</label>
-            <select name="water-entry-type">
-                <option value="Depth">H</option>
-                <option value="Discharge">Q</option>
-                <option value="Elevation">Z</option>
-                <option value="Velocity">V</option>
-            </select>
-        `);
-        marker.bindTooltip("Pick boundary and click me!");
+
         //add the logic to draw the boundary based on the domain polygon vertex
-        marker.on('click', () => {
+        marker.on('click', e => {
+            marker.openPopup()
+            console.log(e);
             if(document.querySelector("#polygon-type").value === 'Boundary') {
+                console.log('reeee');
                 marker.closePopup(); //close the popup that opens automatically
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
                     MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
@@ -221,13 +253,11 @@ var MyFunctions = {
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
             }
-            else {
-
-            }
         });
         marker.on('dblclick', () => { //remove the marker on double click
             marker.remove();
         });
+        
     },
     //function when the user clicks on the map (to stop the boundary line)
     stopBoundaryDefinition: () => {
@@ -345,6 +375,15 @@ var MyFunctions = {
         MyFunctions.fillForm(response);
         MyFunctions.drawGeometries(response, map);
     },
+    //function to clear the map to fill with new data
+    clearMap: () => {
+        MyFunctions.boundaries.clearLayers();
+        MyFunctions.domainMarkers.clearLayers();
+        MyFunctions.drawnPolygn.clearLayers();
+
+        for(key in MyFunctions.createdPolygons)
+            MyFunctions.createdPolygons[key] = null;
+    },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
         document.querySelector('#id_code').value = response.code;
@@ -377,9 +416,7 @@ var MyFunctions = {
         }
         //Boundaries
         if(response.context_boundaries !== null && response.context_boundaries.length > 0) {
-            console.log('boundaries');
             response.context_boundaries.forEach((element) => {
-                console.log(element.geom);
                 MyFunctions.boundaries.addLayer(L.polyline(MyFunctions.coordStringToArray(element.geom)));
             });
         }
@@ -390,7 +427,6 @@ var MyFunctions = {
         string = string.slice(string.lastIndexOf('(') + 1, string.indexOf(')')).split(',');
         for(coord of string)
             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
-        console.log(coordinates);
         return coordinates;
     },
 }

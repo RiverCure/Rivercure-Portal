@@ -14,7 +14,7 @@ EVENTSIMULATIONKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'
 
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
-CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('Depth', 'H'), ('Discharge','Q'), ('Elevation', 'Z'), ('Velocity', 'V'), )
+CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
 
 class e_Context(models.Model):
 	code = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -41,13 +41,13 @@ class  e_ContextBoundaryLine(models.Model):
 
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_boundaries')
 
-	geom = models.MultiLineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
+	geom = models.LineStringField(null=True) #superimposed "must be a line superimposed on context.geomExternalBoundary"))] 
 
 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
 	dataType = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES, null=True)
 
 	def __str__(self):
-		return f"{self.context} context boundary"
+		return f"{self.context} context boundary line"
 		
 	
 class  e_ContextBoundaryPoint(models.Model):
@@ -56,7 +56,10 @@ class  e_ContextBoundaryPoint(models.Model):
 
 	geom = models.PointField() #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
-	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True)
+	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
+
+	def __str__(self):
+		return f"{self.contextBoundaryLine} point"
 
 class e_ContextSensor(models.Model):
 

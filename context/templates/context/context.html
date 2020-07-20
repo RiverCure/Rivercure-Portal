@@ -8,6 +8,8 @@
     {% leaflet_css plugins="ALL" %}
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
     <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -22,6 +24,8 @@
                 //Polygon drawing controls
                 drawControl = MyFunctions.drawControlConfig(map);
                 map.addControl(drawControl);
+                map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
+                MyFunctions.boundariesInit(map); //init the boundaries variables
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
                 map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
@@ -37,8 +41,10 @@
                 document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
                 // Function to call the api for the context data when user selects a context
                 document.querySelector('#context-to-change').addEventListener('change', e => {
-                    if(document.querySelector('#context-to-change').value !== "")
+                    if(document.querySelector('#context-to-change').value !== "") {
+                        MyFunctions.clearMap();
                         MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
+                    }
                 });
             });    
             //function to load sensor information to a dict so it can be processed by a function

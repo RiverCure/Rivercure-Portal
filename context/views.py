@@ -6,7 +6,7 @@ from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from .serializers import ContextSerializer, ContextBoundarySerializer
-from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry
+from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
 import json, os
 
 def show_context(request):
@@ -27,7 +27,7 @@ def show_context(request):
             e_context.save()
 
             # initialize and save boundaries
-            boundaryline_creation(form, e_context).save()
+            boundaryline_creation(form, e_context)
 
             # initialize and save boundaries point
             # boundary_point = e_ContextBoundaryPoint()
@@ -52,17 +52,27 @@ def context_creation(form, user): # function to initialize and save the context 
 
     return context
 
-def boundaryline_creation(form, context):
-    boundary = e_ContextBoundaryLine()
-    boundary.context = context   
-    lineStrings = []
+def boundaryline_creation(form, context): # function to create the several lines
     for feature in json.loads(form.cleaned_data['boundaries'])['features']:
-        lineStrings.append(LineString(feature['geometry']['coordinates']))
-
-    boundary.geom = MultiLineString(lineStrings)
-    boundary.type = 'Input' #temporary solution
-
-    return boundary
+        boundary = e_ContextBoundaryLine()
+        boundary.context = context   
+        boundary.geom = LineString(feature['geometry']['coordinates'])
+        print(feature['geometry']['coordinates'])
+        boundary.type = 'Input' #temporary solution
+        boundary.dataType = 'H'
+        boundary.save()
+        # Save the points on the boundary line
+        for point in feature['geometry']['coordinates']:
+            print(f'Point: {point}')
+            boundary_point = e_ContextBoundaryPoint()
+            boundary_point.contextBoundaryLine = boundary
+            print(f'Boundary Point: {boundary_point.contextBoundaryLine}')
+            boundary_point.geom = Point(point)
+            print(f'Boundary Point: {boundary_point.geom}')
+            boundary_point.sensor = None #Needs to be changed
+            print(f'Boundary Point: {boundary_point.sensor}')
+            boundary_point.save()
+    
 
 class ContextViewSet(viewsets.ModelViewSet):
     queryset = e_Context.objects.all()
