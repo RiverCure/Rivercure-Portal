@@ -343,7 +343,6 @@ var MyFunctions = {
             MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             MyFunctions.boundaryPolyline = null; //restart the boundary draw
         }
-        alert('kek');
     },
     //function to run on the begginning of a drawing
     drawStart: (e) => {
