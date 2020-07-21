@@ -152,11 +152,13 @@ var MyFunctions = {
     boundaryLinePopupConfig: (popup) => {
         //define popup alteration saving
         popup.on('popupopen', e => { // function to handle the saving of the data
-            document.querySelector('#popup-btn').addEventListener('click', () => {
-                e.popup.setContent(MyFunctions.boundaryPopup(document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
-                e.popup.update();
-                setTimeout(() => { e.target.closePopup();}, 1500);
-            });
+            setTimeout(() => { //wait in case user opens popups back to back
+                document.querySelector('#popup-btn').addEventListener('click', () => {
+                    e.popup.setContent(MyFunctions.boundaryPopup(document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
+                    e.popup.update();
+                    setTimeout(() => { e.target.closePopup();}, 1500);
+                });
+            }, 1000);
         });
     },
     //function to return polygons CL popups
@@ -181,11 +183,13 @@ var MyFunctions = {
     //function to configure polygon popup
     polygonsPopupConfig: (popup) => {
         popup.on('popupopen', e => { //define popup alteration saving
-            document.querySelector('#popup-btn').addEventListener('click', () => {
-                e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
-                e.popup.update();
-                setTimeout(() => { e.target.closePopup();}, 1500);
-            });
+            setTimeout(() => { //wait in case user opens popups back to back
+                document.querySelector('#popup-btn').addEventListener('click', () => {
+                    e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                    e.popup.update();
+                    setTimeout(() => { e.target.closePopup();}, 1500);
+                });
+            }, 1000);
         });
     },
     //function to set the domain markers layers visibility toggle
