@@ -8,8 +8,9 @@ from .views import (
     HydroFeatureUpdateView, 
     HydroFeatureDetailView,
     HydroFeatureDeleteView,
-    home
+    home,
 )
+from sensors.views import SensorListView
 
 urlpatterns = [
     path('', home, name='rivercure-home'),
@@ -21,6 +22,8 @@ urlpatterns = [
     path('hydrofeature/new/', HydroFeatureCreateView.as_view(), name='hydrofeature-create'),
     path('hydrofeature/<int:pk>/update/', HydroFeatureUpdateView.as_view(), name='hydrofeature-update'),
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
+    
+    
 
    
 ]
