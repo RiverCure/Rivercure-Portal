@@ -34,7 +34,7 @@
                 //event to enable the dropdown selection for the polygon type
                 map.on('draw:drawstop', e => {document.querySelector("#polygon-type").disabled = false});
                 map.on("draw:drawstart", e => {MyFunctions.drawStart(e);});
-                map.on("draw:created", e => {MyFunctions.drawCreated(e, map)});
+                map.on("draw:created", e => {MyFunctions.drawCreated(e)});
                 map.on('click', e => {MyFunctions.stopBoundaryDefinition(e, map)});
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
@@ -71,7 +71,7 @@
     <h1><small>Edit your context here</small></h1>
     <div class="container">
         <label for="context-to-change">Choose a context:</label>
-        <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
+        <select name="context-to-change" id="context-to-change" class="browser-default custom-select" onfocus="this.selectedIndex = -1">
             <option value="">-----</option>
             {% for context_definition in contexts%}
                 <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>

@@ -4,6 +4,7 @@ var MyFunctions = {
     sensorsLayer: null,
     //Variable to store the features for editing
     drawnPolygn: null,
+    lel: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
     boundaryPolylineMarkersTemp: null,
@@ -92,9 +93,9 @@ var MyFunctions = {
     },
     //function to init polygons
     polygonsInit: (map) => {
-        MyFunctions.createdPolygons.Domain = L.featureGroup();
-        MyFunctions.createdPolygons.Refinement = L.featureGroup();
-        MyFunctions.createdPolygons.Alignment = L.featureGroup();
+        MyFunctions.createdPolygons.Domain = L.layerGroup();
+        MyFunctions.createdPolygons.Refinement = L.layerGroup();
+        MyFunctions.createdPolygons.Alignment = L.layerGroup();
 
         MyFunctions.createdPolygons.Domain.addTo(map);
         MyFunctions.createdPolygons.Refinement.addTo(map);
@@ -106,34 +107,86 @@ var MyFunctions = {
     },
     //funtion to init the boundaries variable
     boundariesInit: (map) => {
-        MyFunctions.createdPolygons.Boundaries = L.featureGroup();
+        MyFunctions.createdPolygons.Boundaries = L.layerGroup();
         map.addLayer(MyFunctions.createdPolygons.Boundaries);
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Boundaries, 'Boundaries');
-
-        //add a popup to select CONTEXTBOUNDARYLINEDATAKIND_CHOICES present in the model
-        MyFunctions.createdPolygons.Boundaries.bindPopup(`
-            <h1><small>Boundary</small></h1>
-            <label for="water-entry-type">Choose a type:</label>
-            <select name="water-entry-type">
-                <option value="Depth">H</option>
-                <option value="Discharge">Q</option>
-                <option value="Elevation">Z</option>
-                <option value="Velocity">V</option>
-            </select> <br>
-            <label for="water-entry-type">Choose a data type:</label>
-            <select name="water-entry-type">
-                <option value="Input">Input</option>
-                <option value="Output">Output</option>
-                <option value="InputOutput">Input Output</option>
-            </select> <br>
-            <button type="button" onclick="MyFunctions.saveBoundaryProperties(this)">Save</button>
-        `);
-
-        MyFunctions.createdPolygons.Boundaries.bindTooltip("Click to define variables");
     },
-    //functions to save the boundary line variables
-    saveBoundaryProperties: (e) => {
-        console.log(e);
+    //function to return boundary line popup
+    boundaryPopup: (type, dataType) => {
+        return `<h1><small>Boundary</small></h1>
+            <table class='table'>
+                <tr>
+                    <th scope="row">Current Type</th>
+                    <td id='popup-current-type'>`+ type + `</td id='end-type'>
+                </tr>
+                <tr>
+                    <th scope="row">Current Data Type</th>
+                    <td id='popup-current-data-type'>`+ dataType + `</td id='end-data-type'>
+                </tr>
+                <tr>
+                    <th scope="row">Type</th>
+                    <td>
+                        <select id='popup-selected-type'>
+                            <option value="Input">Input</option>
+                            <option value="Output">Output</option>
+                            <option value="InputOutput">Input Output</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Data Type</th>
+                    <td>
+                        <select id='popup-selected-data-type'>
+                            <option value="Depth">H</option>
+                            <option value="Discharge">Q</option>
+                            <option value="Elevation">Z</option>
+                            <option value="Velocity">V</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+        `
+    }, 
+    //function to configure boundary popup
+    boundaryLinePopupConfig: (popup) => {
+        //define popup alteration saving
+        popup.on('popupopen', e => { // function to handle the saving of the data
+            document.querySelector('#popup-btn').addEventListener('click', () => {
+                e.popup.setContent(MyFunctions.boundaryPopup(document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
+                e.popup.update();
+                setTimeout(() => { e.target.closePopup();}, 1500);
+            });
+        });
+    },
+    //function to return polygons CL popups
+    polygonsPopup: (name, CL) => {
+        return `
+            <h1><small id='popup-header'>` + name + `</small></h1>
+            <table class='table'>
+                <tr>
+                    <th scope="row">Current CL</th>
+                    <td id='popup-current-cl'>`+ CL + `</td id='end-cl'>
+                </tr>
+                <tr>
+                    <th scope="row">CL</th>
+                    <td>
+                        <input id='popup-selected-cl' type='number'>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+        `
+    },
+    //function to configure polygon popup
+    polygonsPopupConfig: (popup) => {
+        popup.on('popupopen', e => { //define popup alteration saving
+            document.querySelector('#popup-btn').addEventListener('click', () => {
+                e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                e.popup.update();
+                setTimeout(() => { e.target.closePopup();}, 1500);
+            });
+        });
     },
     //function to set the domain markers layers visibility toggle
     setDomainMarkers: (map) => {
@@ -282,11 +335,15 @@ var MyFunctions = {
     //function when the user clicks on the map (to stop the boundary line)
     stopBoundaryDefinition: () => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
-            if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1)  //check if the user is currently drawing the boundary
+            if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1) { //check if the user is currently drawing the boundary
                 MyFunctions.createdPolygons.Boundaries.addLayer(MyFunctions.boundaryPolyline); //store the previously drawn boundary
+                MyFunctions.boundaryLinePopupConfig(MyFunctions.boundaryPolyline.bindPopup(MyFunctions.boundaryPopup(null, null))); 
+                MyFunctions.boundaryPolyline.bindTooltip("Boundary");
+            }
             MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             MyFunctions.boundaryPolyline = null; //restart the boundary draw
         }
+        alert('kek');
     },
     //function to run on the begginning of a drawing
     drawStart: (e) => {
@@ -325,9 +382,11 @@ var MyFunctions = {
         }
     },
     //function to run when draw is created
-    drawCreated: (e, map) => {
+    drawCreated: (e) => {
         MyFunctions.drawnPolygn.addLayer(e.layer);
         let polygonType = document.querySelector("#polygon-type").value;
+        MyFunctions.polygonsPopupConfig(e.layer.bindPopup(polygonType, MyFunctions.polygonsPopup(0))); //add the popup to the layer
+        e.layer.bindTooltip(polygonType);
         //save the polygon in the appropriate variable
         switch(polygonType) {                    
             case "Domain":
@@ -345,29 +404,39 @@ var MyFunctions = {
     sendContext: () => {
         //prepare the visualization of the operation result
         try {
+            let popup;
             // Save the polygons in geojsons and then serialize them to send to the web server
-            var domain = JSON.stringify(MyFunctions.createdPolygons.Domain.getLayers()[0].toGeoJSON());
+            var domain = MyFunctions.createdPolygons.Domain.getLayers()[0].toGeoJSON();
+            popup = MyFunctions.createdPolygons.Domain.getLayers()[0].getPopup().getContent();
+            domain.properties.CL = popup.slice(popup.indexOf('current-cl\'>') + 'current-cl\'>'.length, popup.indexOf('</td id=\'end-cl')).trim();
 
             var alignment = {"type": "FeatureCollection", "features": []}; //save all the alignment geometries
             MyFunctions.createdPolygons.Alignment.getLayers().forEach((element) => {
-                boundaryLine = element.toGeoJSON();
-                alignment.features.push(boundaryLine);
+                alignmentUnit = element.toGeoJSON();
+                popup = element.getPopup().getContent(); //get the popup to extract the properties values
+                alignmentUnit.properties.CL = popup.slice(popup.indexOf('current-cl\'>') + 'current-cl\'>'.length, popup.indexOf('</td id=\'end-cl')).trim();
+                alignment.features.push(alignmentUnit);
             });
 
             var refinement = {"type": "FeatureCollection", "features": []}; //save all the refinement geometries
             MyFunctions.createdPolygons.Refinement.getLayers().forEach((element) => {
-                boundaryLine = element.toGeoJSON();
-                refinement.features.push(boundaryLine);
+                refinementUnit = element.toGeoJSON();
+                popup = element.getPopup().getContent(); //get the popup to extract the properties values
+                refinementUnit.properties.CL = popup.slice(popup.indexOf('current-cl\'>') + 'current-cl\'>'.length, popup.indexOf('</td id=\'end-cl')).trim();
+                refinement.features.push(refinementUnit);
             });
 
             // Fill the hidden form fields with the values
-            document.querySelector('#id_domain').value = domain;
+            document.querySelector('#id_domain').value = JSON.stringify(domain);
             document.querySelector('#id_alignment').value = JSON.stringify(alignment);
             document.querySelector('#id_refinement').value = JSON.stringify(refinement);
             //Handle the boundaries
             var boundaries = {"type": "FeatureCollection", "features": []};
             MyFunctions.createdPolygons.Boundaries.getLayers().forEach((element) => {
                 boundaryLine = element.toGeoJSON();
+                popup = element.getPopup().getContent(); //get the popup to extract the properties values
+                boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\'>') + 'current-type\'>'.length, popup.indexOf('</td id=\'end-type')).trim();
+                boundaryLine.properties.dataType = popup.slice(popup.indexOf('current-data-type\'>') + 'current-data-type\'>'.length, popup.indexOf('</td id=\'end-data-type')).trim();
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
@@ -422,6 +491,8 @@ var MyFunctions = {
         //Domain
         if(response.geomExternalBoundary !== null) { //check if the refinement is defined in the database
             let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'})
+            MyFunctions.polygonsPopupConfig(domain.bindPopup(MyFunctions.polygonsPopup('Domain', response.CLExternalBoundary)));
+            domain.bindTooltip("Domain");
             MyFunctions.createdPolygons.Domain.addLayer(domain); //Domain
             MyFunctions.drawnPolygn.addLayer(domain); //Add to this layer for editing
             MyFunctions.editStop(map); //behave as if an edit was finished to draw the markers of the boundary
@@ -431,6 +502,8 @@ var MyFunctions = {
             let refinement;
             response.context_refinement.forEach((element) => {
                 refinement = L.polygon(MyFunctions.coordStringToArray(element.geom), {color: '#FFA500'})
+                MyFunctions.polygonsPopupConfig(refinement.bindPopup(MyFunctions.polygonsPopup('Refinement', element.CL)));
+                refinement.bindTooltip("Refinement");
                 MyFunctions.drawnPolygn.addLayer(refinement); //Add to this layer for editing
                 MyFunctions.createdPolygons.Refinement.addLayer(refinement);
             });
@@ -440,16 +513,27 @@ var MyFunctions = {
             let alignment;
             response.context_alignment.forEach((element) => {
                 alignment = L.polyline(MyFunctions.coordStringToArray(element.geom), {color: '#FFFF00'});
+                MyFunctions.polygonsPopupConfig(alignment.bindPopup(MyFunctions.polygonsPopup('Alignment', element.CL)));
+                alignment.bindTooltip("Alignment");
                 MyFunctions.drawnPolygn.addLayer(alignment); //Add to this layer for editing
                 MyFunctions.createdPolygons.Alignment.addLayer(alignment);
             });
         }
         //Boundaries
         if(response.context_boundaries !== null && response.context_boundaries.length > 0) {
-            response.context_boundaries.forEach((element) => {
-                MyFunctions.createdPolygons.Boundaries.addLayer(L.polyline(MyFunctions.coordStringToArray(element.geom)));
+            response.context_boundaries.forEach((element) => { //define each boundary line individually
+                MyFunctions.createdPolygons.Boundaries.addLayer(MyFunctions.defineBoundary(element));
             });
         }
+    },
+    //function to define boundary gotten from api
+    defineBoundary: (element) => {
+        var boundary;
+        boundary = L.polyline(MyFunctions.coordStringToArray(element.geom))
+        MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(element.type, element.dataType)));
+        boundary.bindTooltip("Boundary");
+
+        return boundary;
     },
     //function to transform coordinate string into an array
     coordStringToArray: (string) => {

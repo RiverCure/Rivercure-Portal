@@ -44,6 +44,7 @@ def context_creation(form, user): # function to initialize and save the context 
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
+    context.CLExternalBoundary = json.loads(form.cleaned_data['domain'])['properties']['CL']
     return context
 
 def refinement_creation(form, context):
@@ -51,9 +52,7 @@ def refinement_creation(form, context):
     for feature in json.loads(form.cleaned_data['refinement'])['features']:
         refinement = e_ContextRefinement()
         refinement.context = context
-        refinement.CL = 0; #temporary solution
-        print('\n\n\n\n')
-        print(feature['geometry']['coordinates'])
+        refinement.CL = feature['properties']['CL']
         refinement.geom = Polygon(feature['geometry']['coordinates'][0])
         refinement.save()
 
@@ -62,7 +61,7 @@ def alignment_creation(form, context):
     for feature in json.loads(form.cleaned_data['alignment'])['features']:
         alignment = e_ContextAlignment()
         alignment.context = context
-        alignment.CL = 0; #temporary solution
+        alignment.CL = feature['properties']['CL']
         alignment.geom = LineString(feature['geometry']['coordinates'])
         alignment.save()
 
@@ -74,8 +73,8 @@ def boundaryline_creation(form, context): # function to create the several lines
         boundary = e_ContextBoundaryLine()
         boundary.context = context   
         boundary.geom = LineString(feature['geometry']['coordinates'])
-        boundary.type = 'Input' #temporary solution
-        boundary.dataType = 'H'
+        boundary.type = feature['properties']['type']
+        boundary.dataType = feature['properties']['dataType']
         boundary.save()
         # Save the points on the boundary line
         for point in feature['geometry']['coordinates']:
