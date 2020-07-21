@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import e_District, e_HydroFeature
 from context.models import e_Context
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
 
@@ -30,20 +30,47 @@ class HydroFeatureForm(forms.ModelForm):
         model = e_HydroFeature
         fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
         widgets = {'geom': LeafletWidget()}
+        
     
 class HydroFeatureCreateView(LoginRequiredMixin,CreateView):
     model = e_HydroFeature
     form_class = HydroFeatureForm
     success_url = 'hydrofeature-list'
 
-class HydroFeatureUpdateView(LoginRequiredMixin,UpdateView):
+    def test_func(self):
+        if self.request.user.has_perm('can_add_hydrofeatures'):
+            return True
+        else:
+            return False
+
+class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_HydroFeature
-    fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
+    form_class = HydroFeatureForm
     success_url = 'hydrofeature-list'
+
+    def test_func(self):
+        if self.request.user.has_perm('can_update_hydrofeatures'):
+            return True
+        else:
+            return False
+
+    #only checking if he has permission to update (not if the user has created the hydrofeature)
 
 class HydroFeatureDetailView(DetailView):
     model = e_HydroFeature
     context_object_name = 'Hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_detail.html'
 
+class HydroFeatureDeleteView(LoginRequiredMixin, DeleteView ):
+    model = e_HydroFeature
+    context_object_name = 'Hydrofeatures'
+    template_name = 'rivercureportal/e_HydroFeature_confirm_delete.html'
+    success_url = 'hydrofeature_list'
+
+    def test_func(self):
+        if self.request.user.has_perm('can_delete_hydrofeatures'):
+            return True
+        else:
+            return False
+    
 

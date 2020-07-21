@@ -1,0 +1,18 @@
+{% extends "rivercureportal/base.html" %}
+
+{% block content %}
+
+<h1>Sensors</h1>
+
+{% for object in sensors %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{% url 'hydrofeature-detail' object.id %}">{{ object.Name }}</a>
+      </div>
+      <p><a class="article-title">Type: </a></p>
+    </div>
+</article>
+{% endfor %}
+
+{% endblock content %} 
