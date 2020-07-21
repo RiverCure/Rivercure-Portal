@@ -5,11 +5,18 @@ from context.models import e_Context
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
+from users.models import User
+
+def home(request):
+    context = {
+        'users': User.objects.all(),
+    }
+    return render(request, 'rivercureportal/home.html', context)
 
 
 class ContextListView(ListView):
     model = e_Context
-    template_name = 'rivercureportal/home.html'
+    template_name = 'rivercureportal/e_Context_list.html'
     context_object_name = 'contexts'
     ordering = ['Name']
 

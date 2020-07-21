@@ -2,16 +2,17 @@
 
 {% block content %}
 
-<h1>Contexts</h1>
+<h1>Rivercure Team</h1>
 
-{% for context in contexts %}
+{% for user in users %}
 <article class="media content-section">
     <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
-      </div>
-      <p><a class="article-title" >{{ context.code }}</a></p>
+        <a class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</a>
     </div>
+
+<div class="media-article">
+  <img class="article-img" src="{{ user.profile.image.url }}"></img>
+</div>
 </article>
 {% endfor %}
 
