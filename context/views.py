@@ -23,24 +23,34 @@ def show_context(request):
         
         form = ContextForm(request.POST)
         if form.is_valid():
-            e_context = context_creation(form, request.user)
-            e_context.save()
+            try:
+                e_context = context_creation(form, request.user)
+                e_context.save()
 
-            # initialize and save refinement
-            refinement_creation(form, e_context)
-            # initialize and save alignment
-            alignment_creation(form, e_context)
+                # initialize and save refinement
+                refinement_creation(form, e_context)
+                # initialize and save alignment
+                alignment_creation(form, e_context)
 
-            # initialize and save boundaries & boundary points
-            boundaryline_creation(form, e_context)
+                # initialize and save boundaries & boundary points
+                boundaryline_creation(form, e_context)
 
-            messages.success(request,f'Context created with success!') 
-            return render(request, 'context/context.html', context)
+                messages.success(request,f'Context created with success!') 
+                return render(request, 'context/context.html', context)
+            except Exception as e:
+                print(f'Error saving context: {e}')
+                messages.warning(request,f'Context update failed') 
+                return render(request, 'context/context.html', context)
 
     return render(request, 'context/context.html', context)
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
+
+    if context.user != user: # if user doesn't own the context
+        print('User that doesn\'t own the context tried to change it!')
+        return None
+                
     context.Name = form.cleaned_data['name']
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))

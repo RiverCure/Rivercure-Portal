@@ -19,9 +19,18 @@
             
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
+                //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
                 MyFunctions.mouseMove(map);
+                //visual tools
+                map.on('dragstart', e => {
+                    e.target._container.style.cursor = 'grab';
+                });
+                map.on('dragend', e => {
+                    e.target._container.style.cursor = 'pointer';
+                });
+                //end of visual tools
                 //Put the sensors on the map                
                 MyFunctions.drawSensors(map, loadSensors(), "{% static 'context/imgs/sensor_img.png' %}");
                 MyFunctions.setDomainMarkers(map);
@@ -40,6 +49,8 @@
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
                 map.on("draw:editstart", e => {MyFunctions.clearLayers();});
                 map.on("draw:editstop", e => {MyFunctions.editStop(map)});
+                map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
+                map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action

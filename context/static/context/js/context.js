@@ -1,10 +1,10 @@
 //Help functions
 var MyFunctions = {
+    deleting: false,
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
     drawnPolygn: null,
-    lel: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
     boundaryPolylineMarkersTemp: null,
@@ -183,13 +183,15 @@ var MyFunctions = {
     //function to configure polygon popup
     polygonsPopupConfig: (popup) => {
         popup.on('popupopen', e => { //define popup alteration saving
-            setTimeout(() => { //wait in case user opens popups back to back
-                document.querySelector('#popup-btn').addEventListener('click', () => {
-                    e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
-                    e.popup.update();
-                    setTimeout(() => { e.target.closePopup();}, 1500);
-                });
-            }, 1000);
+            if(!MyFunctions.deleting) {
+                setTimeout(() => { //wait in case user opens popups back to back
+                    document.querySelector('#popup-btn').addEventListener('click', () => {
+                        e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                        e.popup.update();
+                        setTimeout(() => { e.target.closePopup();}, 1500);
+                    });
+                }, 1000);
+            }
         });
     },
     //function to set the domain markers layers visibility toggle
@@ -302,6 +304,14 @@ var MyFunctions = {
         //     MyFunctions.addDomainMarker(map, coordinates[i].lat, coordinates[i].lng);
         for(coordinate of coordinates) {//populate the vertices with markers again
             MyFunctions.addDomainMarker(map, coordinate.lat, coordinate.lng);
+        }
+    },
+    //function to delete layers from created polygons when deleting from drawnpolygn
+    removeLayers: (layers) => {
+        for(layer of layers) {
+            MyFunctions.createdPolygons.Domain.removeLayer(layer);
+            MyFunctions.createdPolygons.Refinement.removeLayer(layer);
+            MyFunctions.createdPolygons.Alignment.removeLayer(layer);
         }
     },
     //function to remove domain markers
