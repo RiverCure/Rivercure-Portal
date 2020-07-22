@@ -1,6 +1,8 @@
 //Help functions
 var MyFunctions = {
     deleting: false,
+    //Layer for highlights
+    highlightLayer: null,
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
@@ -93,13 +95,11 @@ var MyFunctions = {
     },
     //function to init polygons
     polygonsInit: (map) => {
-        MyFunctions.createdPolygons.Domain = L.layerGroup();
-        MyFunctions.createdPolygons.Refinement = L.layerGroup();
-        MyFunctions.createdPolygons.Alignment = L.layerGroup();
+        MyFunctions.createdPolygons.Domain = L.layerGroup().addTo(map);
+        MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
+        MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
 
-        MyFunctions.createdPolygons.Domain.addTo(map);
-        MyFunctions.createdPolygons.Refinement.addTo(map);
-        MyFunctions.createdPolygons.Alignment.addTo(map);
+        MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Domain, "Domain");
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Refinement, "Refinement");
@@ -394,25 +394,6 @@ var MyFunctions = {
                 }
         }
     },
-    //function to run when draw is created
-    drawCreated: (e) => {
-        MyFunctions.drawnPolygn.addLayer(e.layer);
-        let polygonType = document.querySelector("#polygon-type").value;
-        MyFunctions.polygonsPopupConfig(e.layer.bindPopup(polygonType, MyFunctions.polygonsPopup(0))); //add the popup to the layer
-        e.layer.bindTooltip(polygonType);
-        //save the polygon in the appropriate variable
-        switch(polygonType) {                    
-            case "Domain":
-                MyFunctions.createdPolygons.Domain.addLayer(e.layer);
-                break;
-            case "Alignment":
-                MyFunctions.createdPolygons.Alignment.addLayer(e.layer);
-                break;
-            case "Refinement":
-                MyFunctions.createdPolygons.Refinement.addLayer(e.layer);
-                break;
-        }
-    },
     //function to send the polygons to the web server
     sendContext: () => {
         //prepare the visualization of the operation result
@@ -503,22 +484,15 @@ var MyFunctions = {
     drawGeometries: (response, map) => {
         //Domain
         if(response.geomExternalBoundary !== null) { //check if the refinement is defined in the database
-            let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'})
-            MyFunctions.polygonsPopupConfig(domain.bindPopup(MyFunctions.polygonsPopup('Domain', response.CLExternalBoundary)));
-            domain.bindTooltip("Domain");
-            MyFunctions.createdPolygons.Domain.addLayer(domain); //Domain
-            MyFunctions.drawnPolygn.addLayer(domain); //Add to this layer for editing
-            MyFunctions.editStop(map); //behave as if an edit was finished to draw the markers of the boundary
+            let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'});
+            MyFunctions.definePolygon(domain, "Domain", response.CLExternalBoundary);
         }
         //Refinement
         if(response.context_refinement !== null && response.context_refinement.length > 0) {
             let refinement;
             response.context_refinement.forEach((element) => {
                 refinement = L.polygon(MyFunctions.coordStringToArray(element.geom), {color: '#FFA500'})
-                MyFunctions.polygonsPopupConfig(refinement.bindPopup(MyFunctions.polygonsPopup('Refinement', element.CL)));
-                refinement.bindTooltip("Refinement");
-                MyFunctions.drawnPolygn.addLayer(refinement); //Add to this layer for editing
-                MyFunctions.createdPolygons.Refinement.addLayer(refinement);
+                MyFunctions.definePolygon(refinement, "Refinement", element.CL);
             });
         }
         //Alignment
@@ -526,10 +500,7 @@ var MyFunctions = {
             let alignment;
             response.context_alignment.forEach((element) => {
                 alignment = L.polyline(MyFunctions.coordStringToArray(element.geom), {color: '#FFFF00'});
-                MyFunctions.polygonsPopupConfig(alignment.bindPopup(MyFunctions.polygonsPopup('Alignment', element.CL)));
-                alignment.bindTooltip("Alignment");
-                MyFunctions.drawnPolygn.addLayer(alignment); //Add to this layer for editing
-                MyFunctions.createdPolygons.Alignment.addLayer(alignment);
+                MyFunctions.definePolygon(alignment, "Alignment", element.CL);
             });
         }
         //Boundaries
@@ -538,6 +509,36 @@ var MyFunctions = {
                 MyFunctions.createdPolygons.Boundaries.addLayer(MyFunctions.defineBoundary(element));
             });
         }
+    },
+    //function to define polygons on all necessary layers
+    definePolygon: (layer, type, CL) => {
+        var polygonLayer;
+        switch(type) { //get the proper storing structure             
+            case "Domain":
+                polygonLayer = MyFunctions.createdPolygons.Domain;
+                break;
+            case "Alignment":
+                polygonLayer = MyFunctions.createdPolygons.Alignment;
+                break;
+            case "Refinement":
+                polygonLayer = MyFunctions.createdPolygons.Refinement;
+                break;
+        }
+
+        MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(type, CL)));
+        layer.bindTooltip(type);
+        polygonLayer.addLayer(layer); //Domain
+        MyFunctions.drawnPolygn.addLayer(layer); //Add to this layer for editing
+
+        // layer.on('mouseover', e => {
+        //     console.log(e);
+        //     console.log('in')
+        //     MyFunctions.highlightLayer.addLayer(L.geoJson(polygonLayer.getLayer(e.target._leaflet_id).toGeoJSON()))
+        //     .on('mouseout', () => {
+        //         console.log('out');
+        //         MyFunctions.highlightLayer.clearLayers();
+        //     });
+        // });
     },
     //function to define boundary gotten from api
     defineBoundary: (element) => {
