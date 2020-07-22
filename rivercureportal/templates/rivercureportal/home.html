@@ -2,12 +2,13 @@
 
 {% block content %}
 
-<h1>Rivercure Team</h1>
+<h1 class="media">Rivercure Users</h1>
 
 {% for user in users %}
 <article class="media content-section">
     <div class="media-body">
-        <a class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</a>
+        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
+        <a class="mr-2">{{ user.profile.institution }}</a>
     </div>
 
 <div class="media-article">
