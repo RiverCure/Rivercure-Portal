@@ -14,7 +14,7 @@ EVENTSIMULATIONKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'
 
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
-CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('Depth', 'H'), ('Discharge', 'Q'), ('Elevation', 'Z'), ('Velocity', 'V'), )
+CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
 
 class e_Context(models.Model):
 	code = models.CharField(primary_key=True, max_length=100, unique=True)

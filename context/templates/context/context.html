@@ -67,7 +67,7 @@
             //function to load sensor information to a dict so it can be processed by a function
             loadSensors = () => {
                 var sensors = [], sensor;
-                '{% for sensor in sensors %}'
+                '{% for sensor in ssensors %}'
                     sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
                     description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
                     timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};
@@ -83,7 +83,7 @@
     <h1><small>Edit your context here</small></h1>
     <div class="container">
         <label for="context-to-change">Choose a context:</label>
-        <select name="context-to-change" id="context-to-change" class="browser-default custom-select" onfocus="this.selectedIndex = -1">
+        <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
             <option value="">-----</option>
             {% for context_definition in contexts%}
                 <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>

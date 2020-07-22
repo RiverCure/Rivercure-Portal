@@ -113,38 +113,63 @@ var MyFunctions = {
     },
     //function to return boundary line popup
     boundaryPopup: (type, dataType) => {
-        return `<h1><small>Boundary</small></h1>
-            <table class='table'>
-                <tr>
-                    <th scope="row">Current Type</th>
-                    <td id='popup-current-type'>`+ type + `</td id='end-type'>
-                </tr>
-                <tr>
-                    <th scope="row">Current Data Type</th>
-                    <td id='popup-current-data-type'>`+ dataType + `</td id='end-data-type'>
-                </tr>
-                <tr>
-                    <th scope="row">Type</th>
-                    <td>
-                        <select id='popup-selected-type'>
-                            <option value="Input">Input</option>
+        
+        getType = (option) => {
+            switch(option){
+                case 'Input':
+                    return `<option id='popup-current-type' value="Input" selected>Input</option>
                             <option value="Output">Output</option>
-                            <option value="InputOutput">Input Output</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Data Type</th>
-                    <td>
-                        <select id='popup-selected-data-type'>
-                            <option value="Depth">Depth</option>
-                            <option value="Discharge">Discharge</option>
-                            <option value="Elevation">Elevation</option>
-                            <option value="Velocity">Velocity</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+                            <option value="InputOutput">Input Output</option>`
+                case 'Output':
+                    return `<option value="Input">Input</option>
+                            <option id='popup-current-type' value="Output" selected>Output</option>
+                            <option value="InputOutput">Input Output</option>`
+                default:
+                    return `<option value="Input">Input</option>
+                            <option value="Output">Output</option>
+                            <option id='popup-current-type' value="InputOutput" selected>Input Output</option>`
+            }
+        };
+
+        getDataType = (option) => {
+            switch(option){
+                case 'H':
+                    return `<option id='popup-current-data-type' value="H" selected>Depth</option>
+                            <option value="Q">Discharge</option>
+                            <option value="Z">Elevation</option>
+                            <option value="V">Velocity</option>`
+                case 'Q':
+                    return `<option value="H">Depth</option>
+                            <option id='popup-current-data-type' value="Q" selected>Discharge</option>
+                            <option value="Z">Elevation</option>
+                            <option value="V">Velocity</option>`
+                case 'Z':
+                    return `<option value="H">Depth</option>
+                            <option value="Q">Discharge</option>
+                            <option id='popup-current-data-type' value="Z" selected>Elevation</option>
+                            <option value="Velocity">Velocity</option>`
+                default:
+                    return `<option value="H">Depth</option>
+                            <option value="Q">Discharge</option>
+                            <option value="Z">Elevation</option>
+                            <option id='popup-current-data-type' value="V" selected>Velocity</option>`
+            }
+        };
+        
+        return `<h1><small>Boundary</small></h1>
+            <div class="form-group">
+                <label for="popup-selected-type"><big>Type</big></label><br>
+                <select id='popup-selected-type' class="form-control form-control-sm">
+                    ` + getType(type) + `
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="popup-selected-data-type"><big>Data Type</big></label><br>  
+                <select id='popup-selected-data-type' class="form-control form-control-sm">
+                    ` + getDataType(dataType) + `
+                </select>
+                  
+            </div>
             <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
         `
     }, 
@@ -153,6 +178,9 @@ var MyFunctions = {
         //define popup alteration saving
         popup.on('popupopen', e => { // function to handle the saving of the data
             setTimeout(() => { //wait in case user opens popups back to back
+                //set the color of the current choice
+                document.querySelector('#popup-current-type').style.backgroundColor = 'lightblue';
+                document.querySelector('#popup-current-data-type').style.backgroundColor = 'lightblue';
                 document.querySelector('#popup-btn').addEventListener('click', () => {
                     e.popup.setContent(MyFunctions.boundaryPopup(document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
                     e.popup.update();
@@ -427,8 +455,8 @@ var MyFunctions = {
             MyFunctions.createdPolygons.Boundaries.getLayers().forEach((element) => {
                 boundaryLine = element.toGeoJSON();
                 popup = element.getPopup().getContent(); //get the popup to extract the properties values
-                boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\'>') + 'current-type\'>'.length, popup.indexOf('</td id=\'end-type')).trim();
-                boundaryLine.properties.dataType = popup.slice(popup.indexOf('current-data-type\'>') + 'current-data-type\'>'.length, popup.indexOf('</td id=\'end-data-type')).trim();
+                boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
+                boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
