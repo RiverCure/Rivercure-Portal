@@ -137,10 +137,10 @@ var MyFunctions = {
                     <th scope="row">Data Type</th>
                     <td>
                         <select id='popup-selected-data-type'>
-                            <option value="Depth">H</option>
-                            <option value="Discharge">Q</option>
-                            <option value="Elevation">Z</option>
-                            <option value="Velocity">V</option>
+                            <option value="Depth">Depth</option>
+                            <option value="Discharge">Discharge</option>
+                            <option value="Elevation">Elevation</option>
+                            <option value="Velocity">Velocity</option>
                         </select>
                     </td>
                 </tr>
@@ -350,9 +350,7 @@ var MyFunctions = {
     stopBoundaryDefinition: () => {
         if(document.querySelector("#polygon-type").value === 'Boundary') { //this function is only used when the user is drawing the boundary
             if(MyFunctions.boundaryPolyline != null && MyFunctions.boundaryPolylineMarkersTemp.length > 1) { //check if the user is currently drawing the boundary
-                MyFunctions.createdPolygons.Boundaries.addLayer(MyFunctions.boundaryPolyline); //store the previously drawn boundary
-                MyFunctions.boundaryLinePopupConfig(MyFunctions.boundaryPolyline.bindPopup(MyFunctions.boundaryPopup(null, null))); 
-                MyFunctions.boundaryPolyline.bindTooltip("Boundary");
+                MyFunctions.defineBoundary(MyFunctions.boundaryPolyline, null, null);
             }
             MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             MyFunctions.boundaryPolyline = null; //restart the boundary draw
@@ -486,6 +484,7 @@ var MyFunctions = {
         if(response.geomExternalBoundary !== null) { //check if the refinement is defined in the database
             let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'});
             MyFunctions.definePolygon(domain, "Domain", response.CLExternalBoundary);
+            MyFunctions.editStop(map); //draw the markers
         }
         //Refinement
         if(response.context_refinement !== null && response.context_refinement.length > 0) {
@@ -505,8 +504,10 @@ var MyFunctions = {
         }
         //Boundaries
         if(response.context_boundaries !== null && response.context_boundaries.length > 0) {
+            let boundary;
             response.context_boundaries.forEach((element) => { //define each boundary line individually
-                MyFunctions.createdPolygons.Boundaries.addLayer(MyFunctions.defineBoundary(element));
+                boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
+                MyFunctions.defineBoundary(boundary, element.type, element.dataType);
             });
         }
     },
@@ -540,14 +541,11 @@ var MyFunctions = {
         //     });
         // });
     },
-    //function to define boundary gotten from api
-    defineBoundary: (element) => {
-        var boundary;
-        boundary = L.polyline(MyFunctions.coordStringToArray(element.geom))
-        MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(element.type, element.dataType)));
+    //function to define boundary and draw it on the map
+    defineBoundary: (boundary, type, dataType) => {
+        MyFunctions.createdPolygons.Boundaries.addLayer(boundary);
+        MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
         boundary.bindTooltip("Boundary");
-
-        return boundary;
     },
     //function to transform coordinate string into an array
     coordStringToArray: (string) => {
