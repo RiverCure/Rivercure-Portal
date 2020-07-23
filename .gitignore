@@ -119,6 +119,8 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv/
+ubuntuvenv/
 rivercure/
 ENV/
 env.bak/
@@ -148,6 +150,7 @@ dmypy.json
 # End of https://www.toptal.com/developers/gitignore/api/django
 
 *.cmd
+*.sh
 *.map
 data/
 migrations/
