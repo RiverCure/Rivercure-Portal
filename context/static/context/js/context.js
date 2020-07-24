@@ -3,6 +3,7 @@ var MyFunctions = {
     deleting: false,
     //Layer for highlights
     highlightLayer: null,
+    highlightStatus: null,
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
@@ -239,6 +240,7 @@ var MyFunctions = {
         MyFunctions.domainMarkers.on('popupopen', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
                 e.target.closePopup();
+                MyFunctions.highlightStatus = false; //keep the highlight functionality disabled
             }
         });
     },
@@ -382,6 +384,7 @@ var MyFunctions = {
             }
             MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
             MyFunctions.boundaryPolyline = null; //restart the boundary draw
+            MyFunctions.highlightStatus = true; //enable highlights again
         }
     },
     //function to run on the begginning of a drawing
@@ -559,21 +562,31 @@ var MyFunctions = {
         polygonLayer.addLayer(layer); //Domain
         MyFunctions.drawnPolygn.addLayer(layer); //Add to this layer for editing
 
-        // layer.on('mouseover', e => {
-        //     console.log(e);
-        //     console.log('in')
-        //     MyFunctions.highlightLayer.addLayer(L.geoJson(polygonLayer.getLayer(e.target._leaflet_id).toGeoJSON()))
-        //     .on('mouseout', () => {
-        //         console.log('out');
-        //         MyFunctions.highlightLayer.clearLayers();
-        //     });
-        // });
+        MyFunctions.handleHighlights(layer, polygonLayer);
     },
     //function to define boundary and draw it on the map
     defineBoundary: (boundary, type, dataType) => {
+        boundary.setStyle({color: '#008080'});
         MyFunctions.createdPolygons.Boundaries.addLayer(boundary);
         MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
         boundary.bindTooltip("Boundary");
+        MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
+    },
+    //function to handle highlights
+    handleHighlights: (layer, polygonLayer) => {
+        MyFunctions.highlightStatus = true;
+        layer.on('mouseover', e => {
+            if(MyFunctions.highlightStatus) {//stop highlight when popup is open
+                if(polygonLayer === MyFunctions.createdPolygons.Boundaries || polygonLayer === MyFunctions.createdPolygons.Alignment)
+                    L.polyline(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
+                else
+                    L.polygon(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
+            }
+        });
+        layer.on('mouseout', () => {
+            if(MyFunctions.highlightStatus)
+                MyFunctions.highlightLayer.clearLayers();
+        });
     },
     //function to transform coordinate string into an array
     coordStringToArray: (string) => {

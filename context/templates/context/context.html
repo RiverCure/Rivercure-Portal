@@ -51,7 +51,8 @@
                 map.on("draw:editstop", e => {MyFunctions.editStop(map)});
                 map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
-                
+                map.on('popupopen', () => { MyFunctions.highlightStatus = false;});
+                map.on('popupclose', () => { MyFunctions.highlightStatus = true; MyFunctions.highlightLayer.clearLayers()});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action
