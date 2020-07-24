@@ -150,10 +150,16 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
     'RESET_VIEW': False,
-    'TILES': [('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
-                ('Satellite', 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}', {'attribution': '&copy; <a href="https://www.hatarilabs.com/ih-en/how-to-add-a-google-map-in-qgis-3-tutorial">Google</a>'})]
+    'TILES': [('Satellite', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
+                'id': 'satellite-streets-v11',
+                'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
+                'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
+                                &copy <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> 
+                                <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
+            }),
+            ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
+    ]
 }
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/

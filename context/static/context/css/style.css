@@ -21,6 +21,12 @@
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.5);
 }
+#my_map .leaflet-bottom .leaflet-control-scale {
+  background-color: whitesmoke;
+}
+#my_map .leaflet-bottom #mouse-latlng {
+  background-color: whitesmoke;
+}
 
 #context-options {
   margin-bottom: 50px;
