@@ -96,9 +96,6 @@ var MyFunctions = {
     },
     //function to init polygons
     polygonsInit: (map) => {
-        // map.createPane('Domain');
-        // map.getPane('Domain').style.zIndex = 300;
-        // MyFunctions.createdPolygons.Domain = L.layerGroup(null, {pane: map.getPane('Domain')}).addTo(map);
         MyFunctions.createdPolygons.Domain = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
@@ -209,7 +206,10 @@ var MyFunctions = {
                     </td>
                 </tr>
             </table>
-            <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+            <div class"container">
+                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+                <button type="button" id='popup-btn-send-to-back' class="btn btn-outline-info btn-sm")" style="float: right">Send to Back</button>
+            </div>
         `
     },
     //function to configure polygon popup
@@ -223,8 +223,21 @@ var MyFunctions = {
                         setTimeout(() => { e.target.closePopup();}, 1500);
                     });
                 }, 1000);
+
+                document.querySelector('#popup-btn-send-to-back').addEventListener('click', () => {
+                    e.target.bringToBack()
+                    MyFunctions.overlayOrder(false);
+                    setTimeout(() => { e.target.closePopup();}, 500);
+                });
             }
         });
+    },
+    //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
+    overlayOrder: (alignment) => {
+        MyFunctions.createdPolygons.Domain.invoke('bringToBack');
+        MyFunctions.createdPolygons.Boundaries.invoke('bringToFront');
+        if(alignment) //check if alignment is supposed to be brought to front
+            MyFunctions.createdPolygons.Alignment.invoke('bringToFront');
     },
     //function to set the domain markers layers visibility toggle
     setDomainMarkers: (map) => {

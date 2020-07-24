@@ -55,6 +55,7 @@
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
                 map.on('popupopen', () => { MyFunctions.highlightStatus = false;});
                 map.on('popupclose', () => { MyFunctions.highlightStatus = true; MyFunctions.highlightLayer.clearLayers()});
+                map.on('overlayadd', () => { MyFunctions.overlayOrder(true);});
                 //enable controls when users changes the select polygon
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action
