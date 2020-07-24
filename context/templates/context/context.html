@@ -15,10 +15,12 @@
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     
     <script>
+        var fds;
         document.addEventListener('DOMContentLoaded', () => {
             
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
+                fds = map;
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();

@@ -7,7 +7,7 @@ var MyFunctions = {
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
-    drawnPolygn: null,
+    editPolygonFeature: null,
     //Variable to store boundary polyline being drawn
     boundaryPolyline: null,
     boundaryPolylineMarkersTemp: null,
@@ -69,8 +69,8 @@ var MyFunctions = {
     },
     //function to configure draw control
     drawControlConfig: (map) => {
-        MyFunctions.drawnPolygn = new L.FeatureGroup();
-        map.addLayer(MyFunctions.drawnPolygn);
+        MyFunctions.editPolygonFeature = new L.FeatureGroup();
+        map.addLayer(MyFunctions.editPolygonFeature);
         
         return new L.Control.Draw({
             //leave only polygon option in the control
@@ -89,17 +89,20 @@ var MyFunctions = {
                 },
             },
             edit: {
-                featureGroup: MyFunctions.drawnPolygn,
+                featureGroup: MyFunctions.editPolygonFeature,
                 allowIntersection: false,
             }
         });
     },
     //function to init polygons
     polygonsInit: (map) => {
+        // map.createPane('Domain');
+        // map.getPane('Domain').style.zIndex = 300;
+        // MyFunctions.createdPolygons.Domain = L.layerGroup(null, {pane: map.getPane('Domain')}).addTo(map);
         MyFunctions.createdPolygons.Domain = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
-
+        
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Domain, "Domain");
@@ -328,15 +331,12 @@ var MyFunctions = {
     },
     //function to redraw the domain markers when the edit stops
     editStop: (map) => {
-        // let coordinates = MyFunctions.drawnPolygn._layers[MyFunctions.createdPolygons.Domain]._latlngs[0];
         let coordinates = MyFunctions.createdPolygons.Domain.getLayers()[0].getLatLngs()[0];
-        // for(let i = 0; i < coordinates.length; i++) //populate the vertices with markers again
-        //     MyFunctions.addDomainMarker(map, coordinates[i].lat, coordinates[i].lng);
         for(coordinate of coordinates) {//populate the vertices with markers again
             MyFunctions.addDomainMarker(map, coordinate.lat, coordinate.lng);
         }
     },
-    //function to delete layers from created polygons when deleting from drawnpolygn
+    //function to delete layers from created polygons when deleting from editPolygonFeature
     removeLayers: (layers) => {
         for(layer of layers) {
             MyFunctions.createdPolygons.Domain.removeLayer(layer);
@@ -352,7 +352,6 @@ var MyFunctions = {
     //function to add domain marker
     addDomainMarker: (map, lat, lng) => {
         let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
-
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
             console.log(e);
@@ -374,7 +373,6 @@ var MyFunctions = {
         marker.on('dblclick', () => { //remove the marker on double click
             marker.remove();
         });
-        
     },
     //function when the user clicks on the map (to stop the boundary line)
     stopBoundaryDefinition: () => {
@@ -495,7 +493,7 @@ var MyFunctions = {
     clearMap: () => {
         MyFunctions.createdPolygons.Boundaries.clearLayers();
         MyFunctions.domainMarkers.clearLayers();
-        MyFunctions.drawnPolygn.clearLayers();
+        MyFunctions.editPolygonFeature.clearLayers();
 
         for(key in MyFunctions.createdPolygons)
             MyFunctions.createdPolygons[key].clearLayers();
@@ -505,9 +503,6 @@ var MyFunctions = {
         document.querySelector('#id_code').value = response.code;
         document.querySelector('#id_name').value = response.Name;
         document.querySelector('#id_hydroFeature').value = response.hydroFeature;
-        // document.querySelector('#id_CLExternalBoundary').value = response.CLExternalBoundary;
-        // document.querySelector('#id_CLAlignment').value = response.CLAlignment;
-        // document.querySelector('#id_CLInternalBoundary').value = response.CLInternalBoundary;
     },
     //function to draw the geometries in the context from API call
     drawGeometries: (response, map) => {
@@ -560,7 +555,7 @@ var MyFunctions = {
         MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(type, CL)));
         layer.bindTooltip(type);
         polygonLayer.addLayer(layer); //Domain
-        MyFunctions.drawnPolygn.addLayer(layer); //Add to this layer for editing
+        MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
 
         MyFunctions.handleHighlights(layer, polygonLayer);
     },
@@ -575,17 +570,20 @@ var MyFunctions = {
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {
         MyFunctions.highlightStatus = true;
-        layer.on('mouseover', e => {
-            if(MyFunctions.highlightStatus) {//stop highlight when popup is open
-                if(polygonLayer === MyFunctions.createdPolygons.Boundaries || polygonLayer === MyFunctions.createdPolygons.Alignment)
-                    L.polyline(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
-                else
-                    L.polygon(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
-            }
-        });
+        highlightPolygon = (e, polygonLayer) => {
+            if(polygonLayer === MyFunctions.createdPolygons.Boundaries || polygonLayer === MyFunctions.createdPolygons.Alignment)
+                L.polyline(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
+            else
+                L.polygon(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
+        };
+        layer.on('mouseover', e => { if(MyFunctions.highlightStatus) { highlightPolygon(e, polygonLayer);}});
         layer.on('mouseout', () => {
             if(MyFunctions.highlightStatus)
                 MyFunctions.highlightLayer.clearLayers();
+        });
+        layer.on('click', e => {
+            MyFunctions.highlightLayer.clearLayers();
+            highlightPolygon(e, polygonLayer);
         });
     },
     //function to transform coordinate string into an array
