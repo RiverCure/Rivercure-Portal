@@ -82,7 +82,8 @@ var MyFunctions = {
                 polygon: {
                     shapeOptions: {
                         fill: false
-                    }
+                    },
+                    allowIntersection: false,
                 },
                 polyline: {
                     allowIntersection: false,
