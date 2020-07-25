@@ -18,6 +18,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
+                map.doubleClickZoom.disable(); //disable double click zoom
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
@@ -50,6 +51,7 @@
                 map.on("draw:editstop", e => {MyFunctions.editStop(map)});
                 map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
+                map.on('draw:deletestop', () => {MyFunctions.deleting = false;});
                 map.on('popupopen', () => { MyFunctions.highlightStatus = false;});
                 map.on('popupclose', () => { MyFunctions.highlightStatus = true; MyFunctions.highlightLayer.clearLayers()});
                 map.on('overlayadd', () => { MyFunctions.overlayOrder(true);});

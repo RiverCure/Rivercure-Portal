@@ -115,7 +115,6 @@ var MyFunctions = {
     },
     //function to return boundary line popup
     boundaryPopup: (type, dataType) => {
-        
         getType = (option) => {
             switch(option){
                 case 'Input':
@@ -179,7 +178,13 @@ var MyFunctions = {
     boundaryLinePopupConfig: (popup) => {
         //define popup alteration saving
         popup.on('popupopen', e => { // function to handle the saving of the data
+            if(MyFunctions.deleting) { //if the user os deleting prevent popup opening
+                e.target.closePopup();
+                return;
+            }
             setTimeout(() => { //wait in case user opens popups back to back
+                if(!e.popup.isOpen()) //check if the popup is still open
+                        return;
                 //set the color of the current choice
                 document.querySelector('#popup-current-type').style.backgroundColor = 'lightblue';
                 document.querySelector('#popup-current-data-type').style.backgroundColor = 'lightblue';
@@ -188,7 +193,7 @@ var MyFunctions = {
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
-            }, 1000);
+            }, 800);
         });
     },
     //function to return polygons CL popups
@@ -216,22 +221,47 @@ var MyFunctions = {
     //function to configure polygon popup
     polygonsPopupConfig: (popup) => {
         popup.on('popupopen', e => { //define popup alteration saving
-            if(!MyFunctions.deleting) {
-                setTimeout(() => { //wait in case user opens popups back to back
-                    document.querySelector('#popup-btn').addEventListener('click', () => {
-                        e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
-                        e.popup.update();
-                        setTimeout(() => { e.target.closePopup();}, 1500);
-                    });
-                }, 1000);
-
+            if(MyFunctions.deleting)
+                return;
+            
+            setTimeout(() => { //wait in case user opens popups back to back
+                if(!e.popup.isOpen()) //check if the popup is still open
+                    return;
+                document.querySelector('#popup-btn').addEventListener('click', () => {
+                    e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                    e.popup.update();
+                    setTimeout(() => { e.target.closePopup();}, 1500);
+                });
+                
                 document.querySelector('#popup-btn-send-to-back').addEventListener('click', () => {
                     e.target.bringToBack()
                     MyFunctions.overlayOrder(false);
                     setTimeout(() => { e.target.closePopup();}, 500);
                 });
-            }
+            }, 800);
         });
+    },
+    //function to configure domain marker popup, used to associate a sensor
+    sensorAssociationPopup: () => {
+        return `
+            <h1><small id='popup-header'>` + name + `</small></h1>
+            <table class='table'>
+                <tr>
+                    <th scope="row">Current CL</th>
+                    <td id='popup-current-cl'>`+ CL + `</td id='end-cl'>
+                </tr>
+                <tr>
+                    <th scope="row">CL</th>
+                    <td>
+                        <input id='popup-selected-cl' type='number'>
+                    </td>
+                </tr>
+            </table>
+            <div class"container">
+                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+                <button type="button" id='popup-btn-send-to-back' class="btn btn-outline-info btn-sm")" style="float: right">Send to Back</button>
+            </div>
+        `   
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
@@ -353,10 +383,14 @@ var MyFunctions = {
     //function to delete layers from created polygons when deleting from editPolygonFeature
     removeLayers: (layers) => {
         for(layer of layers) {
+            if(MyFunctions.createdPolygons.Domain.hasLayer(layer))
+                MyFunctions.createdPolygons.Boundaries.clearLayers();
             MyFunctions.createdPolygons.Domain.removeLayer(layer);
             MyFunctions.createdPolygons.Refinement.removeLayer(layer);
             MyFunctions.createdPolygons.Alignment.removeLayer(layer);
         }
+
+        MyFunctions.deleting = false;
     },
     //function to remove domain markers
     clearLayers: () => {
@@ -580,6 +614,11 @@ var MyFunctions = {
         MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
         boundary.bindTooltip("Boundary");
         MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
+
+        boundary.on('dblclick', e => {
+            e.target.removeFrom(MyFunctions.editPolygonFeature);
+            e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
+        });
     },
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {
