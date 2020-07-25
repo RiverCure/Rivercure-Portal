@@ -19,50 +19,66 @@ var MyFunctions = {
     boundaries: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
+    //function to define draw sensor icon
+    sensorIcon: (code) => {
+        return `
+            <svg>
+                <rect rx="5" ry="5"/>
+                <text x="50%" y="50%" alignment-baseline="middle" text-anchor="middle">` + code + `</text>  
+            </svg>
+        `
+    },
+    //function to define sensor popup
+    sensorPopup: (sensor) => {
+        return `
+            <h1>Sensor</h1>
+            <table class='table'>
+                <tr>
+                    <th scope="row">Code</th>
+                    <td>` + sensor.code + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>` + sensor.name + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">ModalityType</th>
+                    <td>` + sensor.modalityType + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Type</th>
+                    <td>` + sensor.type + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td>` + sensor.description + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Version</th>
+                    <td>` + sensor.version + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Time Zone</th>
+                    <td>` + sensor.timeZoneAbbreviation + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Time Zone offset</th>
+                    <td>` + sensor.timeZoneOffset + `</td>
+                </tr>
+            </table>
+        `
+    },     
     //function to draw sensors on the map
-    drawSensors: (map, sensors, iconUrl) => {
-        MyFunctions.sensorsLayer = L.layerGroup();
+    drawSensors: (map, sensors) => {
+        MyFunctions.sensorsLayer = L.markerClusterGroup();
+        MyFunctions.sensorsLayer.bindTooltip('Sensors');
         //icon for sensors
-        let sensorIcon = L.icon( {iconUrl: iconUrl, iconSize: [50, 50]});
+        let sensorIcon;
         let sensorMarker; //auxiliar variable
         for(sensor of sensors) {
+            sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code), className: 'sensor', iconSize: [30, 30]});
             sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(MyFunctions.sensorsLayer);
-            sensorMarker.bindPopup(`
-                <table class='table'>
-                    <tr>
-                        <th scope="row">Code</th>
-                        <td>` + sensor.code + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Name</th>
-                        <td>` + sensor.name + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">ModalityType</th>
-                        <td>` + sensor.modalityType + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Type</th>
-                        <td>` + sensor.type + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Description</th>
-                        <td>` + sensor.description + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Version</th>
-                        <td>` + sensor.version + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Time Zone</th>
-                        <td>` + sensor.timeZoneAbbreviation + `</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Time Zone offset</th>
-                        <td>` + sensor.timeZoneOffset + `</td>
-                    </tr>
-                </table>
-            `);
+            sensorMarker.bindPopup(MyFunctions.sensorPopup(sensor));
         }
         MyFunctions.sensorsLayer.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.sensorsLayer, 'Sensors');

@@ -32,7 +32,7 @@
                 });
                 //end of visual tools
                 //Put the sensors on the map                
-                MyFunctions.drawSensors(map, loadSensors(), "{% static 'context/imgs/sensor_img.png' %}");
+                MyFunctions.drawSensors(map, loadSensors());
                 MyFunctions.setDomainMarkers(map);
                 //Polygon drawing controls
                 drawControl = MyFunctions.drawControlConfig(map);
@@ -70,7 +70,7 @@
             //function to load sensor information to a dict so it can be processed by a function
             loadSensors = () => {
                 var sensors = [], sensor;
-                '{% for sensor in ssensors %}'
+                '{% for sensor in sensors %}'
                     sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
                     description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
                     timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};

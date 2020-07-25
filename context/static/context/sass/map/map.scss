@@ -33,4 +33,19 @@ $leaflet-bottom-background: whitesmoke;
             background-color: $leaflet-bottom-background;
         }
     }
+
+    .sensor {
+        svg {
+            width: 100%;
+            height: 100%;
+            rect {
+                width: 100%;
+                height: 100%;
+                stroke: black;
+                stroke-width: 2;
+                opacity: 0.8;
+                fill: $leaflet-bottom-background;
+            }
+        }
+    }
 }
