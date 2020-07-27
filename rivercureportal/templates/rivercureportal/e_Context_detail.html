@@ -4,13 +4,19 @@
 
 <article class="media content-section">
     <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ object.Name }}</a>
-      </div>
       <h2 class="article-title">{{object.Name}}</h2>
-      <p class="article-content">{{ object.code }}</p>
+      <p class="article-content">Code: {{ object.code }}</p>
+    
+    <h2>Events</h2>
+    {% for event in object.e_ContextEvent %}
+   
+    <p class="article-content"> {{event.type}} </p> 
+
+    {% endfor %}
     </div>
 </article>
+
+
 
 
 {% endblock content %}
