@@ -1,6 +1,8 @@
 //Help functions
 var MyFunctions = {
     deleting: false,
+    //Variable to store sensors
+    sensors: null,
     //Layer for highlights
     highlightLayer: null,
     highlightStatus: null,
@@ -75,6 +77,7 @@ var MyFunctions = {
         //icon for sensors
         let sensorIcon;
         let sensorMarker; //auxiliar variable
+        MyFunctions.sensors = sensors;
         for(sensor of sensors) {
             sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code), className: 'sensor', iconSize: [30, 30]});
             sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(MyFunctions.sensorsLayer);
@@ -131,8 +134,8 @@ var MyFunctions = {
     },
     //function to return boundary line popup
     boundaryPopup: (type, dataType) => {
-        getType = (option) => {
-            switch(option){
+        getType = () => {
+            switch(type){
                 case 'Input':
                     return `<option id='popup-current-type' value="Input" selected>Input</option>
                             <option value="Output">Output</option>
@@ -148,8 +151,8 @@ var MyFunctions = {
             }
         };
 
-        getDataType = (option) => {
-            switch(option){
+        getDataType = () => {
+            switch(dataType){
                 case 'H':
                     return `<option id='popup-current-data-type' value="H" selected>Depth</option>
                             <option value="Q">Discharge</option>
@@ -177,13 +180,13 @@ var MyFunctions = {
             <div class="form-group">
                 <label for="popup-selected-type"><big>Type</big></label><br>
                 <select id='popup-selected-type' class="form-control form-control-sm">
-                    ` + getType(type) + `
+                    ` + getType() + `
                 </select>
             </div>
             <div class="form-group">
                 <label for="popup-selected-data-type"><big>Data Type</big></label><br>  
                 <select id='popup-selected-data-type' class="form-control form-control-sm">
-                    ` + getDataType(dataType) + `
+                    ` + getDataType() + `
                 </select>
                   
             </div>
@@ -257,27 +260,94 @@ var MyFunctions = {
             }, 800);
         });
     },
-    //function to configure domain marker popup, used to associate a sensor
-    sensorAssociationPopup: () => {
+    //function to create domain marker popup, used to associate a sensor
+    sensorAssociationPopup: (associatedSensors, newSensor) => {
+        //('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor')
+        //('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload')
+        getAvailableSensors = () => {
+            var result = "";
+
+            for(sensor of MyFunctions.sensors) {
+                result += '<option value="' + sensor.code + '">' + sensor.code.concat(' '.concat(sensor.type)) + '</option>\n'
+            }
+
+            return result;
+        };
+        
+        getAssociatedSensors = () => {
+            if(associatedSensors === null)
+                return "";
+
+            var result;
+            result = associatedSensors.slice(associatedSensors.indexOf('</tr>') + '</tr>'.length + 1,
+                                            associatedSensors.indexOf('</table>'));
+            return result;
+        };
+
+        associateNewSensors = () => {
+            if(newSensor === null)
+                return "";
+            console.log(MyFunctions.sensors)
+
+            var sensor = MyFunctions.sensors.find((value) => {
+                return value.code == newSensor});
+                
+            if(sensor === undefined) {
+                alert('ups');
+                return "";
+            }
+
+            var nr = '1';
+            if(associatedSensors.lastIndexOf('<th>Sensor ') != -1) {
+                nr = associatedSensors.slice(associatedSensors.lastIndexOf('<th>') + '<th>'.length, associatedSensors.lastIndexOf('</th>'));
+                nr = Number(nr) + 1
+            }
+
+            return `
+                <tr>
+                    <th>` + nr + `</th>
+                    <td>` + sensor.code + `</td>
+                    <td>` + sensor.type + `</td>
+                </tr>`;
+        };
+
         return `
-            <h1><small id='popup-header'>` + name + `</small></h1>
+            <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
             <table class='table'>
                 <tr>
-                    <th scope="row">Current CL</th>
-                    <td id='popup-current-cl'>`+ CL + `</td id='end-cl'>
+                    <th scope="col">#</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Type</th>
                 </tr>
-                <tr>
-                    <th scope="row">CL</th>
-                    <td>
-                        <input id='popup-selected-cl' type='number'>
-                    </td>
-                </tr>
-            </table>
+            ` +
+                getAssociatedSensors().concat(associateNewSensors()) +
+            `</table>
+            <label for="sensor-association"><big>Choose a sensor:</big></label>
+            <select id='sensor-association' class="form-control form-control-sm">
+                    ` + getAvailableSensors() + `
+            </select>
             <div class"container">
                 <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
-                <button type="button" id='popup-btn-send-to-back' class="btn btn-outline-info btn-sm")" style="float: right">Send to Back</button>
             </div>
         `   
+    },
+    //functio to configure domain marker popup
+    sensorAssociationPopupConfig: (popup) => {
+        popup.on('popupopen', e => {
+            if(MyFunctions.deleting)
+                return;
+            
+            setTimeout(() => { //wait in case user opens popups back to back
+                if(!e.popup.isOpen()) //check if the popup is still open
+                    return;
+                document.querySelector('#popup-btn').addEventListener('click', () => {
+                    e.popup.setContent(MyFunctions.sensorAssociationPopup(e.popup.getContent(), document.querySelector('#sensor-association').value));
+                    // e.popup.update();
+                    popup.closePopup();
+                    popup.openPopup();
+                });
+            }, 800);
+        });
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
@@ -292,12 +362,6 @@ var MyFunctions = {
         MyFunctions.domainMarkers.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
 
-        //add a popup to select a sensor to associate
-        MyFunctions.domainMarkers.bindPopup(`
-            <h1><small>Water entry point</small></h1>
-            <label for="sensor-association">Choose a sensor:</label>
-            <input type="text" id="sensor-association" name="sensor-association">
-        `);
         MyFunctions.domainMarkers.bindTooltip("Pick boundary and click me!");
 
         MyFunctions.domainMarkers.on('popupopen', e => {
@@ -416,9 +480,11 @@ var MyFunctions = {
     //function to add domain marker
     addDomainMarker: (map, lat, lng) => {
         let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
+
+        MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null)));
+
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
-            console.log(e);
             if(document.querySelector("#polygon-type").value === 'Boundary') {
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
                     MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
