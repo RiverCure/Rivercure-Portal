@@ -6,10 +6,13 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
 from users.models import User
+from django.contrib.auth.models import Group
 
 def home(request):
     context = {
         'users': User.objects.all(),
+        'groups': Group.objects.all()
+        
     }
     return render(request, 'rivercureportal/home.html', context)
 
