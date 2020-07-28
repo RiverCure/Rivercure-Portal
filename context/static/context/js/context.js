@@ -313,6 +313,7 @@ var MyFunctions = {
             `</table>
             <label for="sensor-association"><big>Choose a sensor:</big></label>
             <select id='sensor-association' class="form-control form-control-sm">
+                <option value='null'>--------------------</option>
             </select>
             <div class"container">
                 <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
@@ -330,6 +331,8 @@ var MyFunctions = {
                 if(!e.popup.isOpen()) //check if the popup is still open
                     return;
                 document.querySelector('#popup-btn').addEventListener('click', () => {
+                    if(document.querySelector('#sensor-association').value == 'null')
+                        return;
                     e.popup.setContent(MyFunctions.sensorAssociationPopup(e.popup.getContent(), document.querySelector('#sensor-association').value));
                     popup.closePopup();
                     popup.openPopup();
