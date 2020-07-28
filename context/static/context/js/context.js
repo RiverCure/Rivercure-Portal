@@ -264,15 +264,6 @@ var MyFunctions = {
     sensorAssociationPopup: (associatedSensors, newSensor) => {
         //('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor')
         //('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload')
-        getAvailableSensors = () => {
-            var result = "";
-
-            for(sensor of MyFunctions.sensors) {
-                result += '<option value="' + sensor.code + '">' + sensor.code.concat(' '.concat(sensor.type)) + '</option>\n'
-            }
-
-            return result;
-        };
         
         getAssociatedSensors = () => {
             if(associatedSensors === null)
@@ -287,13 +278,11 @@ var MyFunctions = {
         associateNewSensors = () => {
             if(newSensor === null)
                 return "";
-            console.log(MyFunctions.sensors)
 
             var sensor = MyFunctions.sensors.find((value) => {
                 return value.code == newSensor});
                 
             if(sensor === undefined) {
-                alert('ups');
                 return "";
             }
 
@@ -306,7 +295,7 @@ var MyFunctions = {
             return `
                 <tr>
                     <th>` + nr + `</th>
-                    <td>` + sensor.code + `</td>
+                    <td class='add-code'>` + sensor.code + `</td>
                     <td>` + sensor.type + `</td>
                 </tr>`;
         };
@@ -324,15 +313,15 @@ var MyFunctions = {
             `</table>
             <label for="sensor-association"><big>Choose a sensor:</big></label>
             <select id='sensor-association' class="form-control form-control-sm">
-                    ` + getAvailableSensors() + `
             </select>
             <div class"container">
-                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
             </div>
         `   
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
+        var sensorDistance = 10000; //variable to store the distance at which a user can associate a sensor
         popup.on('popupopen', e => {
             if(MyFunctions.deleting)
                 return;
@@ -342,11 +331,26 @@ var MyFunctions = {
                     return;
                 document.querySelector('#popup-btn').addEventListener('click', () => {
                     e.popup.setContent(MyFunctions.sensorAssociationPopup(e.popup.getContent(), document.querySelector('#sensor-association').value));
-                    // e.popup.update();
                     popup.closePopup();
                     popup.openPopup();
                 });
-            }, 800);
+                //check the already added sensors
+                var addedSensors= [];
+                document.querySelectorAll('.add-code').forEach(element => {
+                    addedSensors.push(element.innerHTML);
+                });
+                //add the option for the available sensors for adding
+                var option;
+                for(sensor of MyFunctions.sensors) {
+                    if(!addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
+                        L.latLng(e.target.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= sensorDistance) { 
+                        option = document.createElement('option');
+                        option.value = sensor.code;
+                        option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+                        document.querySelector('#sensor-association').appendChild(option);
+                    }
+                };
+            }, 500);
         });
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
