@@ -30,6 +30,14 @@
 #my_map #sensor-association {
   margin-bottom: 7px;
 }
+#my_map tbody tr:hover {
+  background: #eee;
+}
+#my_map tbody .close {
+  cursor: pointer;
+  position: absolute;
+  transform: translate(0%, -25%);
+}
 #my_map .sensor svg {
   width: 100%;
   height: 100%;

@@ -270,8 +270,8 @@ var MyFunctions = {
                 return "";
 
             var result;
-            result = associatedSensors.slice(associatedSensors.indexOf('</tr>') + '</tr>'.length + 1,
-                                            associatedSensors.indexOf('</table>'));
+            result = associatedSensors.slice(associatedSensors.indexOf('<tbody>') + '<tbody>'.length + 1,
+                                            associatedSensors.indexOf('</tbody>'));
             return result;
         };
 
@@ -293,24 +293,29 @@ var MyFunctions = {
             }
 
             return `
-                <tr>
+                <tr id='sensor-` +  sensor.code + `'>
                     <th>` + nr + `</th>
                     <td class='add-code'>` + sensor.code + `</td>
                     <td>` + sensor.type + `</td>
+                    <td><span class='close'>x</span></td>
                 </tr>`;
         };
 
         return `
             <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
             <table class='table'>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Type</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
             ` +
                 getAssociatedSensors().concat(associateNewSensors()) +
-            `</table>
+            `</tbody>
+            </table>
             <label for="sensor-association"><big>Choose a sensor:</big></label>
             <select id='sensor-association' class="form-control form-control-sm">
                 <option value='null'>--------------------</option>
@@ -337,6 +342,16 @@ var MyFunctions = {
                     popup.closePopup();
                     popup.openPopup();
                 });
+                if(document.querySelector('.close') !== null) {
+                    document.querySelectorAll('.close').forEach( element => {
+                        element.addEventListener('click', ev => { //button to remove added sensors
+                            console.log(ev.target.parentElement.parentElement.id);
+                            MyFunctions.removeAssociatedSensor(e.popup, ev.target.parentElement.parentElement.id);
+                            popup.closePopup();
+                            popup.openPopup();
+                        });
+                    });
+                }
                 //check the already added sensors
                 var addedSensors= [];
                 document.querySelectorAll('.add-code').forEach(element => {
@@ -355,6 +370,12 @@ var MyFunctions = {
                 };
             }, 500);
         });
+    },
+    //function to remove row from associated sensors
+    removeAssociatedSensor: (popup, sensorCode) => {
+        let begginning = popup.getContent().substring(0, popup.getContent().indexOf('<tr id=\''.concat(sensorCode)));
+        let ending = popup.getContent().substr(popup.getContent().indexOf('</tr>', popup.getContent().indexOf('<tr id=\''.concat(sensorCode))) + '</tr>'.length);
+        popup.setContent(begginning.concat(ending));
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
