@@ -73,7 +73,7 @@ var MyFunctions = {
     //function to draw sensors on the map
     drawSensors: (map, sensors) => {
         MyFunctions.sensorsLayer = L.markerClusterGroup();
-        MyFunctions.sensorsLayer.bindTooltip('Sensors');
+        MyFunctions.sensorsLayer.bindTooltip('Sensor');
         //icon for sensors
         let sensorIcon;
         let sensorMarker; //auxiliar variable
@@ -212,7 +212,7 @@ var MyFunctions = {
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
-            }, 800);
+            }, 500);
         });
     },
     //function to return polygons CL popups
@@ -257,7 +257,7 @@ var MyFunctions = {
                     MyFunctions.overlayOrder(false);
                     setTimeout(() => { e.target.closePopup();}, 500);
                 });
-            }, 800);
+            }, 500);
         });
     },
     //function to create domain marker popup, used to associate a sensor
@@ -329,8 +329,10 @@ var MyFunctions = {
     sensorAssociationPopupConfig: (popup) => {
         var sensorDistance = 10000; //variable to store the distance at which a user can associate a sensor
         popup.on('popupopen', e => {
-            if(MyFunctions.deleting)
+            if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
+                popup.closePopup();
                 return;
+            }
             
             setTimeout(() => { //wait in case user opens popups back to back
                 if(!e.popup.isOpen()) //check if the popup is still open
@@ -345,7 +347,6 @@ var MyFunctions = {
                 if(document.querySelector('.close') !== null) {
                     document.querySelectorAll('.close').forEach( element => {
                         element.addEventListener('click', ev => { //button to remove added sensors
-                            console.log(ev.target.parentElement.parentElement.id);
                             MyFunctions.removeAssociatedSensor(e.popup, ev.target.parentElement.parentElement.id);
                             popup.closePopup();
                             popup.openPopup();
@@ -616,6 +617,10 @@ var MyFunctions = {
                 popup = element.getPopup().getContent(); //get the popup to extract the properties values
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
+                console.log(element.getLatLngs());
+                for(point of element.getLatLngs()) { //get sensors associated with points
+
+                }
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
@@ -716,6 +721,7 @@ var MyFunctions = {
         MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
 
         MyFunctions.handleHighlights(layer, polygonLayer);
+        MyFunctions.checkForCompleteness();
     },
     //function to define boundary and draw it on the map
     defineBoundary: (boundary, type, dataType) => {
@@ -729,6 +735,20 @@ var MyFunctions = {
             e.target.removeFrom(MyFunctions.editPolygonFeature);
             e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
         });
+
+        MyFunctions.checkForCompleteness();
+    },
+    //check if all layers of createdPolygons have polygons 
+    checkForCompleteness: () => {
+        for(type in MyFunctions.createdPolygons) { //check if all polygons are defined
+            if(MyFunctions.createdPolygons[type].getLayers().length < 1) {
+                document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-danger");
+                document.querySelector('#load-btn').disabled = true;
+                return;
+            }
+        }
+        document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-info"); //all polygons are defined mark the button green
+        document.querySelector('#load-btn').disabled = false;
     },
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {

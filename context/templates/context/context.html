@@ -19,6 +19,7 @@
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
                 map.doubleClickZoom.disable(); //disable double click zoom
+                document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
@@ -51,7 +52,7 @@
                 map.on("draw:editstop", e => {MyFunctions.editStop(map)});
                 map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
-                map.on('draw:deletestop', () => {MyFunctions.deleting = false;});
+                map.on('draw:deletestop', () => {MyFunctions.deleting = false; MyFunctions.checkForCompleteness();});
                 map.on('popupopen', () => { MyFunctions.highlightStatus = false;});
                 map.on('popupclose', () => { MyFunctions.highlightStatus = true; MyFunctions.highlightLayer.clearLayers()});
                 map.on('overlayadd', () => { MyFunctions.overlayOrder(true);});
@@ -119,7 +120,7 @@
     </div>
     <div class="container" id="context-options">
         <div class="container" style="display: flex">
-            <button type="button" id='load-btn' class="btn btn-outline-info">Save Context</button>
+            <button type="button" id='load-btn' class="btn btn-outline-danger">Save Context</button>
             <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
                 <option value="none" selected disabled>Select the polygon to define</option>
                 <option value="Domain">Domain</option>
