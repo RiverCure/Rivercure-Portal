@@ -100,7 +100,6 @@ def boundaryline_creation(form, context): # function to create the several lines
 
 #end of aux functions for show_context()
 
-
 class ContextViewSet(viewsets.ModelViewSet):
     queryset = e_Context.objects.all()
     lookup_field = 'code'
@@ -121,7 +120,8 @@ def download_context(request): #function that allows the download of an context
     context = e_Context.objects.get(code=context_code)
 
     context_main = geojson.Feature(geometry= geojson.MultiPolygon(context.geomExternalBoundary.coords),
-                        properties = { "Code": context.code,
+                        properties = {"Geometry type": 'Domain',
+                                    "Code": context.code,
                                     "Name": str.title(context.Name),
                                     "CL": context.CLExternalBoundary})
 
@@ -134,8 +134,9 @@ def download_context(request): #function that allows the download of an context
     features = []
     for alignment in e_ContextAlignment.objects.filter(context__code=context_code):
         context_alignment = geojson.Feature(geometry= geojson.LineString(alignment.geom.coords),
-                            properties = {"Context_Code": context.code,
-                                        "Context_Name": str.title(context.Name),
+                            properties = {"Geometry type": 'Alignment',
+                                        "Context code": context.code,
+                                        "Context name": str.title(context.Name),
                                         "CL": alignment.CL})
 
         features.append(context_alignment)
@@ -147,8 +148,9 @@ def download_context(request): #function that allows the download of an context
     features = []
     for refinement in e_ContextRefinement.objects.filter(context__code=context_code):
         context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement.geom.coords),
-                            properties = {"Code": context.code,
-                                        "Name": str.title(context.Name),
+                            properties = {"Geometry type": 'Refinement',
+                                        "Context code": context.code,
+                                        "Context name": str.title(context.Name),
                                         "CL": refinement.CL})
 
         features.append(context_refinement)
@@ -160,10 +162,11 @@ def download_context(request): #function that allows the download of an context
     features = []
     for boundary in e_ContextBoundaryLine.objects.filter(context__code=context_code):
         context_boundary = geojson.Feature(geometry= geojson.LineString(boundary.geom.coords),
-                            properties = {"Code": context.code,
-                                        "Name": str.title(context.Name),
+                            properties = {"Geometry type": 'Boundary Line',
+                                        "Contextc ode": context.code,
+                                        "Context name": str.title(context.Name),
                                         "Type": boundary.type,
-                                        "Data Type": boundary.dataType})
+                                        "Data type": boundary.dataType})
 
         features.append(context_boundary)
 
@@ -174,8 +177,9 @@ def download_context(request): #function that allows the download of an context
     features = []
     for boundary_point in e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context__code=context_code):
         context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point.geom.coords),
-                            properties = {"Code": context.code,
-                                        "Name": str.title(context.Name),
+                            properties = {"Geometry type": 'Boundary Point',
+                                        "Context code": context.code,
+                                        "Context name": str.title(context.Name),
                                         "Boundary": '0'}) #must be changed
 
         features.append(context_boundary_points)

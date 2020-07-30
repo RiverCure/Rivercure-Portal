@@ -19,6 +19,8 @@ var MyFunctions = {
     domainMarkers: null,
     //vars with created polygons
     boundaries: null,
+    //var to associate domain points to boundaries
+    domainMarkerToBoundary: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
     //function to define draw sensor icon
@@ -120,6 +122,7 @@ var MyFunctions = {
         MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
         
+        MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Domain, "Domain");
@@ -492,8 +495,10 @@ var MyFunctions = {
     //function to delete layers from created polygons when deleting from editPolygonFeature
     removeLayers: (layers) => {
         for(layer of layers) {
-            if(MyFunctions.createdPolygons.Domain.hasLayer(layer))
+            if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
+                MyFunctions.domainMarkerToBoundary = {};
+            }
             MyFunctions.createdPolygons.Domain.removeLayer(layer);
             MyFunctions.createdPolygons.Refinement.removeLayer(layer);
             MyFunctions.createdPolygons.Alignment.removeLayer(layer);
@@ -505,6 +510,7 @@ var MyFunctions = {
     clearLayers: () => {
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.createdPolygons.Boundaries.clearLayers();
+        MyFunctions.domainMarkerToBoundary = {};
     },
     //function to add domain marker
     addDomainMarker: (map, lat, lng) => {
@@ -612,18 +618,33 @@ var MyFunctions = {
             document.querySelector('#id_refinement').value = JSON.stringify(refinement);
             //Handle the boundaries
             var boundaries = {"type": "FeatureCollection", "features": []};
+            var boundaryPoints = {"type": "FeatureCollection", "features": []};
             MyFunctions.createdPolygons.Boundaries.getLayers().forEach((element) => {
                 boundaryLine = element.toGeoJSON();
                 popup = element.getPopup().getContent(); //get the popup to extract the properties values
+                boundaryLine.properties.id = element._leaflet_id;
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
-                console.log(element.getLatLngs());
-                for(point of element.getLatLngs()) { //get sensors associated with points
+                
+                for(point of MyFunctions.domainMarkerToBoundary[element._leaflet_id]) { //get sensors associated with points
+                    boundaryPoint = point.toGeoJSON();
+                    pointPopup = point.getPopup().getContent();                
+                    
+                    boundaryPoint.properties.boundaryLineId = element._leaflet_id; //associate with boundary line
+                    
+                    let sensors = [];
+                    if((codes = pointPopup.match(/<td class=("|')add-code("|')>(\d|[aA-zZ])*<\/td>/g)) != null) {
+                        for(code of codes) 
+                            sensors.push(code.slice('<td class="add-code">'.length, code.indexOf('</td>')));
+                    }
+                    boundaryPoint.properties.sensors = sensors;
 
+                    boundaryPoints.features.push(boundaryPoint);
                 }
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
+            document.querySelector('#id_boundaries_point').value = JSON.stringify(boundaryPoints);
             
             // Change alert on form
             document.querySelector('#load-status').innerHTML = document.querySelector('#load-context-result').innerHTML = "Context Loaded";
@@ -655,6 +676,7 @@ var MyFunctions = {
     //function to clear the map to fill with new data
     clearMap: () => {
         MyFunctions.createdPolygons.Boundaries.clearLayers();
+        MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.editPolygonFeature.clearLayers();
 
@@ -735,6 +757,17 @@ var MyFunctions = {
             e.target.removeFrom(MyFunctions.editPolygonFeature);
             e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
         });
+
+        //associate point to respective boundary
+        var boundaryPoints = [];
+        for(boundaryLinePoint of boundary.getLatLngs()) {
+            for(domainPoint of MyFunctions.domainMarkers.getLayers()) {  
+                if(boundaryLinePoint.distanceTo(domainPoint.getLatLng()) < 100) {
+                    boundaryPoints.push(domainPoint);
+                }
+            }
+        }
+        MyFunctions.domainMarkerToBoundary[boundary._leaflet_id] = boundaryPoints;
 
         MyFunctions.checkForCompleteness();
     },
