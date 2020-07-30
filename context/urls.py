@@ -7,5 +7,6 @@ router.register(r'context', views.ContextViewSet)
 
 urlpatterns = [
     path('', views.show_context, name='context'),
+    path('download/', views.download_context, name='download_context'),
     path('api/', include(router.urls))
 ]
