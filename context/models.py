@@ -74,11 +74,14 @@ class  e_ContextBoundaryPoint(models.Model):
 class e_ContextSensor(models.Model):
 
 	boundary_point = models.ForeignKey('e_ContextBoundaryPoint', on_delete=models.CASCADE, null=True, related_name='sensor_boundary_point')
-	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
+	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False, related_name='context_sensor' )
 	description = models.TextField()
 	
 	associateDatetime = models.DateTimeField(default=datetime.now)
 	# user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+	def __str__(self):
+		return f"{self.boundary_point} sensor"
 
 class e_ContextEvent(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)

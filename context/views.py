@@ -1,8 +1,9 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import HttpResponse
-from .forms import ContextForm
+from .forms import ContextForm, UploadContextForm
+from django.views.generic.edit import FormView
 from django.contrib import messages
-from django.contrib.gis.geos import Polygon
 from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor
 from sensors.models import e_Sensor
 from rest_framework import viewsets
@@ -107,9 +108,6 @@ def boundaryline_creation(form, context): # function to create the several lines
                     boundary_point_sensor.boundary_point = boundary_point
                     boundary_point_sensor.save()
                 
-
-
-
 #end of aux functions for show_context()
 
 class ContextViewSet(viewsets.ModelViewSet):
@@ -117,6 +115,43 @@ class ContextViewSet(viewsets.ModelViewSet):
     lookup_field = 'code'
     serializer_class = ContextSerializer
 
+class UploadContext(FormView):
+    template_name = 'context/context_upload.html'
+    form_class = UploadContextForm
+
+    def form_valid(self, form):
+        context = e_Context()
+        context.code = form.cleaned_data['code']
+        handle_domain(form.cleaned_data['domain'], context)
+        handle_alignment(form.cleaned_data['alignments'])
+        handle_refinement(form.cleaned_data['refinements'])
+        handle_boundaries(form.cleaned_data['boundaries'])
+        handle_boundaries_points(form.cleaned_data['boundary_points'])
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('context_upload')
+    
+def handle_domain(f, context): #handle the loading of domain from a geojson
+    domain_features = json.load(f)
+    context.Name = domain_features['name']
+    context.hydroFeature = None
+    context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
+    context.geomExternalBoundary = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0]))
+    #user ???
+    
+def handle_alignment(f): #handle the loading of alignment from a geojson
+    alignment_features = json.load(f)
+
+def handle_refinement(f): #handle the loading of refinement from a geojson
+    refinement_features = json.load(f)
+
+def handle_boundaries(f): #handle the loading of boundaries from a geojson
+    boundaries_features = json.load(f)
+
+def handle_boundaries_points(f): #handle the loading of boundaries points from a geojson
+    boundaries_points_features = json.load(f)
 
 def download_context(request, context_code): #function that allows the download of an context
     if not request.user.is_authenticated: #verify that the user is logged in
@@ -135,12 +170,12 @@ def download_context(request, context_code): #function that allows the download 
     context_main = geojson.Feature(geometry= geojson.MultiPolygon(context.geomExternalBoundary.coords),
                         properties = {"Geometry type": 'Domain',
                                     "Code": context.code,
-                                    "Name": str.title(context.Name),
                                     "CL": context.CLExternalBoundary})
 
     features = []
     features.append(context_main)
     domain_file = geojson.FeatureCollection(features)
+    domain_file['name'] = str.title(context.Name)
 
     #------------------ Alignment --------------------------------
     

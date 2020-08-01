@@ -17,3 +17,11 @@ class ContextForm(forms.Form):
     # CLInternalBoundary = forms.IntegerField()
     boundaries = forms.CharField(widget=forms.HiddenInput())
     boundary_points = forms.CharField(widget=forms.HiddenInput())
+
+class UploadContextForm(forms.Form):
+    code = forms.CharField()
+    domain = forms.FileField()
+    alignments = forms.FileField()
+    refinements = forms.FileField()
+    boundaries = forms.FileField()
+    boundaries_points = forms.FileField()
