@@ -99,9 +99,6 @@
     <div id="form-data" class="content-section" style="display: none">
         <form method='POST'>
             {% csrf_token %}
-            <input type="hidden" id="domain" name="domain" value="">
-            <input type="hidden" id="alignment" name="alignment" value="">
-            <input type="hidden" id="refinement" name="refinement" value="">
             {{ form|crispy }}
             <div id="load-status" class="alert alert-danger" role="alert">
                 Context not loaded!!!

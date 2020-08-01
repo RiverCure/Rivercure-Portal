@@ -481,7 +481,7 @@ var MyFunctions = {
         let lng = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lng;
         if(polygonType === 'Domain') { //if we're drawing the domain then
             //mark the vertex with a marker
-            MyFunctions.addDomainMarker(map, lat, lng);
+            MyFunctions.addDomainMarker(map, [lat, lng]);
             //console.log(domain.getBounds());
         }
     },
@@ -489,7 +489,7 @@ var MyFunctions = {
     editStop: (map) => {
         let coordinates = MyFunctions.createdPolygons.Domain.getLayers()[0].getLatLngs()[0];
         for(coordinate of coordinates) {//populate the vertices with markers again
-            MyFunctions.addDomainMarker(map, coordinate.lat, coordinate.lng);
+            MyFunctions.addDomainMarker(map, coordinate);
         }
     },
     //function to delete layers from created polygons when deleting from editPolygonFeature
@@ -513,10 +513,16 @@ var MyFunctions = {
         MyFunctions.domainMarkerToBoundary = {};
     },
     //function to add domain marker
-    addDomainMarker: (map, lat, lng) => {
-        let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
+    addDomainMarker: (map, latLng, sensors) => {
+        let marker = L.marker(latLng).addTo(MyFunctions.domainMarkers);
 
         MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null)));
+
+        if(sensors !== undefined) {
+            for(sensor of sensors) {
+                marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker.getPopup().getContent(), sensor.sensor));
+            }
+        }
 
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
@@ -529,8 +535,8 @@ var MyFunctions = {
                 }
                 else { //if there are already defined points then draw the polyline
                     //add some logic to guarantee that the points are sequential in the array
-                    MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
-                    MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
+                    MyFunctions.boundaryPolyline.addLatLng(latLng);
+                    MyFunctions.tempPolyline.setLatLngs([latLng, MyFunctions.tempPolyline.getLatLngs()[1]]);
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
             }
@@ -695,7 +701,7 @@ var MyFunctions = {
         if(response.geomExternalBoundary !== null) { //check if the refinement is defined in the database
             let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'});
             MyFunctions.definePolygon(domain, "Domain", response.CLExternalBoundary);
-            MyFunctions.editStop(map); //draw the markers
+            // MyFunctions.editStop(map); //draw the markers
         }
         //Refinement
         if(response.context_refinement !== null && response.context_refinement.length > 0) {
@@ -719,8 +725,14 @@ var MyFunctions = {
             response.context_boundaries.forEach((element) => { //define each boundary line individually
                 boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
                 MyFunctions.defineBoundary(boundary, element.type, element.dataType);
+                //Boundary Points
+                for(point of element.context_boundary_points) {
+                    console.log(MyFunctions.coordStringToArray(point.geom)[0]);
+                    MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
+                }
             });
         }
+
     },
     //function to define polygons on all necessary layers
     definePolygon: (layer, type, CL) => {

@@ -1,12 +1,19 @@
 from rest_framework import serializers
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor
 
 # Serializers for API calls
 
+class ContextSensorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = e_ContextSensor
+        fields = ['sensor']
+
 class ContextPointSerializer(serializers.ModelSerializer):
+    sensor_boundary_point = ContextSensorSerializer(many=True, read_only=True)
+
     class Meta:
         model = e_ContextBoundaryPoint
-        fields = ['geom',]
+        fields = ['geom', 'sensor_boundary_point']
 
 class ContextBoundarySerializer(serializers.ModelSerializer):
     context_boundary_points = ContextPointSerializer(many=True, read_only=True)
