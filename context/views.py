@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .forms import ContextForm
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
@@ -11,7 +11,7 @@ from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
 from io import BytesIO, StringIO
 from zipfile import ZipFile
-import json, os, geojson, tempfile
+import json, os, geojson, tempfile, datetime
 
 def show_context(request):
     web_host = os.environ['CONTEXT_API']
@@ -90,13 +90,25 @@ def boundaryline_creation(form, context): # function to create the several lines
         boundary.type = feature['properties']['type']
         boundary.dataType = feature['properties']['dataType']
         boundary.save()
+        
         # Save the points on the boundary line
-        for point in feature['geometry']['coordinates']:
-            boundary_point = e_ContextBoundaryPoint()
-            boundary_point.contextBoundaryLine = boundary
-            boundary_point.geom = Point(point)
-            boundary_point.sensor = None #Needs to be changed
-            boundary_point.save()
+        for point in json.loads(form.cleaned_data['boundary_points'])['features']:
+            if(point['properties']['boundaryLineId'] == feature['properties']['id']):
+                boundary_point = e_ContextBoundaryPoint()
+                boundary_point.contextBoundaryLine = boundary
+                boundary_point.geom = Point(point['geometry']['coordinates'])
+                boundary_point.save()
+                
+                # Handle sensors on point
+                for sensor in point['properties']['sensors']:
+                    boundary_point_sensor = e_ContextSensor()
+                    boundary_point_sensor.associateDatetime = datetime.datetime.now()
+                    boundary_point_sensor.sensor = e_Sensor.objects.get(code=sensor)
+                    boundary_point_sensor.boundary_point = boundary_point
+                    boundary_point_sensor.save()
+                
+
+
 
 #end of aux functions for show_context()
 
@@ -106,7 +118,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
 
 
-def download_context(request): #function that allows the download of an context
+def download_context(request, context_code): #function that allows the download of an context
     if not request.user.is_authenticated: #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
@@ -114,7 +126,8 @@ def download_context(request): #function that allows the download of an context
     message = None  #Message to send to user in case of failure
 
     #prepare geojson for download
-    context_code = request.GET.get("context_code") #context code to download
+
+    #Need to check if context code exists
 
     #------------------ Domain --------------------------------
     context = e_Context.objects.get(code=context_code)

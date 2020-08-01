@@ -16,4 +16,4 @@ class ContextForm(forms.Form):
     refinement = forms.CharField(widget=forms.HiddenInput())
     # CLInternalBoundary = forms.IntegerField()
     boundaries = forms.CharField(widget=forms.HiddenInput())
-    boundaries_point = forms.CharField(widget=forms.HiddenInput())
+    boundary_points = forms.CharField(widget=forms.HiddenInput())

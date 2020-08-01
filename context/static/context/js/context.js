@@ -644,7 +644,7 @@ var MyFunctions = {
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
-            document.querySelector('#id_boundaries_point').value = JSON.stringify(boundaryPoints);
+            document.querySelector('#id_boundary_points').value = JSON.stringify(boundaryPoints);
             
             // Change alert on form
             document.querySelector('#load-status').innerHTML = document.querySelector('#load-context-result').innerHTML = "Context Loaded";
