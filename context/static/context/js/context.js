@@ -528,7 +528,7 @@ var MyFunctions = {
         marker.on('click', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
-                    MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
+                    MyFunctions.boundaryPolyline = L.polyline([latLng], color='#0000A0').addTo(map);
                     //start saving the markers
                     MyFunctions.boundaryPolylineMarkersTemp = []; 
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker);

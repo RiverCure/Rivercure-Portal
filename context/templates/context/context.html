@@ -49,7 +49,7 @@
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
                 map.on("draw:editstart", e => {MyFunctions.clearLayers();});
-                map.on("draw:editstop", e => {MyFunctions.editStop(map)});
+                map.on("draw:editstop", e => {MyFunctions.editStop(map); MyFunctions.checkForCompleteness();});
                 map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
                 map.on('draw:deletestop', () => {MyFunctions.deleting = false; MyFunctions.checkForCompleteness();});

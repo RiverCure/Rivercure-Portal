@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse
+from django.db import transaction
 from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
@@ -10,6 +11,7 @@ from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
+from django.contrib.gis.gdal import SpatialReference
 from io import BytesIO, StringIO
 from zipfile import ZipFile
 import json, os, geojson, tempfile, datetime
@@ -29,23 +31,24 @@ def show_context(request):
         form = ContextForm(request.POST)
         if form.is_valid():
             try:
-                e_context = context_creation(form, request.user)
-                e_context.save()
+                with transaction.atomic():
+                    e_context = context_creation(form, request.user)
+                    e_context.save()
 
-                # initialize and save refinement
-                refinement_creation(form, e_context)
-                # initialize and save alignment
-                alignment_creation(form, e_context)
+                    # initialize and save refinement
+                    refinement_creation(form, e_context)
+                    # initialize and save alignment
+                    alignment_creation(form, e_context)
 
-                # initialize and save boundaries & boundary points
-                boundaryline_creation(form, e_context)
+                    # initialize and save boundaries & boundary points
+                    boundaryline_creation(form, e_context)
 
-                messages.success(request,f'Context created with success!') 
-                return render(request, 'context/context.html', context)
+                    messages.success(request,f'Context created with success!') 
             except Exception as e:
                 print(f'Error saving context: {e}')
                 messages.warning(request,f'Context update failed') 
-                return render(request, 'context/context.html', context)
+        else:
+            messages.warning(request,f'Context info is not complete') 
 
     return render(request, 'context/context.html', context)
 
@@ -84,6 +87,8 @@ def alignment_creation(form, context):
 def boundaryline_creation(form, context): # function to create the several lines
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
+    boundary_points = json.loads(form.cleaned_data['boundary_points'])['features']
+
     for feature in json.loads(form.cleaned_data['boundaries'])['features']:
         boundary = e_ContextBoundaryLine()
         boundary.context = context   
@@ -93,7 +98,7 @@ def boundaryline_creation(form, context): # function to create the several lines
         boundary.save()
         
         # Save the points on the boundary line
-        for point in json.loads(form.cleaned_data['boundary_points'])['features']:
+        for point in boundary_points:
             if(point['properties']['boundaryLineId'] == feature['properties']['id']):
                 boundary_point = e_ContextBoundaryPoint()
                 boundary_point.contextBoundaryLine = boundary
@@ -120,13 +125,17 @@ class UploadContext(FormView):
     form_class = UploadContextForm
 
     def form_valid(self, form):
-        context = e_Context()
-        context.code = form.cleaned_data['code']
-        handle_domain(form.cleaned_data['domain'], context)
-        handle_alignment(form.cleaned_data['alignments'])
-        handle_refinement(form.cleaned_data['refinements'])
-        handle_boundaries(form.cleaned_data['boundaries'])
-        handle_boundaries_points(form.cleaned_data['boundary_points'])
+        try:
+            with transaction.atomic():
+                context = e_Context()
+                context.code = form.cleaned_data['code']
+                handle_domain(form.cleaned_data['domain'], context)
+                handle_alignment(form.cleaned_data['alignments'], context)
+                handle_refinement(form.cleaned_data['refinements'], context)
+                handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context)
+        except Exception as e:
+            print(f'Error loading the files:\n{e}')
+
 
         return super().form_valid(form)
 
@@ -135,23 +144,59 @@ class UploadContext(FormView):
     
 def handle_domain(f, context): #handle the loading of domain from a geojson
     domain_features = json.load(f)
+    crs = domain_features['crs']['properties']['name']
+    # crs = crs.split('::')[1]
+    print(SpatialReference(crs))
     context.Name = domain_features['name']
     context.hydroFeature = None
     context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
     context.geomExternalBoundary = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0]))
+    # context.geomExternalBoundary.transform(crs)
+    context.save()
     #user ???
     
-def handle_alignment(f): #handle the loading of alignment from a geojson
-    alignment_features = json.load(f)
+def handle_alignment(f, context): #handle the loading of alignment from a geojson
+    for feature in json.load(f)['features']:
+        alignment = e_ContextAlignment()
+        alignment.context = context
+        alignment.CL = feature['properties']['CL']
+        alignment.geom = LineString(feature['geometry']['coordinates'][0])
+        alignment.save()
 
-def handle_refinement(f): #handle the loading of refinement from a geojson
-    refinement_features = json.load(f)
+def handle_refinement(f, context): #handle the loading of refinement from a geojson
+    for feature in json.load(f)['features']:
+        refinement = e_ContextRefinement()
+        refinement.context = context
+        refinement.CL = feature['properties']['CL']
+        refinement.geom = Polygon(feature['geometry']['coordinates'][0][0])
+        refinement.save()
 
-def handle_boundaries(f): #handle the loading of boundaries from a geojson
-    boundaries_features = json.load(f)
+def handle_boundaries(f, f_points, context): #handle the loading of boundaries from a geojson
+    boundary_points = json.load(f_points)['features']
 
-def handle_boundaries_points(f): #handle the loading of boundaries points from a geojson
-    boundaries_points_features = json.load(f)
+    for feature in json.load(f)['features']:
+        boundary = e_ContextBoundaryLine()
+        boundary.context = context  
+        boundary.geom = LineString(feature['geometry']['coordinates'][0])
+        boundary.type = feature['properties']['Type']
+        # boundary.dataType = feature['properties']['dataType']
+        boundary.save()
+        
+        # Save the points on the boundary line
+        for point in boundary_points:
+            if(boundary.geom.intersects(Point(point['geometry']['coordinates']))):
+                boundary_point = e_ContextBoundaryPoint()
+                boundary_point.contextBoundaryLine = boundary
+                boundary_point.geom = Point(point['geometry']['coordinates'])
+                boundary_point.save()
+
+                # Handle sensors on point
+                # for sensor in point['properties']['sensors']:
+                #     boundary_point_sensor = e_ContextSensor()
+                #     boundary_point_sensor.associateDatetime = datetime.datetime.now()
+                #     boundary_point_sensor.sensor = e_Sensor.objects.get(code=sensor)
+                #     boundary_point_sensor.boundary_point = boundary_point
+                #     boundary_point_sensor.save()
 
 def download_context(request, context_code): #function that allows the download of an context
     if not request.user.is_authenticated: #verify that the user is logged in
@@ -176,6 +221,7 @@ def download_context(request, context_code): #function that allows the download 
     features.append(context_main)
     domain_file = geojson.FeatureCollection(features)
     domain_file['name'] = str.title(context.Name)
+    # domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
     #------------------ Alignment --------------------------------
     
@@ -190,6 +236,7 @@ def download_context(request, context_code): #function that allows the download 
         features.append(context_alignment)
 
     alignment_file = geojson.FeatureCollection(features)
+    alignment_file['name'] = str.title(context.Name).join('_alignments')
 
     #------------------ Refinement --------------------------------  
 
@@ -204,6 +251,7 @@ def download_context(request, context_code): #function that allows the download 
         features.append(context_refinement)
 
     refinement_file = geojson.FeatureCollection(features)
+    refinement_file['name'] = str.title(context.Name).join('_refinements')
 
     #------------------ Boundary --------------------------------
 
@@ -219,6 +267,7 @@ def download_context(request, context_code): #function that allows the download 
         features.append(context_boundary)
 
     boundary_file = geojson.FeatureCollection(features)
+    boundary_file['name'] = str.title(context.Name).join('_boundaries')
 
     #------------------ Boundary Points --------------------------------
 
@@ -233,7 +282,8 @@ def download_context(request, context_code): #function that allows the download 
         features.append(context_boundary_points)
     
     boundary_point_file = geojson.FeatureCollection(features)
-
+    boundary_point_file['name'] = str.title(context.Name).join('_boundary_points')
+    
     #endof json preparation
 
     mem_file = BytesIO() #memory where the zip file will be created
