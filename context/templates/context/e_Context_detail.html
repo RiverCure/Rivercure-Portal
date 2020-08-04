@@ -9,9 +9,10 @@
       <p class="article-content">Code: {{ context.code }}</p>
       <a class="btn btn-secondary btn-sm mt-1 mb-1" 
       href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" > Events</a>
-      <a class="btn btn-secondary btn-sm mt-1 mb-1" 
-      href="{% url 'context-sensor-list' %}" >Sensors</a>
+     
     </div>
+    <a class="btn btn-primary btn-lg btn mt-1 mb-1" 
+    href="{% url 'download_context' context.code %}" >Download</a>
 </article>
 
 

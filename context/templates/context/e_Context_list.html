@@ -2,18 +2,54 @@
 
 {% block content %}
 
+{% if user.is_authenticated %}
 <h1>Your Contexts</h1>
 
 {% for context in contexts %}
+{% if context.user == request.user %}
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
       <p><a class="article-title" >{{ context.code }}</a></p>
+      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'context_manage'  %}" > Update</a>  
+      <a class="btn btn btn-primary btn-sm mt-1 mb-1" 
+      href="{% url 'download_context' context.code %}" >Download</a>
+     
     </div>
 </article>
+{% endif %}
+
+
 {% endfor %}
+
+{% endif %}
+
+<h1>Other Contexts</h1>
+
+{% for context in contexts %}
+
+{% if context.user != request.user %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
+      </div>
+      <p><a class="article-title" >{{ context.code }}</a></p>
+      <a class="btn btn btn-primary btn-sm mt-1 mb-1" 
+      href="{% url 'download_context' context.code %}" >Download</a>
+     
+    </div>
+</article>
+{% endif %}
+
+
+{% endfor %}
+
+
+
+
 
 {% endblock content %}
 
