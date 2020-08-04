@@ -11,7 +11,7 @@ from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
-from django.contrib.gis.gdal import SpatialReference
+from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from io import BytesIO, StringIO
 from zipfile import ZipFile
 import json, os, geojson, tempfile, datetime
@@ -129,65 +129,72 @@ class UploadContext(FormView):
             with transaction.atomic():
                 context = e_Context()
                 context.code = form.cleaned_data['code']
-                handle_domain(form.cleaned_data['domain'], context)
-                handle_alignment(form.cleaned_data['alignments'], context)
-                handle_refinement(form.cleaned_data['refinements'], context)
-                handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context)
+                srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                handle_alignment(form.cleaned_data['alignments'], context, srid)
+                handle_refinement(form.cleaned_data['refinements'], context, srid)
+                handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
+                messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
+            messages.warning(self.request, 'Context Upload Failed') 
 
-
+        
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('context_upload')
     
-def handle_domain(f, context): #handle the loading of domain from a geojson
+def handle_domain(f, context, user): #handle the loading of domain from a geojson
     domain_features = json.load(f)
-    crs = domain_features['crs']['properties']['name']
-    # crs = crs.split('::')[1]
-    print(SpatialReference(crs))
-    context.Name = domain_features['name']
+    try:
+        srid = SpatialReference(domain_features['crs']['properties']['name']).srid
+    except:
+        srid = 4326
+
+    context.Name = str.title(domain_features['name'].split('_')[0])
     context.hydroFeature = None
     context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
-    context.geomExternalBoundary = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0]))
-    # context.geomExternalBoundary.transform(crs)
+    domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
+    context.geomExternalBoundary = domain_geom
+    # context.geomExternalBoundary.transform(SpatialReference(4326))
+    context.user = user
     context.save()
-    #user ???
     
-def handle_alignment(f, context): #handle the loading of alignment from a geojson
+    return srid
+    
+def handle_alignment(f, context, srid): #handle the loading of alignment from a geojson
     for feature in json.load(f)['features']:
         alignment = e_ContextAlignment()
         alignment.context = context
         alignment.CL = feature['properties']['CL']
-        alignment.geom = LineString(feature['geometry']['coordinates'][0])
+        alignment.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
         alignment.save()
 
-def handle_refinement(f, context): #handle the loading of refinement from a geojson
+def handle_refinement(f, context, srid): #handle the loading of refinement from a geojson
     for feature in json.load(f)['features']:
         refinement = e_ContextRefinement()
         refinement.context = context
         refinement.CL = feature['properties']['CL']
-        refinement.geom = Polygon(feature['geometry']['coordinates'][0][0])
+        refinement.geom = Polygon(feature['geometry']['coordinates'][0][0], srid=srid)
         refinement.save()
 
-def handle_boundaries(f, f_points, context): #handle the loading of boundaries from a geojson
+def handle_boundaries(f, f_points, context, srid): #handle the loading of boundaries from a geojson
     boundary_points = json.load(f_points)['features']
 
     for feature in json.load(f)['features']:
         boundary = e_ContextBoundaryLine()
         boundary.context = context  
-        boundary.geom = LineString(feature['geometry']['coordinates'][0])
-        boundary.type = feature['properties']['Type']
-        # boundary.dataType = feature['properties']['dataType']
+        boundary.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        boundary.dataType = feature['properties']['Type']
+        # boundary.type = feature['properties']['dataType']
         boundary.save()
         
         # Save the points on the boundary line
         for point in boundary_points:
-            if(boundary.geom.intersects(Point(point['geometry']['coordinates']))):
+            if(boundary.geom.intersects(Point(point['geometry']['coordinates'], srid=srid))):
                 boundary_point = e_ContextBoundaryPoint()
                 boundary_point.contextBoundaryLine = boundary
-                boundary_point.geom = Point(point['geometry']['coordinates'])
+                boundary_point.geom = Point(point['geometry']['coordinates'], srid=srid)
                 boundary_point.save()
 
                 # Handle sensors on point
