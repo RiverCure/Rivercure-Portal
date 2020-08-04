@@ -31,6 +31,13 @@ class ContextDetailView(DetailView):
     context_object_name = 'context'
     template_name = 'context/e_Context_detail.html'
 
+    def get_context_data(self, **kwargs):
+        web_host = os.environ['CONTEXT_API']
+        context = super().get_context_data(**kwargs)
+        context['api'] = f'http://{web_host}/contexts/api/context/'
+        context['sensors'] = e_Sensor.objects.all()
+        return context
+
 #NEW URL + FILTER  + TEMPLATE 
 def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
@@ -55,7 +62,7 @@ def show_context(request):
         'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
-        'api': f'http://{web_host}/context/api/context/'
+        'api': f'http://{web_host}/contexts/api/context/'
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated

@@ -1,5 +1,7 @@
 //Help functions
 var MyFunctions = {
+    //variable to change popups depending on the user page
+    mode: 'edit',
     deleting: false,
     //Variable to store sensors
     sensors: null,
@@ -179,21 +181,48 @@ var MyFunctions = {
             }
         };
         
-        return `<h1><small>Boundary</small></h1>
-            <div class="form-group">
-                <label for="popup-selected-type"><big>Type</big></label><br>
-                <select id='popup-selected-type' class="form-control form-control-sm">
-                    ` + getType() + `
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="popup-selected-data-type"><big>Data Type</big></label><br>  
-                <select id='popup-selected-data-type' class="form-control form-control-sm">
-                    ` + getDataType() + `
-                </select>
-                  
-            </div>
-            <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+        if(MyFunctions.mode == 'edit') {
+            return `<h1><small>Boundary</small></h1>
+                <div class="form-group">
+                    <label for="popup-selected-type"><big>Type</big></label><br>
+                    <select id='popup-selected-type' class="form-control form-control-sm">
+                        ` + getType() + `
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="popup-selected-data-type"><big>Data Type</big></label><br>  
+                    <select id='popup-selected-data-type' class="form-control form-control-sm">
+                        ` + getDataType() + `
+                    </select>
+                    
+                </div>
+                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+            `
+        }
+        let newDataType;
+        switch (dataType){
+            case 'H':
+                newDataType = 'Depth';
+            case 'Q':
+                newDataType = 'Discharge';
+            case 'Z':
+                newDataType = 'Elevation';
+            default:
+                newDataType = 'Velocity';
+        }
+
+        return `
+            <h1><small>Boundary</small></h1>
+            <table class='table'>
+                <tr>
+                    <th scope="row">Type</th>
+                    <td>`+ type + `</td>
+                </tr>
+                <tr>
+                    <th scope="row">Data Type</th>
+                    <td>`+ newDataType + `</td>
+                </tr>
+            </table>
         `
     }, 
     //function to configure boundary popup
@@ -220,24 +249,35 @@ var MyFunctions = {
     },
     //function to return polygons CL popups
     polygonsPopup: (name, CL) => {
+        if(MyFunctions.mode == 'edit') {
+            return `
+                <h1><small id='popup-header'>` + name + `</small></h1>
+                <table class='table'>
+                    <tr>
+                        <th scope="row">Current CL</th>
+                        <td id='popup-current-cl'>`+ CL + `</td id='end-cl'>
+                    </tr>
+                    <tr>
+                        <th scope="row">CL</th>
+                        <td>
+                            <input id='popup-selected-cl' type='number'>
+                        </td>
+                    </tr>
+                </table>
+                <div class"container">
+                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+                    <button type="button" id='popup-btn-send-to-back' class="btn btn-outline-info btn-sm")" style="float: right">Send to Back</button>
+                </div>
+            `
+        }
         return `
             <h1><small id='popup-header'>` + name + `</small></h1>
             <table class='table'>
                 <tr>
-                    <th scope="row">Current CL</th>
-                    <td id='popup-current-cl'>`+ CL + `</td id='end-cl'>
-                </tr>
-                <tr>
                     <th scope="row">CL</th>
-                    <td>
-                        <input id='popup-selected-cl' type='number'>
-                    </td>
+                    <td id='popup-current-cl'>`+ CL + `</td>
                 </tr>
             </table>
-            <div class"container">
-                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
-                <button type="button" id='popup-btn-send-to-back' class="btn btn-outline-info btn-sm")" style="float: right">Send to Back</button>
-            </div>
         `
     },
     //function to configure polygon popup
@@ -304,6 +344,31 @@ var MyFunctions = {
                 </tr>`;
         };
 
+        if(MyFunctions.mode == 'edit') {
+            return `
+                <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                ` + getAssociatedSensors().concat(associateNewSensors()) +
+                `</tbody>
+                </table>
+                <label for="sensor-association"><big>Choose a sensor:</big></label>
+                <select id='sensor-association' class="form-control form-control-sm">
+                    <option value='null'>--------------------</option>
+                </select>
+                <div class"container">
+                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
+                </div>
+            `   
+        }
+
         return `
             <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
             <table class='table'>
@@ -315,18 +380,9 @@ var MyFunctions = {
                     </tr>
                 </thead>
                 <tbody>
-            ` +
-                getAssociatedSensors().concat(associateNewSensors()) +
+            ` + getAssociatedSensors().concat(associateNewSensors()) +
             `</tbody>
-            </table>
-            <label for="sensor-association"><big>Choose a sensor:</big></label>
-            <select id='sensor-association' class="form-control form-control-sm">
-                <option value='null'>--------------------</option>
-            </select>
-            <div class"container">
-                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
-            </div>
-        `   
+            </table>`
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
@@ -466,7 +522,7 @@ var MyFunctions = {
             //update the lat and lng values of the div added on showMousePosition()
             document.querySelector("#mouse-latlng").innerHTML = "Lat: " + e.latlng.lat.toFixed(5)+ " Lon: " + e.latlng.lng.toFixed(5); 
 
-            if(document.querySelector("#polygon-type").value === 'Boundary' && MyFunctions.boundaryPolyline != null) { //if the user is drawing the boundary
+            if(MyFunctions.mode == 'edit' && document.querySelector("#polygon-type").value === 'Boundary' && MyFunctions.boundaryPolyline != null) { //if the user is drawing the boundary
                 let aux = MyFunctions.boundaryPolyline.getLatLngs();
                 aux = aux[aux.length - 1];
                 //draw a polyline from the last point clicked to the mouse position
@@ -523,7 +579,7 @@ var MyFunctions = {
                 marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker.getPopup().getContent(), sensor.sensor));
             }
         }
-
+        
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
@@ -673,10 +729,13 @@ var MyFunctions = {
         response = JSON.parse(xmlHttp.responseText);
 
         //show the form
-        document.querySelector('#form-data').style.display = 'block';
+        if(MyFunctions.mode == 'edit') {
+            document.querySelector('#form-data').style.display = 'block';
+            MyFunctions.fillForm(response);
+        }
+        
         console.log(response);
 
-        MyFunctions.fillForm(response);
         MyFunctions.drawGeometries(response, map);
     },
     //function to clear the map to fill with new data
@@ -727,8 +786,12 @@ var MyFunctions = {
                 MyFunctions.defineBoundary(boundary, element.type, element.dataType);
                 //Boundary Points
                 for(point of element.context_boundary_points) {
-                    console.log(MyFunctions.coordStringToArray(point.geom)[0]);
-                    MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
+                    if(MyFunctions.mode == 'edit')
+                        MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
+                    else {
+                        let marker = L.marker(MyFunctions.coordStringToArray(point.geom)[0]).addTo(MyFunctions.domainMarkers);
+                        marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null));
+                    }
                 }
             });
         }
@@ -748,27 +811,33 @@ var MyFunctions = {
                 polygonLayer = MyFunctions.createdPolygons.Refinement;
                 break;
         }
-
-        MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(type, CL)));
+        if(MyFunctions.mode == 'edit')
+            MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(type, CL)));
+        else
+            layer.bindPopup(MyFunctions.polygonsPopup(type, CL))
+        
         layer.bindTooltip(type);
         polygonLayer.addLayer(layer); //Domain
-        MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
 
         MyFunctions.handleHighlights(layer, polygonLayer);
-        MyFunctions.checkForCompleteness();
+        
+        if(MyFunctions.mode == 'edit') {
+            MyFunctions.checkForCompleteness();
+            MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
+        }
     },
     //function to define boundary and draw it on the map
     defineBoundary: (boundary, type, dataType) => {
         boundary.setStyle({color: '#008080'});
         MyFunctions.createdPolygons.Boundaries.addLayer(boundary);
-        MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
+        if(MyFunctions.mode == 'edit')
+            MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
+        else
+            boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType))
         boundary.bindTooltip("Boundary");
         MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
 
-        boundary.on('dblclick', e => {
-            e.target.removeFrom(MyFunctions.editPolygonFeature);
-            e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
-        });
+        
 
         //associate point to respective boundary
         var boundaryPoints = [];
@@ -780,8 +849,13 @@ var MyFunctions = {
             }
         }
         MyFunctions.domainMarkerToBoundary[boundary._leaflet_id] = boundaryPoints;
-
-        MyFunctions.checkForCompleteness();
+        
+        if(MyFunctions.mode == 'edit') {
+            MyFunctions.checkForCompleteness();
+            boundary.on('dblclick', e => {
+                e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
+            });
+        }
     },
     //check if all layers of createdPolygons have polygons 
     checkForCompleteness: () => {
