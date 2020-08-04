@@ -1,4 +1,11 @@
+$margin-tab: 10px;
+
 .no-context-data {
-    margin-left: 10px;
+    margin-left: $margin-tab;
     margin-bottom: 20px;
+}
+
+#upload-context-btn {
+    margin-left: $margin-tab;
+    margin-bottom: 50px;
 }
