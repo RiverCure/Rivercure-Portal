@@ -1,55 +1,49 @@
 {% extends "rivercureportal/base.html" %}
+{% load static %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+{% endblock %}
 
 {% block content %}
 
 {% if user.is_authenticated %}
-<h1>Your Contexts</h1>
-
-{% for context in contexts %}
-{% if context.user == request.user %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
-      </div>
-      <p><a class="article-title" >{{ context.code }}</a></p>
-      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'context_manage'  %}" > Update</a>  
-      <a class="btn btn btn-primary btn-sm mt-1 mb-1" 
-      href="{% url 'download_context' context.code %}" >Download</a>
-     
-    </div>
-</article>
-{% endif %}
-
-
-{% endfor %}
-
+  <h1>Your Contexts</h1>
+  {% for context in owned_contexts %}
+    <article class="media content-section">
+        <div class="media-body">
+          <div class="article-metadata">
+            <a class="text-info mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
+          </div>
+          <p><a class="article-title" >{{ context.code }}</a></p>
+          <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'context_manage'  %}?context_code={{ context.code }}" > Update</a>  
+          <a class="btn btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
+        </div>
+    </article>
+  {% empty %}
+    <h2 class="text-secondary font-italic no-context-data">You have no contexts</h2>
+  {% endfor %}
 {% endif %}
 
 <h1>Other Contexts</h1>
-
-{% for context in contexts %}
-
-{% if context.user != request.user %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
+{% for context in other_contexts %}
+  <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
+        </div>
+        <p><a class="article-title" >{{ context.code }}</a></p>
+        <a class="btn btn btn-primary btn-sm mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
       </div>
-      <p><a class="article-title" >{{ context.code }}</a></p>
-      <a class="btn btn btn-primary btn-sm mt-1 mb-1" 
-      href="{% url 'download_context' context.code %}" >Download</a>
-     
-    </div>
-</article>
-{% endif %}
-
-
+  </article>
+{% empty %}
+  <h2 class="text-secondary font-italic no-context-data">No other contexts</h2>
 {% endfor %}
 
-
-
-
+<h1>Don't see your context?</h1>
+<div class="content">
+  <a class="btn btn-info btn-lg mt-1 mb-1" href="{% url 'context_upload'  %}">Upload It</a>  
+</div>
 
 {% endblock content %}
 

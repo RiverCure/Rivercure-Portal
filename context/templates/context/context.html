@@ -67,6 +67,12 @@
                         MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
                     }
                 });
+                //load a context if the user comes from the context list page
+                '{% if context is not None %}'
+                    MyFunctions.clearMap();
+                    MyFunctions.getContext('{{ api }}' + '{{ context }}', map);
+                '{% endif %}'
+
             });    
             //function to load sensor information to a dict so it can be processed by a function
             loadSensors = () => {

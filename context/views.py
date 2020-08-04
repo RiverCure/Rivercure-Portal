@@ -23,8 +23,15 @@ from zipfile import ZipFile
 class ContextListView(ListView):
     model = e_Context
     template_name = 'context/e_Context_list.html'
-    context_object_name = 'contexts'
+    context_object_name = 'context'
     ordering = ['Name']
+
+    def get_context_data(self, **kwargs):
+        web_host = os.environ['CONTEXT_API']
+        context = super().get_context_data(**kwargs)
+        context['owned_contexts'] = e_Context.objects.filter(user=self.request.user)
+        context['other_contexts'] = e_Context.objects.exclude(user=self.request.user)
+        return context
 
 class ContextDetailView(DetailView):
     model = e_Context
@@ -62,7 +69,8 @@ def show_context(request):
         'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
-        'api': f'http://{web_host}/contexts/api/context/'
+        'api': f'http://{web_host}/contexts/api/context/',
+        'context': request.GET.get('context_code')
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
