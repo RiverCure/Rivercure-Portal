@@ -16,18 +16,6 @@ def home(request):
         
     }
     return render(request, 'rivercureportal/home.html', context)
-
-
-class ContextListView(ListView):
-    model = e_Context
-    template_name = 'rivercureportal/e_Context_list.html'
-    context_object_name = 'contexts'
-    ordering = ['Name']
-
-class ContextDetailView(DetailView):
-    model = e_Context
-    context_object_name = 'context'
-    template_name = 'rivercureportal/e_Context_detail.html'
     
 def about(request):
     return render(request, 'rivercureportal/about.html')

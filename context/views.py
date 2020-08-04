@@ -20,6 +20,17 @@ from io import BytesIO, StringIO
 from zipfile import ZipFile
 
 
+class ContextListView(ListView):
+    model = e_Context
+    template_name = 'context/e_Context_list.html'
+    context_object_name = 'contexts'
+    ordering = ['Name']
+
+class ContextDetailView(DetailView):
+    model = e_Context
+    context_object_name = 'context'
+    template_name = 'context/e_Context_detail.html'
+
 #NEW URL + FILTER  + TEMPLATE 
 def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
