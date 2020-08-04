@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>Sensors</h1>
+<h1>Sensors in Context X</h1>
 <div class="content-section">
 <form method="get">
   {{ filter.form |crispy }}
@@ -11,13 +11,13 @@
 </form>
 </div>
 
-{% for sensor in filter.qs %}
+{% for context_sensor in filter.qs %}
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="#">{{ sensor.Name }}</a>
+        <a class="mr-2" href="#">{{ context_sensor.code }}</a>
       </div>
-      <p><a class="article-title" >{{ sensor.type }}</a></p>
+      <p><a class="article-title" >{{ context_sensor.type }}</a></p>
     </div>
 </article>
 {% endfor %}

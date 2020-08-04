@@ -26,7 +26,7 @@
               <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hydrofeatures</a>
                 <div class="dropdown-menu">
-                    <a href="{% url 'hydrofeature-list' %}" class="dropdown-item">List</a>
+                    <a href="{% url 'hydrofeature-list' %}" class="dropdown-item">Hydrofeatures List</a>
                     {% if user.is_authenticated %}
                     {% if perms.rivercureportal.add_e_hydrofeature %}
                     <a href="{% url 'hydrofeature-create' %}" class="dropdown-item">Create Hydrofeature</a>
@@ -38,7 +38,7 @@
               <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Sensors</a>
                 <div class="dropdown-menu">
-                    <a href="{% url 'sensor-list' %}" class="dropdown-item">List</a>
+                    <a href="{% url 'sensor-list' %}" class="dropdown-item">Sensors List</a>
                     {% if perms.sensors.add_e_sensor %}
                     <a href="{% url 'admin:sensors_e_sensor_add' %}" class="dropdown-item">Add Sensor</a>
                     {% endif %}
@@ -48,15 +48,24 @@
               <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Context</a>
                 <div class="dropdown-menu">
-                    {% if request.user.change_e_context %}
-                    <a href="{% url 'context' %}" class="dropdown-item">Manage Contexts</a>
+                    {% if request.user.add_e_context  or request.user.is_superuser %}
+                      <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
                     {% endif %}
-                    {% if request.user.add_e_context %}
-                    <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
+                    {% if request.user.change_e_context or request.user.is_superuser %}
+                    <a href="{% url 'context' %}" class="dropdown-item">Edit Contexts</a>
                     {% endif %}
+                   
                     {% if perms.context.view_e_context %}
-                    <a href="{% url 'context-list' %}" class="dropdown-item">List</a>
+                    <a href="{% url 'context-list' %}" class="dropdown-item">Contexts List</a>
                     {% endif %}
+                    
+                    <a href="#" class="dropdown-item">Other</a>
+                </div>
+              </div>
+              <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Events</a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'event-list' %}" class="dropdown-item">Events</a>
                     <a href="#" class="dropdown-item">Other</a>
                 </div>
               </div>
