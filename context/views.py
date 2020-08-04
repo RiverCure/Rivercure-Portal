@@ -1,5 +1,5 @@
 import json, os, geojson, tempfile, datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
 from django.db import transaction
@@ -257,99 +257,102 @@ def download_context(request, context_code): #function that allows the download 
     if not request.user.is_authenticated: #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
-
     message = None  #Message to send to user in case of failure
 
     #prepare geojson for download
 
     #Need to check if context code exists
+    try:
+        #------------------ Domain --------------------------------
+        context = e_Context.objects.get(code=context_code)
 
-    #------------------ Domain --------------------------------
-    context = e_Context.objects.get(code=context_code)
+        context_main = geojson.Feature(geometry= geojson.MultiPolygon(context.geomExternalBoundary.coords),
+                            properties = {"Geometry type": 'Domain',
+                                        "Code": context.code,
+                                        "CL": context.CLExternalBoundary})
 
-    context_main = geojson.Feature(geometry= geojson.MultiPolygon(context.geomExternalBoundary.coords),
-                        properties = {"Geometry type": 'Domain',
-                                    "Code": context.code,
-                                    "CL": context.CLExternalBoundary})
+        features = []
+        features.append(context_main)
+        domain_file = geojson.FeatureCollection(features)
+        domain_file['name'] = str.title(context.Name)
+        # domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
-    features = []
-    features.append(context_main)
-    domain_file = geojson.FeatureCollection(features)
-    domain_file['name'] = str.title(context.Name)
-    # domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
+        #------------------ Alignment --------------------------------
 
-    #------------------ Alignment --------------------------------
-    
-    features = []
-    for alignment in e_ContextAlignment.objects.filter(context__code=context_code):
-        context_alignment = geojson.Feature(geometry= geojson.LineString(alignment.geom.coords),
-                            properties = {"Geometry type": 'Alignment',
-                                        "Context code": context.code,
-                                        "Context name": str.title(context.Name),
-                                        "CL": alignment.CL})
+        features = []
+        for alignment in e_ContextAlignment.objects.filter(context__code=context_code):
+            context_alignment = geojson.Feature(geometry= geojson.LineString(alignment.geom.coords),
+                                properties = {"Geometry type": 'Alignment',
+                                            "Context code": context.code,
+                                            "Context name": str.title(context.Name),
+                                            "CL": alignment.CL})
 
-        features.append(context_alignment)
+            features.append(context_alignment)
 
-    alignment_file = geojson.FeatureCollection(features)
-    alignment_file['name'] = str.title(context.Name).join('_alignments')
+        alignment_file = geojson.FeatureCollection(features)
+        alignment_file['name'] = str.title(context.Name).join('_alignments')
 
-    #------------------ Refinement --------------------------------  
+        #------------------ Refinement --------------------------------  
 
-    features = []
-    for refinement in e_ContextRefinement.objects.filter(context__code=context_code):
-        context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement.geom.coords),
-                            properties = {"Geometry type": 'Refinement',
-                                        "Context code": context.code,
-                                        "Context name": str.title(context.Name),
-                                        "CL": refinement.CL})
+        features = []
+        for refinement in e_ContextRefinement.objects.filter(context__code=context_code):
+            context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement.geom.coords),
+                                properties = {"Geometry type": 'Refinement',
+                                            "Context code": context.code,
+                                            "Context name": str.title(context.Name),
+                                            "CL": refinement.CL})
 
-        features.append(context_refinement)
+            features.append(context_refinement)
 
-    refinement_file = geojson.FeatureCollection(features)
-    refinement_file['name'] = str.title(context.Name).join('_refinements')
+        refinement_file = geojson.FeatureCollection(features)
+        refinement_file['name'] = str.title(context.Name).join('_refinements')
 
-    #------------------ Boundary --------------------------------
+        #------------------ Boundary --------------------------------
 
-    features = []
-    for boundary in e_ContextBoundaryLine.objects.filter(context__code=context_code):
-        context_boundary = geojson.Feature(geometry= geojson.LineString(boundary.geom.coords),
-                            properties = {"Geometry type": 'Boundary Line',
-                                        "Contextc ode": context.code,
-                                        "Context name": str.title(context.Name),
-                                        "Type": boundary.type,
-                                        "Data type": boundary.dataType})
+        features = []
+        for boundary in e_ContextBoundaryLine.objects.filter(context__code=context_code):
+            context_boundary = geojson.Feature(geometry= geojson.LineString(boundary.geom.coords),
+                                properties = {"Geometry type": 'Boundary Line',
+                                            "Contextc ode": context.code,
+                                            "Context name": str.title(context.Name),
+                                            "Type": boundary.type,
+                                            "Data type": boundary.dataType})
 
-        features.append(context_boundary)
+            features.append(context_boundary)
 
-    boundary_file = geojson.FeatureCollection(features)
-    boundary_file['name'] = str.title(context.Name).join('_boundaries')
+        boundary_file = geojson.FeatureCollection(features)
+        boundary_file['name'] = str.title(context.Name).join('_boundaries')
 
-    #------------------ Boundary Points --------------------------------
+        #------------------ Boundary Points --------------------------------
 
-    features = []
-    for boundary_point in e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context__code=context_code):
-        context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point.geom.coords),
-                            properties = {"Geometry type": 'Boundary Point',
-                                        "Context code": context.code,
-                                        "Context name": str.title(context.Name),
-                                        "Boundary": '0'}) #must be changed
+        features = []
+        for boundary_point in e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context__code=context_code):
+            context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point.geom.coords),
+                                properties = {"Geometry type": 'Boundary Point',
+                                            "Context code": context.code,
+                                            "Context name": str.title(context.Name),
+                                            "Boundary": '0'}) #must be changed
 
-        features.append(context_boundary_points)
-    
-    boundary_point_file = geojson.FeatureCollection(features)
-    boundary_point_file['name'] = str.title(context.Name).join('_boundary_points')
-    
-    #endof json preparation
+            features.append(context_boundary_points)
 
-    mem_file = BytesIO() #memory where the zip file will be created
-    with ZipFile(mem_file, 'w') as zipFolder: #create a zipped folder to return to the user
-        zipFolder.writestr(f'{context.Name}_domain.geojson', geojson.dumps(domain_file))
-        zipFolder.writestr(f'{context.Name}_alignments.geojson', geojson.dumps(alignment_file))
-        zipFolder.writestr(f'{context.Name}_refinements.geojson', geojson.dumps(refinement_file))
-        zipFolder.writestr(f'{context.Name}_boundaries.geojson', geojson.dumps(boundary_file))
-        zipFolder.writestr(f'{context.Name}_boundaries_points.geojson', geojson.dumps(boundary_point_file))
+        boundary_point_file = geojson.FeatureCollection(features)
+        boundary_point_file['name'] = str.title(context.Name).join('_boundary_points')
 
-    mem_file.seek(0)
-    response = HttpResponse(mem_file.read(), content_type="application/zip")
-    response['Content-Disposition'] = 'attachment; filename="%s.zip"'%context.Name
-    return response
+        #endof json preparation
+
+        mem_file = BytesIO() #memory where the zip file will be created
+        with ZipFile(mem_file, 'w') as zipFolder: #create a zipped folder to return to the user
+            zipFolder.writestr(f'{context.Name}_domain.geojson', geojson.dumps(domain_file))
+            zipFolder.writestr(f'{context.Name}_alignments.geojson', geojson.dumps(alignment_file))
+            zipFolder.writestr(f'{context.Name}_refinements.geojson', geojson.dumps(refinement_file))
+            zipFolder.writestr(f'{context.Name}_boundaries.geojson', geojson.dumps(boundary_file))
+            zipFolder.writestr(f'{context.Name}_boundaries_points.geojson', geojson.dumps(boundary_point_file))
+
+        mem_file.seek(0)
+        response = HttpResponse(mem_file.read(), content_type="application/zip")
+        response['Content-Disposition'] = 'attachment; filename="%s.zip"'%context.Name
+        return response
+    except:
+        messages.warning(request,f'Context not complete for download') 
+        return redirect(request.META['HTTP_REFERER'])
+
