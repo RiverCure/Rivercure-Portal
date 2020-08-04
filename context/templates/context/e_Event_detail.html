@@ -1,0 +1,20 @@
+{% extends "rivercureportal/base.html" %}
+
+{% block content %}
+
+<h1>Event</h1>
+<article class="media content-section">
+    <div class="media-body">
+      <h2 class="article-title">{{event.Name}}</h2>
+      <p class="article-content">Code: {{ event.type }}</p> 
+      <p class="article-content">Start: {{ event.startDatetime }}</p>
+      <p class="article-content">End: {{ event.endDatetime }}</p>
+
+</article>
+<a class="btn btn-outline-info" href="{% url 'event-list' %}">All Events</a>
+
+{% endblock content %}
+
+
+
+

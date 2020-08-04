@@ -2,20 +2,17 @@
 
 {% block content %}
 
+<h1>Context</h1>
 <article class="media content-section">
     <div class="media-body">
-      <h2 class="article-title">{{object.Name}}</h2>
-      <p class="article-content">Code: {{ object.code }}</p>
-    
-    <h2>Events</h2>
-    {% for event in object.e_ContextEvent %}
-   
-    <p class="article-content"> {{event.type}} </p> 
-
-    {% endfor %}
+      <h2 class="article-title">{{context.Name}}</h2>
+      <p class="article-content">Code: {{ context.code }}</p>
+      <a class="btn btn-secondary btn-sm mt-1 mb-1" 
+      href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" > Events</a>
+      <a class="btn btn-secondary btn-sm mt-1 mb-1" 
+      href="{% url 'context-sensor-list' %}" >Sensors</a>
     </div>
 </article>
-
 
 
 

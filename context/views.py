@@ -1,3 +1,4 @@
+import json, os, geojson, tempfile, datetime
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponse
@@ -5,16 +6,37 @@ from django.db import transaction
 from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor
+from django.contrib.gis.geos import Polygon
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from .filters import EventFilter, EventSensorFilter
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from io import BytesIO, StringIO
 from zipfile import ZipFile
-import json, os, geojson, tempfile, datetime
+
+
+#NEW URL + FILTER  + TEMPLATE 
+def ContextSensorListView(request):
+    contextSensor_list = e_ContextSensor.objects.all()
+    contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
+    return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
+
+
+def EventListView(request):
+    event_list = e_ContextEvent.objects.all()
+    event_filter = EventFilter(request.GET, queryset=event_list)
+    return render(request, 'context/e_Event_list.html', {'filter': event_filter})
+
+class EventDetailView(DetailView):
+    model = e_ContextEvent
+    context_object_name = 'event'
+    template_name = 'context/e_Event_detail.html'
+
 
 def show_context(request):
     web_host = os.environ['CONTEXT_API']

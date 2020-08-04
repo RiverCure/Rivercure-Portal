@@ -4,6 +4,6 @@ from django.urls import path, include
 
 urlpatterns = [
 
-    path('', SensorListView.as_view(), name='sensor-list'),
+    path('', SensorListView, name='sensor-list'),
    
 ]
