@@ -19,6 +19,8 @@ var MyFunctions = {
     domainMarkers: null,
     //vars with created polygons
     boundaries: null,
+    //var to associate domain points to boundaries
+    domainMarkerToBoundary: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
     //function to define draw sensor icon
@@ -73,7 +75,7 @@ var MyFunctions = {
     //function to draw sensors on the map
     drawSensors: (map, sensors) => {
         MyFunctions.sensorsLayer = L.markerClusterGroup();
-        MyFunctions.sensorsLayer.bindTooltip('Sensors');
+        MyFunctions.sensorsLayer.bindTooltip('Sensor');
         //icon for sensors
         let sensorIcon;
         let sensorMarker; //auxiliar variable
@@ -120,6 +122,7 @@ var MyFunctions = {
         MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
         
+        MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Domain, "Domain");
@@ -212,7 +215,7 @@ var MyFunctions = {
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
-            }, 800);
+            }, 500);
         });
     },
     //function to return polygons CL popups
@@ -257,43 +260,32 @@ var MyFunctions = {
                     MyFunctions.overlayOrder(false);
                     setTimeout(() => { e.target.closePopup();}, 500);
                 });
-            }, 800);
+            }, 500);
         });
     },
     //function to create domain marker popup, used to associate a sensor
     sensorAssociationPopup: (associatedSensors, newSensor) => {
         //('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor')
         //('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload')
-        getAvailableSensors = () => {
-            var result = "";
-
-            for(sensor of MyFunctions.sensors) {
-                result += '<option value="' + sensor.code + '">' + sensor.code.concat(' '.concat(sensor.type)) + '</option>\n'
-            }
-
-            return result;
-        };
         
         getAssociatedSensors = () => {
             if(associatedSensors === null)
                 return "";
 
             var result;
-            result = associatedSensors.slice(associatedSensors.indexOf('</tr>') + '</tr>'.length + 1,
-                                            associatedSensors.indexOf('</table>'));
+            result = associatedSensors.slice(associatedSensors.indexOf('<tbody>') + '<tbody>'.length + 1,
+                                            associatedSensors.indexOf('</tbody>'));
             return result;
         };
 
         associateNewSensors = () => {
             if(newSensor === null)
                 return "";
-            console.log(MyFunctions.sensors)
 
             var sensor = MyFunctions.sensors.find((value) => {
                 return value.code == newSensor});
                 
             if(sensor === undefined) {
-                alert('ups');
                 return "";
             }
 
@@ -304,50 +296,90 @@ var MyFunctions = {
             }
 
             return `
-                <tr>
+                <tr id='sensor-` +  sensor.code + `'>
                     <th>` + nr + `</th>
-                    <td>` + sensor.code + `</td>
+                    <td class='add-code'>` + sensor.code + `</td>
                     <td>` + sensor.type + `</td>
+                    <td><span class='close'>x</span></td>
                 </tr>`;
         };
 
         return `
             <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
             <table class='table'>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Type</th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
             ` +
                 getAssociatedSensors().concat(associateNewSensors()) +
-            `</table>
+            `</tbody>
+            </table>
             <label for="sensor-association"><big>Choose a sensor:</big></label>
             <select id='sensor-association' class="form-control form-control-sm">
-                    ` + getAvailableSensors() + `
+                <option value='null'>--------------------</option>
             </select>
             <div class"container">
-                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
+                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
             </div>
         `   
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
+        var sensorDistance = 10000; //variable to store the distance at which a user can associate a sensor
         popup.on('popupopen', e => {
-            if(MyFunctions.deleting)
+            if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
+                popup.closePopup();
                 return;
+            }
             
             setTimeout(() => { //wait in case user opens popups back to back
                 if(!e.popup.isOpen()) //check if the popup is still open
                     return;
                 document.querySelector('#popup-btn').addEventListener('click', () => {
+                    if(document.querySelector('#sensor-association').value == 'null')
+                        return;
                     e.popup.setContent(MyFunctions.sensorAssociationPopup(e.popup.getContent(), document.querySelector('#sensor-association').value));
-                    // e.popup.update();
                     popup.closePopup();
                     popup.openPopup();
                 });
-            }, 800);
+                if(document.querySelector('.close') !== null) {
+                    document.querySelectorAll('.close').forEach( element => {
+                        element.addEventListener('click', ev => { //button to remove added sensors
+                            MyFunctions.removeAssociatedSensor(e.popup, ev.target.parentElement.parentElement.id);
+                            popup.closePopup();
+                            popup.openPopup();
+                        });
+                    });
+                }
+                //check the already added sensors
+                var addedSensors= [];
+                document.querySelectorAll('.add-code').forEach(element => {
+                    addedSensors.push(element.innerHTML);
+                });
+                //add the option for the available sensors for adding
+                var option;
+                for(sensor of MyFunctions.sensors) {
+                    if(!addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
+                        L.latLng(e.target.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= sensorDistance) { 
+                        option = document.createElement('option');
+                        option.value = sensor.code;
+                        option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+                        document.querySelector('#sensor-association').appendChild(option);
+                    }
+                };
+            }, 500);
         });
+    },
+    //function to remove row from associated sensors
+    removeAssociatedSensor: (popup, sensorCode) => {
+        let begginning = popup.getContent().substring(0, popup.getContent().indexOf('<tr id=\''.concat(sensorCode)));
+        let ending = popup.getContent().substr(popup.getContent().indexOf('</tr>', popup.getContent().indexOf('<tr id=\''.concat(sensorCode))) + '</tr>'.length);
+        popup.setContent(begginning.concat(ending));
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
@@ -449,7 +481,7 @@ var MyFunctions = {
         let lng = Object.values(e.layers._layers)[Object.values(e.layers._layers).length - 1]._latlng.lng;
         if(polygonType === 'Domain') { //if we're drawing the domain then
             //mark the vertex with a marker
-            MyFunctions.addDomainMarker(map, lat, lng);
+            MyFunctions.addDomainMarker(map, [lat, lng]);
             //console.log(domain.getBounds());
         }
     },
@@ -457,14 +489,16 @@ var MyFunctions = {
     editStop: (map) => {
         let coordinates = MyFunctions.createdPolygons.Domain.getLayers()[0].getLatLngs()[0];
         for(coordinate of coordinates) {//populate the vertices with markers again
-            MyFunctions.addDomainMarker(map, coordinate.lat, coordinate.lng);
+            MyFunctions.addDomainMarker(map, coordinate);
         }
     },
     //function to delete layers from created polygons when deleting from editPolygonFeature
     removeLayers: (layers) => {
         for(layer of layers) {
-            if(MyFunctions.createdPolygons.Domain.hasLayer(layer))
+            if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
+                MyFunctions.domainMarkerToBoundary = {};
+            }
             MyFunctions.createdPolygons.Domain.removeLayer(layer);
             MyFunctions.createdPolygons.Refinement.removeLayer(layer);
             MyFunctions.createdPolygons.Alignment.removeLayer(layer);
@@ -476,26 +510,33 @@ var MyFunctions = {
     clearLayers: () => {
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.createdPolygons.Boundaries.clearLayers();
+        MyFunctions.domainMarkerToBoundary = {};
     },
     //function to add domain marker
-    addDomainMarker: (map, lat, lng) => {
-        let marker = L.marker([lat, lng]).addTo(MyFunctions.domainMarkers);
+    addDomainMarker: (map, latLng, sensors) => {
+        let marker = L.marker(latLng).addTo(MyFunctions.domainMarkers);
 
         MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null)));
+
+        if(sensors !== undefined) {
+            for(sensor of sensors) {
+                marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker.getPopup().getContent(), sensor.sensor));
+            }
+        }
 
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
                 if(MyFunctions.boundaryPolyline === null) { //if it's the first point of the polyline being added to the map then
-                    MyFunctions.boundaryPolyline = L.polyline([[lat,lng]], color='#0000A0').addTo(map);
+                    MyFunctions.boundaryPolyline = L.polyline([latLng], color='#0000A0').addTo(map);
                     //start saving the markers
                     MyFunctions.boundaryPolylineMarkersTemp = []; 
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker);
                 }
                 else { //if there are already defined points then draw the polyline
                     //add some logic to guarantee that the points are sequential in the array
-                    MyFunctions.boundaryPolyline.addLatLng([lat, lng]);
-                    MyFunctions.tempPolyline.setLatLngs([[lat, lng], MyFunctions.tempPolyline.getLatLngs()[1]]);
+                    MyFunctions.boundaryPolyline.addLatLng(latLng);
+                    MyFunctions.tempPolyline.setLatLngs([latLng, MyFunctions.tempPolyline.getLatLngs()[1]]);
                     MyFunctions.boundaryPolylineMarkersTemp.push(marker); //save the marker
                 }
             }
@@ -583,14 +624,33 @@ var MyFunctions = {
             document.querySelector('#id_refinement').value = JSON.stringify(refinement);
             //Handle the boundaries
             var boundaries = {"type": "FeatureCollection", "features": []};
+            var boundaryPoints = {"type": "FeatureCollection", "features": []};
             MyFunctions.createdPolygons.Boundaries.getLayers().forEach((element) => {
                 boundaryLine = element.toGeoJSON();
                 popup = element.getPopup().getContent(); //get the popup to extract the properties values
+                boundaryLine.properties.id = element._leaflet_id;
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
+                
+                for(point of MyFunctions.domainMarkerToBoundary[element._leaflet_id]) { //get sensors associated with points
+                    boundaryPoint = point.toGeoJSON();
+                    pointPopup = point.getPopup().getContent();                
+                    
+                    boundaryPoint.properties.boundaryLineId = element._leaflet_id; //associate with boundary line
+                    
+                    let sensors = [];
+                    if((codes = pointPopup.match(/<td class=("|')add-code("|')>(\d|[aA-zZ])*<\/td>/g)) != null) {
+                        for(code of codes) 
+                            sensors.push(code.slice('<td class="add-code">'.length, code.indexOf('</td>')));
+                    }
+                    boundaryPoint.properties.sensors = sensors;
+
+                    boundaryPoints.features.push(boundaryPoint);
+                }
                 boundaries.features.push(boundaryLine);
             });
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
+            document.querySelector('#id_boundary_points').value = JSON.stringify(boundaryPoints);
             
             // Change alert on form
             document.querySelector('#load-status').innerHTML = document.querySelector('#load-context-result').innerHTML = "Context Loaded";
@@ -622,6 +682,7 @@ var MyFunctions = {
     //function to clear the map to fill with new data
     clearMap: () => {
         MyFunctions.createdPolygons.Boundaries.clearLayers();
+        MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.editPolygonFeature.clearLayers();
 
@@ -640,7 +701,7 @@ var MyFunctions = {
         if(response.geomExternalBoundary !== null) { //check if the refinement is defined in the database
             let domain = L.polygon(MyFunctions.coordStringToArray(response.geomExternalBoundary), {color: '#C0C0C0'});
             MyFunctions.definePolygon(domain, "Domain", response.CLExternalBoundary);
-            MyFunctions.editStop(map); //draw the markers
+            // MyFunctions.editStop(map); //draw the markers
         }
         //Refinement
         if(response.context_refinement !== null && response.context_refinement.length > 0) {
@@ -664,8 +725,14 @@ var MyFunctions = {
             response.context_boundaries.forEach((element) => { //define each boundary line individually
                 boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
                 MyFunctions.defineBoundary(boundary, element.type, element.dataType);
+                //Boundary Points
+                for(point of element.context_boundary_points) {
+                    console.log(MyFunctions.coordStringToArray(point.geom)[0]);
+                    MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
+                }
             });
         }
+
     },
     //function to define polygons on all necessary layers
     definePolygon: (layer, type, CL) => {
@@ -688,6 +755,7 @@ var MyFunctions = {
         MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
 
         MyFunctions.handleHighlights(layer, polygonLayer);
+        MyFunctions.checkForCompleteness();
     },
     //function to define boundary and draw it on the map
     defineBoundary: (boundary, type, dataType) => {
@@ -701,6 +769,31 @@ var MyFunctions = {
             e.target.removeFrom(MyFunctions.editPolygonFeature);
             e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
         });
+
+        //associate point to respective boundary
+        var boundaryPoints = [];
+        for(boundaryLinePoint of boundary.getLatLngs()) {
+            for(domainPoint of MyFunctions.domainMarkers.getLayers()) {  
+                if(boundaryLinePoint.distanceTo(domainPoint.getLatLng()) < 100) {
+                    boundaryPoints.push(domainPoint);
+                }
+            }
+        }
+        MyFunctions.domainMarkerToBoundary[boundary._leaflet_id] = boundaryPoints;
+
+        MyFunctions.checkForCompleteness();
+    },
+    //check if all layers of createdPolygons have polygons 
+    checkForCompleteness: () => {
+        for(type in MyFunctions.createdPolygons) { //check if all polygons are defined
+            if(MyFunctions.createdPolygons[type].getLayers().length < 1) {
+                document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-danger");
+                document.querySelector('#load-btn').disabled = true;
+                return;
+            }
+        }
+        document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-info"); //all polygons are defined mark the button green
+        document.querySelector('#load-btn').disabled = false;
     },
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {

@@ -1,11 +1,18 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin, LeafletGeoAdminMixin
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextAlignment, e_ContextRefinement, e_ContextEvent, e_ContextSensor
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextAlignment, e_ContextRefinement, e_ContextSensor, e_ContextEvent
+
+class ContextSensorInLine(LeafletGeoAdminMixin, admin.StackedInline):
+    model = e_ContextSensor
+    classes = ['collapse']
+    fields = ['sensor', 'associateDatetime']
+    readonly_fields = ['sensor']
+    extra = 0
 
 class ContextBoundaryPointInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextBoundaryPoint
-    # classes = ['collapse']
-    fields = ['geom', 'sensor']
+    classes = ['collapse']
+    fields = ['geom']
     # readonly_fields = ['geom']
     extra = 0
 
@@ -29,6 +36,9 @@ class ContextRefinementInLine(LeafletGeoAdminMixin, admin.StackedInline):
     extra = 0
 
 class ContextBoundaryPointDetail(LeafletGeoAdmin):
+    inlines = [
+        ContextSensorInLine,
+    ]
     search_fields = ['contextBoundaryLine',]
     list_display = ['__str__', 'contextBoundaryLine', 'context']
 
@@ -60,3 +70,4 @@ admin.site.register(e_ContextBoundaryLine, ContextBoundaryDetail)
 admin.site.register(e_ContextEvent)
 admin.site.register(e_ContextSensor)
 # admin.site.register(e_ContextBoundaryPoint, ContextBoundaryPointDetail)
+admin.site.register(e_ContextBoundaryPoint, ContextBoundaryPointDetail)

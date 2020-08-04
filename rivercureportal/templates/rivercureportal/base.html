@@ -52,7 +52,7 @@
                       <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
                     {% endif %}
                     {% if request.user.change_e_context or request.user.is_superuser %}
-                    <a href="{% url 'context' %}" class="dropdown-item">Edit Contexts</a>
+                    <a href="{% url 'context_manage' %}" class="dropdown-item">Edit Contexts</a>
                     {% endif %}
                    
                     {% if perms.context.view_e_context %}

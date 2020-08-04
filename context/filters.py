@@ -8,7 +8,7 @@ from django_filters import DateFilter
 class EventSensorFilter(django_filters.FilterSet):
      class Meta:
         model = e_ContextSensor
-        fields = ['sensor','context']
+        fields = ['sensor',]
 
 class EventFilter(django_filters.FilterSet):  
 

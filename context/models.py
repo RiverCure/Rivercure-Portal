@@ -66,19 +66,22 @@ class  e_ContextBoundaryPoint(models.Model):
 
 	geom = models.PointField(null=True, blank=True) #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
-	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
+	# sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.contextBoundaryLine} point"
 
 class e_ContextSensor(models.Model):
 
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
-	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
+	boundary_point = models.ForeignKey('e_ContextBoundaryPoint', on_delete=models.CASCADE, null=True, related_name='sensor_boundary_point')
+	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False, related_name='context_sensor' )
 	description = models.TextField()
 	
 	associateDatetime = models.DateTimeField(default=datetime.now)
-	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+	# user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+	def __str__(self):
+		return f"{self.boundary_point} sensor"
 
 class e_ContextEvent(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)

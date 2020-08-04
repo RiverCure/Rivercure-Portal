@@ -19,6 +19,7 @@
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
                 map.doubleClickZoom.disable(); //disable double click zoom
+                document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
@@ -48,10 +49,10 @@
                 //event for when a vertex is added to a polygon
                 map.on("draw:drawvertex", e => {MyFunctions.vertexAdded(e, map);});
                 map.on("draw:editstart", e => {MyFunctions.clearLayers();});
-                map.on("draw:editstop", e => {MyFunctions.editStop(map)});
+                map.on("draw:editstop", e => {MyFunctions.editStop(map); MyFunctions.checkForCompleteness();});
                 map.on('draw:deletestart', e => {MyFunctions.deleting = true;});
                 map.on('draw:deleted', e => {MyFunctions.removeLayers(e.layers.getLayers())});
-                map.on('draw:deletestop', () => {MyFunctions.deleting = false;});
+                map.on('draw:deletestop', () => {MyFunctions.deleting = false; MyFunctions.checkForCompleteness();});
                 map.on('popupopen', () => { MyFunctions.highlightStatus = false;});
                 map.on('popupclose', () => { MyFunctions.highlightStatus = true; MyFunctions.highlightLayer.clearLayers()});
                 map.on('overlayadd', () => { MyFunctions.overlayOrder(true);});
@@ -98,9 +99,6 @@
     <div id="form-data" class="content-section" style="display: none">
         <form method='POST'>
             {% csrf_token %}
-            <input type="hidden" id="domain" name="domain" value="">
-            <input type="hidden" id="alignment" name="alignment" value="">
-            <input type="hidden" id="refinement" name="refinement" value="">
             {{ form|crispy }}
             <div id="load-status" class="alert alert-danger" role="alert">
                 Context not loaded!!!
@@ -119,7 +117,7 @@
     </div>
     <div class="container" id="context-options">
         <div class="container" style="display: flex">
-            <button type="button" id='load-btn' class="btn btn-outline-info">Save Context</button>
+            <button type="button" id='load-btn' class="btn btn-outline-danger">Save Context</button>
             <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
                 <option value="none" selected disabled>Select the polygon to define</option>
                 <option value="Domain">Domain</option>

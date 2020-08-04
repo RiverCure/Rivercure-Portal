@@ -38,6 +38,18 @@ $leaflet-bottom-background: whitesmoke;
         margin-bottom: 7px;
     }
 
+    tbody {
+        tr:hover {
+            background: #eee;
+        }
+            
+        .close {
+            cursor: pointer;
+            position: absolute;
+            transform: translate(0%, -25%);
+        }
+    }
+
     .sensor {
         svg {
             width: 100%;
