@@ -8,11 +8,11 @@
         <a class="mr-2" href="#">{{ object.Name }}</a>
       </div>
       {% if perms.sensors.change_e_sensor %}
-        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#" > Update</a>
-        <a class="btn btn-danger btn-sm mt-1 mb-1" href="#" > Delete</a>
+        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'sensor-update' object.code %}" > Update</a>
+        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  > Delete</a>
       {% endif %}
-      <p class="article-content">Code: {{ object.name }}</p></p>
-      <p class="article-content">Area: {{ object.geom }}</p>
+      <p class="article-content">Code: {{ object.code }}</p></p>
+      <p class="article-content">Modality Type: {{ object.modalityType }}</p>
     </div>
 </article>
 
