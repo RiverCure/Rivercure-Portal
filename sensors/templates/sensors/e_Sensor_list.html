@@ -15,10 +15,10 @@
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href="#">{{ sensor.Name }}</a>
+        <a class="mr-2" href="{% url 'sensor-detail' sensor.code %}">{{ sensor.Name }}</a>
       </div>
       <p><a class="article-title" >{{ sensor.type }}</a></p>
-      <p><a class="article-title" >{{ sensor.geom }}</a></p>
+      <p><a class="article-title" >{{ sensor.modalityType}}</a></p>
     </div>
 </article>
 {% endfor %}
