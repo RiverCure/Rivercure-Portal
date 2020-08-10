@@ -290,8 +290,7 @@ def download_context(request, context_code): #function that allows the download 
             features.append(context_alignment)
 
         alignment_file = geojson.FeatureCollection(features)
-        alignment_file['name'] = str.title(context.Name).join('_alignments')
-
+        alignment_file['name'] = str.title(context.Name) + '_alignments'
         #------------------ Refinement --------------------------------  
 
         features = []
@@ -305,7 +304,7 @@ def download_context(request, context_code): #function that allows the download 
             features.append(context_refinement)
 
         refinement_file = geojson.FeatureCollection(features)
-        refinement_file['name'] = str.title(context.Name).join('_refinements')
+        refinement_file['name'] = str.title(context.Name) + '_refinements'
 
         #------------------ Boundary --------------------------------
 
@@ -321,7 +320,7 @@ def download_context(request, context_code): #function that allows the download 
             features.append(context_boundary)
 
         boundary_file = geojson.FeatureCollection(features)
-        boundary_file['name'] = str.title(context.Name).join('_boundaries')
+        boundary_file['name'] = str.title(context.Name) + '_boundaries'
 
         #------------------ Boundary Points --------------------------------
 
@@ -336,7 +335,7 @@ def download_context(request, context_code): #function that allows the download 
             features.append(context_boundary_points)
 
         boundary_point_file = geojson.FeatureCollection(features)
-        boundary_point_file['name'] = str.title(context.Name).join('_boundary_points')
+        boundary_point_file['name'] = str.title(context.Name) + '_boundary_points'
 
         #endof json preparation
 
