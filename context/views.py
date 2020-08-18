@@ -266,7 +266,7 @@ def download_context(request, context_code): #function that allows the download 
         #------------------ Domain --------------------------------
         context = e_Context.objects.get(code=context_code)
 
-        context_main = geojson.Feature(geometry= geojson.MultiPolygon(context.geomExternalBoundary.coords), #Maybe this should be a simple polygon for pre processor
+        context_main = geojson.Feature(geometry= geojson.Polygon(context.geomExternalBoundary.coords[0]), #Maybe this should be a simple polygon for pre processor
                             properties = {"Geometry type": 'Domain',
                                         "Code": context.code,
                                         "CL": context.CLExternalBoundary})
