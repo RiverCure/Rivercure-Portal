@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'django.contrib.gis',
     'django_filters',
+    'bootstrapform',
+    
 ]
 
 MIDDLEWARE = [

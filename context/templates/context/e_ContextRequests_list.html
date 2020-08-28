@@ -1,0 +1,48 @@
+{% extends "rivercureportal/base.html" %}
+{% load auth_extras %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h1>Context Access Requests</h1>
+
+
+<h2>Processing</h2>
+{% for request in requests %}
+{% if request.state == "Processing" %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href=#>{{ request.context.code }}</a>
+      </div>
+      {% if user|has_group:"ContextManager" %}  
+      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'context-request-decision' request.id %}" >Manage Access</a>
+      {% endif %}
+    </div>
+</article>
+{% endif %}
+{% endfor %}
+
+<h2>Finished</h2>
+
+{% for request in requests %}
+{% if request.state == "Finished" %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href=#>{{ request.context.code }}</a>
+      </div>
+      {% if user|has_group:"ContextManager" %}  
+      <p><a class="article-title" >{{ request.state }}</a></p>
+      {% endif %}
+    </div>
+</article>
+{% endif %}
+{% endfor %}
+
+{% endblock content %}

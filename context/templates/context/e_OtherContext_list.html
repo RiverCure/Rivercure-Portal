@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load auth_extras %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -8,7 +9,7 @@
 
 {% block content %}
 
-<h1>My Contexts</h1>
+<h1>Other Contexts</h1>
 <div class="filter-section">
 <h5>Filter</h5> 
 <form method="get">
@@ -24,6 +25,11 @@
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
       <p><a class="article-title" >{{ context.code }}</a></p>
+
+      {% if request.user|has_group:"ContextManager" %}  
+      <button type="button" class="btn btn-info">Request Acess</button>
+      {% endif %}
+
     </div>
 </article>
 {% empty %}
@@ -31,16 +37,10 @@
 {% endfor %}
 
 <div class="content">
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'  %}">My Contexts</a>  
 </div> 
-
-
- 
-<h1>Don't see your context?</h1>
-<div class="content">
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
-</div>
   
+
 
 {% endblock content %}
 

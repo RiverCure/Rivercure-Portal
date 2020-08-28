@@ -1,4 +1,6 @@
+{% load auth_extras %}
 {% load static %}
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -51,10 +53,13 @@
                     {% if request.user.add_e_context  or request.user.is_superuser %}
                       <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
                     {% endif %}
-                    {% if request.user.change_e_context or request.user.is_superuser %}
+                    <!-- {% if request.user.change_e_context or request.user.is_superuser %}
                     <a href="{% url 'context_manage' %}" class="dropdown-item">Edit Contexts</a>
+                    {% endif %} -->
+                    {% if request.user|has_group:"ContextAdmin" %}  
+                    <a href="{% url 'context-requests-list' %}" class="dropdown-item">Access Requests</a>
                     {% endif %}
-                   
+              
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-list' %}" class="dropdown-item">Contexts List</a>
                     {% endif %}
@@ -62,13 +67,8 @@
                     <a href="#" class="dropdown-item">Other</a>
                 </div>
               </div>
-              <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Events</a>
-                <div class="dropdown-menu">
-                    <a href="{% url 'event-list' %}" class="dropdown-item">Events</a>
-                    <a href="#" class="dropdown-item">Other</a>
-                </div>
-              </div>
+            
+              
               <a class="nav-item nav-link" href="{% url 'rivercure-about' %}">About</a>
           </div>
             
