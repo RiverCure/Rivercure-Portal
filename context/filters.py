@@ -1,5 +1,5 @@
 import django_filters
-from .models import e_ContextEvent, e_ContextSensor
+from .models import e_ContextEvent, e_ContextSensor, e_Context
 from django import forms
 from django_filters import DateFilter
 
@@ -19,5 +19,8 @@ class EventFilter(django_filters.FilterSet):
         model = e_ContextEvent
         fields = ['Name','type','context', 'startDateTime', 'endDateTime']
         
-        
+class ContextFilter(django_filters.FilterSet):  
+    class Meta:
+        model = e_Context
+        fields = ['Name', 'hydroFeature']    
         

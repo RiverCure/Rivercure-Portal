@@ -23,7 +23,7 @@ body {
   .site-header .navbar-nav .nav-link:hover {
     color: #ffffff;
   }
-  
+
   .site-header .navbar-nav .nav-link.active {
     font-weight: 500;
   }
@@ -34,6 +34,15 @@ body {
     border: 1px solid #dddddd;
     border-radius: 3px;
     margin-bottom: 20px;
+  }
+
+  .filter-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    float: right;
   }
   
   .article-title {

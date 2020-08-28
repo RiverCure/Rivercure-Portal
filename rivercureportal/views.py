@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import e_District, e_HydroFeature
 from context.models import e_Context, e_ContextEvent
+from sensors.models import e_Sensor
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
@@ -9,10 +10,14 @@ from users.models import User
 from django.contrib.auth.models import Group
 
 
+
 def home(request):
     context = {
         'users': User.objects.all(),
-        'groups': Group.objects.all()
+        'groups': Group.objects.all(),
+        'contexts' : e_Context.objects.all(),
+        'recent_context' : e_Context.objects.all().first(),
+        'recent_sensor' : e_Sensor.objects.all().first()
         
     }
     return render(request, 'rivercureportal/home.html', context)
@@ -72,5 +77,6 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
             return True
         else:
             return False
-    
+
+
 

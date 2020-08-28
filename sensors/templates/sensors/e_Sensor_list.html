@@ -4,10 +4,11 @@
 {% block content %}
 
 <h1>Sensors</h1>
-<div class="content-section">
+<div class="filter-section">
+<h5>Filter</h5> 
 <form method="get">
   {{ filter.form |crispy }}
-  <button type="button" class="btn btn-info">Filter</button>
+  <button type="submit" class="btn btn-info">Filter</button>
 </form>
 </div>
 
@@ -17,8 +18,8 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'sensor-detail' sensor.code %}">{{ sensor.Name }}</a>
       </div>
-      <p><a class="article-title" >{{ sensor.type }}</a></p>
-      <p><a class="article-title" >{{ sensor.modalityType}}</a></p>
+      <p><a class="article-title" >Type: {{ sensor.type }}</a></p>
+      <p><a class="article-title" >Modality type: {{ sensor.modalityType}}</a></p>
     </div>
 </article>
 {% endfor %}

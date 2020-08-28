@@ -4,6 +4,7 @@ from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
 from sensors.models import e_Sensor
 
+
 EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  ('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  ('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
@@ -14,7 +15,13 @@ EVENTSIMULATIONKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'
 
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
+CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
+
+ContextAccessRequestState_CHOICES =  ( ('Processing', 'processing'), ('Finished', 'finished'), )
+
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
+
+CONTEXTACCESS_CHOICES = (('admin', 'Admin'), ('manager', 'Manager'), ('viewer', 'Viewer'))
 
 class e_Context(models.Model):
 	code = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -27,6 +34,8 @@ class e_Context(models.Model):
 	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
 
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
+
+	isPublic = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.Name
@@ -66,7 +75,7 @@ class  e_ContextBoundaryPoint(models.Model):
 
 	geom = models.PointField(null=True, blank=True) #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
-	# sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
+	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.contextBoundaryLine} point"
@@ -106,27 +115,14 @@ class e_ContextEvent(models.Model):
 	simulationType = models.CharField(max_length=30, choices=EVENTSIMULATIONKIND_CHOICES, null=True)
 
 
-	
+class e_ContextAccessRequest(models.Model):
 
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
+	access_granted = models.BooleanField(default=False)
 
-#CONTEXT BOUNDARY POINT SENSOR?
+	state = models.CharField(max_length=30, choices=ContextAccessRequestState_CHOICES, null=False)
 
-#class  e_ContextBoundaryPointSensor(models.Model):
+	requestuser = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # REQUESTER
 
-	#point = models.IntegerField()
-
-	#sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False )
-
-#CONTEXT BOUNDARY CONDITION?
-
-# class e_ContextBoundaryCondition(models.Model):
-# 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
-# 	geom = models.MultiLineStringField(null=True) #TEMPORARY CHOICE
-# 	type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
-
-#CONTEXT SIMULATION?
-
-#CONTEXT USER?
-
-#CONTEXT ORGANIZATION?
+	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES)

@@ -7,45 +7,95 @@ from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .filters import EventFilter, EventSensorFilter
+from .filters import EventFilter, EventSensorFilter, ContextFilter
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from io import BytesIO, StringIO
 from zipfile import ZipFile
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
-class ContextListView(ListView):
-    model = e_Context
-    template_name = 'context/e_Context_list.html'
-    context_object_name = 'context'
-    ordering = ['Name']
 
-    def get_context_data(self, **kwargs):
-        web_host = os.environ['CONTEXT_API']
-        context = super().get_context_data(**kwargs)
-        context['owned_contexts'] = e_Context.objects.filter(user=self.request.user)
-        context['other_contexts'] = e_Context.objects.exclude(user=self.request.user)
-        return context
+def GrantAccess(request):
+    context = {
+        
+    }
 
-class ContextDetailView(DetailView):
+    
+    return render(request, 'rivercure/home.html', context)
+
+
+
+
+def ContextRequestDecisionView(request, pk):
+    pedido = e_ContextAccessRequest.objects.get(id=pk)
+    context = pedido.context
+
+    context  = {
+        #user
+        'context': e_Context.objects.first
+
+    }
+    return render(request, 'context/e_ContextRequest_grant_deny.html', context)
+
+class ContextRequestListView(UserPassesTestMixin, ListView):
+    model = e_ContextAccessRequest
+    context_object_name = 'requests'
+    template_name = 'context/e_ContextRequests_list.html'
+
+    def test_func(self):
+        if self.request.user.has_perm('can_add_group'):
+            return True
+        else:
+            return False
+
+def ContextListView(request):
+    context_list = e_Context.objects.filter(user=request.user)
+    context_filter = ContextFilter(request.GET, queryset=context_list)
+    return render(request, 'context/e_Context_list.html', {'filter': context_filter})
+
+
+def OtherContextListView(request):
+    other_context_list = e_Context.objects.exclude(user=request.user)
+    other_context_filter = ContextFilter(request.GET, queryset=other_context_list)
+    return render(request, 'context/e_OtherContext_list.html', {'filter': other_context_filter})
+
+    #def get_context_data(self, **kwargs):
+        #web_host = os.environ['CONTEXT_API']
+        #context = super().get_context_data(**kwargs)
+        #context['owned_contexts'] = e_Context.objects.filter(user=self.request.user)
+        #context['other_contexts'] = e_Context.objects.exclude(user=self.request.user)
+        #return context
+
+class ContextDetailView(UserPassesTestMixin, DetailView):
     model = e_Context
     context_object_name = 'context'
     template_name = 'context/e_Context_detail.html'
+
+    def test_func(self, *args , **kwargs):
+        self.object = self.get_object()
+        if self.request.user.has_perm('can_update_contexts') and self.object.user == self.request.user:
+            return True
+        else:
+            return False
 
     def get_context_data(self, **kwargs):
         web_host = os.environ['CONTEXT_API']
         context = super().get_context_data(**kwargs)
         context['api'] = f'http://{web_host}/contexts/api/context/'
         context['sensors'] = e_Sensor.objects.all()
+               
         return context
+    
 
-#NEW URL + FILTER  + TEMPLATE 
+
+
 def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
     contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
