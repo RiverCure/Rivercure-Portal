@@ -83,6 +83,8 @@ class e_ContextSensor(models.Model):
 	def __str__(self):
 		return f"{self.boundary_point} sensor"
 
+# A sensor has to be associated to Context before being associated with a point. Check ASL specification
+
 class e_ContextEvent(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
