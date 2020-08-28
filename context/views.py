@@ -252,7 +252,11 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
     context.Name = str.title(domain_features['name'].split('_')[0])
     context.hydroFeature = None
     context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
-    domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
+    try:
+        domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
+    except:
+        print('Domain geojson doesn\'t contain a MultiPolygon\nTrying simple Polygon')
+        domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0], srid=srid), srid=srid)
     context.geomExternalBoundary = domain_geom
     # context.geomExternalBoundary.transform(SpatialReference(4326))
     context.user = user
@@ -265,7 +269,11 @@ def handle_alignment(f, context, srid): #handle the loading of alignment from a 
         alignment = e_ContextAlignment()
         alignment.context = context
         alignment.CL = feature['properties']['CL']
-        alignment.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        try:
+            alignment.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        except:
+            print('Alignment geojson doesn\'t contain a MultiLineString\nTrying simple LineString')
+            alignment.geom = LineString(feature['geometry']['coordinates'], srid=srid)
         alignment.save()
 
 def handle_refinement(f, context, srid): #handle the loading of refinement from a geojson
@@ -273,7 +281,11 @@ def handle_refinement(f, context, srid): #handle the loading of refinement from 
         refinement = e_ContextRefinement()
         refinement.context = context
         refinement.CL = feature['properties']['CL']
-        refinement.geom = Polygon(feature['geometry']['coordinates'][0][0], srid=srid)
+        try:
+            refinement.geom = Polygon(feature['geometry']['coordinates'][0][0], srid=srid)
+        except:
+            print('Refinement geojson doesn\'t contain a MultiPolygon\nTrying simple Polygon')
+            refinement.geom = Polygon(feature['geometry']['coordinates'][0], srid=srid)
         refinement.save()
 
 def handle_boundaries(f, f_points, context, srid): #handle the loading of boundaries from a geojson
@@ -282,7 +294,12 @@ def handle_boundaries(f, f_points, context, srid): #handle the loading of bounda
     for feature in json.load(f)['features']:
         boundary = e_ContextBoundaryLine()
         boundary.context = context  
-        boundary.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        try:
+            boundary.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        except:
+            print('Boundary geojson doesn\'t contain a MultiLineString\nTrying simple LineString')
+            boundary.geom = LineString(feature['geometry']['coordinates'], srid=srid)
+
         boundary.dataType = feature['properties']['Type']
         # boundary.type = feature['properties']['dataType']
         boundary.save()

@@ -75,7 +75,7 @@ class  e_ContextBoundaryPoint(models.Model):
 
 	geom = models.PointField(null=True, blank=True) #superimposed "must be a point superimposed on e_ContextBoundaryLine.geom"))]  
 
-	sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
+	# sensor = models.ForeignKey('e_ContextSensor', on_delete=models.CASCADE, null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.contextBoundaryLine} point"
