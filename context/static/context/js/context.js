@@ -386,7 +386,7 @@ var MyFunctions = {
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
-        var sensorDistance = 10000; //variable to store the distance at which a user can associate a sensor
+        var sensorDistance = 1000; //variable to store the distance at which a user can associate a sensor (meters)
         popup.on('popupopen', e => {
             if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
                 popup.closePopup();
@@ -687,7 +687,6 @@ var MyFunctions = {
                 boundaryLine.properties.id = element._leaflet_id;
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
-                
                 for(point of MyFunctions.domainMarkerToBoundary[element._leaflet_id]) { //get sensors associated with points
                     boundaryPoint = point.toGeoJSON();
                     pointPopup = point.getPopup().getContent();                
@@ -782,8 +781,6 @@ var MyFunctions = {
         if(response.context_boundaries !== null && response.context_boundaries.length > 0) {
             let boundary;
             response.context_boundaries.forEach((element) => { //define each boundary line individually
-                boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
-                MyFunctions.defineBoundary(boundary, element.type, element.dataType);
                 //Boundary Points
                 for(point of element.context_boundary_points) {
                     if(MyFunctions.mode == 'edit')
@@ -793,6 +790,9 @@ var MyFunctions = {
                         marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null));
                     }
                 }
+                //Boundary Lines
+                boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
+                MyFunctions.defineBoundary(boundary, element.type, element.dataType);
             });
         }
 
@@ -834,7 +834,7 @@ var MyFunctions = {
             MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
         else
             boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType))
-        boundary.bindTooltip("Boundary");
+        boundary.bindTooltip("Boundary " + boundary._leaflet_id);
         MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
 
         
@@ -843,7 +843,7 @@ var MyFunctions = {
         var boundaryPoints = [];
         for(boundaryLinePoint of boundary.getLatLngs()) {
             for(domainPoint of MyFunctions.domainMarkers.getLayers()) {  
-                if(boundaryLinePoint.distanceTo(domainPoint.getLatLng()) < 100) {
+                if(boundaryLinePoint.distanceTo(domainPoint.getLatLng()) < 1) { //this distance is very sensitive and can cause the duplication of points
                     boundaryPoints.push(domainPoint);
                 }
             }
