@@ -2,9 +2,9 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 
-SENSORKIND_CHOICES = (  ('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor'),  ('tBD Sensor','TBD Sensor'),  )
+SENSORKIND_CHOICES = (  ('HydrometricSensor','Hydrometric Sensor'),  ('WeatherSensor','Weather Sensor'),  ('SocialNetworkScanner','Social Network Scanner'),  ('HumanSensor','Human Sensor'),  ('TBDSensor','TBD Sensor'),  )
 
-SENSORMODALITYKIND_CHOICES = (  ('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload'),  )
+SENSORMODALITYKIND_CHOICES = (  ('PhysicalFixed', 'Physical Fixed'),  ('PhysicalMobile', 'Physical Mobile'),  ('DigitalSocialNetworkScanner','Digital Social Network Scanner'),  ('DigitalHumanUpload','Digital Human Upload'),  )
 
 COLOURKIND_CHOICES = (  ('red','Red'),  ('yellow','Yellow'),  ('green','Green'),  )
 
@@ -13,7 +13,7 @@ class e_Sensor(models.Model):
 
     Name = models.CharField(max_length=100)
 
-    responsibleUser = models.ForeignKey(User, on_delete=models.CASCADE)
+    responsibleUser = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     modalityType = models.CharField(max_length=50, choices=SENSORMODALITYKIND_CHOICES)
 
@@ -21,7 +21,7 @@ class e_Sensor(models.Model):
     
     description = models.TextField()
 
-    version = models.CharField(max_length=20)
+    version = models.CharField(max_length=20, blank=True, null=True)
 
     timeZoneAbbreviation = models.CharField(max_length=20)
 
