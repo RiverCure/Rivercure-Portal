@@ -63,6 +63,10 @@
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-list' %}" class="dropdown-item">Contexts List</a>
                     {% endif %}
+
+                    {% if perms.context.view_e_context %}
+                    <a href="{% url 'context-simulation-results' %}" target='_blank' class="dropdown-item">Contexts Simulation Results</a>
+                    {% endif %}
                     
                     <a href="#" class="dropdown-item">Other</a>
                 </div>

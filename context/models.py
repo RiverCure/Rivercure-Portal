@@ -33,6 +33,8 @@ class e_Context(models.Model):
 	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
 	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
 
+	#contextDTM = models.RasterField(null=True, blank=True) #This field corresponds to the context DTM (.tiff file)
+
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
 
 	isPublic = models.BooleanField(default=False)
