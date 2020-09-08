@@ -13,7 +13,7 @@ def run():
 
         sensor = e_Sensor()
 
-        sensor.code = sheet.cell_value(i,1)
+        sensor.code = sheet.cell_value(i,1) #Eventually this might need to be an int
         sensor.Name = sheet.cell_value(i,2)
         sensor.type = sheet.cell_value(i,3)
         sensor.modalityType = sheet.cell_value(i,4)

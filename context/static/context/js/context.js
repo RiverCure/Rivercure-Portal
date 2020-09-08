@@ -694,7 +694,7 @@ var MyFunctions = {
                     boundaryPoint.properties.boundaryLineId = element._leaflet_id; //associate with boundary line
                     
                     let sensors = [];
-                    if((codes = pointPopup.match(/<td class=("|')add-code("|')>(\d|[aA-zZ])*<\/td>/g)) != null) {
+                    if((codes = pointPopup.match(/<td class=("|')add-code("|')>(.)*<\/td>/g)) != null) {
                         for(code of codes) 
                             sensors.push(code.slice('<td class="add-code">'.length, code.indexOf('</td>')));
                     }
