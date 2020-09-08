@@ -29,7 +29,7 @@ var MyFunctions = {
     sensorIcon: (code) => {
         return `
             <svg>
-                <rect rx="5" ry="5"/>
+                <rect id="` + 'sensor-' + code + `" rx="20" ry="20"/>
                 <text x="50%" y="50%" alignment-baseline="middle" text-anchor="middle">` + code + `</text>  
             </svg>
         `
@@ -76,14 +76,14 @@ var MyFunctions = {
     },     
     //function to draw sensors on the map
     drawSensors: (map, sensors) => {
-        MyFunctions.sensorsLayer = L.markerClusterGroup();
+        MyFunctions.sensorsLayer = L.markerClusterGroup({showCoverageOnHover: false});
         MyFunctions.sensorsLayer.bindTooltip('Sensor');
         //icon for sensors
         let sensorIcon;
         let sensorMarker; //auxiliar variable
         MyFunctions.sensors = sensors;
         for(sensor of sensors) {
-            sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code), className: 'sensor', iconSize: [30, 30]});
+            sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code), className: 'sensor', iconSize: [35, 35]});
             sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(MyFunctions.sensorsLayer);
             sensorMarker.bindPopup(MyFunctions.sensorPopup(sensor));
         }
@@ -335,6 +335,11 @@ var MyFunctions = {
                 nr = Number(nr) + 1
             }
 
+            //change popup color to associated (crimson)
+            selector = '#' + CSS.escape('sensor-' + newSensor)
+            console.log(selector)
+            document.querySelector(selector).style.fill = 'crimson';
+
             return `
                 <tr id='sensor-` +  sensor.code + `'>
                     <th>` + nr + `</th>
@@ -386,7 +391,7 @@ var MyFunctions = {
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
-        var sensorDistance = 1000; //variable to store the distance at which a user can associate a sensor (meters)
+        var sensorDistance = 100; //variable to store the distance at which a user can associate a sensor (meters)
         popup.on('popupopen', e => {
             if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
                 popup.closePopup();
@@ -412,6 +417,7 @@ var MyFunctions = {
                         });
                     });
                 }
+                //fill the sensors selection options
                 //check the already added sensors
                 var addedSensors= [];
                 document.querySelectorAll('.add-code').forEach(element => {
@@ -436,6 +442,10 @@ var MyFunctions = {
         let begginning = popup.getContent().substring(0, popup.getContent().indexOf('<tr id=\''.concat(sensorCode)));
         let ending = popup.getContent().substr(popup.getContent().indexOf('</tr>', popup.getContent().indexOf('<tr id=\''.concat(sensorCode))) + '</tr>'.length);
         popup.setContent(begginning.concat(ending));
+
+        //change popup color to not associated (whitesmoke)
+        let selector = '#' + CSS.escape(sensorCode);
+        document.querySelector(selector).style.fill = 'whitesmoke';
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
@@ -446,7 +456,7 @@ var MyFunctions = {
     },
     //function to set the domain markers layers visibility toggle
     setDomainMarkers: (map) => {
-        MyFunctions.domainMarkers = L.markerClusterGroup();
+        MyFunctions.domainMarkers = L.markerClusterGroup({showCoverageOnHover: false});
         MyFunctions.domainMarkers.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
 
@@ -575,6 +585,7 @@ var MyFunctions = {
         MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null)));
 
         if(sensors !== undefined) {
+            let sensorCode;
             for(sensor of sensors) {
                 marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker.getPopup().getContent(), sensor.sensor));
             }

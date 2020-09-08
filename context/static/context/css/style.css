@@ -50,6 +50,11 @@
   opacity: 0.8;
   fill: whitesmoke;
 }
+#my_map .sensor svg text {
+  font-weight: bold;
+  font-size: medium;
+  transform: translateY(5px);
+}
 
 #context-options {
   margin-bottom: 50px;

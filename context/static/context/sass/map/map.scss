@@ -62,6 +62,11 @@ $leaflet-bottom-background: whitesmoke;
                 opacity: 0.8;
                 fill: $leaflet-bottom-background;
             }
+            text {
+                font-weight: bold;
+                font-size: medium;
+                transform: translateY(5px);
+            }
         }
     }
 }
