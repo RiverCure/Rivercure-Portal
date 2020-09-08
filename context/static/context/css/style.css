@@ -48,7 +48,6 @@
   stroke: black;
   stroke-width: 2;
   opacity: 0.8;
-  fill: whitesmoke;
 }
 #my_map .sensor svg text {
   font-weight: bold;

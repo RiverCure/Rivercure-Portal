@@ -5,6 +5,7 @@ var MyFunctions = {
     deleting: false,
     //Variable to store sensors
     sensors: null,
+    contextSensors: null,
     //Layer for highlights
     highlightLayer: null,
     highlightStatus: null,
@@ -26,10 +27,10 @@ var MyFunctions = {
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
     //function to define draw sensor icon
-    sensorIcon: (code) => {
+    sensorIcon: (code, fill) => {
         return `
             <svg>
-                <rect id="` + 'sensor-' + code + `" rx="20" ry="20"/>
+                <rect id="` + 'sensor-' + code + `" rx="20" ry="20" style="fill:` + fill + `;"/>
                 <text x="50%" y="50%" alignment-baseline="middle" text-anchor="middle">` + code + `</text>  
             </svg>
         `
@@ -77,15 +78,17 @@ var MyFunctions = {
     //function to draw sensors on the map
     drawSensors: (map, sensors) => {
         MyFunctions.sensorsLayer = L.markerClusterGroup({showCoverageOnHover: false});
-        MyFunctions.sensorsLayer.bindTooltip('Sensor');
         //icon for sensors
         let sensorIcon;
         let sensorMarker; //auxiliar variable
         MyFunctions.sensors = sensors;
+        MyFunctions.contextSensors = {};
         for(sensor of sensors) {
-            sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code), className: 'sensor', iconSize: [35, 35]});
+            sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code, 'whitesmoke'), className: 'sensor', iconSize: [35, 35]});
             sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(MyFunctions.sensorsLayer);
             sensorMarker.bindPopup(MyFunctions.sensorPopup(sensor));
+            sensorMarker.bindTooltip('Sensor ' + sensor.code);
+            MyFunctions.contextSensors[sensor.code] = sensorMarker;
         }
         MyFunctions.sensorsLayer.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.sensorsLayer, 'Sensors');
@@ -336,9 +339,8 @@ var MyFunctions = {
             }
 
             //change popup color to associated (crimson)
-            selector = '#' + CSS.escape('sensor-' + newSensor)
-            console.log(selector)
-            document.querySelector(selector).style.fill = 'crimson';
+            MyFunctions.contextSensors[sensor.code].options.icon.options.html = MyFunctions.sensorIcon(sensor.code, 'crimson');
+            MyFunctions.contextSensors[sensor.code].refreshIconOptions();
 
             return `
                 <tr id='sensor-` +  sensor.code + `'>
@@ -444,8 +446,9 @@ var MyFunctions = {
         popup.setContent(begginning.concat(ending));
 
         //change popup color to not associated (whitesmoke)
-        let selector = '#' + CSS.escape(sensorCode);
-        document.querySelector(selector).style.fill = 'whitesmoke';
+        let code = sensorCode.split('-')[1];
+        MyFunctions.contextSensors[code].options.icon.options.html = MyFunctions.sensorIcon(code, 'whitesmoke');
+        MyFunctions.contextSensors[code].refreshIconOptions();
     },
     //function to run everytime a overlay is added to keep the polygons ordered (alignment is boolean and defines if alignment layer is to be brought to front)
     overlayOrder: (alignment) => {
