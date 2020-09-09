@@ -1,0 +1,19 @@
+#polygon-tree-id {
+    margin-bottom: 50px;
+    display: block;
+
+    .polygon-tree {
+        display: flex;
+        
+        .col-md-4 {
+            display: flex;
+            align-items: center;
+        }
+
+        .col-md-12 {
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+    }
+}
+

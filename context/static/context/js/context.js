@@ -911,6 +911,91 @@ var MyFunctions = {
             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
         return coordinates;
     },
+
+
+
+    //functions for polygon tree
+    //adds a polygon to the tree
+    addPolygonToTree: () => {
+
+    },
+    //adds a boundary line to the tree
+    addBoundaryLineToTree: () => {
+
+    },
+    //write polygon html for tree
+    polygonInTreeRepresentation: (id, polygonType, CL) => {
+
+
+        return `
+            <div class="polygon-tree col-md-12 border-top border-bottom">
+                <div class="col-md-4">
+                    <h1><small>` + polygonType + ' ' + id + `</small></h1>
+                </div>
+                <div class="col-md-8">
+                    <div class="col-md-12">
+                        <b>Current CL:</b>` + CL + `
+                    </div>
+                    <div class="col-md-12">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Insert new CL">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-info">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    //write boundary line html for tree
+    polygonInTreeRepresentation: (id, selectedType, selectedDataType) => {
+        findSelectedType = (valueInAnalisys, selected) => {
+            if(valueInAnalisys == selected)
+                return 'selected';
+            else
+                return '';
+        }
+
+        return `
+            <div class="polygon-tree container border-top border-bottom">
+                <div class="col-md-4">
+                    <h1><small>Boundary ` + id + `</small></h1>
+                </div>
+                <div class="col-md-8">
+                    <div class="col-md-12">
+                        <b>Type:</b>
+                    </div>
+                    <div class="input-group col-md-12">
+                        <select class="custom-select">
+                            <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
+                            <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
+                            <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-info">Save</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <b>Data Type:</b>
+                    </div>
+                    <div class="input-group col-md-12">
+                        <select class="custom-select">
+                            <option value="H" ` + findSelected('InputOutput', selectedDataType) + `>Depth</option>
+                            <option value="Q" ` + findSelected('InputOutput', selectedDataType) + `>Discharge</option>
+                            <option value="Z" ` + findSelected('InputOutput', selectedDataType) + `>Elevation</option>
+                            <option value="V" ` + findSelected('InputOutput', selectedDataType) + `>Velocity</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-info">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    },
+
+    
 }
 
 
