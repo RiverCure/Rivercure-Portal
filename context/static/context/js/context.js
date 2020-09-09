@@ -38,7 +38,7 @@ var MyFunctions = {
     //function to define sensor popup
     sensorPopup: (sensor) => {
         return `
-            <h1>Sensor</h1>
+            <h1>Sensor ` + sensor.code + `</h1>
             <table class='table'>
                 <tr>
                     <th scope="row">Code</th>
@@ -141,7 +141,7 @@ var MyFunctions = {
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Boundaries, 'Boundaries');
     },
     //function to return boundary line popup
-    boundaryPopup: (type, dataType) => {
+    boundaryPopup: (id, type, dataType) => {
         getType = () => {
             switch(type){
                 case 'Input':
@@ -185,7 +185,7 @@ var MyFunctions = {
         };
         
         if(MyFunctions.mode == 'edit') {
-            return `<h1><small>Boundary</small></h1>
+            return `<h1><small>Boundary ` + id + `</small></h1>
                 <div class="form-group">
                     <label for="popup-selected-type"><big>Type</big></label><br>
                     <select id='popup-selected-type' class="form-control form-control-sm">
@@ -215,7 +215,7 @@ var MyFunctions = {
         }
 
         return `
-            <h1><small>Boundary</small></h1>
+            <h1><small>Boundary ` + id + `</small></h1>
             <table class='table'>
                 <tr>
                     <th scope="row">Type</th>
@@ -243,7 +243,7 @@ var MyFunctions = {
                 document.querySelector('#popup-current-type').style.backgroundColor = 'lightblue';
                 document.querySelector('#popup-current-data-type').style.backgroundColor = 'lightblue';
                 document.querySelector('#popup-btn').addEventListener('click', () => {
-                    e.popup.setContent(MyFunctions.boundaryPopup(document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
+                    e.popup.setContent(MyFunctions.boundaryPopup(e.target._leaflet_id, document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
@@ -251,10 +251,10 @@ var MyFunctions = {
         });
     },
     //function to return polygons CL popups
-    polygonsPopup: (name, CL) => {
+    polygonsPopup: (id, name, CL) => {
         if(MyFunctions.mode == 'edit') {
             return `
-                <h1><small id='popup-header'>` + name + `</small></h1>
+                <h1><small id='popup-header'>` + name + ' ' + id + `</small></h1>
                 <table class='table'>
                     <tr>
                         <th scope="row">Current CL</th>
@@ -274,7 +274,7 @@ var MyFunctions = {
             `
         }
         return `
-            <h1><small id='popup-header'>` + name + `</small></h1>
+            <h1><small id='popup-header'>` + name + ' ' + id + `</small></h1>
             <table class='table'>
                 <tr>
                     <th scope="row">CL</th>
@@ -293,7 +293,7 @@ var MyFunctions = {
                 if(!e.popup.isOpen()) //check if the popup is still open
                     return;
                 document.querySelector('#popup-btn').addEventListener('click', () => {
-                    e.popup.setContent(MyFunctions.polygonsPopup(document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                    e.popup.setContent(MyFunctions.polygonsPopup(e.target._leaflet_id, document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
@@ -307,10 +307,9 @@ var MyFunctions = {
         });
     },
     //function to create domain marker popup, used to associate a sensor
-    sensorAssociationPopup: (associatedSensors, newSensor) => {
+    sensorAssociationPopup: (id, associatedSensors, newSensor) => {
         //('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor')
         //('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload')
-        
         getAssociatedSensors = () => {
             if(associatedSensors === null)
                 return "";
@@ -353,7 +352,8 @@ var MyFunctions = {
 
         if(MyFunctions.mode == 'edit') {
             return `
-                <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
+                <h1><small id='popup-header'>Water Entry Point ` + id + `</small></h1>
+                <h2><small>Sensors</small></h2>
                 <table class='table'>
                     <thead>
                         <tr>
@@ -377,7 +377,8 @@ var MyFunctions = {
         }
 
         return `
-            <h1><small id='popup-header'>Water Entry Point Sensors</small></h1>
+            <h1><small id='popup-header'>Water Entry Point ` + id + `</small></h1>
+            <h2><small>Sensors</small></h2>
             <table class='table'>
                 <thead>
                     <tr>
@@ -406,7 +407,7 @@ var MyFunctions = {
                 document.querySelector('#popup-btn').addEventListener('click', () => {
                     if(document.querySelector('#sensor-association').value == 'null')
                         return;
-                    e.popup.setContent(MyFunctions.sensorAssociationPopup(e.popup.getContent(), document.querySelector('#sensor-association').value));
+                    e.popup.setContent(MyFunctions.sensorAssociationPopup(e.target._leaflet_id, e.popup.getContent(), document.querySelector('#sensor-association').value));
                     popup.closePopup();
                     popup.openPopup();
                 });
@@ -462,8 +463,6 @@ var MyFunctions = {
         MyFunctions.domainMarkers = L.markerClusterGroup({showCoverageOnHover: false});
         MyFunctions.domainMarkers.addTo(map);
         map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
-
-        MyFunctions.domainMarkers.bindTooltip("Pick boundary and click me!");
 
         MyFunctions.domainMarkers.on('popupopen', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
@@ -585,12 +584,12 @@ var MyFunctions = {
     addDomainMarker: (map, latLng, sensors) => {
         let marker = L.marker(latLng).addTo(MyFunctions.domainMarkers);
 
-        MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null)));
+        MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null)));
 
         if(sensors !== undefined) {
             let sensorCode;
             for(sensor of sensors) {
-                marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker.getPopup().getContent(), sensor.sensor));
+                marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker._leaflet_id, marker.getPopup().getContent(), sensor.sensor));
             }
         }
         
@@ -801,7 +800,7 @@ var MyFunctions = {
                         MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
                     else {
                         let marker = L.marker(MyFunctions.coordStringToArray(point.geom)[0]).addTo(MyFunctions.domainMarkers);
-                        marker.bindPopup(MyFunctions.sensorAssociationPopup(null, null));
+                        marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null));
                     }
                 }
                 //Boundary Lines
@@ -825,12 +824,13 @@ var MyFunctions = {
                 polygonLayer = MyFunctions.createdPolygons.Refinement;
                 break;
         }
+
         if(MyFunctions.mode == 'edit')
-            MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(type, CL)));
+            MyFunctions.polygonsPopupConfig(layer.bindPopup(MyFunctions.polygonsPopup(L.stamp(layer), type, CL)));
         else
-            layer.bindPopup(MyFunctions.polygonsPopup(type, CL))
+            layer.bindPopup(MyFunctions.polygonsPopup(L.stamp(layer), type, CL))
         
-        layer.bindTooltip(type);
+        layer.bindTooltip(type + ' ' + layer._leaflet_id);
         polygonLayer.addLayer(layer); //Domain
 
         MyFunctions.handleHighlights(layer, polygonLayer);
@@ -845,9 +845,9 @@ var MyFunctions = {
         boundary.setStyle({color: '#008080'});
         MyFunctions.createdPolygons.Boundaries.addLayer(boundary);
         if(MyFunctions.mode == 'edit')
-            MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType)));
+            MyFunctions.boundaryLinePopupConfig(boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, dataType)));
         else
-            boundary.bindPopup(MyFunctions.boundaryPopup(type, dataType))
+            boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, dataType))
         boundary.bindTooltip("Boundary " + boundary._leaflet_id);
         MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
 
@@ -859,6 +859,7 @@ var MyFunctions = {
             for(domainPoint of MyFunctions.domainMarkers.getLayers()) {  
                 if(boundaryLinePoint.distanceTo(domainPoint.getLatLng()) < 1) { //this distance is very sensitive and can cause the duplication of points
                     boundaryPoints.push(domainPoint);
+                    domainPoint.bindTooltip('Boundary Point ' + domainPoint._leaflet_id);
                 }
             }
         }
