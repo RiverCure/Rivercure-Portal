@@ -1,10 +1,16 @@
 #polygon-tree-id {
     margin-bottom: 50px;
     display: block;
+    height: 250px;
+    overflow: scroll;
 
     .polygon-tree {
         display: flex;
         
+        &:hover {
+            background: #eee;
+        }
+
         .col-md-4 {
             display: flex;
             align-items: center;

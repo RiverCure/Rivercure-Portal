@@ -838,6 +838,7 @@ var MyFunctions = {
         if(MyFunctions.mode == 'edit') {
             MyFunctions.checkForCompleteness();
             MyFunctions.editPolygonFeature.addLayer(layer); //Add to this layer for editing
+            MyFunctions.addPolygonToTree(layer._leaflet_id, type, CL);
         }
     },
     //function to define boundary and draw it on the map
@@ -870,6 +871,7 @@ var MyFunctions = {
             boundary.on('dblclick', e => {
                 e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
             });
+            MyFunctions.addBoundaryLineToTree(boundary._leaflet_id, type, dataType);
         }
     },
     //check if all layers of createdPolygons have polygons 
@@ -887,21 +889,26 @@ var MyFunctions = {
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {
         MyFunctions.highlightStatus = true;
-        highlightPolygon = (e, polygonLayer) => {
-            if(polygonLayer === MyFunctions.createdPolygons.Boundaries || polygonLayer === MyFunctions.createdPolygons.Alignment)
-                L.polyline(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
-            else
-                L.polygon(polygonLayer.getLayer(e.target._leaflet_id).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
-        };
-        layer.on('mouseover', e => { if(MyFunctions.highlightStatus) { highlightPolygon(e, polygonLayer);}});
+        let polygonType = false; //polygon
+        if(polygonLayer === MyFunctions.createdPolygons.Boundaries || polygonLayer === MyFunctions.createdPolygons.Alignment)
+            polygonType = true; //polyline
+        
+        layer.on('mouseover', e => { if(MyFunctions.highlightStatus) { MyFunctions.highlightPolygon(e.target._leaflet_id, polygonType, polygonLayer);}});
         layer.on('mouseout', () => {
             if(MyFunctions.highlightStatus)
                 MyFunctions.highlightLayer.clearLayers();
         });
         layer.on('click', e => {
             MyFunctions.highlightLayer.clearLayers();
-            highlightPolygon(e, polygonLayer);
+            MyFunctions.highlightPolygon(e.target._leaflet_id, polygonType, polygonLayer);
         });
+    },
+    //function to highlight a polygon
+    highlightPolygon: (polygonId, polygonType, polygonLayer) => {
+        if(polygonType)
+            L.polyline(polygonLayer.getLayer(polygonId).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
+        else
+            L.polygon(polygonLayer.getLayer(polygonId).getLatLngs(), {interactive: false}).addTo(MyFunctions.highlightLayer);
     },
     //function to transform coordinate string into an array
     coordStringToArray: (string) => {
@@ -911,22 +918,52 @@ var MyFunctions = {
             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
         return coordinates;
     },
-
-
-
     //functions for polygon tree
     //adds a polygon to the tree
-    addPolygonToTree: () => {
+    addPolygonToTree: (id, polygon, CL) => {
+        let polygonType, polygonLayer;
+        const element = new DOMParser().parseFromString(MyFunctions.polygonInTreeHTML(id, polygon, CL), 'text/html').firstChild.lastChild.firstChild;
+        switch(polygon) {
+            case 'Domain':
+                document.querySelector('#domain-tree-id').appendChild(element);
+                polygonType = false;
+                polygonLayer = MyFunctions.createdPolygons.Domain;
+                break;
+            case 'Refinement':
+                document.querySelector('#refinement-tree-id').appendChild(element);
+                polygonType = false;
+                polygonLayer = MyFunctions.createdPolygons.Refinement;
+                break;
+            case 'Alignment':
+                document.querySelector('#alignment-tree-id').appendChild(element);
+                polygonType = true;
+                polygonLayer = MyFunctions.createdPolygons.Alignment;
+        }
 
+        element.addEventListener('mouseover', () => { if(MyFunctions.highlightStatus) { MyFunctions.highlightPolygon(id, polygonType, polygonLayer);}});
+        element.addEventListener('mouseout', () => {
+            if(MyFunctions.highlightStatus)
+                MyFunctions.highlightLayer.clearLayers();
+        });
     },
     //adds a boundary line to the tree
-    addBoundaryLineToTree: () => {
+    addBoundaryLineToTree: (id, selectedType, selectedDataType) => {
+        const element = new DOMParser().parseFromString(MyFunctions.boundaryLineInTreeHTML(id, selectedType, selectedDataType), 'text/html').firstChild.lastChild.firstChild;
+        document.querySelector('#boundaryline-tree-id').appendChild(element);
 
+        element.addEventListener('mouseover', () => { if(MyFunctions.highlightStatus) { MyFunctions.highlightPolygon(id, true, MyFunctions.createdPolygons.Boundaries);}});
+        element.addEventListener('mouseout', () => {
+            if(MyFunctions.highlightStatus)
+                MyFunctions.highlightLayer.clearLayers();
+        });
+    },
+    //adds a boundary point to the tree
+    addBoundaryPointToTree: (id, addedSensors, availableSensors, boundaryLine) => {
+        const element = new DOMParser().parseFromString(MyFunctions.boundaryPointInTreeHTML(id, addedSensors, availableSensors), 'text/html').firstChild.lastChild.firstChild;
+        document.querySelector('#' + boundaryLine).appendChild(element);
     },
     //write polygon html for tree
-    polygonInTreeRepresentation: (id, polygonType, CL) => {
-
-
+    polygonInTreeHTML: (id, polygonType, CL) => {
         return `
             <div class="polygon-tree col-md-12 border-top border-bottom">
                 <div class="col-md-4">
@@ -934,7 +971,7 @@ var MyFunctions = {
                 </div>
                 <div class="col-md-8">
                     <div class="col-md-12">
-                        <b>Current CL:</b>` + CL + `
+                        <b>Current CL:</b> ` + CL + `
                     </div>
                     <div class="col-md-12">
                         <div class="input-group mb-3">
@@ -949,8 +986,8 @@ var MyFunctions = {
         `
     },
     //write boundary line html for tree
-    polygonInTreeRepresentation: (id, selectedType, selectedDataType) => {
-        findSelectedType = (valueInAnalisys, selected) => {
+    boundaryLineInTreeHTML: (id, selectedType, selectedDataType) => {
+        findSelected = (valueInAnalisys, selected) => {
             if(valueInAnalisys == selected)
                 return 'selected';
             else
@@ -963,10 +1000,10 @@ var MyFunctions = {
                     <h1><small>Boundary ` + id + `</small></h1>
                 </div>
                 <div class="col-md-8">
-                    <div class="col-md-12">
-                        <b>Type:</b>
-                    </div>
                     <div class="input-group col-md-12">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><b>Type:</b></span>
+                        </div>
                         <select class="custom-select">
                             <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
                             <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
@@ -976,15 +1013,15 @@ var MyFunctions = {
                             <button type="button" class="btn btn-outline-info">Save</button>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <b>Data Type:</b>
-                    </div>
                     <div class="input-group col-md-12">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><b>Data Type:</b></span>
+                        </div>
                         <select class="custom-select">
-                            <option value="H" ` + findSelected('InputOutput', selectedDataType) + `>Depth</option>
-                            <option value="Q" ` + findSelected('InputOutput', selectedDataType) + `>Discharge</option>
-                            <option value="Z" ` + findSelected('InputOutput', selectedDataType) + `>Elevation</option>
-                            <option value="V" ` + findSelected('InputOutput', selectedDataType) + `>Velocity</option>
+                            <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
+                            <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
+                            <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
+                            <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
                         </select>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-info">Save</button>
@@ -994,8 +1031,69 @@ var MyFunctions = {
             </div>
         `
     },
+    //write boundary point html for tree
+    boundaryPointInTreeHTML: (id, addedSensors, availableSensors) => {
+        buildAssociatedSensorsTableBody = () => {
+            
+            return `
+                <tr>
+                    <th>1</th>
+                    <td class='add-code'>5</td>
+                    <td>Input</td>
+                    <td><span class='close'>x</span></td>
+                </tr>
+            `
+        }
 
-    
+        buildOptions = () => {
+            let addOptions = [];
+
+            for(sensor of availableSensors) {
+                addOptions += '<option value=' + sensor.code + '>' + sensor.code.concat(' '.concat(sensor.type)) + '</option>'
+            }
+
+            return addOptions;
+
+            // option = document.createElement('option');
+            // option.value = sensor.code;
+            // option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+            // document.querySelector('#sensor-association').appendChild(option);
+        }
+
+        return `
+            <div class="polygon-tree container border-top border-bottom">
+                <div class="col-md-4">
+                    <h1><small>Water Entry Point ` + id + ` Sensors</small></h1>
+                </div>
+                <div class="col-md-8">
+                    <table class='table'>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>`
+                            + buildAssociatedSensorsTableBody +
+                        `</tbody>
+                    </table>
+                    <div class="input-group col-md-12">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><b>Choose a sensor:</b></span>
+                        </div>
+                        <select name="sensor-association-tree" class="custom-select">
+                            <option value='null'>--------------------</option>
+                            ` + buildOptions + `
+                        </select>
+                        <div class"input-group-append">
+                            <button type="button" class="btn btn-outline-info">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    },
 }
 
 

@@ -84,9 +84,14 @@
 #polygon-tree-id {
   margin-bottom: 50px;
   display: block;
+  height: 250px;
+  overflow: scroll;
 }
 #polygon-tree-id .polygon-tree {
   display: flex;
+}
+#polygon-tree-id .polygon-tree:hover {
+  background: #eee;
 }
 #polygon-tree-id .polygon-tree .col-md-4 {
   display: flex;
