@@ -12,12 +12,12 @@ class EventSensorFilter(django_filters.FilterSet):
 
 class EventFilter(django_filters.FilterSet):  
 
-    startDateTime = DateFilter(field_name='startDatetime', lookup_expr='gte')
-    endDateTime = DateFilter(field_name='endDatetime', lookup_expr='lte')
+    startDate = DateFilter(field_name='startDate', lookup_expr='gte')
+    endDate = DateFilter(field_name='endDate', lookup_expr='lte')
     
     class Meta:
         model = e_ContextEvent
-        fields = ['Name','type','context', 'startDateTime', 'endDateTime']
+        fields = ['Name','type','context', 'startDate', 'endDate']
         
 class ContextFilter(django_filters.FilterSet):  
     class Meta:

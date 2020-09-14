@@ -1,5 +1,11 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, ContextViewSet, UploadContext, EventListView,EventDetailView, ContextSensorListView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView
+from .views import (
+    GrantAccess, ContextAccessCreateView,
+    ContextRequestDecisionView, show_context, 
+    download_context, ContextViewSet, UploadContext, 
+    EventListView,EventDetailView, ContextSensorListView, 
+    ContextListView, ContextDetailView, OtherContextListView, 
+    ContextRequestListView)
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -19,5 +25,7 @@ urlpatterns = [
     path('context_requests/', ContextRequestListView.as_view(), name='context-requests-list'), 
     path('context_request/<int:pk>', ContextRequestDecisionView, name='context-request-decision'),
     path('events/', EventListView, name='event-list'),
-    path('context_requests/', GrantAccess, name='access-granted'),
+    path('access_granted/<int:pk>', GrantAccess, name='access-granted'),
+    path('context_request_create/', ContextAccessCreateView.as_view(), name='context-requests-create'),
+    
 ]

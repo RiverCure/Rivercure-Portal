@@ -26,8 +26,8 @@
       </div>
       <p><a class="article-title" >{{ context.code }}</a></p>
 
-      {% if request.user|has_group:"ContextManager" %}  
-      <button type="button" class="btn btn-info">Request Acess</button>
+      {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
+      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">  Request Acess</a>
       {% endif %}
 
     </div>

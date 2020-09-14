@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from datetime import datetime
+from datetime import datetime, date
 from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
 from sensors.models import e_Sensor
@@ -103,9 +103,14 @@ class e_ContextEvent(models.Model):
 
 	state = models.CharField(max_length=30, choices=EVENTSTATE_CHOICES)
 	
-	startDatetime = models.DateTimeField() 
-	endDatetime = models.DateTimeField()    #always bigger than starttime
+	startDate = models.DateField(default=date.today)
 
+	startTime = models.TimeField(null=True)
+
+	endDate = models.DateField(default=date.today)
+
+	endTime = models.TimeField(null=True)
+	   									
 	description = models.TextField()
 
 	#Attributes for "Flood Simulation" event, with iStav
@@ -123,7 +128,7 @@ class e_ContextAccessRequest(models.Model):
 
 	access_granted = models.BooleanField(default=False)
 
-	state = models.CharField(max_length=30, choices=ContextAccessRequestState_CHOICES, null=False)
+	state = models.CharField(max_length=30, choices=ContextAccessRequestState_CHOICES, null=True, default="processing")
 
 	requestuser = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # REQUESTER
 

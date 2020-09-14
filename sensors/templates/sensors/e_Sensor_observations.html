@@ -1,0 +1,37 @@
+{% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h1>Sensors Observations</h1>
+<div>
+<form action="{% url 'sensor-observations' %}" method="GET">
+  <input name="query" type="text"  placeholder="Search by sensor/type">
+</form>
+</div>
+<div>
+{% for observation in queryset %}
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{% url 'sensor-observation-detail' observation.id %}">{{observation.sensor.Name}}</a>
+      </div>
+      <p><a class="article-title" >Sensor: {{observation.sensor}}</a></p>
+      <p><a class="article-title" >Date: {{observation.date}}</a></p>
+      <p><a class="article-title" >Time: {{observation.time}}</a></p>
+    </div>
+    </div>
+</article>
+{% empty %}
+<h2 class="text-secondary font-italic no-context-data">No available observations! :(</h2>
+{% endfor %}
+</div>
+
+
+
+
+{% endblock content %}
+
+
+
+

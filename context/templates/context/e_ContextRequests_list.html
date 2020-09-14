@@ -11,38 +11,54 @@
 
 <h1>Context Access Requests</h1>
 
+{% if user|has_group:"ContextManager" %}
 
 <h2>Processing</h2>
 {% for request in requests %}
-{% if request.state == "Processing" %}
+{% if request.state == "processing" or request.state == "Processing" %}
 <article class="media content-section">
     <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href=#>{{ request.context.code }}</a>
-      </div>
-      {% if user|has_group:"ContextManager" %}  
-      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'context-request-decision' request.id %}" >Manage Access</a>
-      {% endif %}
+        <div class="article-metadata">
+          <a class="mr-2" href="{% url 'context-request-decision' request.id %}">{{ request.context.Name }} </a>  
+        </div>
+        <div class="media-body">
+          <p>User : {{ request.requestuser}}</p>
+          <p>Organization : {{ request.requestuser.profile.institution}}</p>
+        </div>
+        <div class="media-article">
+          <img class="article-img" src="{{ user.profile.image.url }}"></img>
+        </div>
     </div>
 </article>
 {% endif %}
+{% empty %}
+<h2 class="text-secondary font-italic no-context-data">No requests</h2>
 {% endfor %}
 
 <h2>Finished</h2>
-
 {% for request in requests %}
-{% if request.state == "Finished" %}
+{% if request.state == "finished" or request.state == "Finished" %}
 <article class="media content-section">
-    <div class="media-body">
+  <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2" href=#>{{ request.context.code }}</a>
+        <a class="mr-2">{{ request.context.Name }} </a>  
       </div>
-      {% if user|has_group:"ContextManager" %}  
-      <p><a class="article-title" >{{ request.state }}</a></p>
-      {% endif %}
-    </div>
+      <div class="media-body">
+        <p>User : {{ request.requestuser}}</p>
+        <p>Organization : {{ request.requestuser.profile.institution}}</p>
+      </div>
+      <div class="media-article">
+        <img class="article-img" src="{{ user.profile.image.url }}"></img>
+      </div>
+  </div>
 </article>
 {% endif %}
+{% empty %}
+<h2 class="text-secondary font-italic no-context-data">No requests</h2>
 {% endfor %}
+
+
+
+{% endif %}
 
 {% endblock content %}

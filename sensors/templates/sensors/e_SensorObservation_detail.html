@@ -1,0 +1,20 @@
+{% extends "rivercureportal/base.html" %}
+
+{% block content %}
+
+<article class="media content-section">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="#">{{ object.sensor}} - observation{{ object.id }}</a>
+      </div>
+      <p class="article-content">{{observation.startDatetime}} </p>
+      <p class="article-content"> {{observation.endDatetime}} </p>
+    </div>
+</article>
+
+
+{% endblock content %}
+
+
+
+

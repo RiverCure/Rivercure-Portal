@@ -7,8 +7,9 @@
     <div class="media-body">
       <h2 class="article-title">{{event.Name}}</h2>
       <p class="article-content">Code: {{ event.type }}</p> 
-      <p class="article-content">Start: {{ event.startDatetime }}</p>
-      <p class="article-content">End: {{ event.endDatetime }}</p>
+      <p class="article-content">Start: {{ event.startDate }} {{event.startTime}}</p> 
+      <p class="article-content">End: {{ event.endDate }} {{event.endTime}}</p>
+      <p><a class="article-title" >Context: {{ event.context }}</a></p>
 
 </article>
 <a class="btn btn-outline-info" href="{% url 'event-list' %}">All Events</a>

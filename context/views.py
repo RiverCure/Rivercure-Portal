@@ -19,30 +19,51 @@ from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from io import BytesIO, StringIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django import forms
+from django.http import HttpResponseRedirect
 
 
 
-def GrantAccess(request):
-    context = {
-        
-    }
-
+class ContextAccessCreateView(UserPassesTestMixin, CreateView):
+    model = e_ContextAccessRequest
+    fields = ['type', 'context']
+    template_name = "context/e_ContextAccessRequest_create.html"
+    #success_url =  "/contexts/" 
     
-    return render(request, 'rivercure/home.html', context)
-
-
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.requestuser = self.request.user
+        obj.save() 
+        return HttpResponseRedirect("/contexts")
+        
+    def test_func(self, *args , **kwargs):
+        if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists() :
+            return True 
+       
 
 
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
-    context = pedido.context
-
-    context  = {
-        #user
-        'context': e_Context.objects.first
-
+    requester = pedido.requestuser
+    context = {
+        'sensors': e_Sensor.objects.all(),
+        'user': requester,
+        'context': e_Context.objects.first(),
+        'request': pedido,
     }
     return render(request, 'context/e_ContextRequest_grant_deny.html', context)
+
+def GrantAccess(request, pk):
+    pedido = e_ContextAccessRequest.objects.get(id=pk)
+    requester = pedido.requestuser
+    pedido.access_granted = True
+    pedido.state = "Finished"
+    pedido.save()   
+
+    context = {
+        'user': requester,   
+    }
+    return render(request, 'context/access_granted.html', context)
 
 class ContextRequestListView(UserPassesTestMixin, ListView):
     model = e_ContextAccessRequest
@@ -93,9 +114,6 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
                
         return context
     
-
-
-
 def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
     contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
@@ -427,4 +445,3 @@ def download_context(request, context_code): #function that allows the download 
         messages.warning(request,f'Context not complete for download') 
         print(f'Error dopwnloading context: {e}')
         return redirect(request.META['HTTP_REFERER'])
-

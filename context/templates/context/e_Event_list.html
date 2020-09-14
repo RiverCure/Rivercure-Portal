@@ -18,9 +18,13 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'event-detail' event.pk %}">{{ event.Name }}</a>
       </div>
-      <p><a class="article-title" >{{ event.type }}</a></p>
+      <p class="article-title" >{{ event.type }}</p>
+      <p class="article-title" >Date: {{ event.startDate }} - {{ event.endDate }</p>
+      <p class="article-title" >Context: {{ event.context }}</p>
     </div>
 </article>
+{% empty %}
+<h2 class="text-secondary font-italic no-context-data">No events found! :(</h2>
 {% endfor %}
 
 

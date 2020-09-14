@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib.auth.models import User
 
 SENSORKIND_CHOICES = (  ('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor'),  ('tBD Sensor','TBD Sensor'),  )
@@ -7,6 +7,9 @@ SENSORKIND_CHOICES = (  ('hydrometricSensor','HydrometricSensor'),  ('weatherSen
 SENSORMODALITYKIND_CHOICES = (  ('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload'),  )
 
 COLOURKIND_CHOICES = (  ('red','Red'),  ('yellow','Yellow'),  ('green','Green'),  )
+
+METRICKIND_CHOICES = (  ('sec','Sec'),  ('min','Min'),  ('hour','Hour'),  ('day','Day'), ('week','Week'), ('month','Month'), ('year','Year'),)
+
 
 class e_Sensor(models.Model):
     code = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -23,23 +26,24 @@ class e_Sensor(models.Model):
 
     version = models.CharField(max_length=20)
 
-    timeZoneAbbreviation = models.CharField(max_length=20)
+    timeZoneAbbreviation = models.CharField(null=True, blank=True, max_length=20)
 
-    timeZoneOffset = models.IntegerField()
+    timeZoneOffset = models.IntegerField(null=True, blank=True)
 
     geom = models.PointField()
    
     # FixedInSituSensor
-# 	attribute recRhythmValue "Recording rhythm value" : Integer []
-# 	attribute recRhythmMetric "Recording rhythm metric" : DataEnumeration MetricKind
+    recRhythmValue = models.IntegerField(null=True, blank=True)                                           # Recording rhythm value
+    recRhythmMetric = models.CharField(max_length=20, choices=METRICKIND_CHOICES, null=True)              # Recording rhythm metric                                                                  
+
 
 #  HydrometricSensor
-# 	attribute zeroLevelScale "Zero level scale" : Decimal  
+    zeroLevelScale = models.DecimalField(null=True, max_digits=3, decimal_places=2)
+
 
 #  WeatherSensor
-# 	attribute maxRange "Max range" : Integer 
-# 	attribute PRF "Pulse repetition frequency (PRF)" : Integer 
-# 	attribute recRhythm "Recording rhythm" : String  
+    maxRange = models.IntegerField(null=True, blank=True)   
+    PRF = models.IntegerField(null=True, blank=True)   
 
 # 	PhotoSensor
 # 	attribute isSocialNetwork "is from a social network" : Boolean [defaultValue "False"]
@@ -83,8 +87,41 @@ class e_SensorObservation(models.Model):
 
     sensorType = models.CharField(max_length=50, choices=SENSORKIND_CHOICES )
 
-    startDatetime = models.DateTimeField()
+    date = models.DateField(default=date.today)
 
-    endDateTime = models.DateTimeField()
+    time = models.TimeField(null=True)
 
-    #TBD
+    #HYDROMETRIC SENSORS
+    depth = models.FloatField(blank=True, null=True)        #profundidade (m)
+    discharge = models.FloatField(blank=True, null=True)    #caudal (m3/seg)
+    volume  = models.FloatField(blank=True, null=True)      #volume (m3)
+    velocity  = models.FloatField(blank=True, null=True)   #velocidade (m/seg)
+    elevation  = models.FloatField(blank=True, null=True)   #cota (m)
+
+    test  = models.IntegerField(blank=True, null=True)   #cota (m)
+
+    #WeatherSensorObservation
+    WeatherSensorRainFall = models.FloatField(blank=True, null=True)  #precipitação (m)
+    soilWaterContent = models.FloatField(blank=True, null=True)    # teor em água do solo (%)
+
+    #RadarSensorObservation
+    RadarSensorRainfall = models.FloatField(blank=True, null=True)  #precipitação (m)
+    
+    #HumanSensorObservation
+	#photo : Image
+	#geom  : GeoPoint 
+	#elevation : Double                              #"ML techniques from Photo" 	// cota (m3)
+	#attribute velocity : Double	                 #"ML techniques from Photo"	// velocidade (m/seg)
+
+	#isCummulative "is Cummulative" : Boolean [defaultValue "False"]
+	#nValueTotal "Total number of values" : Integer [constraints (NotNull)]
+
+    ##e_PhotoSensorObservation
+	#attribute url "URL" : URL
+	#attribute fileName "File name" : String 
+	#attribute height "Height" : Integer
+	#attribute horizontalRes "Horizontal resolution" : Integer
+	#attribute verticalRes "Vertical resolution" : Integer
+	#attribute nBits "Number of bits" : Integer
+	#attribute width "Width" : Integer
+	#attribute fileFormat "File format" : String

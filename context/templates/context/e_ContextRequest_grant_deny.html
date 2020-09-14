@@ -1,23 +1,20 @@
 {% extends "rivercureportal/base.html" %}
+{% load auth_extras %}
 {% load leaflet_tags %}
 {% load static %}
 
-{% block scripts %}
-    {% leaflet_js plugins="ALL" %}
-    {% leaflet_css plugins="ALL" %}
-{% endblock %}
 
 {% block content %}
     <div class="content-section">
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Grant access to {{context}} for "USERNAME"</legend>
-                <h2>Are you sure you want grant access to this context for this user?</h2>
+                <legend class="border-bottom mb-0">Grant access to {{context}} for {{user}}?</legend>
             </fieldset>
             <div class="form-group">
-                <a class="btn btn-outline-danger" href="{% url 'access-granted' %}">Yes</a>
-                <a class="btn btn-outline-secondary" href="#">Cancel</a>
+                <a class="btn btn-outline-danger" href="{% url 'access-granted' request.id %}">Yessss</a> 
+                <a class="btn btn-outline-danger" href="#">No</a>
+                <a class="btn btn-outline-secondary" href="{% url 'context-requests-list' %}">Back</a>
                 
             </div>
         </form>

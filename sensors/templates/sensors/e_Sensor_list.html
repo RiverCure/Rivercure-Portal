@@ -4,8 +4,11 @@
 {% block content %}
 
 <h1>Sensors</h1>
+
+
 <div class="filter-section">
 <h5>Filter</h5> 
+
 <form method="get">
   {{ filter.form |crispy }}
   <button type="submit" class="btn btn-info">Filter</button>
@@ -20,10 +23,10 @@
       </div>
       <p><a class="article-title" >Type: {{ sensor.type }}</a></p>
       <p><a class="article-title" >Modality type: {{ sensor.modalityType}}</a></p>
+      <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observations' %}?query={{sensor.Name}}" style='float:right'> Observations</a>
     </div>
 </article>
 {% endfor %}
-
 
 {% endblock content %}
 

@@ -1,63 +1,64 @@
 {% extends "rivercureportal/base.html" %}
 {% load auth_extras %}
+{% load static %}
 
 {% block content %}
 
-{% if request.user|has_group:"Administration" %} 
-<p>
-  <a type="button" class="btn btn-info"class="btn btn-info" data-toggle="collapse" data-target="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-  Users
-  </a>
-</p>
- 
-
-{% for g in groups %}
-<div class="collapse" id="collapseExample">
-  <h4>{{g.name}}</h4>
-  {% for user in g.user_set.all %}
-  <article class="media content-section">
-    <div class="media-body">
-        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
-        <a class="mr-2">{{ user.profile.institution }}</a>
-    </div>
-
-    <div class="media-article">
-      <img class="article-img" src="{{ user.profile.image.url }}"></img>
-    </div>
-  </article>
-
-  
-  {% endfor %}
-</div>
-{% endfor %}
-
-{% endif %}
-
 {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
 
-<h2> Popular Context </h2>
+<h2 class="cool-header">Popular Context</h2>
+
 <article class="media content-section">
     <div class="media-body">
       <h2 class="article-title">{% if recent_context != None  %} {{recent_context.Name}}  {% endif %}</h2>
       <p class="article-content">{% if recent_context != None  %} Hydrofeature: {{ recent_context.hydroFeature }} {% endif %}</p>  
+    </div>
 </article>
-<a type="button" class="btn btn-info"class="btn btn-info" href="{% url 'context-list' %}">All Contexts</a>
+
+<a type="button" class="btn btn-info btn-sm" href="{% url 'context-list' %}">All Contexts</a>
 
 {% endif %}
 
 
 {% if request.user|has_group:"SensorManager" %} 
 
-<h2> Popular Sensor </h2>
+<h2>Popular Sensor </h2>
 <article class="media content-section">
     <div class="media-body">
       <h2 class="article-title">{% if recent_sensor != None  %} {{recent_sensor.Name}}  {% endif %}</h2>
       <p class="article-content">{% if recent_sensor != None  %} Code: {{ recent_sensor.code }} {% endif %}</p>  
+    </div>
 </article>
-<a type="button" class="btn btn-info"class="btn btn-info" href="{% url 'sensor-list' %}">All Sensors</a>
+
+<a type="button" class="btn btn-info btn-sm" href="{% url 'sensor-list' %}">All Sensors</a>
 
 {% endif %}
 
+{% if request.user|has_group:"Administration" %} 
+
+
+<a type="button" class="btn btn-info" data-toggle="collapse" data-target="#collapseExample"  aria-expanded="false" aria-controls="collapseExample">
+  Users
+</a>
+
+{% for g in groups %}
+  <div class="collapse" id="collapseExample">
+    <h4>{{g.name}}</h4>
+    {% for user in g.user_set.all %}
+      <article class="media content-section">
+      <div class="media-body">
+        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
+        <a class="mr-2">{{ user.profile.institution }}</a>
+      </div>
+      <div class="media-article">
+        <img class="article-img" src="{{ user.profile.image.url }}"></img>
+      </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endfor %}
+
+{% endif %}
 
 {% endblock %}
 
