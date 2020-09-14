@@ -134,5 +134,103 @@
         </div>
         <div id='load-context-result' style='display: none'></div>
     </div>
-    
+    <div id="polygon-tree-id" class="container">
+        <div id="domain-tree-id" class="container"></div>
+        <div id="refinement-tree-id" class="container"></div>
+        <div id="alignment-tree-id" class="container"></div>
+        <div id="boundaryline-tree-id" class="container"></div>
+
+        {% comment %} <div class="polygon-tree col-md-12 border-top border-bottom">
+            <div class="col-md-4">
+                <h1><small>Domain 156</small></h1>
+            </div>
+            <div class="col-md-8">
+                <div class="col-md-12">
+                    <b>Current CL:</b> 12
+                </div>
+                <div class="col-md-12">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><b>Data Type:</b></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Insert new CL">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-info">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="polygon-tree container border-top border-bottom">
+            <div class="col-md-4">
+                <h1><small>Boundary 156</small></h1>
+            </div>
+            <div class="col-md-8">
+                <div class="input-group col-md-12">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><b>Type:</b></span>
+                    </div>
+                    <select class="custom-select">
+                        <option value="Input" selected>Input</option>
+                        <option value="Output">Output</option>
+                        <option value="InputOutput">Input Output</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-info">Save</button>
+                    </div>
+                </div>
+                <div class="input-group col-md-12">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><b>Data Type:</b></span>
+                    </div>
+                    <select class="custom-select">
+                        <option value="H" selected>Depth</option>
+                        <option value="Q">Discharge</option>
+                        <option value="Z">Elevation</option>
+                        <option value="V">Velocity</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-info">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="polygon-tree container border-top border-bottom">
+            <div class="col-md-4">
+                <h1><small>Water Entry Point 156 Sensors</small></h1>
+            </div>
+            <div class="col-md-8">
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>1</th>
+                            <td class='add-code'>5</td>
+                            <td>Input</td>
+                            <td><span class='close'>x</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="input-group col-md-12">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><b>Choose a sensor:</b></span>
+                    </div>
+                    <select class="custom-select">
+                        <option value='null'>--------------------</option>
+                    </select>
+                    <div class"input-group-append">
+                        <button type="button" class="btn btn-outline-info">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
 {% endblock %}

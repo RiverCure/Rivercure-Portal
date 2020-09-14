@@ -204,10 +204,9 @@ def boundaryline_creation(form, context): # function to create the several lines
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
     boundary_points = json.loads(form.cleaned_data['boundary_points'])['features']
-
     for feature in json.loads(form.cleaned_data['boundaries'])['features']:
         boundary = e_ContextBoundaryLine()
-        boundary.context = context   
+        boundary.context = context
         boundary.geom = LineString(feature['geometry']['coordinates'])
         boundary.type = feature['properties']['type']
         boundary.dataType = feature['properties']['dataType']
@@ -445,3 +444,7 @@ def download_context(request, context_code): #function that allows the download 
         messages.warning(request,f'Context not complete for download') 
         print(f'Error dopwnloading context: {e}')
         return redirect(request.META['HTTP_REFERER'])
+
+def simulation_results(request): #function to redirect the user to the paraviewweb visualizer
+    paraviewweb_visualizer_url = 'http://localhost:8090'
+    return redirect(paraviewweb_visualizer_url)
