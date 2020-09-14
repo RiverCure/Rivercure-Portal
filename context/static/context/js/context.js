@@ -240,11 +240,16 @@ var MyFunctions = {
                 if(!e.popup.isOpen()) //check if the popup is still open
                         return;
                 //set the color of the current choice
-                document.querySelector('#popup-current-type').style.backgroundColor = 'lightblue';
-                document.querySelector('#popup-current-data-type').style.backgroundColor = 'lightblue';
+                document.querySelector('#popup-current-type').style.backgroundColor = '#E8E8E8';
+                document.querySelector('#popup-current-data-type').style.backgroundColor = '#E8E8E8';
                 document.querySelector('#popup-btn').addEventListener('click', () => {
                     e.popup.setContent(MyFunctions.boundaryPopup(e.target._leaflet_id, document.querySelector('#popup-selected-type').value, document.querySelector('#popup-selected-data-type').value));
                     e.popup.update();
+                    
+                    document.querySelector('#boundaryline-' + e.target._leaflet_id + '-type-value').value = document.querySelector('#popup-selected-type').value;
+                    document.querySelector('#boundaryline-' + e.target._leaflet_id + '-datatype-value').value = document.querySelector('#popup-selected-data-type').value;
+                    MyFunctions.boundaryLineTreeOptionsHighlight(e.target._leaflet_id);
+
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
             }, 500);
@@ -293,7 +298,9 @@ var MyFunctions = {
                 if(!e.popup.isOpen()) //check if the popup is still open
                     return;
                 document.querySelector('#popup-btn').addEventListener('click', () => {
-                    e.popup.setContent(MyFunctions.polygonsPopup(e.target._leaflet_id, document.querySelector('#popup-header').innerHTML, document.querySelector('#popup-selected-cl').value));
+                    //change value in polygon tree
+                    document.querySelector('#polygon-' + e.target._leaflet_id + '-CL-value').innerHTML = '<b>Current CL:</b> ' + document.querySelector('#popup-selected-cl').value;
+                    e.popup.setContent(MyFunctions.polygonsPopup(e.target._leaflet_id, document.querySelector('#popup-header').innerHTML.split(' ')[0], document.querySelector('#popup-selected-cl').value));
                     e.popup.update();
                     setTimeout(() => { e.target.closePopup();}, 1500);
                 });
@@ -566,12 +573,27 @@ var MyFunctions = {
             if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
                 MyFunctions.domainMarkerToBoundary = {};
+
+                while(document.querySelector('#boundaryline-tree-id').firstChild)
+                    document.querySelector('#boundaryline-tree-id').lastChild.remove();
+
+                MyFunctions.createdPolygons.Domain.removeLayer(layer);
+
+                document.querySelector('#polygon-tree-Domain-' + layer._leaflet_id).remove();
             }
-            MyFunctions.createdPolygons.Domain.removeLayer(layer);
-            MyFunctions.createdPolygons.Refinement.removeLayer(layer);
-            MyFunctions.createdPolygons.Alignment.removeLayer(layer);
+
+            else if(MyFunctions.createdPolygons.Refinement.hasLayer(layer)) {
+                MyFunctions.createdPolygons.Refinement.removeLayer(layer);
+                document.querySelector('#polygon-tree-Refinement-' + layer._leaflet_id).remove();
+            }
+
+            else if(MyFunctions.createdPolygons.Alignment.hasLayer(layer)) {
+                MyFunctions.createdPolygons.Alignment.removeLayer(layer);
+                document.querySelector('#polygon-tree-Alignment-' + layer._leaflet_id).remove();
+            }
         }
 
+        //remove polygon tree
         MyFunctions.deleting = false;
     },
     //function to remove domain markers
@@ -731,7 +753,26 @@ var MyFunctions = {
         }
         finally {
             document.querySelector('#load-context-result').style.display = 'block';
+            MyFunctions.pruneDomainMarkers();
         }
+    },
+    //function to delete all domain points that dont belong to a boundary line
+    pruneDomainMarkers: () => {
+        MyFunctions.domainMarkers.eachLayer((marker) => {
+            let found = false;
+            for(line in MyFunctions.domainMarkerToBoundary) {
+                if(found)
+                    break;
+                for(point of MyFunctions.domainMarkerToBoundary[line]) {
+                    if(point._leaflet_id === marker._leaflet_id) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if(!found)
+                MyFunctions.domainMarkers.removeLayer(marker);
+        })
     },
     //function to get a context to edit
     getContext: (url, map) => {
@@ -759,6 +800,22 @@ var MyFunctions = {
 
         for(key in MyFunctions.createdPolygons)
             MyFunctions.createdPolygons[key].clearLayers();
+
+        var element = document.querySelector('#domain-tree-id');
+        while(element.firstChild)
+            element.lastChild.remove();
+        
+        element = document.querySelector('#refinement-tree-id');
+        while(element.firstChild)
+            element.lastChild.remove();
+        
+        element = document.querySelector('#alignment-tree-id');
+        while(element.firstChild)
+            element.lastChild.remove();
+        
+        element = document.querySelector('#boundaryline-tree-id');
+        while(element.firstChild)
+            element.lastChild.remove();
     },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
@@ -852,8 +909,6 @@ var MyFunctions = {
         boundary.bindTooltip("Boundary " + boundary._leaflet_id);
         MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
 
-        
-
         //associate point to respective boundary
         var boundaryPoints = [];
         for(boundaryLinePoint of boundary.getLatLngs()) {
@@ -870,8 +925,13 @@ var MyFunctions = {
             MyFunctions.checkForCompleteness();
             boundary.on('dblclick', e => {
                 e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
+                document.querySelector('#boundaryline-tree-id-' + e.target._leaflet_id).remove();
             });
             MyFunctions.addBoundaryLineToTree(boundary._leaflet_id, type, dataType);
+
+            // for(point of boundaryPoints) {
+            //     MyFunctions.addBoundaryPointToTree(point._leaflet_id, [], boundary._leaflet_id);
+            // }
         }
     },
     //check if all layers of createdPolygons have polygons 
@@ -945,6 +1005,13 @@ var MyFunctions = {
             if(MyFunctions.highlightStatus)
                 MyFunctions.highlightLayer.clearLayers();
         });
+
+
+        document.querySelector('#polygon-' + id + '-CL-input-btn').addEventListener('click', () => {
+            polygonLayer.getLayer(id).getPopup().setContent(MyFunctions.polygonsPopup(id , polygon, document.querySelector('#polygon-' + id + '-CL-input').value));
+            document.querySelector('#polygon-' + id + '-CL-value').innerHTML = '<b>Current CL:</b> ' + document.querySelector('#polygon-' + id + '-CL-input').value;
+            document.querySelector('#polygon-' + id + '-CL-input').value = '';
+        });
     },
     //adds a boundary line to the tree
     addBoundaryLineToTree: (id, selectedType, selectedDataType) => {
@@ -956,28 +1023,38 @@ var MyFunctions = {
             if(MyFunctions.highlightStatus)
                 MyFunctions.highlightLayer.clearLayers();
         });
+
+        document.querySelector('#boundaryline-' + id + '-type-value').options[document.querySelector('#boundaryline-' + id + '-type-value').selectedIndex].style.backgroundColor = '#E8E8E8';
+        document.querySelector('#boundaryline-' + id + '-datatype-value').options[document.querySelector('#boundaryline-' + id + '-datatype-value').selectedIndex].style.backgroundColor = '#E8E8E8';
+        
+        document.querySelector('#boundaryline-' + id + '-types-input-btn').addEventListener('click', () => {
+            MyFunctions.createdPolygons.Boundaries.getLayer(id).getPopup()
+            .setContent(MyFunctions.boundaryPopup(id, document.querySelector('#boundaryline-' + id + '-type-value').value, document.querySelector('#boundaryline-' + id + '-datatype-value').value));
+
+            MyFunctions.boundaryLineTreeOptionsHighlight(id);
+        });
     },
     //adds a boundary point to the tree
-    addBoundaryPointToTree: (id, addedSensors, availableSensors, boundaryLine) => {
-        const element = new DOMParser().parseFromString(MyFunctions.boundaryPointInTreeHTML(id, addedSensors, availableSensors), 'text/html').firstChild.lastChild.firstChild;
-        document.querySelector('#' + boundaryLine).appendChild(element);
+    addBoundaryPointToTree: (id, addedSensors, boundaryLine) => {
+        const element = new DOMParser().parseFromString(MyFunctions.boundaryPointInTreeHTML(id, addedSensors), 'text/html').firstChild.lastChild.firstChild;
+        document.querySelector('#boundaryline-tree-id-' + boundaryLine).appendChild(element);
     },
     //write polygon html for tree
     polygonInTreeHTML: (id, polygonType, CL) => {
         return `
-            <div class="polygon-tree col-md-12 border-top border-bottom">
+            <div ` + 'id=polygon-tree-' + polygonType + '-' + id + ` class="polygon-tree col-md-12 border-top border-bottom">
                 <div class="col-md-4">
                     <h1><small>` + polygonType + ' ' + id + `</small></h1>
                 </div>
                 <div class="col-md-8">
-                    <div class="col-md-12">
+                    <div ` + 'id=polygon-' + id + '-CL-value' + ` class="col-md-12">
                         <b>Current CL:</b> ` + CL + `
                     </div>
                     <div class="col-md-12">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Insert new CL">
+                            <input type="text" ` + 'id=polygon-' + id + '-CL-input' + ` class="form-control" placeholder="Insert new CL">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-info">Save</button>
+                                <button type="button" ` + 'id=polygon-' + id + '-CL-input-btn' + ` class="btn btn-outline-info">Save</button>
                             </div>
                         </div>
                     </div>
@@ -995,7 +1072,7 @@ var MyFunctions = {
         }
 
         return `
-            <div class="polygon-tree container border-top border-bottom">
+            <div ` + 'id=boundaryline-tree-id-' + id + ` class="polygon-tree container border-top border-bottom">
                 <div class="col-md-4">
                     <h1><small>Boundary ` + id + `</small></h1>
                 </div>
@@ -1004,27 +1081,24 @@ var MyFunctions = {
                         <div class="input-group-prepend">
                             <span class="input-group-text"><b>Type:</b></span>
                         </div>
-                        <select class="custom-select">
+                        <select ` + 'id=boundaryline-' + id + '-type-value' + ` class="custom-select">
                             <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
                             <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
                             <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
                         </select>
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-info">Save</button>
-                        </div>
                     </div>
                     <div class="input-group col-md-12">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><b>Data Type:</b></span>
                         </div>
-                        <select class="custom-select">
+                        <select ` + 'id=boundaryline-' + id + '-datatype-value' + ` class="custom-select">
                             <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
                             <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
                             <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
                             <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
                         </select>
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-info">Save</button>
+                            <button type="button" ` + 'id=boundaryline-' + id + '-types-input-btn' + ` class="btn btn-outline-info">Save</button>
                         </div>
                     </div>
                 </div>
@@ -1032,9 +1106,8 @@ var MyFunctions = {
         `
     },
     //write boundary point html for tree
-    boundaryPointInTreeHTML: (id, addedSensors, availableSensors) => {
+    boundaryPointInTreeHTML: (id, addedSensors) => {
         buildAssociatedSensorsTableBody = () => {
-            
             return `
                 <tr>
                     <th>1</th>
@@ -1046,12 +1119,16 @@ var MyFunctions = {
         }
 
         buildOptions = () => {
-            let addOptions = [];
+            let addOptions = '';
+            let availableSensors = MyFunctions.getNearbySensors(addedSensors, MyFunctions.domainMarkers.getLayer(id));
 
-            for(sensor of availableSensors) {
-                addOptions += '<option value=' + sensor.code + '>' + sensor.code.concat(' '.concat(sensor.type)) + '</option>'
+            for(option of availableSensors) {
+                addOptions += option.outerHTML;
             }
 
+            console.log('Sensors ' + id)
+            console.log(MyFunctions.getNearbySensors(addedSensors, MyFunctions.domainMarkers.getLayer(id)))
+            console.log(addOptions)
             return addOptions;
 
             // option = document.createElement('option');
@@ -1061,7 +1138,7 @@ var MyFunctions = {
         }
 
         return `
-            <div class="polygon-tree container border-top border-bottom">
+            <div ` + 'id=boundarypoint-tree-id-' + id + ` class="polygon-tree col-md-12 border-top border-bottom">
                 <div class="col-md-4">
                     <h1><small>Water Entry Point ` + id + ` Sensors</small></h1>
                 </div>
@@ -1075,7 +1152,7 @@ var MyFunctions = {
                             </tr>
                         </thead>
                         <tbody>`
-                            + buildAssociatedSensorsTableBody +
+                            + buildAssociatedSensorsTableBody() +
                         `</tbody>
                     </table>
                     <div class="input-group col-md-12">
@@ -1084,7 +1161,7 @@ var MyFunctions = {
                         </div>
                         <select name="sensor-association-tree" class="custom-select">
                             <option value='null'>--------------------</option>
-                            ` + buildOptions + `
+                            ` + buildOptions() + `
                         </select>
                         <div class"input-group-append">
                             <button type="button" class="btn btn-outline-info">Add</button>
@@ -1093,6 +1170,34 @@ var MyFunctions = {
                 </div>
             </div>
         `
+    },
+    //function to highlight the background color of current value of boundary line options in polygonTree
+    boundaryLineTreeOptionsHighlight: (id) => {
+        for(node of document.querySelector('#boundaryline-' + id + '-type-value').childNodes) {
+            if(node.style !== undefined)
+                node.style.backgroundColor = 'white';
+        }
+        for(node of document.querySelector('#boundaryline-' + id + '-datatype-value').childNodes){
+            if(node.style !== undefined)
+                node.style.backgroundColor = 'white';
+        }
+
+        document.querySelector('#boundaryline-' + id + '-type-value').options[document.querySelector('#boundaryline-' + id + '-type-value').selectedIndex].style.backgroundColor = '#E8E8E8';
+        document.querySelector('#boundaryline-' + id + '-datatype-value').options[document.querySelector('#boundaryline-' + id + '-datatype-value').selectedIndex].style.backgroundColor = '#E8E8E8';
+    },
+    //function to get sensors that are close enough to a marker
+    getNearbySensors: (addedSensors, domainPoint) => {
+        let nearbySensors = [], sensorDistance = 100
+        for(sensor of MyFunctions.sensors) {
+            if(!addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
+                L.latLng(domainPoint.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= sensorDistance) { 
+                option = document.createElement('option');
+                option.value = sensor.code;
+                option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+                nearbySensors.push(option);
+            }
+        };
+        return nearbySensors;
     },
 }
 
