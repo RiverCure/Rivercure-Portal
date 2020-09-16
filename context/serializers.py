@@ -41,3 +41,4 @@ class ContextSerializer(serializers.ModelSerializer): # main serializer
         model = e_Context
         fields = ['code', 'Name', 'hydroFeature', 'geomExternalBoundary', 'CLExternalBoundary',
                     'context_refinement', 'context_alignment', 'context_boundaries']
+

@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.utils import timezone
 from datetime import datetime, date
 from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
@@ -33,14 +34,19 @@ class e_Context(models.Model):
 	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
 	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
 
-	#contextDTM = models.RasterField(null=True, blank=True) #This field corresponds to the context DTM (.tiff file)
-
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
 
 	isPublic = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.Name
+
+class e_ContextDTM(models.Model):
+	context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_dtm')
+	contextDTM = models.RasterField(null=True, blank=True) #This field corresponds to the context DTM (.tiff file)
+
+	def __str__(self):
+		return f"{self.context} context dtm"
 
 class e_ContextRefinement(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_refinement')
@@ -88,7 +94,7 @@ class e_ContextSensor(models.Model):
 	sensor = models.ForeignKey('sensors.e_Sensor', on_delete=models.CASCADE, null=True, blank=False, related_name='context_sensor' )
 	description = models.TextField()
 	
-	associateDatetime = models.DateTimeField(default=datetime.now)
+	associateDatetime = models.DateTimeField(default=timezone.now)
 	# user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 	def __str__(self):

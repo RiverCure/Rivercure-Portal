@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 	'suit',
     'rest_framework',
     'corsheaders',
+    'raster',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
