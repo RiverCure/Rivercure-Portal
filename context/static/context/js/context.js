@@ -9,6 +9,8 @@ var MyFunctions = {
     //Layer for highlights
     highlightLayer: null,
     highlightStatus: null,
+    //dictionary for missing polygons
+    missingPolygons: {},
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
@@ -572,6 +574,7 @@ var MyFunctions = {
         for(layer of layers) {
             if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
+                MyFunctions.domainMarkers.clearLayers();
                 MyFunctions.domainMarkerToBoundary = {};
 
                 while(document.querySelector('#boundaryline-tree-id').firstChild)
@@ -688,6 +691,7 @@ var MyFunctions = {
         //prepare the visualization of the operation result
         try {
             let popup;
+
             // Save the polygons in geojsons and then serialize them to send to the web server
             var domain = MyFunctions.createdPolygons.Domain.getLayers()[0].toGeoJSON();
             popup = MyFunctions.createdPolygons.Domain.getLayers()[0].getPopup().getContent();
@@ -743,13 +747,30 @@ var MyFunctions = {
             document.querySelector('#id_boundary_points').value = JSON.stringify(boundaryPoints);
             
             // Change alert on form
-            document.querySelector('#load-status').innerHTML = document.querySelector('#load-context-result').innerHTML = "Context Loaded";
-            document.querySelector('#load-status').className = document.querySelector('#load-context-result').className = "alert alert-success";
+            let errorMsg = '';
+            for(key in MyFunctions.missingPolygons) {
+                if(MyFunctions.missingPolygons[key]) {
+                    errorMsg += key +' missing<br>'
+                }
+            }
+            if(errorMsg != '') {
+                document.querySelector('#load-context-result').setAttribute("class", "alert alert-warning");
+                document.querySelector('#load-context-result').innerHTML = "Context incomplete but ready for submission<br>" + errorMsg;
+                // document.querySelector('#load-status').innerHTML = "Context incomplete but ready for submission";
+                // document.querySelector('#load-status').setAttribute("class", "alert alert-warning");
+            }
+            else {
+                // document.querySelector('#load-context-result').innerHTML = document.querySelector('#load-status').innerHTML = "Context complete and ready for submission";
+                // document.querySelector('#load-status').className = document.querySelector('#load-context-result').className = "alert alert-success";
+                document.querySelector('#load-context-result').innerHTML = "Context complete and ready for submission";
+                document.querySelector('#load-context-result').className = "alert alert-success";
+            }
+
         }
         catch(err) { //In case of invalid context
             console.log(err);
             document.querySelector('#load-context-result').setAttribute("class", "alert alert-danger");
-            document.querySelector('#load-context-result').innerHTML = "Invalid Context";
+            document.querySelector('#load-context-result').innerHTML = "Unable to save Context<br>Hint: Start by drawing the Domain";
         }
         finally {
             document.querySelector('#load-context-result').style.display = 'block';
@@ -784,6 +805,7 @@ var MyFunctions = {
         //show the form
         if(MyFunctions.mode == 'edit') {
             document.querySelector('#form-data').style.display = 'block';
+            document.querySelector('#polygon-tree-id').style.height = '' + document.querySelector('#map-container').offsetHeight + 'px';
             MyFunctions.fillForm(response);
         }
         
@@ -816,6 +838,13 @@ var MyFunctions = {
         element = document.querySelector('#boundaryline-tree-id');
         while(element.firstChild)
             element.lastChild.remove();
+
+        // Change sensor colors to white
+        for(code in MyFunctions.contextSensors) {
+            MyFunctions.contextSensors[code].options.icon.options.html = MyFunctions.sensorIcon(code, 'whitesmoke');
+            MyFunctions.contextSensors[code].refreshIconOptions();
+        }
+
     },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
@@ -936,15 +965,20 @@ var MyFunctions = {
     },
     //check if all layers of createdPolygons have polygons 
     checkForCompleteness: () => {
+        let complete = true;
         for(type in MyFunctions.createdPolygons) { //check if all polygons are defined
             if(MyFunctions.createdPolygons[type].getLayers().length < 1) {
+                MyFunctions.missingPolygons[type] = true;
                 document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-danger");
-                document.querySelector('#load-btn').disabled = true;
-                return;
+                // document.querySelector('#load-btn').disabled = true;
+                complete = false;
             }
+            else
+                MyFunctions.missingPolygons[type] = false;
         }
-        document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-info"); //all polygons are defined mark the button green
-        document.querySelector('#load-btn').disabled = false;
+        if(complete)
+            document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-info"); //all polygons are defined mark the button green
+        // document.querySelector('#load-btn').disabled = false;
     },
     //function to handle highlights
     handleHighlights: (layer, polygonLayer) => {
@@ -1042,14 +1076,18 @@ var MyFunctions = {
     //write polygon html for tree
     polygonInTreeHTML: (id, polygonType, CL) => {
         return `
-            <div ` + 'id=polygon-tree-' + polygonType + '-' + id + ` class="polygon-tree col-md-12 border-top border-bottom">
-                <div class="col-md-4">
-                    <h1><small>` + polygonType + ' ' + id + `</small></h1>
+            <div ` + 'id=polygon-tree-' + polygonType + '-' + id + ` class="polygon-tree container border-bottom">
+                <div class="row">
+                    <div class="col-md-12" polygon-tree-label">
+                        <span class="tree-titles"><b>` + polygonType + ' ' + id + `</b></span>
+                    </div>
                 </div>
-                <div class="col-md-8">
-                    <div ` + 'id=polygon-' + id + '-CL-value' + ` class="col-md-12">
+                <div ` + 'id=polygon-' + id + '-CL-value' + ` class="row">
+                    <div class="col-md-12">
                         <b>Current CL:</b> ` + CL + `
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12">
                         <div class="input-group mb-3">
                             <input type="text" ` + 'id=polygon-' + id + '-CL-input' + ` class="form-control" placeholder="Insert new CL">
@@ -1072,33 +1110,45 @@ var MyFunctions = {
         }
 
         return `
-            <div ` + 'id=boundaryline-tree-id-' + id + ` class="polygon-tree container border-top border-bottom">
-                <div class="col-md-4">
-                    <h1><small>Boundary ` + id + `</small></h1>
-                </div>
-                <div class="col-md-8">
-                    <div class="input-group col-md-12">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><b>Type:</b></span>
-                        </div>
-                        <select ` + 'id=boundaryline-' + id + '-type-value' + ` class="custom-select">
-                            <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
-                            <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
-                            <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
-                        </select>
+            <div ` + 'id=boundaryline-tree-id-' + id + ` class="polygon-tree container border-bottom">
+                <div class="row">
+                    <div class="col-md-12" style="margin-bottom:5px;">
+                        <span class="tree-titles"><b>Boundary ` + id + `</b></span>
                     </div>
-                    <div class="input-group col-md-12">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><b>Data Type:</b></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 polygon-tree-label">
+                        <b>Type:</b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group mb-3">
+                            <select ` + 'id=boundaryline-' + id + '-type-value' + ` class="custom-select">
+                                <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
+                                <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
+                                <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
+                            </select>
                         </div>
-                        <select ` + 'id=boundaryline-' + id + '-datatype-value' + ` class="custom-select">
-                            <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
-                            <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
-                            <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
-                            <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
-                        </select>
-                        <div class="input-group-append">
-                            <button type="button" ` + 'id=boundaryline-' + id + '-types-input-btn' + ` class="btn btn-outline-info">Save</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 polygon-tree-label" style="margin-top:-8px">
+                        <b>Data Type:</b>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group mb-3">
+                            <select ` + 'id=boundaryline-' + id + '-datatype-value' + ` class="custom-select">
+                                <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
+                                <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
+                                <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
+                                <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
+                            </select>
+                            <div class="input-group-append">
+                                <button type="button" ` + 'id=boundaryline-' + id + '-types-input-btn' + ` class="btn btn-outline-info">Save</button>
+                            </div>
                         </div>
                     </div>
                 </div>

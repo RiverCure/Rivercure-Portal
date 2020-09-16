@@ -1,24 +1,22 @@
 #polygon-tree-id {
-    margin-bottom: 50px;
-    display: block;
-    height: 250px;
+    height: 100px;
     overflow: scroll;
+    margin-left: inherit;
 
     .polygon-tree {
-        display: flex;
-        
         &:hover {
             background: #eee;
         }
 
-        .col-md-4 {
-            display: flex;
-            align-items: center;
+        .tree-titles {
+            font-size: large;
+            margin-left: -5px;
+            margin-top: 5px;
+
         }
 
-        .col-md-12 {
+        .polygon-tree-label {
             margin-bottom: 5px;
-            margin-top: 5px;
         }
     }
 }
