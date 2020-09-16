@@ -9,8 +9,8 @@ var MyFunctions = {
     //Layer for highlights
     highlightLayer: null,
     highlightStatus: null,
-    //dictionary for missing polygons
-    missingPolygons: {},
+    //boolean to check completeness
+    complete: false,
     //Layer Group for sensor
     sensorsLayer: null,
     //Variable to store the features for editing
@@ -746,26 +746,23 @@ var MyFunctions = {
             document.querySelector('#id_boundaries').value = JSON.stringify(boundaries);
             document.querySelector('#id_boundary_points').value = JSON.stringify(boundaryPoints);
             
-            // Change alert on form
-            let errorMsg = '';
-            for(key in MyFunctions.missingPolygons) {
-                if(MyFunctions.missingPolygons[key]) {
-                    errorMsg += key +' missing<br>'
-                }
-            }
-            if(errorMsg != '') {
-                document.querySelector('#load-context-result').setAttribute("class", "alert alert-warning");
-                document.querySelector('#load-context-result').innerHTML = "Context incomplete but ready for submission<br>" + errorMsg;
-                // document.querySelector('#load-status').innerHTML = "Context incomplete but ready for submission";
-                // document.querySelector('#load-status').setAttribute("class", "alert alert-warning");
-            }
-            else {
-                // document.querySelector('#load-context-result').innerHTML = document.querySelector('#load-status').innerHTML = "Context complete and ready for submission";
-                // document.querySelector('#load-status').className = document.querySelector('#load-context-result').className = "alert alert-success";
-                document.querySelector('#load-context-result').innerHTML = "Context complete and ready for submission";
+            // Check if the drawing is fully completed
+            if(MyFunctions.complete) {
+                document.querySelector('#load-context-result').innerHTML = "Context staged!";
                 document.querySelector('#load-context-result').className = "alert alert-success";
             }
-
+            else {
+                let missing = 'Context staged but incomplete<br>';
+                let text = document.querySelector('#load-context-result').innerHTML.split('<br>');
+                for(i = 1; i < text.length - 1; i++) {
+                    missing += text[i] + '<br>';
+                }
+                missing += text[text.length - 1];
+                document.querySelector('#load-context-result').innerHTML = missing;
+            }
+            document.querySelector('#submit-btn').disabled = false;
+            document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-info");
+            document.querySelector('#submit-btn').innerHTML = 'Save Context'
         }
         catch(err) { //In case of invalid context
             console.log(err);
@@ -773,7 +770,7 @@ var MyFunctions = {
             document.querySelector('#load-context-result').innerHTML = "Unable to save Context<br>Hint: Start by drawing the Domain";
         }
         finally {
-            document.querySelector('#load-context-result').style.display = 'block';
+            // document.querySelector('#load-context-result').style.display = 'block';
             MyFunctions.pruneDomainMarkers();
         }
     },
@@ -965,19 +962,25 @@ var MyFunctions = {
     },
     //check if all layers of createdPolygons have polygons 
     checkForCompleteness: () => {
-        let complete = true;
+        let missingPolygons = '';
+        MyFunctions.complete = true;
         for(type in MyFunctions.createdPolygons) { //check if all polygons are defined
             if(MyFunctions.createdPolygons[type].getLayers().length < 1) {
-                MyFunctions.missingPolygons[type] = true;
-                document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-danger");
+                missingPolygons += type +' missing<br>'
+                document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-warning");
                 // document.querySelector('#load-btn').disabled = true;
-                complete = false;
+                MyFunctions.complete = false;
             }
-            else
-                MyFunctions.missingPolygons[type] = false;
         }
-        if(complete)
+        if(MyFunctions.complete) {
             document.querySelector('#load-btn').setAttribute('class', "btn btn-outline-info"); //all polygons are defined mark the button green
+            document.querySelector('#load-context-result').innerHTML = "Context complete stage it!";
+            document.querySelector('#load-context-result').className = "alert alert-success";
+        }
+        else {
+            document.querySelector('#load-context-result').setAttribute("class", "alert alert-warning");
+            document.querySelector('#load-context-result').innerHTML = "Context incomplete but ready for submission<br>" + missingPolygons;
+        }
         // document.querySelector('#load-btn').disabled = false;
     },
     //function to handle highlights
