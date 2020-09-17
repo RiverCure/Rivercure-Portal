@@ -809,6 +809,8 @@ var MyFunctions = {
         console.log(response);
 
         MyFunctions.drawGeometries(response, map);
+
+        map.setView(MyFunctions.createdPolygons.Domain.getLayers()[0].getCenter(), 12);
     },
     //function to clear the map to fill with new data
     clearMap: () => {
@@ -879,7 +881,7 @@ var MyFunctions = {
             response.context_boundaries.forEach((element) => { //define each boundary line individually
                 //Boundary Points
                 for(point of element.context_boundary_points) {
-                    if(MyFunctions.mode == 'edit')
+                    if(MyFunctions.mode == 'edit') //This makes it so sensors background dont change color in view mode
                         MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
                     else {
                         let marker = L.marker(MyFunctions.coordStringToArray(point.geom)[0]).addTo(MyFunctions.domainMarkers);

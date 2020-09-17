@@ -82,7 +82,6 @@ def ContextListView(request):
     context_filter = ContextFilter(request.GET, queryset=context_list)
     return render(request, 'context/e_Context_list.html', {'filter': context_filter})
 
-
 def OtherContextListView(request):
     other_context_list = e_Context.objects.exclude(user=request.user)
     other_context_filter = ContextFilter(request.GET, queryset=other_context_list)
@@ -119,7 +118,6 @@ def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
     contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
     return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
-
 
 def EventListView(request):
     event_list = e_ContextEvent.objects.all()
@@ -264,12 +262,15 @@ class UploadContext(FormView):
     def form_valid(self, form):
         try:
             with transaction.atomic():
-                context = e_Context()
-                context.code = form.cleaned_data['code']
-                srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
-                handle_alignment(form.cleaned_data['alignments'], context, srid)
-                handle_refinement(form.cleaned_data['refinements'], context, srid)
-                handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
+                context = e_Context.objects.get(code=form.cleaned_data['code'])
+                if form.cleaned_data['domain'] is not None:
+                    srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                if form.cleaned_data['alignments'] is not None:
+                    handle_alignment(form.cleaned_data['alignments'], context, srid)
+                if form.cleaned_data['refinements'] is not None:
+                    handle_refinement(form.cleaned_data['refinements'], context, srid)
+                if form.cleaned_data['boundaries'] is not None and  form.cleaned_data['boundaries_points'] is not None:
+                    handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
@@ -279,7 +280,12 @@ class UploadContext(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('context_upload')
+        return reverse('context-detail', args=[self.kwargs['pk']])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context'] = e_Context.objects.get(code=self.kwargs['pk'])
+        return context
     
 def handle_domain(f, context, user): #handle the loading of domain from a geojson
     domain_features = json.load(f)

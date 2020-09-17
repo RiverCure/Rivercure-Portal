@@ -17,11 +17,11 @@ class ContextForm(forms.Form):
     boundary_points = forms.CharField(widget=forms.HiddenInput())
 
 class UploadContextForm(forms.Form):
-    code = forms.CharField()
-    domain = forms.FileField()
-    alignments = forms.FileField()
-    refinements = forms.FileField()
-    boundaries = forms.FileField()
-    boundaries_points = forms.FileField()
+    code = forms.CharField(widget=forms.HiddenInput())
+    domain = forms.FileField(required=False)
+    alignments = forms.FileField(required=False)
+    refinements = forms.FileField(required=False)
+    boundaries = forms.FileField(required=False)
+    boundaries_points = forms.FileField(required=False)
 
     #dtm_file = forms.FileField()
