@@ -22,5 +22,4 @@ urlpatterns = [
     path('events/', EventListView, name='event-list'),
     path('access_granted/<int:pk>', GrantAccess, name='access-granted'),
     path('context_request_create/', ContextAccessCreateView.as_view(), name='context-requests-create'),
-    
 ]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin, LeafletGeoAdminMixin
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextAlignment, e_ContextRefinement, e_ContextSensor, e_ContextEvent, e_ContextAccessRequest
+from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextAlignment, e_ContextRefinement, e_ContextSensor, e_ContextEvent, e_ContextAccessRequest, e_ContextDTM
 
 class ContextSensorInLine(LeafletGeoAdminMixin, admin.StackedInline):
     model = e_ContextSensor
@@ -70,5 +70,6 @@ admin.site.register(e_ContextBoundaryLine, ContextBoundaryDetail)
 admin.site.register(e_ContextEvent)
 admin.site.register(e_ContextSensor)
 admin.site.register(e_ContextAccessRequest)
-# admin.site.register(e_ContextBoundaryPoint, ContextBoundaryPointDetail)
 admin.site.register(e_ContextBoundaryPoint, ContextBoundaryPointDetail)
+admin.site.register(e_ContextDTM)
+

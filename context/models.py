@@ -4,7 +4,7 @@ from datetime import datetime, date
 from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
 from sensors.models import e_Sensor
-
+from raster.models import RasterLayer
 
 EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  ('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  ('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
 
@@ -29,7 +29,7 @@ class e_Context(models.Model):
 
 	Name = models.CharField(max_length=100, unique=True)
 
-	hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=False )
+	hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=True )
 
 	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
 	CLExternalBoundary  = models.BigIntegerField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
@@ -43,7 +43,8 @@ class e_Context(models.Model):
 
 class e_ContextDTM(models.Model):
 	context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_dtm')
-	contextDTM = models.RasterField(null=True, blank=True) #This field corresponds to the context DTM (.tiff file)
+	contextDTM = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='dtm_endpoint') #This field corresponds to the context DTM (.tiff file)
+	# dtmFile = models.FileField()
 
 	def __str__(self):
 		return f"{self.context} context dtm"

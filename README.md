@@ -19,3 +19,7 @@ Database configuration:
     2. CREATE EXTENSION postgis_raster;
 
     Link: https://postgis.net/install/
+
+Needed software:
+    1. OSGeo (GDAL, PROJ.4, GEOS)
+    2. RabbitMQ

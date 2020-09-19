@@ -8,7 +8,8 @@ from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from .models import e_Context, e_ContextDTM, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from raster.models import RasterLayer
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
@@ -22,7 +23,6 @@ from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django import forms
 from django.http import HttpResponseRedirect
-from tempfile import NamedTemporaryFile
 from pprint import pprint
 
 class ContextAccessCreateView(UserPassesTestMixin, CreateView):
@@ -40,8 +40,6 @@ class ContextAccessCreateView(UserPassesTestMixin, CreateView):
     def test_func(self, *args , **kwargs):
         if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists() :
             return True 
-       
-
 
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
@@ -137,7 +135,7 @@ def show_context(request):
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
-        'context': request.GET.get('context_code')
+        'context': request.GET.get('context_code'),
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
@@ -150,16 +148,6 @@ def show_context(request):
                     e_context = context_creation(form, request.user)
                     e_context.save()
 
-                    #Save dtm from raster file field
-                    try:
-                        dtm = request.FILES['dtm_file']
-                    except:
-                        print('No dtm file was provided')
-                        dtm = None
-
-                    if dtm is not None:
-                        handle_upload_raster(e_context, dtm)
-
                     # initialize and save refinement
                     refinement_creation(form, e_context)
                     # initialize and save alignment
@@ -168,7 +156,17 @@ def show_context(request):
                     # initialize and save boundaries & boundary points
                     boundaryline_creation(form, e_context)
                     
-                    messages.success(request,f'Context created with success!') 
+                #Save dtm from raster file field
+                try:
+                    dtm = request.FILES['dtm_file']
+                except:
+                    print('No dtm file was provided')
+                    dtm = None
+
+                if dtm is not None:
+                    handle_upload_raster(e_context, dtm)
+
+                messages.success(request,f'Context created with success!') 
             except Exception as e:
                 print(f'Error saving context: {e}')
                 messages.warning(request,f'Context update failed') 
@@ -179,14 +177,22 @@ def show_context(request):
 
 #aux functions for show_context()
 def handle_upload_raster(context, raster_file): #function to handle the upload of the raster file
-    with NamedTemporaryFile(mode='w+b') as destination:
-        for chunk in raster_file.chunks():
-            destination.write(chunk)
-        destination.seek(0)
-        dtm = e_ContextDTM.objects.get_or_create(context=context)
-        dtm = dtm[0] # get_or_create returns a tuple, 0 = object, 1 = boolean true if object was created false otherwise
-        dtm.contextDTM = GDALRaster(destination.name, write=True)
-        dtm.save()
+    try:
+        dtm = e_ContextDTM.objects.get(context=context) 
+        dtm.contextDTM.datatype='co'
+        dtm.contextDTM.name = str(dtm)
+        dtm.contextDTM.rasterfile = raster_file
+    except e_ContextDTM.DoesNotExist:
+        dtm = e_ContextDTM()
+        dtm.context = context
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = str(dtm)
+        raster.rasterfile = raster_file
+        raster.save()
+        dtm.contextDTM = raster
+   
+    dtm.save()
 
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form

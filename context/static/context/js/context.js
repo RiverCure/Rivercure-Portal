@@ -28,6 +28,8 @@ var MyFunctions = {
     domainMarkerToBoundary: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
+    //layer for the dtm raster
+    dtm: null,
     //function to define draw sensor icon
     sensorIcon: (code, fill) => {
         return `
@@ -128,10 +130,12 @@ var MyFunctions = {
         MyFunctions.createdPolygons.Domain = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Refinement = L.layerGroup().addTo(map);
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
-        
+        MyFunctions.dtm = L.layerGroup().addTo(map);
+
         MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
+        map.layerscontrol.addOverlay(MyFunctions.dtm, 'DTM');
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Domain, "Domain");
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Refinement, "Refinement");
         map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Alignment, "Alignment");
@@ -811,6 +815,10 @@ var MyFunctions = {
         MyFunctions.drawGeometries(response, map);
 
         map.setView(MyFunctions.createdPolygons.Domain.getLayers()[0].getCenter(), 12);
+
+        //get DTM if it exists
+        if(response.context_dtm !== null) 
+            L.tileLayer(`http://127.0.0.1:8000/context/raster/tiles/${response.context_dtm.contextDTM}/{z}/{x}/{y}.png`).addTo(MyFunctions.dtm);
     },
     //function to clear the map to fill with new data
     clearMap: () => {
@@ -818,6 +826,7 @@ var MyFunctions = {
         MyFunctions.domainMarkerToBoundary = {};
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.editPolygonFeature.clearLayers();
+        MyFunctions.dtm.clearLayers();
 
         for(key in MyFunctions.createdPolygons)
             MyFunctions.createdPolygons[key].clearLayers();
@@ -843,7 +852,6 @@ var MyFunctions = {
             MyFunctions.contextSensors[code].options.icon.options.html = MyFunctions.sensorIcon(code, 'whitesmoke');
             MyFunctions.contextSensors[code].refreshIconOptions();
         }
-
     },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'raster',
+    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -179,3 +180,8 @@ LOGIN_REDIRECT_URL = 'rivercure-home'
 LOGIN_URL = 'login'
 
 CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually
+
+# RASTER_USE_CELERY = True
+
+CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'django-db'
