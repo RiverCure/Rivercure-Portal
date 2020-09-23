@@ -2,7 +2,7 @@ import json, os, geojson, tempfile, datetime
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
-from django.db import transaction
+from django.db import transaction, connection
 from django.utils import timezone
 from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
@@ -376,99 +376,121 @@ def handle_boundaries(f, f_points, context, srid): #handle the loading of bounda
                 #     boundary_point_sensor.boundary_point = boundary_point
                 #     boundary_point_sensor.save()
 
+
 def download_context(request, context_code): #function that allows the download of an context
     if not request.user.is_authenticated: #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
 
+    source_coord = SpatialReference(4326)
+    dest_coord = SpatialReference(3763)
+    trans = CoordTransform(source_coord, dest_coord)
+
     #prepare geojson for download
 
     #Need to check if context code exists
     try:
         #------------------ Domain --------------------------------
+        # SELECT ST_AsText(ST_Transform("geomExternalBoundary", 3763)) FROM public.context_e_context WHERE code='01';
         context = e_Context.objects.get(code=context_code)
+        
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT ST_AsText(ST_Transform("geomExternalBoundary", 3763)) FROM public.context_e_context WHERE code= %s', [context_code])
+            row = cursor.fetchone()
+            context_domain = GEOSGeometry(row[0])
 
-        domain = context.geomExternalBoundary.transform(3763, clone=True)
-        context_main = geojson.Feature(geometry= geojson.Polygon(domain.coords[0]), #Maybe this should be a simple polygon for pre processor
-                            properties = {"Geometry type": 'Domain',
-                                        "Code": context.code,
-                                        "CL": context.CLExternalBoundary})
+            context_main = geojson.Feature(geometry= geojson.Polygon(context_domain.coords[0]), #Maybe this should be a simple polygon for pre processor
+                                properties = {"Geometry type": 'Domain',
+                                            "Code": context.code,
+                                            "CL": context.CLExternalBoundary})
 
-        features = []
-        features.append(context_main)
-        domain_file = geojson.FeatureCollection(features)
-        domain_file['name'] = str.title(context.Name)
-        domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763"} } # str(context.geomExternalBoundary.srid)
+            features = []
+            features.append(context_main)
+            domain_file = geojson.FeatureCollection(features)
+            domain_file['name'] = str.title(context.Name)
+            domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763"} } # str(context.geomExternalBoundary.srid)
 
-        #------------------ Alignment --------------------------------
+            #------------------ Alignment --------------------------------
 
-        features = []
-        for alignment in e_ContextAlignment.objects.filter(context__code=context_code):
-            alignment_geom = alignment.geom.transform(3763, clone=True)
-            context_alignment = geojson.Feature(geometry= geojson.LineString(alignment_geom.coords),
-                                properties = {"Geometry type": 'Alignment',
-                                            "CL": alignment.CL})
+            features = []
 
-            features.append(context_alignment)
+            cursor.execute('SELECT ST_AsText(ST_Transform("geom", 3763)), "CL" FROM public.context_e_contextalignment WHERE context_id= %s', [context_code])
+            rows = cursor.fetchall()
+            for alignment in rows:
+                alignment_geom = GEOSGeometry(alignment[0])
+                context_alignment = geojson.Feature(geometry= geojson.LineString(alignment_geom.coords),
+                                    properties = {"Geometry type": 'Alignment',
+                                                "CL": alignment[1]})
 
-        alignment_file = geojson.FeatureCollection(features)
-        alignment_file['name'] = str.title(context.Name) + '_alignments'
-        alignment_file['Context code'] = context.code
-        alignment_file['Context name'] = str.title(context.Name)
-        alignment_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
+                features.append(context_alignment)
 
-        #------------------ Refinement --------------------------------  
+            alignment_file = geojson.FeatureCollection(features)
+            alignment_file['name'] = str.title(context.Name) + '_alignments'
+            alignment_file['Context code'] = context.code
+            alignment_file['Context name'] = str.title(context.Name)
+            alignment_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
-        features = []
-        for refinement in e_ContextRefinement.objects.filter(context__code=context_code):
-            refinement_geom = refinement.geom.transform(3763, clone=True)
-            context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement_geom.coords),
-                                properties = {"Geometry type": 'Refinement',
-                                            "CL": refinement.CL})
+            #------------------ Refinement --------------------------------  
 
-            features.append(context_refinement)
+            features = []
+            cursor.execute('SELECT ST_AsText(ST_Transform("geom", 3763)), "CL" FROM public.context_e_contextrefinement WHERE context_id= %s', [context_code])
+            rows = cursor.fetchall()
+            for refinement in rows:
+                refinement_geom = GEOSGeometry(refinement[0])
+                context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement_geom.coords),
+                                    properties = {"Geometry type": 'Refinement',
+                                                "CL": refinement[1]})
 
-        refinement_file = geojson.FeatureCollection(features)
-        refinement_file['name'] = str.title(context.Name) + '_refinements'
-        refinement_file['Context code'] = context.code
-        refinement_file['Context name'] = str.title(context.Name)
-        refinement_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
+                features.append(context_refinement)
 
-        #------------------ Boundary --------------------------------
+            refinement_file = geojson.FeatureCollection(features)
+            refinement_file['name'] = str.title(context.Name) + '_refinements'
+            refinement_file['Context code'] = context.code
+            refinement_file['Context name'] = str.title(context.Name)
+            refinement_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
-        features = []
-        for boundary in e_ContextBoundaryLine.objects.filter(context__code=context_code):
-            boundary_geom = boundary.geom.transform(3763, clone=True)
-            context_boundary = geojson.Feature(geometry= geojson.LineString(boundary_geom.coords),
-                                properties = {"Geometry type": 'Boundary Line',
-                                            "Type": boundary.type,
-                                            "Data type": boundary.dataType})
+            #------------------ Boundary --------------------------------
 
-            features.append(context_boundary)
+            features = []
+            cursor.execute('SELECT ST_AsText(ST_Transform("geom", 3763)), "type", "dataType" FROM public.context_e_contextboundaryline WHERE context_id= %s', [context_code])
+            rows = cursor.fetchall()
+            for boundary in rows:
+                boundary_geom = GEOSGeometry(boundary[0])
+                context_boundary = geojson.Feature(geometry= geojson.LineString(boundary_geom.coords),
+                                    properties = {"Geometry type": 'Boundary Line',
+                                                "Type": boundary[1],
+                                                "Data type": boundary[2]})
 
-        boundary_file = geojson.FeatureCollection(features)
-        boundary_file['name'] = str.title(context.Name) + '_boundaries'
-        boundary_file['Context code'] = context.code
-        boundary_file['Context name'] = str.title(context.Name)
-        boundary_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
+                features.append(context_boundary)
 
-        #------------------ Boundary Points --------------------------------
+            boundary_file = geojson.FeatureCollection(features)
+            boundary_file['name'] = str.title(context.Name) + '_boundaries'
+            boundary_file['Context code'] = context.code
+            boundary_file['Context name'] = str.title(context.Name)
+            boundary_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
-        features = []
-        for boundary_point in e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context__code=context_code):
-            boundary_point_geom = boundary_point.geom.transform(3763, clone=True)
-            context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
-                                properties = {"Geometry type": 'Boundary Point',
-                                            "Boundary": '0'}) #must be changed
+            #------------------ Boundary Points --------------------------------
 
-            features.append(context_boundary_points)
+            features = []
+            cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)) FROM public.context_e_contextboundarypoint 
+                            INNER JOIN "context_e_contextboundaryline" 
+                            ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
+                            WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
+            rows = cursor.fetchall()
+            for boundary_point in rows:
+                boundary_point_geom = GEOSGeometry(boundary_point[0])
+                context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
+                                    properties = {"Geometry type": 'Boundary Point',
+                                                "Boundary": '0'}) #must be changed
 
-        boundary_point_file = geojson.FeatureCollection(features)
-        boundary_point_file['name'] = str.title(context.Name) + '_boundary_points'
-        boundary_point_file['Context code'] = context.code
-        boundary_point_file['Context name'] = str.title(context.Name)
-        boundary_point_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
+                features.append(context_boundary_points)
+
+            boundary_point_file = geojson.FeatureCollection(features)
+            boundary_point_file['name'] = str.title(context.Name) + '_boundary_points'
+            boundary_point_file['Context code'] = context.code
+            boundary_point_file['Context name'] = str.title(context.Name)
+            boundary_point_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
         #endof json preparation
 
