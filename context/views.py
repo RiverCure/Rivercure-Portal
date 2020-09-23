@@ -389,7 +389,8 @@ def download_context(request, context_code): #function that allows the download 
         #------------------ Domain --------------------------------
         context = e_Context.objects.get(code=context_code)
 
-        context_main = geojson.Feature(geometry= geojson.Polygon(context.geomExternalBoundary.coords[0]), #Maybe this should be a simple polygon for pre processor
+        domain = context.geomExternalBoundary.transform(3763, clone=True)
+        context_main = geojson.Feature(geometry= geojson.Polygon(domain.coords[0]), #Maybe this should be a simple polygon for pre processor
                             properties = {"Geometry type": 'Domain',
                                         "Code": context.code,
                                         "CL": context.CLExternalBoundary})
@@ -398,13 +399,14 @@ def download_context(request, context_code): #function that allows the download 
         features.append(context_main)
         domain_file = geojson.FeatureCollection(features)
         domain_file['name'] = str.title(context.Name)
-        domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::" +  str(context.geomExternalBoundary.srid) } }
+        domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763"} } # str(context.geomExternalBoundary.srid)
 
         #------------------ Alignment --------------------------------
 
         features = []
         for alignment in e_ContextAlignment.objects.filter(context__code=context_code):
-            context_alignment = geojson.Feature(geometry= geojson.LineString(alignment.geom.coords),
+            alignment_geom = alignment.geom.transform(3763, clone=True)
+            context_alignment = geojson.Feature(geometry= geojson.LineString(alignment_geom.coords),
                                 properties = {"Geometry type": 'Alignment',
                                             "CL": alignment.CL})
 
@@ -414,13 +416,14 @@ def download_context(request, context_code): #function that allows the download 
         alignment_file['name'] = str.title(context.Name) + '_alignments'
         alignment_file['Context code'] = context.code
         alignment_file['Context name'] = str.title(context.Name)
-        alignment_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::" +  str(context.geomExternalBoundary.srid) } }
+        alignment_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
         #------------------ Refinement --------------------------------  
 
         features = []
         for refinement in e_ContextRefinement.objects.filter(context__code=context_code):
-            context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement.geom.coords),
+            refinement_geom = refinement.geom.transform(3763, clone=True)
+            context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement_geom.coords),
                                 properties = {"Geometry type": 'Refinement',
                                             "CL": refinement.CL})
 
@@ -430,13 +433,14 @@ def download_context(request, context_code): #function that allows the download 
         refinement_file['name'] = str.title(context.Name) + '_refinements'
         refinement_file['Context code'] = context.code
         refinement_file['Context name'] = str.title(context.Name)
-        refinement_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::" +  str(context.geomExternalBoundary.srid) } }
+        refinement_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
         #------------------ Boundary --------------------------------
 
         features = []
         for boundary in e_ContextBoundaryLine.objects.filter(context__code=context_code):
-            context_boundary = geojson.Feature(geometry= geojson.LineString(boundary.geom.coords),
+            boundary_geom = boundary.geom.transform(3763, clone=True)
+            context_boundary = geojson.Feature(geometry= geojson.LineString(boundary_geom.coords),
                                 properties = {"Geometry type": 'Boundary Line',
                                             "Type": boundary.type,
                                             "Data type": boundary.dataType})
@@ -447,13 +451,14 @@ def download_context(request, context_code): #function that allows the download 
         boundary_file['name'] = str.title(context.Name) + '_boundaries'
         boundary_file['Context code'] = context.code
         boundary_file['Context name'] = str.title(context.Name)
-        boundary_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::" +  str(context.geomExternalBoundary.srid) } }
+        boundary_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
         #------------------ Boundary Points --------------------------------
 
         features = []
         for boundary_point in e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context__code=context_code):
-            context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point.geom.coords),
+            boundary_point_geom = boundary_point.geom.transform(3763, clone=True)
+            context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
                                 properties = {"Geometry type": 'Boundary Point',
                                             "Boundary": '0'}) #must be changed
 
@@ -463,7 +468,7 @@ def download_context(request, context_code): #function that allows the download 
         boundary_point_file['name'] = str.title(context.Name) + '_boundary_points'
         boundary_point_file['Context code'] = context.code
         boundary_point_file['Context name'] = str.title(context.Name)
-        boundary_point_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::" +  str(context.geomExternalBoundary.srid) } }
+        boundary_point_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
         #endof json preparation
 
@@ -481,7 +486,7 @@ def download_context(request, context_code): #function that allows the download 
         return response
     except Exception as e:
         messages.warning(request,f'Context not complete for download') 
-        print(f'Error dopwnloading context: {e}')
+        print(f'Error downloading context: {e}')
         return redirect(request.META['HTTP_REFERER'])
 
 def simulation_results(request): #function to redirect the user to the paraviewweb visualizer
