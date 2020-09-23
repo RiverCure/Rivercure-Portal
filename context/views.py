@@ -3,11 +3,13 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
 from django.db import transaction
+from django.utils import timezone
 from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from .models import e_Context, e_ContextDTM, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from raster.models import RasterLayer
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
@@ -15,14 +17,13 @@ from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .filters import EventFilter, EventSensorFilter, ContextFilter
-from django.contrib.gis.gdal import SpatialReference, CoordTransform
+from django.contrib.gis.gdal import SpatialReference, CoordTransform, GDALRaster
 from io import BytesIO, StringIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django import forms
 from django.http import HttpResponseRedirect
-
-
+from pprint import pprint
 
 class ContextAccessCreateView(UserPassesTestMixin, CreateView):
     model = e_ContextAccessRequest
@@ -39,8 +40,6 @@ class ContextAccessCreateView(UserPassesTestMixin, CreateView):
     def test_func(self, *args , **kwargs):
         if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists() :
             return True 
-       
-
 
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
@@ -80,7 +79,6 @@ def ContextListView(request):
     context_list = e_Context.objects.filter(user=request.user)
     context_filter = ContextFilter(request.GET, queryset=context_list)
     return render(request, 'context/e_Context_list.html', {'filter': context_filter})
-
 
 def OtherContextListView(request):
     other_context_list = e_Context.objects.exclude(user=request.user)
@@ -124,7 +122,6 @@ def ContextSensorListView(request):
     contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
     return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
 
-
 def EventListView(request):
     event_list = e_ContextEvent.objects.all()
     event_filter = EventFilter(request.GET, queryset=event_list)
@@ -143,13 +140,13 @@ def show_context(request):
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
-        'context': request.GET.get('context_code')
+        'context': request.GET.get('context_code'),
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
             return render(request, 'context/context.html', context)
         
-        form = ContextForm(request.POST)
+        form = ContextForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 with transaction.atomic():
@@ -163,8 +160,18 @@ def show_context(request):
 
                     # initialize and save boundaries & boundary points
                     boundaryline_creation(form, e_context)
+                    
+                #Save dtm from raster file field
+                try:
+                    dtm = request.FILES['dtm_file']
+                except:
+                    print('No dtm file was provided')
+                    dtm = None
 
-                    messages.success(request,f'Context created with success!') 
+                if dtm is not None:
+                    handle_upload_raster(e_context, dtm)
+
+                messages.success(request,f'Context created with success!') 
             except Exception as e:
                 print(f'Error saving context: {e}')
                 messages.warning(request,f'Context update failed') 
@@ -174,6 +181,25 @@ def show_context(request):
     return render(request, 'context/context.html', context)
 
 #aux functions for show_context()
+def handle_upload_raster(context, raster_file): #function to handle the upload of the raster file
+    try:
+        dtm = e_ContextDTM.objects.get(context=context) 
+        dtm.contextDTM.datatype='co'
+        dtm.contextDTM.name = str(dtm)
+        dtm.contextDTM.rasterfile = raster_file
+    except e_ContextDTM.DoesNotExist:
+        dtm = e_ContextDTM()
+        dtm.context = context
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = str(dtm)
+        raster.rasterfile = raster_file
+        raster.save()
+        dtm.contextDTM = raster
+   
+    dtm.save()
+
+
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
 
@@ -228,7 +254,7 @@ def boundaryline_creation(form, context): # function to create the several lines
                 # Handle sensors on point
                 for sensor in point['properties']['sensors']:
                     boundary_point_sensor = e_ContextSensor()
-                    boundary_point_sensor.associateDatetime = datetime.datetime.now()
+                    boundary_point_sensor.associateDatetime = timezone.now()
                     boundary_point_sensor.sensor = e_Sensor.objects.get(code=sensor)
                     boundary_point_sensor.boundary_point = boundary_point
                     boundary_point_sensor.save()
@@ -247,12 +273,15 @@ class UploadContext(FormView):
     def form_valid(self, form):
         try:
             with transaction.atomic():
-                context = e_Context()
-                context.code = form.cleaned_data['code']
-                srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
-                handle_alignment(form.cleaned_data['alignments'], context, srid)
-                handle_refinement(form.cleaned_data['refinements'], context, srid)
-                handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
+                context = e_Context.objects.get(code=form.cleaned_data['code'])
+                if form.cleaned_data['domain'] is not None:
+                    srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                if form.cleaned_data['alignments'] is not None:
+                    handle_alignment(form.cleaned_data['alignments'], context, srid)
+                if form.cleaned_data['refinements'] is not None:
+                    handle_refinement(form.cleaned_data['refinements'], context, srid)
+                if form.cleaned_data['boundaries'] is not None and  form.cleaned_data['boundaries_points'] is not None:
+                    handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
@@ -262,7 +291,12 @@ class UploadContext(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('context_upload')
+        return reverse('context-detail', args=[self.kwargs['pk']])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['context'] = e_Context.objects.get(code=self.kwargs['pk'])
+        return context
     
 def handle_domain(f, context, user): #handle the loading of domain from a geojson
     domain_features = json.load(f)

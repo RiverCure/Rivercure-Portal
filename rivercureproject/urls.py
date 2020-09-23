@@ -29,6 +29,7 @@ urlpatterns = [
     path('', include('rivercureportal.urls')),
     path('contexts/', include('context.urls')),
     path('sensors/', include('sensors.urls')),
+    path('context/raster/', include('raster.urls')),
 ]
 
 if settings.DEBUG:

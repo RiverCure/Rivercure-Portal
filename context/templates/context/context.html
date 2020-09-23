@@ -13,13 +13,13 @@
     <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;    
                 map.doubleClickZoom.disable(); //disable double click zoom
-                document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
+                //document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
@@ -64,6 +64,9 @@
                 document.querySelector('#context-to-change').addEventListener('change', e => {
                     if(document.querySelector('#context-to-change').value !== "") {
                         MyFunctions.clearMap();
+                        document.querySelector('#submit-btn').disabled = true;
+                        document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-danger");
+                        document.querySelector('#submit-btn').innerHTML = 'Stage Context before submitting'
                         MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
                     }
                 });
@@ -72,7 +75,6 @@
                     MyFunctions.clearMap();
                     MyFunctions.getContext('{{ api }}' + '{{ context }}', map);
                 '{% endif %}'
-
             });    
             //function to load sensor information to a dict so it can be processed by a function
             loadSensors = () => {
@@ -100,17 +102,45 @@
             {% endfor %}
         </select>
     </div>
-        
-    
-    <div id="form-data" class="content-section" style="display: none">
-        <form method='POST'>
+
+    <div id="form-data" class="content-section container" style="display: none; margin-bottom:50px;">
+        <form method='POST'  enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
-            <div id="load-status" class="alert alert-danger" role="alert">
-                Context not loaded!!!
+            {% comment %} <div id="load-status" class="alert alert-danger" role="alert">
+                Context not ready for submission!!! Draw it on the map below!
+            </div> {% endcomment %}
+            <div class="row">
+                <div class="col-md-9">
+                    <div id="map-container" class="container">
+                        {% leaflet_map "my_map" %}
+                    </div>
+                </div>
+                <div id="polygon-tree-id" class="col-md-3">
+                    <div id="domain-tree-id" class="container"></div>
+                    <div id="refinement-tree-id" class="container"></div>
+                    <div id="alignment-tree-id" class="container"></div>
+                    <div id="boundaryline-tree-id" class="container"></div>
+                </div>
+            </div>
+            <div class="container" id="context-options">
+                <div class="container" style="display: flex">
+                    <button type="button" id='load-btn' class="btn btn-outline-danger">Stage for Upload</button>
+                    <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
+                        <option value="none" selected disabled>Select the polygon to define</option>
+                        <option value="Domain">Domain</option>
+                        <option value="Boundary">Boundary</option>
+                        <option value="Alignment">Alignment</option>
+                        <option value="Refinement">Refinement</option>
+                    </select>
+                </div>
+                {% comment %} <div id='load-context-result' style='display: none'></div> {% endcomment %}
+                <div id="load-context-result" class="alert alert-danger" role="alert">
+                    Context not ready for submission!!! Draw it on the map above!
+                </div>
             </div>
             <div class="form-group">
-                <button id="submit-btn" class="btn btn-outline-info" type="submit">Update</button>
+                <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Stage Context before submitting</button>
             </div>
         </form>
         <div class="border-top pt-3">
@@ -118,27 +148,9 @@
     </div>
 
 
-    <div id="map-container" class="container">
-        {% leaflet_map "my_map" %}
-    </div>
-    <div class="container" id="context-options">
-        <div class="container" style="display: flex">
-            <button type="button" id='load-btn' class="btn btn-outline-danger">Save Context</button>
-            <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
-                <option value="none" selected disabled>Select the polygon to define</option>
-                <option value="Domain">Domain</option>
-                <option value="Boundary">Boundary</option>
-                <option value="Alignment">Alignment</option>
-                <option value="Refinement">Refinement</option>
-            </select>
-        </div>
-        <div id='load-context-result' style='display: none'></div>
-    </div>
-    <div id="polygon-tree-id" class="container">
-        <div id="domain-tree-id" class="container"></div>
-        <div id="refinement-tree-id" class="container"></div>
-        <div id="alignment-tree-id" class="container"></div>
-        <div id="boundaryline-tree-id" class="container"></div>
+    
+    
+    
 
         {% comment %} <div class="polygon-tree col-md-12 border-top border-bottom">
             <div class="col-md-4">
@@ -232,5 +244,4 @@
                 </div>
             </div>
         </div> {% endcomment %}
-    </div>
 {% endblock %}
