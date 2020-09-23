@@ -101,10 +101,15 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
 
     def test_func(self, *args , **kwargs):
         self.object = self.get_object()
-        if self.request.user.has_perm('can_update_contexts') and self.object.user == self.request.user:
+        if self.object.isPublic and request.user.is_authenticated:
             return True
         else:
-            return False
+            if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists():
+                if e_ContextAccessRequest.objects.filter(requestuser=self.request.user, access_granted=True).exists():  #para ver, falta a permissao igual mas de manager na outra view
+                    return True
+                else:
+                    return False
+                return False
 
     def get_context_data(self, **kwargs):
         web_host = os.environ['CONTEXT_API']
