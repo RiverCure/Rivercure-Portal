@@ -99,7 +99,7 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
 
     def test_func(self, *args , **kwargs):
         self.object = self.get_object()
-        if self.object.isPublic and request.user.is_authenticated:
+        if self.object.isPublic and self.request.user.is_authenticated:
             return True
         else:
             if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists():

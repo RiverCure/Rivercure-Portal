@@ -616,7 +616,6 @@ var MyFunctions = {
         MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null)));
 
         if(sensors !== undefined) {
-            let sensorCode;
             for(sensor of sensors) {
                 marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker._leaflet_id, marker.getPopup().getContent(), sensor.sensor));
             }
@@ -889,12 +888,7 @@ var MyFunctions = {
             response.context_boundaries.forEach((element) => { //define each boundary line individually
                 //Boundary Points
                 for(point of element.context_boundary_points) {
-                    if(MyFunctions.mode == 'edit') //This makes it so sensors background dont change color in view mode
-                        MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
-                    else {
-                        let marker = L.marker(MyFunctions.coordStringToArray(point.geom)[0]).addTo(MyFunctions.domainMarkers);
-                        marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null));
-                    }
+                    MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
                 }
                 //Boundary Lines
                 boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
