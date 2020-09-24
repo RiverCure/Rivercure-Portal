@@ -473,7 +473,7 @@ def download_context(request, context_code): #function that allows the download 
             #------------------ Boundary Points --------------------------------
 
             features = []
-            cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)) FROM public.context_e_contextboundarypoint 
+            cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id" FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
@@ -482,7 +482,7 @@ def download_context(request, context_code): #function that allows the download 
                 boundary_point_geom = GEOSGeometry(boundary_point[0])
                 context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
                                     properties = {"Geometry type": 'Boundary Point',
-                                                "Boundary": '0'}) #must be changed
+                                                "Boundary": boundary_point[1]}) 
 
                 features.append(context_boundary_points)
 
