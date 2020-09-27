@@ -1,4 +1,4 @@
-import json, os, geojson, tempfile, datetime
+import json, os, geojson, tempfile, datetime, requests
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
@@ -171,13 +171,16 @@ def show_context(request):
                 if dtm is not None:
                     handle_upload_raster(e_context, dtm)
 
-                messages.success(request,f'Context created with success!') 
+                messages.success(request,f'Context updated with success!') 
+                
+                return HttpResponseRedirect(reverse('context-detail', kwargs={'pk': e_context.code}))
             except Exception as e:
                 print(f'Error saving context: {e}')
                 messages.warning(request,f'Context update failed') 
+
         else:
             messages.warning(request,f'Context info is not complete') 
-
+        
     return render(request, 'context/context.html', context)
 
 #aux functions for show_context()
@@ -382,11 +385,6 @@ def download_context(request, context_code): #function that allows the download 
     #     return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
-
-    source_coord = SpatialReference(4326)
-    dest_coord = SpatialReference(3763)
-    trans = CoordTransform(source_coord, dest_coord)
-
     #prepare geojson for download
 
     #Need to check if context code exists
@@ -537,6 +535,42 @@ def prepare_boundary_points(context_code, context_name):
 
     return boundary_point_file
 
+
+def request_simulation(request, context_code): # function to start simulation
+    url = os.environ['SIMULATOR_ADDRESS']
+
+    try:
+        #------------------ Domain --------------------------------
+        domain_file = prepare_domain(context_code)
+        context_name = domain_file['name']
+        #------------------ Alignment --------------------------------
+        alignment_file = prepare_alignment(context_code, context_name)
+        #------------------ Refinement --------------------------------  
+        refinement_file = prepare_refinement(context_code, context_name)
+        #------------------ Boundary --------------------------------
+        boundary_file = prepare_boundaries(context_code, context_name)
+        #------------------ Boundary Points --------------------------------
+        boundary_point_file = prepare_boundary_points(context_code, context_name)
+        #endof json preparation
+
+        files = {
+            'domain.geojson': geojson.dumps(domain_file),
+            'alignments.geojson': geojson.dumps(alignment_file),
+            'refinements.geojson': geojson.dumps(refinement_file),
+            'boundaries.geojson': geojson.dumps(boundary_file),
+            'boundaries_points.geojson': geojson.dumps(boundary_point_file)
+
+        }  
+        r = requests.post(url, files=files)
+
+        messages.success(request, 'Simulation request successful<br>Server answered: ' + r.text)
+
+        return redirect(request.META['HTTP_REFERER'])
+
+    except Exception as e:
+        messages.warning(request,f'Context simulation request failed') 
+        print(f'Error requesting context simulation: {e}')
+        return redirect(request.META['HTTP_REFERER'])
 
 def simulation_results(request): #function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'

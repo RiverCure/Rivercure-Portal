@@ -74,6 +74,7 @@
         <a class="btn btn-info btn mt-1 mb-1" href="{% url 'context_manage'  %}?context_code={{ context.code }}" > Update</a>  
         <a class="btn btn-secondary btn btn mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
         <a class="btn btn-info btn btn mt-1 mb-1" href="{% url 'context_upload' context.code %}">Upload Polygons</a>  
+        <a class="btn btn-secondary btn btn mt-1 mb-1" href="{% url 'context-simulation-request' context.code %}">Simulate</a>  
         <a class="btn btn-secondary btn mt-1 mb-1" href="#" style='float:right'>Sensors</a> 
         <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" style='float:right'> Events</a>     
     </div>
