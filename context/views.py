@@ -561,9 +561,10 @@ def request_simulation(request, context_code): # function to start simulation
             'boundaries_points.geojson': geojson.dumps(boundary_point_file)
 
         }  
-        r = requests.post(url, files=files)
+        payload = {'context_name': context_name}
+        r = requests.post(url, files=files, params=payload)
 
-        messages.success(request, 'Simulation request successful<br>Server answered: ' + r.text)
+        messages.success(request, 'Simulation request successful\nServer answered: ' + r.text)
 
         return redirect(request.META['HTTP_REFERER'])
 
