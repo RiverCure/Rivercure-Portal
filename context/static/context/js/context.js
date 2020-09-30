@@ -895,7 +895,19 @@ var MyFunctions = {
                 MyFunctions.defineBoundary(boundary, element.type, element.dataType);
             });
         }
-
+        // if(MyFunctions.mode == 'edit' && response.context_contour_lines !== null) {
+        //     let coordinates = [];
+        //     lines = response.context_contour_lines.geom.slice(response.context_contour_lines.geom.indexOf('(') + 1, response.context_contour_lines.geom.lastIndexOf(')'))
+        //     lines = lines.split('),')
+        //     for(line of lines) {
+        //         line = line.slice(1).split(',');
+        //         for(coord of line) {
+        //             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
+        //         }
+        //         L.polyline(coordinates).addTo(map)
+        //         coordinates = []
+        //     }
+        // }
     },
     //function to define polygons on all necessary layers
     definePolygon: (layer, type, CL) => {

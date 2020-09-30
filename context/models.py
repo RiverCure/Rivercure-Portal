@@ -49,6 +49,14 @@ class e_ContextDTM(models.Model):
 	def __str__(self):
 		return f"{self.context} context dtm"
 
+class e_ContextContourLine(models.Model):
+	context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_contour_lines')
+	geom = models.MultiLineStringField(null=True, blank=True)  		#aka contour lines
+
+	def __str__(self):
+		return f"{self.context} context countour lines"
+
+
 class e_ContextRefinement(models.Model):
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_refinement')
 	geom = models.PolygonField(null=True, blank=True) 					# aka Refinement

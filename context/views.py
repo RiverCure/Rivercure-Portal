@@ -8,13 +8,13 @@ from .forms import ContextForm, UploadContextForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
 from raster.models import RasterLayer
 from sensors.models import e_Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
-from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point
+from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point, fromfile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .filters import EventFilter, EventSensorFilter, ContextFilter
 from django.contrib.gis.gdal import SpatialReference, CoordTransform, GDALRaster
@@ -162,14 +162,14 @@ def show_context(request):
                     boundaryline_creation(form, e_context)
                     
                 #Save dtm from raster file field
-                try:
-                    dtm = request.FILES['dtm_file']
-                except:
-                    print('No dtm file was provided')
-                    dtm = None
-
+                dtm = request.FILES.get('dtm_file')
                 if dtm is not None:
                     handle_upload_raster(e_context, dtm)
+
+                #Save contour lines from file
+                contour_lines = request.FILES.get('contour_lines')
+                if contour_lines is not None:
+                    handle_contour_lines_upload(e_context, contour_lines)
 
                 messages.success(request,f'Context updated with success!') 
                 
@@ -201,6 +201,25 @@ def handle_upload_raster(context, raster_file): #function to handle the upload o
         dtm.contextDTM = raster
    
     dtm.save()
+
+def handle_contour_lines_upload(context, contour_lines_file): #function to handle the upload of the contour lines file
+    contour_lines = e_ContextContourLine.objects.get_or_create(context=context)
+    contour_lines_features = json.load(contour_lines_file)
+    try:
+        srid = SpatialReference(contour_lines_features['crs']['properties']['name']).srid
+    except:
+        srid = 4326
+
+    contour_lines_geom = []
+    for feature in contour_lines_features['features']:
+        line = LineString(feature['geometry']['coordinates'][0], srid=srid)
+        contour_lines_geom.append(line)
+    
+    contour_lines[0].geom = MultiLineString(contour_lines_geom, srid=srid)
+    # contour_lines.geom = MultiPolygon(Polygon(contour_lines_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
+
+    contour_lines[0].save()
+
 
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
@@ -285,6 +304,17 @@ class UploadContext(FormView):
                     handle_refinement(form.cleaned_data['refinements'], context, srid)
                 if form.cleaned_data['boundaries'] is not None and  form.cleaned_data['boundaries_points'] is not None:
                     handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
+
+                #Save dtm from raster file field
+                dtm = self.request.FILES.get('dtm_file')
+                if dtm is not None:
+                    handle_upload_raster(context, dtm)
+
+                #Save contour lines from file
+                contour_lines = self.request.FILES.get('contour_lines')
+                if contour_lines is not None:
+                    handle_contour_lines_upload(context, contour_lines)
+
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
