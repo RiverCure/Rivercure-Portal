@@ -25,7 +25,7 @@ var MyFunctions = {
     //vars with created polygons
     boundaries: null,
     //var to associate domain points to boundaries
-    domainMarkerToBoundary: null,
+    boundaryDomainMarkers: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
     //layer for the dtm raster
@@ -132,7 +132,7 @@ var MyFunctions = {
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
         MyFunctions.dtm = L.layerGroup().addTo(map);
 
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.dtm, 'DTM');
@@ -429,9 +429,9 @@ var MyFunctions = {
                     if(document.querySelector('#sensor-association').value == 'null')
                         return;
 
-                    for(key in MyFunctions.domainMarkerToBoundary) { // find the boundary line that contains the point
-                        if(MyFunctions.domainMarkerToBoundary[key].includes(e.target)) {
-                            for(point of MyFunctions.domainMarkerToBoundary[key]) {
+                    for(key in MyFunctions.boundaryDomainMarkers) { // find the boundary line that contains the point
+                        if(MyFunctions.boundaryDomainMarkers[key].includes(e.target)) {
+                            for(point of MyFunctions.boundaryDomainMarkers[key]) {
                                 point.getPopup()
                                     .setContent(MyFunctions.sensorAssociationPopup( point._leaflet_id, e.popup.getContent(), 
                                                                                     document.querySelector('#sensor-association').value));
@@ -598,7 +598,7 @@ var MyFunctions = {
             if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
                 MyFunctions.domainMarkers.clearLayers();
-                MyFunctions.domainMarkerToBoundary = {};
+                MyFunctions.boundaryDomainMarkers = {};
 
                 while(document.querySelector('#boundaryline-tree-id').firstChild)
                     document.querySelector('#boundaryline-tree-id').lastChild.remove();
@@ -626,7 +626,7 @@ var MyFunctions = {
     clearLayers: () => {
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.createdPolygons.Boundaries.clearLayers();
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
     },
     //function to add domain marker
     addDomainMarker: (map, latLng, sensors) => {
@@ -748,7 +748,7 @@ var MyFunctions = {
                 boundaryLine.properties.id = element._leaflet_id;
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
-                for(point of MyFunctions.domainMarkerToBoundary[element._leaflet_id]) { //get sensors associated with points
+                for(point of MyFunctions.boundaryDomainMarkers[element._leaflet_id]) { //get sensors associated with points
                     boundaryPoint = point.toGeoJSON();
                     pointPopup = point.getPopup().getContent();                
                     
@@ -800,10 +800,10 @@ var MyFunctions = {
     pruneDomainMarkers: () => {
         MyFunctions.domainMarkers.eachLayer((marker) => {
             let found = false;
-            for(line in MyFunctions.domainMarkerToBoundary) {
+            for(line in MyFunctions.boundaryDomainMarkers) {
                 if(found)
                     break;
-                for(point of MyFunctions.domainMarkerToBoundary[line]) {
+                for(point of MyFunctions.boundaryDomainMarkers[line]) {
                     if(point._leaflet_id === marker._leaflet_id) {
                         found = true;
                         break;
@@ -841,7 +841,7 @@ var MyFunctions = {
     //function to clear the map to fill with new data
     clearMap: () => {
         MyFunctions.createdPolygons.Boundaries.clearLayers();
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.editPolygonFeature.clearLayers();
         MyFunctions.dtm.clearLayers();
@@ -980,7 +980,7 @@ var MyFunctions = {
                 }
             }
         }
-        MyFunctions.domainMarkerToBoundary[boundary._leaflet_id] = boundaryPoints;
+        MyFunctions.boundaryDomainMarkers[boundary._leaflet_id] = boundaryPoints;
         
         if(MyFunctions.mode == 'edit') {
             MyFunctions.checkForCompleteness();
