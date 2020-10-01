@@ -1,12 +1,8 @@
 # Rivercure
-Create the following groups:
+Create groups and populate through load_groups.py script;
+Populate sensors (sensors\load.py);
+Populate sensors observations (sensors\load_observations.py);
 
-Administration
-ContextAdmin
-ContextManager
-SensorManager
-
-(to be continued)
 
 Migrations:
     1. Save a folder for the data inside the corresponding apps

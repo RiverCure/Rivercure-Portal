@@ -3,10 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import e_Sensor, e_SensorAlarm, e_SensorObservation
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
-from .filters import SensorFilter
+from .filters import SensorFilter, ObservationFilter
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db.models import Q
 from context.models import e_ContextSensor, e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
 
 class SensorObservationDetailView(DetailView):
     model = e_SensorObservation
@@ -16,34 +18,35 @@ class SensorObservationDetailView(DetailView):
 
 def SensorObservationListView(request):
     qs = e_SensorObservation.objects.all()
-    sensor_contains_query = request.GET.get('query')
+    obs_filter = ObservationFilter(request.GET, queryset=qs)
     
-    if sensor_contains_query !='' and sensor_contains_query is not None:
-        qs = qs.filter(Q(sensorType__icontains=sensor_contains_query) | Q(sensor__Name__icontains=sensor_contains_query))
+    paginator = Paginator(qs, 25)
+    page = request.GET.get('page')
+   
+
+    try:
+        response = paginator.page(page)
+    except PageNotAnInteger:
+        response = paginator.page(1)
+    except EmptyPage:
+        response = paginator.page(paginator.num_pages)
     
     context={
-        'queryset': qs
+        'filter': obs_filter,
+        'response': response,
     }
 
     return render(request, "sensors/e_Sensor_observations.html", context)
-
 
 
 def SensorListView(request):
     
     sensor_list = e_Sensor.objects.all()
     sensor_filter = SensorFilter(request.GET, queryset=sensor_list)
-
-    #complex_query=''
-
-    #filter_code = '55'
-
-    #if complex_query is not None:
-        #complex_query = e_ContextSensor.objects.all().filter(code__iexact=filter_code).boundary_point.contextBoundaryLine.context
-      
-
     context ={
         'filter': sensor_filter,
+        
+
     }
 
     return render(request, 'sensors/e_Sensor_list.html', context)

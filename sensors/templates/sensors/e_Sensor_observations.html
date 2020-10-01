@@ -1,16 +1,17 @@
 {% extends "rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
+{% load auth_extras %}
 
 {% block content %}
 
 <h1>Sensors Observations</h1>
-<div>
-<form action="{% url 'sensor-observations' %}" method="GET">
-  <input name="query" type="text"  placeholder="Search by sensor/type">
-</form>
-</div>
 
+<div class="row">
+
+<div class="col-md-8">
 <table class="table table-hover">
+ 
   <thead>
     <tr>
       <th scope="col">Sensor</th>
@@ -23,7 +24,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for observation in queryset %}
+    {% for observation in filter.qs %}
     <tr>
       <td>{{ observation.sensor }}</td>
       <td>{{ observation.sensor.type }}</td>
@@ -32,12 +33,31 @@
       <td>{{ observation.depth }}</td>
       <td>{{ observation.discharge }}</td>
       <td><a class="mr-2" href="{% url 'sensor-observation-detail' observation.id %}">Details</a></td>
-      </tr>
+    </tr>
       {% empty %}
-      <h2 class="text-secondary font-italic no-context-data">No available observations! :(</h2>
-      {% endfor %}
+      <td><h2 class="text-secondary font-italic no-context-data">No available observations! :(</h2></td>
+    {% endfor %}
   </tbody>
 </table>
+</div>
+
+<div class="filter-section col-md-3">
+  <h5>Filter</h5> 
+  
+  <form method="get" >
+    {{ filter.form |crispy }}
+    <button type="submit" class="btn btn-info">Filter</button>
+  </form>
+</div>
+</div>
+
+<div class="pagination mb-2">
+  Page {{ page_obj.number }} of {{ paginator.num_pages }}
+</div>
+
+
+
+
 
 
 

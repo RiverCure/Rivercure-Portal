@@ -3,28 +3,58 @@
 
 {% block content %}
 
-<h1>Sensors in Context X</h1>
-<div class="content-section">
-<form method="get">
-  {{ filter.form |crispy }}
-  <button type="button" class="btn btn-info">Filter</button>
-</form>
+<h1>Sensors</h1>
+
+<div class="row">
+
+<div class="col-md-8">
+<table class="table table-hover ">
+  <thead>
+      <tr>
+        <th scope="col">Code</th>
+        <th scope="col">Name</th>
+        <th scope="col">Type</th>
+        <th scope="col">SubType</th>
+        <th scope="col">Modality</th>
+        <th scope="col">Observations</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sensor in filter.qs %}
+      <tr>
+        <td>{{ sensor.code }}</td>
+        <td>{{ sensor.Name }}</td>
+        <td>{{ sensor.type }}</td>
+        <td>{{ sensor.subtype }}</td>
+        <td>{{ sensor.modalityType }}</td>
+        <td><a href="{% url 'sensor-observations' %}?query={{sensor.Name}}"> <img src="" alt="observations" ></a></td>
+      </tr>
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>
+    {% endfor %}
+  </tbody>
+  </table>
+  </div>
+
+
+
+  
+  <div class="filter-section col-md-3">
+    <h5>Filter</h5> 
+    <form method="get">
+      {{ filter.form |crispy }}
+      <button type="submit" class="btn btn-info">Filter</button>
+    </form>
+  </div>
+
+  {% if perms.sensors.add_e_sensor %}
+  <div>
+    <a type="button" class="btn btn-info" href="{% url 'admin:sensors_e_sensor_add' %}">Add sensor</a>
+  </div>
+  {% endif %}
+ 
 </div>
-
-{% for context_sensor in filter.qs %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ context_sensor.code }}</a>
-      </div>
-      <p><a class="article-title" >{{ context_sensor.type }}</a></p>
-    </div>
-</article>
-{% endfor %}
-
-
 {% endblock content %}
-
 
 
 

@@ -41,9 +41,7 @@
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Sensors</a>
                 <div class="dropdown-menu">
                     <a href="{% url 'sensor-list' %}" class="dropdown-item">Sensors List</a>
-                    {% if perms.sensors.add_e_sensor %}
-                    <a href="{% url 'admin:sensors_e_sensor_add' %}" class="dropdown-item">Add Sensor</a>
-                    {% endif %}
+                    
                 </div>
               </div>
               <div class="nav-item dropdown">
@@ -70,7 +68,7 @@
               </div>
             
               
-              <a class="nav-item nav-link" href="{% url 'rivercure-about' %}">About</a>
+              
           </div>
             
             <!-- Navbar Right Side -->

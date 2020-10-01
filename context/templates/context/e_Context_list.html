@@ -23,7 +23,8 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
-      <p><a class="article-title" >{{ context.code }}</a></p>
+      <p><a class="article-title" >Code : {{ context.code }}</a></p>
+      <p><a class="article-title" >Owner : {{ context.user }}</a></p>
     </div>
 </article>
 {% empty %}

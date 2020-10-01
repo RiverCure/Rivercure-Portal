@@ -6,7 +6,7 @@
 
 {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
 
-<h2 class="cool-header">Popular Context</h2>
+<h2>Popular Context</h2>
 
 <article class="media content-section">
     <div class="media-body">
@@ -15,7 +15,7 @@
     </div>
 </article>
 
-<a type="button" class="btn btn-info btn-sm" href="{% url 'context-list' %}">All Contexts</a>
+<a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
 
 {% endif %}
 
@@ -30,16 +30,17 @@
     </div>
 </article>
 
-<a type="button" class="btn btn-info btn-sm" href="{% url 'sensor-list' %}">All Sensors</a>
+<a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
 
 {% endif %}
 
 {% if request.user|has_group:"Administration" %} 
 
-
-<a type="button" class="btn btn-info" data-toggle="collapse" data-target="#collapseExample"  aria-expanded="false" aria-controls="collapseExample">
+<div>
+<a type="button" class="btn btn-info mt-5" data-toggle="collapse" data-target="#collapseExample"  aria-expanded="false" aria-controls="collapseExample">
   Users
 </a>
+</div>
 
 {% for g in groups %}
   <div class="collapse" id="collapseExample">

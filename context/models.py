@@ -6,15 +6,13 @@ from django.contrib.auth.models import User
 from sensors.models import e_Sensor
 from raster.models import RasterLayer
 
-EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  ('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  ('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
+EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  
+('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  
+('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
 
-EVENTSUBKIND_CHOICES = (  ('Real','real'),  ('simulation','Simulation'),  )
-
-EVENTSIMULATIONKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'), ('Planning','planning'),)
-
-CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
+EVENTSUBKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'), ('Planning','planning'),)
 
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
@@ -23,6 +21,8 @@ ContextAccessRequestState_CHOICES =  ( ('Processing', 'processing'), ('Finished'
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
 
 CONTEXTACCESS_CHOICES = (('admin', 'Admin'), ('manager', 'Manager'), ('viewer', 'Viewer'))
+
+TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
 class e_Context(models.Model):
 	code = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -110,15 +110,17 @@ class e_ContextEvent(models.Model):
 
 	type = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
 
+	subtype = models.CharField(max_length=30, choices=EVENTSUBKIND_CHOICES, null=True, blank=True)
+
 	state = models.CharField(max_length=30, choices=EVENTSTATE_CHOICES)
 	
 	startDate = models.DateField(default=date.today)
 
-	startTime = models.TimeField(null=True)
+	startTime = models.TimeField(null=True, blank=True)
 
-	endDate = models.DateField(default=date.today)
+	endDate = models.DateField(default=date.today, null=True, blank=True)
 
-	endTime = models.TimeField(null=True)
+	endTime = models.TimeField(null=True, blank=True)
 	   									
 	description = models.TextField()
 
@@ -128,7 +130,16 @@ class e_ContextEvent(models.Model):
 
 	warmUp = models.BooleanField(default=False)
 	
-	simulationType = models.CharField(max_length=30, choices=EVENTSIMULATIONKIND_CHOICES, null=True)
+	#simulationType = models.CharField(max_length=30, choices=EVENTSIMULATIONKIND_CHOICES, null=True)
+
+	WritingPeriodicity = models.FloatField(default=1.0, null=True, blank=True)
+
+	WritingPeriodicityUnit = models.CharField(max_length=20, choices= TIME_UNITS, null=True, blank=True) 
+
+	UpdateMaximumValue = models.FloatField(default=1.0, null=True, blank=True)
+
+	UpdateMaximumValueUnit = models.CharField(max_length=20, choices= TIME_UNITS, null=True, blank=True) 
+
 
 
 class e_ContextAccessRequest(models.Model):

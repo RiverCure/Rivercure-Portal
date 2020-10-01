@@ -70,7 +70,7 @@ class ContextRequestListView(UserPassesTestMixin, ListView):
     template_name = 'context/e_ContextRequests_list.html'
 
     def test_func(self):
-        if self.request.user.has_perm('can_add_group'):
+        if self.request.user.groups.filter(name='ContextAdmin').exists() :
             return True
         else:
             return False
@@ -99,11 +99,14 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
 
     def test_func(self, *args , **kwargs):
         self.object = self.get_object()
-        if self.object.isPublic and request.user.is_authenticated:
-            return True
+        if self.object.isPublic and self.request.user.is_authenticated:
+            if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists():
+                return True
+            else:
+                return False
         else:
             if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists():
-                if e_ContextAccessRequest.objects.filter(requestuser=self.request.user, access_granted=True).exists():  #para ver, falta a permissao igual mas de manager na outra view
+                if e_ContextAccessRequest.objects.filter(requestuser=self.request.user, access_granted=True).exists() or self.object.user == self.request.user:  #para ver, falta a permissao igual mas de manager na outra view
                     return True
                 else:
                     return False
@@ -119,8 +122,48 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
     
 def ContextSensorListView(request):
     contextSensor_list = e_ContextSensor.objects.all()
-    contextSensor_filter = EventSensorFilter(request.GET, queryset=contextSensor_list)
+    contextSensor_filter = contextSensor_list.first()
     return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = e_ContextEvent
+        fields = ['Name', 'type', 'subtype', 'context', 'state', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']
+        
+
+class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+    model = e_ContextEvent
+    success_url = 'event-list'
+    template_name = 'context/e_Event_create.html'
+    form_class = EventForm
+
+    #def form_valid(self, form):
+        #obj = form.save(commit=False)
+        #obj.save() 
+        #return HttpResponseRedirect(reverse('event-list'))
+
+    def test_func(self):
+        if self.request.user.has_perm('can_update_hydrofeatures'):
+            return True
+        else:
+            return False
+
+class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+    model = e_ContextEvent
+    success_url = 'event-list'
+    template_name = 'context/e_Event_create.html'
+    form_class = EventForm
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.save() 
+        return HttpResponseRedirect(reverse('event-list'))
+
+    def test_func(self):
+        if self.request.user.has_perm('can_add_hydrofeatures'):
+            return True
+        else:
+            return False
 
 def EventListView(request):
     event_list = e_ContextEvent.objects.all()

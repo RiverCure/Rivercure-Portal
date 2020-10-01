@@ -11,54 +11,75 @@
 
 <h1>Context Access Requests</h1>
 
-{% if user|has_group:"ContextManager" %}
+{% if user|has_group:"ContextManager" or user|has_group:"ContextAdmin" %}
 
 <h2>Processing</h2>
-{% for request in requests %}
-{% if request.state == "processing" or request.state == "Processing" %}
-<article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata">
-          <a class="mr-2" href="{% url 'context-request-decision' request.id %}">{{ request.context.Name }} </a>  
-        </div>
-        <div class="media-body">
-          <p>User : {{ request.requestuser}}</p>
-          <p>Organization : {{ request.requestuser.profile.institution}}</p>
-        </div>
-        <div class="media-article">
-          <img class="article-img" src="{{ user.profile.image.url }}"></img>
-        </div>
-    </div>
-</article>
-{% endif %}
-{% empty %}
-<h2 class="text-secondary font-italic no-context-data">No requests</h2>
-{% endfor %}
+
+<table class="table table-hover ">
+  <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">User</th>
+        <th scope="col">Organization</th>
+        <th scope="col">Context</th>
+        <th scope="col">Type</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in requests %}
+      {% if request.state == "processing" or request.state == "Processing" %}
+      <tr>
+        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+        <td>{{ request.requestuser}}</td>
+        <td>{{ request.requestuser.profile.institution}}</td>
+        <td>{{ request.context.Name }}</td>
+        <td>{{ request.type }}</td>
+        <td><a href="{% url 'context-request-decision' request.id %}"> <img src="" alt="Manage" ></a></td>
+      </tr>
+      {% endif %}
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+          
+      {% endfor %}
+  </tbody>
+  </table>
+
+
 
 <h2>Finished</h2>
-{% for request in requests %}
-{% if request.state == "finished" or request.state == "Finished" %}
-<article class="media content-section">
-  <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2">{{ request.context.Name }} </a>  
-      </div>
-      <div class="media-body">
-        <p>User : {{ request.requestuser}}</p>
-        <p>Organization : {{ request.requestuser.profile.institution}}</p>
-      </div>
-      <div class="media-article">
-        <img class="article-img" src="{{ user.profile.image.url }}"></img>
-      </div>
-  </div>
-</article>
-{% endif %}
-{% empty %}
-<h2 class="text-secondary font-italic no-context-data">No requests</h2>
-{% endfor %}
+<table class="table table-hover ">
+  <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">User</th>
+        <th scope="col">Organization</th>
+        <th scope="col">Context</th>
+        <th scope="col">Type</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in requests %}
+      {% if request.state == "finished" or request.state == "Finished" %}
+      <tr>
+        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+        <td>{{ request.requestuser}}</td>
+        <td>{{ request.requestuser.profile.institution}}</td>
+        <td>{{ request.context.Name }}</td>
+        <td>{{ request.type }}</td>
+      </tr>
+      {% endif %}
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+      
+  {% endfor %}
+  </tbody>
+  </table>
 
 
 
-{% endif %}
+  {% endif %}
+
 
 {% endblock content %}
