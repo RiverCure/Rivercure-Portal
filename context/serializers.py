@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor, e_ContextDTM
+from .models import e_Context, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextSensor, e_ContextDTM
 
 # Serializers for API calls
 
@@ -37,12 +37,18 @@ class ContextDTMSerializer(serializers.ModelSerializer):
         model = e_ContextDTM
         fields = ['contextDTM']
 
+class ContextContourLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = e_ContextContourLine
+        fields = ['geom']
+
 class ContextSerializer(serializers.ModelSerializer): # main serializer
     context_boundaries = ContextBoundarySerializer(many=True, read_only=True)
     context_refinement = ContextRefinementSerializer(many=True, read_only=True)
     context_alignment = ContextAlignmentSerializer(many=True, read_only=True)
     hydroFeature = serializers.PrimaryKeyRelatedField(read_only=True)
     context_dtm = ContextDTMSerializer(read_only=True)
+    # context_contour_lines = ContextContourLineSerializer(read_only=True)
 
     class Meta:
         model = e_Context

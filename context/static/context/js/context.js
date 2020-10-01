@@ -25,7 +25,7 @@ var MyFunctions = {
     //vars with created polygons
     boundaries: null,
     //var to associate domain points to boundaries
-    domainMarkerToBoundary: null,
+    boundaryDomainMarkers: null,
     //Dictionary with the feature groups of the polygons to draw
     createdPolygons: {},
     //layer for the dtm raster
@@ -132,7 +132,7 @@ var MyFunctions = {
         MyFunctions.createdPolygons.Alignment = L.layerGroup().addTo(map);
         MyFunctions.dtm = L.layerGroup().addTo(map);
 
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
         MyFunctions.highlightLayer = L.featureGroup().addTo(map);
 
         map.layerscontrol.addOverlay(MyFunctions.dtm, 'DTM');
@@ -384,7 +384,8 @@ var MyFunctions = {
                     <option value='null'>--------------------</option>
                 </select>
                 <div class"container">
-                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
+                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add to Point</button>
+                    <button type="button" id='popup-btn-all' class="btn btn-outline-info btn-sm")">Add to Line</button>
                 </div>
             `   
         }
@@ -421,6 +422,24 @@ var MyFunctions = {
                     if(document.querySelector('#sensor-association').value == 'null')
                         return;
                     e.popup.setContent(MyFunctions.sensorAssociationPopup(e.target._leaflet_id, e.popup.getContent(), document.querySelector('#sensor-association').value));
+                    popup.closePopup();
+                    popup.openPopup();
+                });
+                document.querySelector('#popup-btn-all').addEventListener('click', () => { // add the sensor to all the point of the boundary line
+                    if(document.querySelector('#sensor-association').value == 'null')
+                        return;
+
+                    for(key in MyFunctions.boundaryDomainMarkers) { // find the boundary line that contains the point
+                        if(MyFunctions.boundaryDomainMarkers[key].includes(e.target)) {
+                            for(point of MyFunctions.boundaryDomainMarkers[key]) {
+                                point.getPopup()
+                                    .setContent(MyFunctions.sensorAssociationPopup( point._leaflet_id, e.popup.getContent(), 
+                                                                                    document.querySelector('#sensor-association').value));
+                            }
+                            break;
+                        }
+                    }
+
                     popup.closePopup();
                     popup.openPopup();
                 });
@@ -579,7 +598,7 @@ var MyFunctions = {
             if(MyFunctions.createdPolygons.Domain.hasLayer(layer)) {
                 MyFunctions.createdPolygons.Boundaries.clearLayers();
                 MyFunctions.domainMarkers.clearLayers();
-                MyFunctions.domainMarkerToBoundary = {};
+                MyFunctions.boundaryDomainMarkers = {};
 
                 while(document.querySelector('#boundaryline-tree-id').firstChild)
                     document.querySelector('#boundaryline-tree-id').lastChild.remove();
@@ -607,7 +626,7 @@ var MyFunctions = {
     clearLayers: () => {
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.createdPolygons.Boundaries.clearLayers();
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
     },
     //function to add domain marker
     addDomainMarker: (map, latLng, sensors) => {
@@ -616,7 +635,6 @@ var MyFunctions = {
         MyFunctions.sensorAssociationPopupConfig(marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null)));
 
         if(sensors !== undefined) {
-            let sensorCode;
             for(sensor of sensors) {
                 marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker._leaflet_id, marker.getPopup().getContent(), sensor.sensor));
             }
@@ -730,7 +748,7 @@ var MyFunctions = {
                 boundaryLine.properties.id = element._leaflet_id;
                 boundaryLine.properties.type = popup.slice(popup.indexOf('current-type\' value="') + 'current-type\' value="'.length, popup.indexOf('" selected')).trim();
                 boundaryLine.properties.dataType = popup.substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1).trim();
-                for(point of MyFunctions.domainMarkerToBoundary[element._leaflet_id]) { //get sensors associated with points
+                for(point of MyFunctions.boundaryDomainMarkers[element._leaflet_id]) { //get sensors associated with points
                     boundaryPoint = point.toGeoJSON();
                     pointPopup = point.getPopup().getContent();                
                     
@@ -782,10 +800,10 @@ var MyFunctions = {
     pruneDomainMarkers: () => {
         MyFunctions.domainMarkers.eachLayer((marker) => {
             let found = false;
-            for(line in MyFunctions.domainMarkerToBoundary) {
+            for(line in MyFunctions.boundaryDomainMarkers) {
                 if(found)
                     break;
-                for(point of MyFunctions.domainMarkerToBoundary[line]) {
+                for(point of MyFunctions.boundaryDomainMarkers[line]) {
                     if(point._leaflet_id === marker._leaflet_id) {
                         found = true;
                         break;
@@ -823,7 +841,7 @@ var MyFunctions = {
     //function to clear the map to fill with new data
     clearMap: () => {
         MyFunctions.createdPolygons.Boundaries.clearLayers();
-        MyFunctions.domainMarkerToBoundary = {};
+        MyFunctions.boundaryDomainMarkers = {};
         MyFunctions.domainMarkers.clearLayers();
         MyFunctions.editPolygonFeature.clearLayers();
         MyFunctions.dtm.clearLayers();
@@ -889,19 +907,26 @@ var MyFunctions = {
             response.context_boundaries.forEach((element) => { //define each boundary line individually
                 //Boundary Points
                 for(point of element.context_boundary_points) {
-                    if(MyFunctions.mode == 'edit') //This makes it so sensors background dont change color in view mode
-                        MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
-                    else {
-                        let marker = L.marker(MyFunctions.coordStringToArray(point.geom)[0]).addTo(MyFunctions.domainMarkers);
-                        marker.bindPopup(MyFunctions.sensorAssociationPopup(marker._leaflet_id, null, null));
-                    }
+                    MyFunctions.addDomainMarker(map, MyFunctions.coordStringToArray(point.geom)[0], point.sensor_boundary_point);
                 }
                 //Boundary Lines
                 boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
                 MyFunctions.defineBoundary(boundary, element.type, element.dataType);
             });
         }
-
+        // if(MyFunctions.mode == 'edit' && response.context_contour_lines !== null) {
+        //     let coordinates = [];
+        //     lines = response.context_contour_lines.geom.slice(response.context_contour_lines.geom.indexOf('(') + 1, response.context_contour_lines.geom.lastIndexOf(')'))
+        //     lines = lines.split('),')
+        //     for(line of lines) {
+        //         line = line.slice(1).split(',');
+        //         for(coord of line) {
+        //             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
+        //         }
+        //         L.polyline(coordinates).addTo(map)
+        //         coordinates = []
+        //     }
+        // }
     },
     //function to define polygons on all necessary layers
     definePolygon: (layer, type, CL) => {
@@ -955,7 +980,7 @@ var MyFunctions = {
                 }
             }
         }
-        MyFunctions.domainMarkerToBoundary[boundary._leaflet_id] = boundaryPoints;
+        MyFunctions.boundaryDomainMarkers[boundary._leaflet_id] = boundaryPoints;
         
         if(MyFunctions.mode == 'edit') {
             MyFunctions.checkForCompleteness();
@@ -1263,15 +1288,3 @@ var MyFunctions = {
         return nearbySensors;
     },
 }
-
-
-//add layers
-        //var satellite = L.gridLayer.googleMutant({type: 'roadmap'});
-        /*var satellite = L.tileLayer('http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}').addTo(map);
-        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'});
-
-        var baseLayers = {
-            "Satellite": satellite,
-            "OpenStreetMaps": osm
-        }
-        L.control.layers(baseLayers).addTo(map);*/

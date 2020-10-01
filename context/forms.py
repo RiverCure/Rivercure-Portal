@@ -9,6 +9,7 @@ class ContextForm(forms.Form):
     code = forms.CharField(widget=forms.HiddenInput())
     name = forms.CharField()
     dtm_file = forms.FileField(required=False)
+    contour_lines = forms.FileField(required=False)
     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
     domain = forms.CharField(widget=forms.HiddenInput())
     alignment = forms.CharField(widget=forms.HiddenInput())
@@ -23,5 +24,5 @@ class UploadContextForm(forms.Form):
     refinements = forms.FileField(required=False)
     boundaries = forms.FileField(required=False)
     boundaries_points = forms.FileField(required=False)
-
-    #dtm_file = forms.FileField()
+    dtm_file = forms.FileField(required=False)
+    contour_lines = forms.FileField(required=False)

@@ -162,6 +162,13 @@ LEAFLET_CONFIG = {
                                 &copy <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> 
                                 <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
             }),
+            ('Contour Lines', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
+                'id': 'outdoors-v11',
+                'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
+                'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
+                                &copy <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> 
+                                <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
+            }),
             ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
     ]
 }
@@ -183,9 +190,10 @@ CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually
 
 # RASTER_USE_CELERY = True
 
-CELERY_BROKER_URL = 'amqp://jorge:jorge@localhost/vjorge'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Europe/London'
+# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_CACHE_BACKEND = 'django-cache'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'Europe/London'
