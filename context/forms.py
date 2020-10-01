@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.gis.forms import fields
-from .models import e_Context
+from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
 
@@ -26,3 +26,8 @@ class UploadContextForm(forms.Form):
     boundaries_points = forms.FileField(required=False)
     dtm_file = forms.FileField(required=False)
     contour_lines = forms.FileField(required=False)
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = e_ContextEvent
+        fields = ['Name', 'type', 'subtype', 'context', 'state', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']

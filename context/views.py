@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 from django.db import transaction, connection
 from django.utils import timezone
-from .forms import ContextForm, UploadContextForm
+from .forms import ContextForm, UploadContextForm, EventForm
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
@@ -125,10 +125,7 @@ def ContextSensorListView(request):
     contextSensor_filter = contextSensor_list.first()
     return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
 
-class EventForm(forms.ModelForm):
-    class Meta:
-        model = e_ContextEvent
-        fields = ['Name', 'type', 'subtype', 'context', 'state', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']
+
         
 
 class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
@@ -155,8 +152,20 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     form_class = EventForm
 
     def form_valid(self, form):
+        context = form.cleaned_data['context']
+        writing_period = form.cleaned_data['WritingPeriodicity']
+        max_update_period = form.cleaned_data['UpdateMaximumValue']
+        writing_unit = form.cleaned_data['WritingPeriodicityUnit']
+        update_unit = form.cleaned_data['UpdateMaximumValueUnit']
+        init_date = form.cleaned_data['startDate']
+        end_date = form.cleaned_data['endDate']
+        init_time = form.cleaned_data['startTime']
+        end_time = form.cleaned_data['endTime']
+
         obj = form.save(commit=False)
         obj.save() 
+
+        request_simulation(context, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
         return HttpResponseRedirect(reverse('event-list'))
 
     def test_func(self):
