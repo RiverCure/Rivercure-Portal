@@ -1288,15 +1288,3 @@ var MyFunctions = {
         return nearbySensors;
     },
 }
-
-
-//add layers
-        //var satellite = L.gridLayer.googleMutant({type: 'roadmap'});
-        /*var satellite = L.tileLayer('http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}').addTo(map);
-        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'});
-
-        var baseLayers = {
-            "Satellite": satellite,
-            "OpenStreetMaps": osm
-        }
-        L.control.layers(baseLayers).addTo(map);*/
