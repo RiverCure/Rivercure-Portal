@@ -595,10 +595,12 @@ def prepare_boundary_points(context_code, context_name):
     features = []
 
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextboundarypoint".id
+        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id"
                             FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
+                            INNER JOIN "context_e_contextsensor" 
+                            ON ("context_e_contextboundarypoint"."id" = "context_e_contextsensor"."boundary_point_id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
         rows = cursor.fetchall()
         for boundary_point in rows:
@@ -700,30 +702,29 @@ def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
     files = []
 
-    context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
-    
+    # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
+    context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
     for point in context_points: 
         sensor_obs = e_SensorObservation.objects.filter(sensor=point.sensor)
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
         file_data = ''
         instant = 0
-
-        if sensor_obs_valid.first().depth is not None:
-            value = 'depth'
-        elif sensor_obs_valid.first().discharge is not None:
-            value = 'discharge'
-        elif sensor_obs_valid.first().volume is not None:
-            value = 'volume'
-        elif sensor_obs_valid.first().velocity is not None:
-            value = 'velocity'
-        elif sensor_obs_valid.first().elevation is not None:
-            value = 'elevation'
-
+        
         for obs in sensor_obs_valid:
-            line = f'{instant}\t{obs[value]}\r\n' #must be changed according to value
+            if sensor_obs_valid.first().depth is not None:
+                line = f'{instant}\t{obs.depth}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().discharge is not None:
+                line = f'{instant}\t{obs.discharge}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().volume is not None:
+                line = f'{instant}\t{obs.volume}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().velocity is not None:
+                line = f'{instant}\t{obs.velocity}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().elevation is not None:
+                line = f'{instant}\t{obs.elevation}\r\n' #must be changed according to value
+
             file_data += line
             instant += 60
 
-        files.append((f'sensor_{point.id}.bnd', line))
+        files.append((f'sensor_{point.sensor.code}.bnd', file_data))
         
     return files
