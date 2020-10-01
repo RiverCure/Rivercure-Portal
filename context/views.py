@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.gis.geos import Polygon
 from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
 from raster.models import RasterLayer
-from sensors.models import e_Sensor
+from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
 from django.core.serializers import serialize
 from .serializers import ContextSerializer
@@ -567,8 +567,8 @@ def prepare_boundary_points(context_code, context_name):
     return boundary_point_file
 
 
-def request_simulation(request, context_code): # function to start simulation
-    url = os.environ['SIMULATOR_ADDRESS']
+def request_pre_processing(request, context_code): # function to start simulation
+    url = os.environ['SIMULATOR_ADDRESS'] + 'process/'
 
     try:
         #------------------ Domain --------------------------------
@@ -590,7 +590,6 @@ def request_simulation(request, context_code): # function to start simulation
             'refinements.geojson': geojson.dumps(refinement_file),
             'boundaries.geojson': geojson.dumps(boundary_file),
             'boundaries_points.geojson': geojson.dumps(boundary_point_file)
-
         }  
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
@@ -604,6 +603,75 @@ def request_simulation(request, context_code): # function to start simulation
         print(f'Error requesting context simulation: {e}')
         return redirect(request.META['HTTP_REFERER'])
 
-def simulation_results(request): #function to redirect the user to the paraviewweb visualizer
+def simulation_results(request): # function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
+
+def request_simulation(context, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
+    url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
+
+    payload = {'context_name': context.Name}
+
+    #prepare files
+
+    frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
+
+    files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
+
+    files.append(('frequency', frequency_file))
+
+    r = requests.post(url, files=files, params=payload)
+
+
+def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
+    # transform periodicity
+    writing_freq = 1/writing_perio
+    max_update_freq = 1/max_update_perio
+
+    if(writing_unit == 'hour'):
+        writing_freq *= 60 * 60
+    elif(writing_unit == 'minute'):
+        writing_freq *= 60
+
+    if(update_unit == 'hour'):
+        max_update_freq *= 60 * 60
+    elif(update_unit == 'minute'):
+        max_update_freq *= 60
+    
+    #end transform
+
+    output_file_data = f'{writing_freq}\r\n{max_update_freq}'
+
+    return output_file_data
+    
+
+def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
+    files = []
+
+    context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
+    
+    for point in context_points: 
+        sensor_obs = e_SensorObservation.objects.filter(sensor=point.sensor)
+        sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
+        file_data = ''
+        instant = 0
+
+        if sensor_obs_valid.first().depth is not None:
+            value = 'depth'
+        elif sensor_obs_valid.first().discharge is not None:
+            value = 'discharge'
+        elif sensor_obs_valid.first().volume is not None:
+            value = 'volume'
+        elif sensor_obs_valid.first().velocity is not None:
+            value = 'velocity'
+        elif sensor_obs_valid.first().elevation is not None:
+            value = 'elevation'
+
+        for obs in sensor_obs_valid:
+            line = f'{instant}\t{obs[value]}\r\n' #must be changed according to value
+            file_data += line
+            instant += 60
+
+        files.append((f'sensor_{point.id}.bnd', line))
+        
+    return files

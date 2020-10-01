@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, simulation_results, request_simulation, ContextViewSet, UploadContext, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView
+from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -12,7 +12,7 @@ urlpatterns = [
     path('manage/', show_context, name='context_manage'),
     path('upload/<str:pk>', UploadContext.as_view(), name='context_upload'),
     path('download/<str:context_code>', download_context, name='download_context'),
-    path('request_simulation/<str:context_code>', request_simulation, name='context-simulation-request'),
+    path('request_simulation/<str:context_code>', request_pre_processing, name='context-simulation-request'),
     path('simulation_results/', simulation_results, name='context-simulation-results'),
     path('api/', include(router.urls)),
     path('events/', EventListView, name='event-list'),
