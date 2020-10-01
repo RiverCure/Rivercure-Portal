@@ -384,7 +384,8 @@ var MyFunctions = {
                     <option value='null'>--------------------</option>
                 </select>
                 <div class"container">
-                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add</button>
+                    <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add to Point</button>
+                    <button type="button" id='popup-btn-all' class="btn btn-outline-info btn-sm")">Add to Line</button>
                 </div>
             `   
         }
@@ -421,6 +422,24 @@ var MyFunctions = {
                     if(document.querySelector('#sensor-association').value == 'null')
                         return;
                     e.popup.setContent(MyFunctions.sensorAssociationPopup(e.target._leaflet_id, e.popup.getContent(), document.querySelector('#sensor-association').value));
+                    popup.closePopup();
+                    popup.openPopup();
+                });
+                document.querySelector('#popup-btn-all').addEventListener('click', () => { // add the sensor to all the point of the boundary line
+                    if(document.querySelector('#sensor-association').value == 'null')
+                        return;
+
+                    for(key in MyFunctions.domainMarkerToBoundary) { // find the boundary line that contains the point
+                        if(MyFunctions.domainMarkerToBoundary[key].includes(e.target)) {
+                            for(point of MyFunctions.domainMarkerToBoundary[key]) {
+                                point.getPopup()
+                                    .setContent(MyFunctions.sensorAssociationPopup( point._leaflet_id, e.popup.getContent(), 
+                                                                                    document.querySelector('#sensor-association').value));
+                            }
+                            break;
+                        }
+                    }
+
                     popup.closePopup();
                     popup.openPopup();
                 });
