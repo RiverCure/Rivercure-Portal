@@ -221,7 +221,6 @@ def handle_contour_lines_upload(context, contour_lines_file): #function to handl
     contour_lines[0].save()
 
 
-
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
 
@@ -544,7 +543,8 @@ def prepare_boundary_points(context_code, context_name):
     features = []
 
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id" FROM public.context_e_contextboundarypoint 
+        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextboundarypoint".id
+                            FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
@@ -553,7 +553,8 @@ def prepare_boundary_points(context_code, context_name):
             boundary_point_geom = GEOSGeometry(boundary_point[0])
             context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
                                 properties = {"Geometry type": 'Boundary Point',
-                                            "Boundary": boundary_point[1]}) 
+                                            "Boundary": boundary_point[1],
+                                            "series": f'sensor_{boundary_point[2]}.bnd'}) 
 
             features.append(context_boundary_points)
 
