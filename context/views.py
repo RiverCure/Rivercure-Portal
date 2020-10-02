@@ -476,8 +476,8 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
 
 
 def download_context(request, context_code): #function that allows the download of an context
-    # if not request.user.is_authenticated: #verify that the user is logged in
-    #     return HttpResponse('Unauthorized', status=401)
+    if not request.user.is_authenticated: #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
     #prepare geojson for download
