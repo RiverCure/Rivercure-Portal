@@ -23,7 +23,7 @@ class UploadContextForm(forms.Form):
     alignments = forms.FileField(required=False)
     refinements = forms.FileField(required=False)
     boundaries = forms.FileField(required=False)
-    boundaries_points = forms.FileField(required=False)
+    # boundaries_points = forms.FileField(required=False)
     dtm_file = forms.FileField(required=False)
     contour_lines = forms.FileField(required=False)
 
