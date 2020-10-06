@@ -408,6 +408,9 @@ var MyFunctions = {
     },
     //functio to configure domain marker popup
     sensorAssociationPopupConfig: (popup) => {
+        if(MyFunctions.mode == 'view') //if user is in context detail page do nothing
+            return;
+
         var sensorDistance = 100; //variable to store the distance at which a user can associate a sensor (meters)
         popup.on('popupopen', e => {
             if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
@@ -639,7 +642,10 @@ var MyFunctions = {
                 marker.getPopup().setContent(MyFunctions.sensorAssociationPopup(marker._leaflet_id, marker.getPopup().getContent(), sensor.sensor));
             }
         }
-        
+            
+        if(MyFunctions.mode == 'view') //if user is in context detail stop function here
+            return;
+
         //add the logic to draw the boundary based on the domain polygon vertex
         marker.on('click', e => {
             if(document.querySelector("#polygon-type").value === 'Boundary') {
