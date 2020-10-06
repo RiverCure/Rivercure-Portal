@@ -1,7 +1,6 @@
 import django_filters
 from django import forms
 from .models import e_Sensor, e_SensorObservation
-from context.models import e_ContextSensor
 from django_filters import DateFilter
 from django.forms.widgets import TextInput
 

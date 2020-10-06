@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>Sensors</h1>
+<h1>{{ context_name }} - Sensors</h1>
 
 <div class="row">
 
@@ -47,13 +47,21 @@
     </form>
   </div>
 
-  {% if perms.sensors.add_e_sensor %}
-  <div>
-    <a type="button" class="btn btn-info" href="{% url 'admin:sensors_e_sensor_add' %}">Add sensor</a>
-  </div>
-  {% endif %}
  
+  <div>
+    {% if perms.sensors.add_e_sensor %}
+    <a type="button" class="btn btn-info" href="{% url 'admin:sensors_e_sensor_add' %}">Add sensor</a>
+    {% endif %}
+    <a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
+    <a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
+    <a type="button" class="btn btn-info " href="{% url 'context-detail' context_code %}">Return to Context {{ context_name }}</a>
+  </div>
 </div>
+
+
+
+
+
 {% endblock content %}
 
 

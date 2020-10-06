@@ -6,6 +6,11 @@ from django.forms.widgets import TextInput
 
 
 
+class ContextSensorFilter(django_filters.FilterSet):
+    class Meta:
+        model = e_ContextSensor
+        fields = ['sensor', ]
+
 class EventSensorFilter(django_filters.FilterSet):
      class Meta:
         model = e_ContextSensor
