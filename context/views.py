@@ -360,13 +360,13 @@ class UploadContext(FormView):
             with transaction.atomic():
                 context = e_Context.objects.get(code=form.cleaned_data['code'])
                 if form.cleaned_data['domain'] is not None:
-                    srid = handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                    handle_domain(form.cleaned_data['domain'], context, self.request.user)
                 if form.cleaned_data['alignments'] is not None:
-                    handle_alignment(form.cleaned_data['alignments'], context, srid)
+                    handle_alignment(form.cleaned_data['alignments'], context)
                 if form.cleaned_data['refinements'] is not None:
-                    handle_refinement(form.cleaned_data['refinements'], context, srid)
-                if form.cleaned_data['boundaries'] is not None and  form.cleaned_data['boundaries_points'] is not None:
-                    handle_boundaries(form.cleaned_data['boundaries'], form.cleaned_data['boundaries_points'], context, srid)
+                    handle_refinement(form.cleaned_data['refinements'], context)
+                if form.cleaned_data['boundaries'] is not None:
+                    handle_boundaries(form.cleaned_data['boundaries'], context)
 
                 #Save dtm from raster file field
                 dtm = self.request.FILES.get('dtm_file')
@@ -414,10 +414,15 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
     context.user = user
     context.save()
     
-    return srid
-    
-def handle_alignment(f, context, srid): #handle the loading of alignment from a geojson
-    for feature in json.load(f)['features']:
+def handle_alignment(f, context): #handle the loading of alignment from a geojson
+    alignment_features = json.load(f)
+    e_ContextAlignment.objects.filter(context=context).delete()
+    try:
+        srid = SpatialReference(alignment_features['crs']['properties']['name']).srid
+    except:
+        srid = 4326
+
+    for feature in alignment_features['features']:
         alignment = e_ContextAlignment()
         alignment.context = context
         alignment.CL = feature['properties']['CL']
@@ -428,8 +433,15 @@ def handle_alignment(f, context, srid): #handle the loading of alignment from a 
             alignment.geom = LineString(feature['geometry']['coordinates'], srid=srid)
         alignment.save()
 
-def handle_refinement(f, context, srid): #handle the loading of refinement from a geojson
-    for feature in json.load(f)['features']:
+def handle_refinement(f, context): #handle the loading of refinement from a geojson
+    e_ContextRefinement.objects.filter(context=context).delete()
+    refinement_features = json.load(f)
+    try:
+        srid = SpatialReference(refinement_features['crs']['properties']['name']).srid
+    except:
+        srid = 4326
+
+    for feature in refinement_features['features']:
         refinement = e_ContextRefinement()
         refinement.context = context
         refinement.CL = feature['properties']['CL']
@@ -440,10 +452,17 @@ def handle_refinement(f, context, srid): #handle the loading of refinement from 
             refinement.geom = Polygon(feature['geometry']['coordinates'][0], srid=srid)
         refinement.save()
 
-def handle_boundaries(f, f_points, context, srid): #handle the loading of boundaries from a geojson
-    boundary_points = json.load(f_points)['features']
+def handle_boundaries(f, context): #handle the loading of boundaries from a geojson
+    # boundary_points = json.load(f_points)['features']
+    e_ContextBoundaryLine.objects.filter(context=context).delete()
+    e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
+    boundary_features = json.load(f)
+    try:
+        srid = SpatialReference(boundary_features['crs']['properties']['name']).srid
+    except:
+        srid = 4326
 
-    for feature in json.load(f)['features']:
+    for feature in boundary_features['features']:
         boundary = e_ContextBoundaryLine()
         boundary.context = context  
         try:
@@ -455,27 +474,22 @@ def handle_boundaries(f, f_points, context, srid): #handle the loading of bounda
         boundary.dataType = feature['properties']['Type']
         # boundary.type = feature['properties']['dataType']
         boundary.save()
-        
         # Save the points on the boundary line
-        for point in boundary_points:
-            if(boundary.geom.intersects(Point(point['geometry']['coordinates'], srid=srid))):
-                boundary_point = e_ContextBoundaryPoint()
-                boundary_point.contextBoundaryLine = boundary
-                boundary_point.geom = Point(point['geometry']['coordinates'], srid=srid)
-                boundary_point.save()
-
-                # Handle sensors on point
-                # for sensor in point['properties']['sensors']:
-                #     boundary_point_sensor = e_ContextSensor()
-                #     boundary_point_sensor.associateDatetime = datetime.datetime.now()
-                #     boundary_point_sensor.sensor = e_Sensor.objects.get(code=sensor)
-                #     boundary_point_sensor.boundary_point = boundary_point
-                #     boundary_point_sensor.save()
+        for point in boundary.geom.coords:
+            boundary_point = e_ContextBoundaryPoint()
+            boundary_point.contextBoundaryLine = boundary
+            boundary_point.geom = Point(point, srid=srid)
+            boundary_point.save()
+            # if(boundary.geom.intersects(Point(point['geometry']['coordinates'], srid=srid))):
+                # boundary_point = e_ContextBoundaryPoint()
+                # boundary_point.contextBoundaryLine = boundary
+                # boundary_point.geom = Point(point['geometry']['coordinates'], srid=srid)
+                # boundary_point.save()
 
 
 def download_context(request, context_code): #function that allows the download of an context
-    # if not request.user.is_authenticated: #verify that the user is logged in
-    #     return HttpResponse('Unauthorized', status=401)
+    if not request.user.is_authenticated: #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
     #prepare geojson for download
@@ -607,10 +621,12 @@ def prepare_boundary_points(context_code, context_name):
     features = []
 
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextboundarypoint".id
+        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id", "context_e_contextboundaryline"."dataType"
                             FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
+                            INNER JOIN "context_e_contextsensor" 
+                            ON ("context_e_contextboundarypoint"."id" = "context_e_contextsensor"."boundary_point_id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
         rows = cursor.fetchall()
         for boundary_point in rows:
@@ -618,7 +634,8 @@ def prepare_boundary_points(context_code, context_name):
             context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
                                 properties = {"Geometry type": 'Boundary Point',
                                             "Boundary": boundary_point[1],
-                                            "series": f'sensor_{boundary_point[2]}.bnd'}) 
+                                            "Series": f'sensor_{boundary_point[2]}.bnd',
+                                            "Type": boundary_point[3]}) 
 
             features.append(context_boundary_points)
 
@@ -686,7 +703,6 @@ def request_simulation(context, writing_perio, max_update_perio, writing_unit, u
 
     r = requests.post(url, files=files, params=payload)
 
-
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
     # transform periodicity
     writing_freq = 1/writing_perio
@@ -708,34 +724,43 @@ def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update
 
     return output_file_data
     
-
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
     files = []
 
-    context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
-    
+    # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
+    context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
     for point in context_points: 
         sensor_obs = e_SensorObservation.objects.filter(sensor=point.sensor)
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
         file_data = ''
         instant = 0
-
-        if sensor_obs_valid.first().depth is not None:
-            value = 'depth'
-        elif sensor_obs_valid.first().discharge is not None:
-            value = 'discharge'
-        elif sensor_obs_valid.first().volume is not None:
-            value = 'volume'
-        elif sensor_obs_valid.first().velocity is not None:
-            value = 'velocity'
-        elif sensor_obs_valid.first().elevation is not None:
-            value = 'elevation'
-
+        
         for obs in sensor_obs_valid:
-            line = f'{instant}\t{obs[value]}\r\n' #must be changed according to value
+            if sensor_obs_valid.first().depth is not None:
+                line = f'{instant}\t{obs.depth}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().discharge is not None:
+                line = f'{instant}\t{obs.discharge}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().volume is not None:
+                line = f'{instant}\t{obs.volume}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().velocity is not None:
+                line = f'{instant}\t{obs.velocity}\r\n' #must be changed according to value
+            elif sensor_obs_valid.first().elevation is not None:
+                line = f'{instant}\t{obs.elevation}\r\n' #must be changed according to value
+
             file_data += line
             instant += 60
 
-        files.append((f'sensor_{point.id}.bnd', line))
+        files.append((f'sensor_{point.sensor.code}.bnd', file_data))
         
     return files
+
+def mesh_status_change(request, context_name): # Function to mark mesh has generated
+    context = e_Context.objects.get(Name=context_name)
+    if request.GET.get('status'):
+        context.hasMesh = True
+    else:
+        context.hasMesh = False
+
+    context.save()
+
+    return HttpResponse(status=200)
