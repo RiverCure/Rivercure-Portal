@@ -741,3 +741,14 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
         files.append((f'sensor_{point.sensor.code}.bnd', file_data))
         
     return files
+
+def mesh_status_change(request, context_name): # Function to mark mesh has generated
+    context = e_Context.objects.get(Name=context_name)
+    if request.GET.get('status'):
+        context.hasMesh = True
+    else:
+        context.hasMesh = False
+
+    context.save()
+
+    return HttpResponse(status=200)

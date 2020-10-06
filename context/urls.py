@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView
+from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -14,6 +14,7 @@ urlpatterns = [
     path('download/<str:context_code>', download_context, name='download_context'),
     path('request_simulation/<str:context_code>', request_pre_processing, name='context-simulation-request'),
     path('simulation_results/', simulation_results, name='context-simulation-results'),
+    path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
     path('api/', include(router.urls)),
     path('events/', EventListView, name='event-list'),
     path('context-sensors/', ContextSensorListView, name='context-sensor-list'),

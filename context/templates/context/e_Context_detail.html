@@ -75,8 +75,12 @@
         <a class="btn btn-secondary mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
         <a class="btn btn-info mt-1 mb-1" href="{% url 'context_upload' context.code %}">Upload Files</a>  
         <a class="btn btn-secondary mt-1 mb-1" href="#" style='float:right'>Sensors</a> 
-        <a class="btn btn-info mt-1 mb-1 mr-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" style='float:right;'> Events</a>     
-        <a class="btn btn-secondary mt-1 mb-1 mr-1" href="{% url 'context-simulation-request' context.code %}" style='float:right;'>Mesh generator</a>  
+        <a class="btn btn-info mt-1 mb-1 mr-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" style='float:right;'> Events</a>  
+        {% if context.hasMesh %}   
+            <a class="btn btn-warning mt-1 mb-1 mr-1" href="{% url 'context-simulation-request' context.code %}" style='float:right;'>Regenerate Mesh</a> 
+        {% else %}
+            <a class="btn btn-success mt-1 mb-1 mr-1" href="{% url 'context-simulation-request' context.code %}" style='float:right;'>Generate Mesh</a> 
+        {% endif %} 
     </div>
     
 </article>
