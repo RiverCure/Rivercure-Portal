@@ -177,7 +177,13 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         obj = form.save(commit=False)
         obj.save() 
 
-        request_simulation(context, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
+        try:
+            request_simulation(context, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
+            messages.success(request,f'Simulation request successful') 
+        except Exception as e:
+            print(f'Failed simulation request!\nException: {e}')
+            messages.warning(request,f'Simulation request failed') 
+
         return HttpResponseRedirect(reverse('event-list'))
 
     def test_func(self):
@@ -702,6 +708,7 @@ def request_simulation(context, writing_perio, max_update_perio, writing_unit, u
     files.append(('frequency', frequency_file))
 
     r = requests.post(url, files=files, params=payload)
+
 
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
     # transform periodicity
