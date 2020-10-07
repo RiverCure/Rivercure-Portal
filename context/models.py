@@ -38,6 +38,8 @@ class e_Context(models.Model):
 
 	isPublic = models.BooleanField(default=False)
 
+	hasMesh = models.BooleanField(default=False)
+
 	def __str__(self):
 		return self.Name
 

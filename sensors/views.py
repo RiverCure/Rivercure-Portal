@@ -20,23 +20,38 @@ def SensorObservationListView(request):
     qs = e_SensorObservation.objects.all()
     obs_filter = ObservationFilter(request.GET, queryset=qs)
     
-    paginator = Paginator(qs, 25)
-    page = request.GET.get('page')
+    obs = obs_filter.qs
    
 
+    page = request.GET.get('page', 1)
+    obs_paginator = Paginator(obs, 30)
+
+    page_obj = obs_paginator.get_page(page)
+
     try:
-        response = paginator.page(page)
+       obs = obs_paginator.page(page)
+    except EmptyPage :
+       obs = obs_paginator.page(page)
     except PageNotAnInteger:
-        response = paginator.page(1)
-    except EmptyPage:
-        response = paginator.page(paginator.num_pages)
+       obs = obs_paginator.page(page)
     
     context={
-        'filter': obs_filter,
-        'response': response,
+        'obs': obs,
+        'filter' : obs_filter,
+        'page_obj' : page_obj
+        
     }
 
     return render(request, "sensors/e_Sensor_observations.html", context)
+
+
+
+
+
+
+
+
+
 
 
 def SensorListView(request):

@@ -16,7 +16,7 @@ from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point, fromfile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .filters import EventFilter, EventSensorFilter, ContextFilter
+from .filters import EventFilter, EventSensorFilter, ContextFilter, ContextSensorFilter
 from django.contrib.gis.gdal import SpatialReference, CoordTransform, GDALRaster
 from io import BytesIO, StringIO
 from zipfile import ZipFile
@@ -121,9 +121,21 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
         return context
     
 def ContextSensorListView(request):
-    contextSensor_list = e_ContextSensor.objects.all()
-    contextSensor_filter = contextSensor_list.first()
-    return render(request, 'context/e_ContextSensor_list.html', {'filter': contextSensor_filter})
+    
+    #new_list = e_ContextSensor.objects.all(filter=)
+
+    context_sensor_list = e_ContextSensor.objects.all()
+
+    context_sensor_filter = ContextSensorFilter(request.GET, queryset=context_sensor_list)
+    
+    context={
+        'filter' :  context_sensor_filter,
+        'context_code' : request.GET.get('context_code'),
+        'context_name' : request.GET.get('context_name'),
+        
+    }
+
+    return render(request, 'context/e_ContextSensor_list.html', context )
 
 
         
@@ -741,3 +753,14 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
         files.append((f'sensor_{point.sensor.code}.bnd', file_data))
         
     return files
+
+def mesh_status_change(request, context_name): # Function to mark mesh has generated
+    context = e_Context.objects.get(Name=context_name)
+    if request.GET.get('status'):
+        context.hasMesh = True
+    else:
+        context.hasMesh = False
+
+    context.save()
+
+    return HttpResponse(status=200)
