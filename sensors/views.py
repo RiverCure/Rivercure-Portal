@@ -68,7 +68,7 @@ def SensorListView(request):
 
 class SensorDetailView(DetailView):
     model = e_Sensor
-    context_object_name = 'Sensor'
+    context_object_name = 'sensor'
     template_name = 'sensors/e_Sensor_detail.html'
 
 class SensorForm(forms.ModelForm):

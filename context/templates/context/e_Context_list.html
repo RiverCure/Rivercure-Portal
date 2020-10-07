@@ -23,17 +23,18 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
-      <p><a class="article-title" >Code : {{ context.code }}</a></p>
-      <p><a class="article-title" >Owner : {{ context.user }}</a></p>
+      <p><a class="article-title" ><b>Code :</b> {{ context.code }}</a></p>
+      <p><a class="article-title" ><b>Owner :</b> {{ context.user }}</a></p>
+      <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
     </div>
 </article>
 {% empty %}
 <h2 class="text-secondary font-italic no-context-data">No contexts found! :(</h2>
 {% endfor %}
 
-<div class="content">
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
-</div> 
+
+<a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+
 
 
  

@@ -19,14 +19,14 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{% url 'rivercure-home' %}">Rivercure Portal</a>
+          <a class="navbar-brand mr-4" href="{% url 'rivercure-home' %}">RiverCure Portal</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hydrofeatures</a>
+                <!-- <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hydrofeatures</a>
                 <div class="dropdown-menu">
                     <a href="{% url 'hydrofeature-list' %}" class="dropdown-item">Hydrofeatures List</a>
                     {% if user.is_authenticated %}
@@ -35,14 +35,13 @@
                     {% endif %}
                     {% endif %}
                     <a href="#" class="dropdown-item">Other</a>
-                </div>
+                </div> --> 
               </div>
               <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Sensors</a>
-                <div class="dropdown-menu">
-                    <a href="{% url 'sensor-list' %}" class="dropdown-item">Sensors List</a>
-                    
-                </div>
+                <a href="{% url 'sensor-list' %}" class="nav-link dropdown-toggle" data-toggle="dropdown">Sensors</a>
+                 <div class="dropdown-menu">
+                    <a href="{% url 'sensor-list' %}" class="dropdown-item">Sensors List</a>  
+                </div> 
               </div>
               <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Context</a>
@@ -51,9 +50,9 @@
                       <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
                     {% endif %}
                   
-
+                    {% if perms.context.add_e_context or perms.context.change_e_context %} 
                     <a href="{% url 'context-requests-list' %}" class="dropdown-item">Access Requests</a>
-                    
+                    {% endif %}
               
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-list' %}" class="dropdown-item">Contexts List</a>
@@ -62,23 +61,25 @@
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-simulation-results' %}" target='_blank' class="dropdown-item">Contexts Simulation Results</a>
                     {% endif %}
-                    
-                    <a href="#" class="dropdown-item">Other</a>
+              
                 </div>
               </div>
-            
-              
-              
           </div>
             
             <!-- Navbar Right Side -->
+            {% if user.is_authenticated %} 
             <div class="navbar-nav">
-              {% if user.is_authenticated %}
-
               {% if user.is_superuser %}
-              <a class="nav-item nav-link" href="{% url 'admin:index' %}">Administrator</a>
+              
+              <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
+                <div class="dropdown-menu">
+                      <a href="{% url 'admin:index' %}" class="dropdown-item">Admin Backoffice</a>
+                      <a href="{% url 'users' %}" class="dropdown-item">Users</a>
+                </div>
+              </div> 
               {% endif %}
-              <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+              <a class="nav-item nav-link" href="{% url 'profile' %}"> <img src=""  width="40" height="30" alt="Profile"></a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
               {% else %}
               <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
@@ -103,7 +104,6 @@
         
       </div>
     </main>
-
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

@@ -1,0 +1,33 @@
+{% extends "rivercureportal/base.html" %}
+{% load auth_extras %}
+{% load static %}
+
+{% block content %}
+
+{% if request.user|has_group:"Administration" %} 
+
+
+{% for g in groups %}
+    <h4>{{g.name}}</h4>
+    {% for user in g.user_set.all %}
+      <article class="media content-section">
+      <div class="media-body">
+        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
+        <a class="mr-2">{{ user.profile.institution }}</a>
+      </div>
+      <div class="media-article">
+        <img class="article-img" src="{{ user.profile.image.url }}"></img>
+      </div>
+      </article>
+    {% endfor %}
+ 
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}
+
+
+
+
+

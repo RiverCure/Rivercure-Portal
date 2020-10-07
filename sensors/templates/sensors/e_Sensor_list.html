@@ -29,7 +29,14 @@
       {% for sensor in filter.qs %}
       <tr>
         <td>{{ sensor.code }}</td>
-        <td>{{ sensor.Name }}</td>
+        <td>
+          <a href="{% url 'sensor-detail' sensor.pk %}">
+            <div style="height:100%;width:100%">
+              {{ sensor.Name }}
+            </div>
+          </a>
+        </td>
+        
         <td>{{ sensor.type }}</td>
         <td>{{ sensor.subtype }}</td>
         <td>{{ sensor.modalityType }}</td>

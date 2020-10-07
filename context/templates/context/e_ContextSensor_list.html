@@ -3,8 +3,8 @@
 
 {% block content %}
 
-<h1>{{ context_name }} - Sensors</h1>
-
+<h1><a href="{% url 'context-detail' context_code %}"> {{ context_name }}</a> </h1>
+<h1>Sensors</h1>
 <div class="row">
 
 <div class="col-md-8">
@@ -22,11 +22,11 @@
     <tbody>
       {% for sensor in filter.qs %}
       <tr>
-        <td>{{ sensor.code }}</td>
-        <td>{{ sensor.Name }}</td>
-        <td>{{ sensor.type }}</td>
-        <td>{{ sensor.subtype }}</td>
-        <td>{{ sensor.modalityType }}</td>
+        <td>{{ sensor.sensor.code }}</td>
+        <td>{{ sensor.sensor.Name }}</td>
+        <td>{{ sensor.sensor.type }}</td>
+        <td>{{ sensor.sensor.subtype }}</td>
+        <td>{{ sensor.sensor.modalityType }}</td>
         <td><a href="{% url 'sensor-observations' %}?query={{sensor.Name}}"> <img src="" alt="observations" ></a></td>
       </tr>
       {% empty %}
@@ -54,7 +54,7 @@
     {% endif %}
     <a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
     <a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
-    <a type="button" class="btn btn-info " href="{% url 'context-detail' context_code %}">Return to Context {{ context_name }}</a>
+    
   </div>
 </div>
 

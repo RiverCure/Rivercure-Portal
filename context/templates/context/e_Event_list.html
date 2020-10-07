@@ -25,14 +25,19 @@
     <tbody>
       {% for event in filter.qs %}
       <tr>
-        <td>{{ event.Name }}</td>
+        <td>
+          <a href="{% url 'event-detail' event.pk %}">
+            <div style="height:100%;width:100%">
+              {{ event.Name }}
+            </div>
+          </a>
+        </td>
         <td>{{ event.context }}</td>
         <td>{{ event.type }}</td>
-        <td> subtype </td>
+        <td> {{ event.subtype }}</td>
         <td>{{ event.startDate }}</td>
         <td>{{ event.endDate }}</td>
         <td>{{ event.state }}</td>
-        <td><a class="mr-2" href="{% url 'event-detail' event.pk %}"> details </a></td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No Events! :(</h2></td>
