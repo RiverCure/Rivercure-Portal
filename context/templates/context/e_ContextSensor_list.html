@@ -1,5 +1,11 @@
 {% extends "rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+{% endblock %}
+
 
 {% block content %}
 
@@ -11,23 +17,29 @@
 <table class="table table-hover ">
   <thead>
       <tr>
-        <th scope="col">Code</th>
-        <th scope="col">Name</th>
-        <th scope="col">Type</th>
-        <th scope="col">SubType</th>
-        <th scope="col">Modality</th>
-        <th scope="col">Observations</th>
+        <th class="tr_class" scope="col">Code</th>
+        <th class="tr_class" scope="col">Name</th>
+        <th class="tr_class" scope="col">Type</th>
+        <th class="tr_class" scope="col">SubType</th>
+        <th class="tr_class" scope="col">Modality</th>
+        <th class="tr_class" scope="col">Observations</th>
       </tr>
     </thead>
     <tbody>
       {% for sensor in filter.qs %}
       <tr>
         <td>{{ sensor.sensor.code }}</td>
-        <td>{{ sensor.sensor.Name }}</td>
+        <td>
+          <a href="{% url 'sensor-detail' sensor.pk %}">
+            <div style="height:100%;width:100%">
+              {{ sensor.sensor.Name }}
+            </div>
+          </a>
+        </td>
         <td>{{ sensor.sensor.type }}</td>
         <td>{{ sensor.sensor.subtype }}</td>
         <td>{{ sensor.sensor.modalityType }}</td>
-        <td><a href="{% url 'sensor-observations' %}?query={{sensor.Name}}"> <img src="" alt="observations" ></a></td>
+        <td class="tr_class"><a href="{% url 'sensor-observations' %}?query={{sensor.Name}}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="15%" height="15%" alt="observations" ></a></td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>
@@ -49,9 +61,6 @@
 
  
   <div>
-    {% if perms.sensors.add_e_sensor %}
-    <a type="button" class="btn btn-info" href="{% url 'admin:sensors_e_sensor_add' %}">Add sensor</a>
-    {% endif %}
     <a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
     <a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
     
