@@ -396,8 +396,8 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
     except:
         srid = 4326
 
-    context.Name = str.title(domain_features['name'].split('_')[0])
-    context.hydroFeature = None
+    # context.Name = str.title(domain_features['name'].split('_')[0]) # might cause problems
+    # context.hydroFeature = None
     context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
     try:
         domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
@@ -406,7 +406,7 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
         domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0], srid=srid), srid=srid)
     context.geomExternalBoundary = domain_geom
     # context.geomExternalBoundary.transform(SpatialReference(4326))
-    context.user = user
+    # context.user = user
     context.save()
     
 def handle_alignment(f, context): #handle the loading of alignment from a geojson

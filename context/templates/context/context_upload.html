@@ -10,7 +10,8 @@
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">
-                <button id="submit-btn" class="btn btn-outline-info" type="submit">Upload</button>
+                <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
+                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
             </div>
         </form>
     </div>
