@@ -122,9 +122,7 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
     
 def ContextSensorListView(request):
     
-    #new_list = e_ContextSensor.objects.all(filter=)
-
-    context_sensor_list = e_ContextSensor.objects.all()
+    context_sensor_list = e_ContextSensor.objects.all().distinct('sensor')
 
     context_sensor_filter = ContextSensorFilter(request.GET, queryset=context_sensor_list)
     
@@ -136,9 +134,6 @@ def ContextSensorListView(request):
     }
 
     return render(request, 'context/e_ContextSensor_list.html', context )
-
-
-        
 
 class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_ContextEvent
