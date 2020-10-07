@@ -174,10 +174,10 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
 
         try:
             request_simulation(context, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
-            messages.success(request,f'Simulation request successful') 
+            messages.success(self.request,f'Simulation request successful') 
         except Exception as e:
             print(f'Failed simulation request!\nException: {e}')
-            messages.warning(request,f'Simulation request failed') 
+            messages.warning(self.request,f'Simulation request failed') 
 
         return HttpResponseRedirect(reverse('event-list'))
 
