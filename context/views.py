@@ -1,7 +1,7 @@
 import json, os, geojson, tempfile, datetime, requests
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction, connection
 from django.utils import timezone
 from .forms import ContextForm, UploadContextForm, EventForm
@@ -22,7 +22,6 @@ from io import BytesIO, StringIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django import forms
-from django.http import HttpResponseRedirect
 from pprint import pprint
 
 class ContextAccessCreateView(UserPassesTestMixin, CreateView):
@@ -117,6 +116,7 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['api'] = f'http://{web_host}/contexts/api/context/'
         context['sensors'] = e_Sensor.objects.all()
+        context['form'] = UploadContextForm()
                
         return context
     
@@ -198,14 +198,14 @@ class EventDetailView(DetailView):
     template_name = 'context/e_Event_detail.html'
 
 
-def show_context(request):
+def show_context(request, context_code):
     web_host = os.environ['CONTEXT_API']
     context = {
-        'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
+        # 'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
         'sensors': e_Sensor.objects.all(),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
-        'context': request.GET.get('context_code'),
+        # 'context': request.GET.get('context_code'),
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated
@@ -225,16 +225,6 @@ def show_context(request):
 
                     # initialize and save boundaries & boundary points
                     boundaryline_creation(form, e_context)
-                    
-                #Save dtm from raster file field
-                dtm = request.FILES.get('dtm_file')
-                if dtm is not None:
-                    handle_upload_raster(e_context, dtm)
-
-                #Save contour lines from file
-                contour_lines = request.FILES.get('contour_lines')
-                if contour_lines is not None:
-                    handle_contour_lines_upload(e_context, contour_lines)
 
                 messages.success(request,f'Context updated with success!') 
                 
@@ -245,7 +235,9 @@ def show_context(request):
 
         else:
             messages.warning(request,f'Context info is not complete') 
-        
+    else:
+        context['context'] = e_Context.objects.get(code=context_code)
+
     return render(request, 'context/context.html', context)
 
 #aux functions for show_context()
@@ -297,6 +289,7 @@ def context_creation(form, user): # function to initialize and save the context 
     context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
     context.CLExternalBoundary = json.loads(form.cleaned_data['domain'])['properties']['CL']
+    context.hasMesh = False
     return context
 
 def refinement_creation(form, context):
@@ -353,6 +346,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
 
 class UploadContext(FormView):
+    http_method_names = ['post']
     template_name = 'context/context_upload.html'
     form_class = UploadContextForm
 
@@ -362,6 +356,11 @@ class UploadContext(FormView):
                 context = e_Context.objects.get(code=form.cleaned_data['code'])
                 if form.cleaned_data['domain'] is not None:
                     handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                
+                #Mark edited context for mesh regeneration need
+                context.hasMesh = False
+                context.save()
+
                 if form.cleaned_data['alignments'] is not None:
                     handle_alignment(form.cleaned_data['alignments'], context)
                 if form.cleaned_data['refinements'] is not None:
@@ -378,7 +377,7 @@ class UploadContext(FormView):
                 contour_lines = self.request.FILES.get('contour_lines')
                 if contour_lines is not None:
                     handle_contour_lines_upload(context, contour_lines)
-
+                
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
@@ -388,7 +387,13 @@ class UploadContext(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('context-detail', args=[self.kwargs['pk']])
+        action = self.request.GET.get('value')
+        if action == "finished":
+            return reverse('context-detail', args=[self.kwargs['pk']])
+        elif action == "continue":
+            return reverse('context_manage', args=[self.kwargs['pk']])
+        else:
+            return reverse('context-detail', args=[self.kwargs['pk']])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -413,6 +418,7 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
     context.geomExternalBoundary = domain_geom
     # context.geomExternalBoundary.transform(SpatialReference(4326))
     # context.user = user
+
     context.save()
     
 def handle_alignment(f, context): #handle the loading of alignment from a geojson

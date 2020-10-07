@@ -61,20 +61,20 @@
                 // load button action
                 document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
                 // Function to call the api for the context data when user selects a context
-                document.querySelector('#context-to-change').addEventListener('change', e => {
-                    if(document.querySelector('#context-to-change').value !== "") {
-                        MyFunctions.clearMap();
-                        document.querySelector('#submit-btn').disabled = true;
-                        document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-danger");
-                        document.querySelector('#submit-btn').innerHTML = 'Stage Context before submitting'
-                        MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
-                        map.invalidateSize(true);
-                    }
-                });
+                // document.querySelector('#context-to-change').addEventListener('change', e => {
+                //    if(document.querySelector('#context-to-change').value !== "") {
+                //        MyFunctions.clearMap();
+                //        document.querySelector('#submit-btn').disabled = true;
+                //        document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-danger");
+                //        document.querySelector('#submit-btn').innerHTML = 'Stage Context before submitting'
+                //        MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
+                //        map.invalidateSize(true);
+                //    }
+                // });
                 //load a context if the user comes from the context list page
                 '{% if context is not None %}'
                     MyFunctions.clearMap();
-                    MyFunctions.getContext('{{ api }}' + '{{ context }}', map);
+                    MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
                 '{% endif %}'
 
                 map.invalidateSize(true);
@@ -95,8 +95,11 @@
 {% endblock %}
 
 {% block content %}
-    <h1><small>Edit your context here</small></h1>
-    <div class="container">
+    <h1>{{ context.Name }} context</h1>
+    <h2>Edit</h2>
+    {% comment %} <h1><small>Edit your context here</small></h1> {% endcomment %}
+
+    {% comment %} <div class="container">
         <label for="context-to-change">Choose a context:</label>
         <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
             <option value="">-----</option>
@@ -104,10 +107,10 @@
                 <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>
             {% endfor %}
         </select>
-    </div>
+    </div> {% endcomment %}
 
     <div id="form-data" class="content-section container" style="display: none; margin-bottom:50px;">
-        <form method='POST'  action="{% url 'context_manage' %}" enctype="multipart/form-data">
+        <form method='POST'  action="{% url 'context_manage' context.code %}" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
             {% comment %} <div id="load-status" class="alert alert-danger" role="alert">
@@ -128,7 +131,7 @@
             </div>
             <div class="container" id="context-options">
                 <div class="container" style="display: flex">
-                    <button type="button" id='load-btn' class="btn btn-outline-danger">Stage for Upload</button>
+                    <button type="button" id='load-btn' class="btn btn-outline-danger">Validate Context</button>
                     <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
                         <option value="none" selected disabled>Select the polygon to define</option>
                         <option value="Domain">Domain</option>
@@ -143,8 +146,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Stage Context before submitting</button>
-                <a class="btn btn-secondary" href="#" onclick="window.history.back()" style="float:right">Back</a>
+                <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Validate Context before submitting</button>
+                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
             </div>
         </form>
         <div class="border-top pt-3">
