@@ -125,3 +125,6 @@ class e_SensorObservation(models.Model):
 	#attribute nBits "Number of bits" : Integer
 	#attribute width "Width" : Integer
 	#attribute fileFormat "File format" : String
+
+    def __str__(self):
+        return f"{self.sensor} observation {self.id}"
