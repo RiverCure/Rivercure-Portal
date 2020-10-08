@@ -682,7 +682,13 @@ def request_pre_processing(request, context_code): # function to start simulatio
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
 
-        messages.success(request, 'Mesh generation request successful\nServer answered: ' + r.text)
+        if r.text == 'success':
+            messages.success(request, 'Mesh generation request successful<br>Simulation is under way')
+        else:
+            messages.warning(request,f'Pre-processing failed') 
+            context = e_Context.objects.get(code=context_code)
+            context.hasMesh = False
+            context.save()
 
         return redirect(request.META['HTTP_REFERER'])
 
