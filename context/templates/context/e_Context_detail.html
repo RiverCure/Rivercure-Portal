@@ -1,7 +1,7 @@
 {% extends "rivercureportal/base.html" %}
 {% load leaflet_tags %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 
 {% block scripts %}
     {% leaflet_js plugins="ALL" %}
@@ -15,6 +15,12 @@
     <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -54,6 +60,14 @@
                 '{% endfor %}'
                 return sensors;
             }  
+
+            showGeometriesUploadDiv = (state) => {
+                document.querySelector('#geometriesUploadDiv').style.display = state;
+
+                if(state == "block") {
+                    window.scrollBy(0, 500);
+                }
+            }
       });
     </script>
 {% endblock %}
@@ -63,28 +77,47 @@
 
 {% block content %}
 
-<h1>Context</h1>
-<article class="media content-section">
-    <div class="media-body">
-      <h2 class="article-title">{{context.Name}}</h2>
-      <p class="article-content">Code: {{ context.code }}</p>
-      <div id="map-container" class="container">
-        {% leaflet_map "my_map" %}
-      </div>
-        <a class="btn btn-info mt-1 mb-1" href="{% url 'context_manage'  %}?context_code={{ context.code }}" > Update</a>  
-        <a class="btn btn-secondary mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
-        <a class="btn btn-info mt-1 mb-1" href="{% url 'context_upload' context.code %}">Upload Files</a>  
-        <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-sensor-list' %}?context_code={{ context.code }}&context_name={{ context.Name }}" style='float:right'>Sensors</a> 
-        <a class="btn btn-info mt-1 mb-1 mr-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&" style='float:right;'> Events</a>  
-        {% if context.hasMesh %}   
-            <a class="btn btn-warning mt-1 mb-1 mr-1" href="{% url 'context-simulation-request' context.code %}" style='float:right;'>Regenerate Mesh</a> 
-        {% else %}
-            <a class="btn btn-success mt-1 mb-1 mr-1" href="{% url 'context-simulation-request' context.code %}" style='float:right;'>Generate Mesh</a> 
-        {% endif %} 
-    </div>
-    
-</article>
+    <h1>{{ context.Name }} context</h1>
+    <article class="media content-section">
+        <div class="media-body">
+        {% comment %} <p class="article-content">Code: {{ context.code }}</p> {% endcomment %}
+        <div id="map-container" class="container">
+            {% leaflet_map "my_map" %}
+        </div>
+            <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')"> Edit</button>  
+            <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
+            <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&"> Events</a>  
+            <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' %}?context_code={{ context.code }}&context_name={{ context.Name }}">Sensors</a> 
+            {% if context.hasMesh %}   
+                <a class="btn btn-warning mt-1 mb-1" href="{% url 'context-simulation-request' context.code %}">Regenerate Mesh</a> 
+            {% else %}
+                <a class="btn btn-success mt-1 mb-1" href="{% url 'context-simulation-request' context.code %}">Generate Mesh</a> 
+            {% endif %} 
 
+            <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-list' %}" style="float:right">Back</a>
+        </div>
+        
+    </article>
+
+    <div id="geometriesUploadDiv" class="container" style="display: none">
+        <h2>Files upload</h2>
+        <div id="form-data" class="content-section">
+            <form method='POST' enctype="multipart/form-data" >
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="form-group">
+                    <button id="submit-btn" class="btn btn-info" type="submit" formaction="{% url 'context_upload' context.code %}?value=finished">Upload</button>
+                    <button id="submit-btn" class="btn btn-dark" type="submit" formaction="{% url 'context_upload' context.code %}?value=continue">Upload & define manually</button>
+                    <a class="btn btn-info" href="{% url 'context_manage' context.code %}">Define manually</a>
+                    <a class="btn btn-secondary" href="#" onclick="showGeometriesUploadDiv('none')" style="float:right">Back</a>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            document.querySelector('#id_code').value = '{{ context.code }}';
+        </script>
+    </div>
 {% endblock content %}
 {% endif %}
 

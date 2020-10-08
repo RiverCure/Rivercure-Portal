@@ -4,62 +4,39 @@
 
 {% block content %}
 
+
+<div>
 {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
 
 <h2>Popular Context</h2>
 
 <article class="media content-section">
     <div class="media-body">
-      <h2 class="article-title">{% if recent_context != None  %} {{recent_context.Name}}  {% endif %}</h2>
+      <h2 class="article-title"> <a href="{% url 'context-detail' recent_context.code %}">{% if recent_context != None  %} {{recent_context.Name}}  {% endif %} </a></h2>
       <p class="article-content">{% if recent_context != None  %} Hydrofeature: {{ recent_context.hydroFeature }} {% endif %}</p>  
     </div>
 </article>
 
-<a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
+
 
 {% endif %}
+</div>
 
-
+<div>
 {% if request.user|has_group:"SensorManager" %} 
 
 <h2>Popular Sensor </h2>
 <article class="media content-section">
     <div class="media-body">
-      <h2 class="article-title">{% if recent_sensor != None  %} {{recent_sensor.Name}}  {% endif %}</h2>
+      <h2 class="article-title"> <a href="{% url 'sensor-detail' recent_sensor.code %}">{% if recent_sensor != None  %} {{recent_sensor.Name}}  {% endif %}</a></h2>
       <p class="article-content">{% if recent_sensor != None  %} Code: {{ recent_sensor.code }} {% endif %}</p>  
     </div>
 </article>
 
-<a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
+
 
 {% endif %}
-
-{% if request.user|has_group:"Administration" %} 
-
-<div>
-<a type="button" class="btn btn-info mt-5" data-toggle="collapse" data-target="#collapseExample"  aria-expanded="false" aria-controls="collapseExample">
-  Users
-</a>
 </div>
-
-{% for g in groups %}
-  <div class="collapse" id="collapseExample">
-    <h4>{{g.name}}</h4>
-    {% for user in g.user_set.all %}
-      <article class="media content-section">
-      <div class="media-body">
-        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
-        <a class="mr-2">{{ user.profile.institution }}</a>
-      </div>
-      <div class="media-article">
-        <img class="article-img" src="{{ user.profile.image.url }}"></img>
-      </div>
-      </article>
-    {% endfor %}
-  </div>
-{% endfor %}
-
-{% endif %}
 
 {% endblock %}
 

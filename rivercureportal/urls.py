@@ -7,6 +7,7 @@ from .views import (
     HydroFeatureDetailView,
     HydroFeatureDeleteView,
     home,
+    users,
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('hydrofeature/<int:pk>/update/', HydroFeatureUpdateView.as_view(), name='hydrofeature-update'),
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
     path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
+    path('users/', users, name='users'),
     
    
 ]

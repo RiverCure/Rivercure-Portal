@@ -29,15 +29,19 @@
       {% for sensor in filter.qs %}
       <tr>
         <td>{{ sensor.code }}</td>
-        <td>{{ sensor.Name }}</td>
+
+        <td>
+          <a href="{% url 'sensor-detail' sensor.pk %}">
+            <div style="height:100%;width:100%">
+              {{ sensor.Name }}
+            </div>
+          </a>
+        </td>
+        
         <td>{{ sensor.type }}</td>
         <td>{{ sensor.subtype }}</td>
         <td>{{ sensor.modalityType }}</td>
-        <td class="tr_class">
-          <a href="{% url 'sensor-observations' %}?query={{sensor.Name}}"> 
-            <img src="{% static 'sensors/sensor-images/data.png' %}"  width="15%" height="15%" alt="observations" >
-          </a>
-        </td>
+        <td class="tr_class"><a href="{% url 'sensor-observations' %}?sensor={{sensor.code}}"> <img src="{% static 'sensors/sensor-images/data.png' %}"  width="15%" height="15%" alt="observations" ></a></td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>

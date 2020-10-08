@@ -789,7 +789,7 @@ var MyFunctions = {
                 document.querySelector('#load-context-result').innerHTML = missing;
             }
             document.querySelector('#submit-btn').disabled = false;
-            document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-info");
+            document.querySelector('#submit-btn').setAttribute("class", "btn btn-info");
             document.querySelector('#submit-btn').innerHTML = 'Save Context'
         }
         catch(err) { //In case of invalid context
