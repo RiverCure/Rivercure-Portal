@@ -682,13 +682,13 @@ def request_pre_processing(request, context_code): # function to start simulatio
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
 
-        messages.success(request, 'Simulation request successful\nServer answered: ' + r.text)
+        messages.success(request, 'Mesh generation request successful\nServer answered: ' + r.text)
 
         return redirect(request.META['HTTP_REFERER'])
 
     except Exception as e:
-        messages.warning(request,f'Context simulation request failed') 
-        print(f'Error requesting context simulation: {e}')
+        messages.warning(request,f'Context mesh generation request failed') 
+        print(f'Error requesting context mesh generation: {e}')
         return redirect(request.META['HTTP_REFERER'])
 
 def simulation_results(request): # function to redirect the user to the paraviewweb visualizer
