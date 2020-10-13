@@ -4,14 +4,18 @@
 
 {% block landing_page %}
 
+{% block scripts %}
+  <link rel="stylesheet" type="text/css" href="{% static 'sensors/css/style.css' %}">
+{% endblock %}
+
 
  <!-- Masthead-->
  <header class="masthead bg-white text-primary text-center">
   <div class="container d-flex align-items-center flex-column">
       <!-- Masthead Avatar Image-->
-      <img class="masthead-avatar mb-5" src="" alt="" />
+      <img class="masthead-avatar mb-5" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
       <!-- Masthead Heading-->
-      <h1 class="masthead-heading text-uppercase mb-0">RiverCure</h1>
+      <!--<h1 class="masthead-heading text-uppercase mb-0">RiverCure</h1>-->
       <!-- Icon Divider-->
       <div class="divider-custom divider-light">
           <div class="divider-custom-line"></div>

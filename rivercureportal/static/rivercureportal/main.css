@@ -3983,6 +3983,8 @@ input[type=button].btn-block {
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
+  min-height: 50px;
+  font-family: Verdana;
 }
 .navbar .container,
 .navbar .container-fluid,
@@ -10143,7 +10145,7 @@ h3 {
   font-size: 1.25rem;
 }
 .masthead .masthead-avatar {
-  width: 15rem;
+  width: 25rem;
 }
 
 @media (min-width: 992px) {

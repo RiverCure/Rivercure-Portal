@@ -24,6 +24,8 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
+      <p><a class="article-title" ><b>My role :</b>{% if context.owner.username == self.request.user %} None {% endif %}</a></p>
+      <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
       {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
       <a class="btn btn-info"  href="{% url 'context-requests-create' %}">  Request Acess</a>
       {% endif %}

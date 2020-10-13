@@ -28,7 +28,7 @@ class ContextAccessCreateView(UserPassesTestMixin, CreateView):
     model = e_ContextAccessRequest
     fields = ['type', 'context']
     template_name = "context/e_ContextAccessRequest_create.html"
-    #success_url =  "/contexts/" 
+    #success_url =  "/contexts/"
     
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -76,6 +76,9 @@ class ContextRequestListView(UserPassesTestMixin, ListView):
 
 def ContextListView(request):
     context_list = e_Context.objects.filter(user=request.user)
+
+    granted_list = e_ContextAccessRequest.objects.filter(state='Finished', access_granted='True', requestuser=request.user)
+
     context_filter = ContextFilter(request.GET, queryset=context_list)
     return render(request, 'context/e_Context_list.html', {'filter': context_filter})
 
