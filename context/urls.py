@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change
+from .views import GrantAccess, ContextRequestDecisionView, ContextEventListView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -16,12 +16,12 @@ urlpatterns = [
     path('simulation_results/', simulation_results, name='context-simulation-results'),
     path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
     path('api/', include(router.urls)),
-    path('events/', EventListView, name='event-list'),
     path('context-sensors/', ContextSensorListView, name='context-sensor-list'),
     path('events/<int:pk>', EventDetailView.as_view(), name='event-detail'),
     path('context_requests/', ContextRequestListView.as_view(), name='context-requests-list'), 
     path('context_request/<int:pk>', ContextRequestDecisionView, name='context-request-decision'),
     path('events/', EventListView, name='event-list'),
+    path('events/list/<str:context_code>', ContextEventListView, name='context-event-list'),
     path('events/new/', EventCreateView.as_view(), name='event-create'),
     path('event/<int:pk>/update/', EventUpdateView.as_view(), name='event-update'),
     path('access_granted/<int:pk>', GrantAccess, name='access-granted'),

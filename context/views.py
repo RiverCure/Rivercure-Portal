@@ -122,7 +122,7 @@ class ContextDetailView(UserPassesTestMixin, DetailView):
     
 def ContextSensorListView(request):
     
-    context_sensor_list = e_ContextSensor.objects.all().distinct('sensor')
+    context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=request.GET.get('context_code')).distinct('sensor')
 
     context_sensor_filter = ContextSensorFilter(request.GET, queryset=context_sensor_list)
     
@@ -190,7 +190,15 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
 def EventListView(request):
     event_list = e_ContextEvent.objects.all()
     event_filter = EventFilter(request.GET, queryset=event_list)
-    return render(request, 'context/e_Event_list.html', {'filter': event_filter})
+    return render(request, 'context/e_AllEvents.html', {'filter': event_filter})
+
+def ContextEventListView(request, context_code):
+    events_list = e_ContextEvent.objects.filter(context__code=context_code)
+    context = {
+        'events': events_list,
+        'context': events_list.first().context,
+    }
+    return render(request, 'context/e_Event_list.html', context)
 
 class EventDetailView(DetailView):
     model = e_ContextEvent

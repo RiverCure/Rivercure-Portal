@@ -2,41 +2,46 @@
 {% load auth_extras %}
 {% load static %}
 
-{% block content %}
+{% block landing_page %}
 
 
-<div>
-{% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
+ <!-- Masthead-->
+ <header class="masthead bg-white text-primary text-center">
+  <div class="container d-flex align-items-center flex-column">
+      <!-- Masthead Avatar Image-->
+      <img class="masthead-avatar mb-5" src="" alt="" />
+      <!-- Masthead Heading-->
+      <h1 class="masthead-heading text-uppercase mb-0">RiverCure</h1>
+      <!-- Icon Divider-->
+      <div class="divider-custom divider-light">
+          <div class="divider-custom-line"></div>
+          <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+          <div class="divider-custom-line"></div>
+      </div>
+      <!-- Masthead Subheading-->
+      <p class="masthead-subheading font-weight-light mb-0">IST-ID, INESC-ID, APA I.P.</p>
+  </div>
+</header>
 
-<h2>Popular Context</h2>
-
-<article class="media content-section">
-    <div class="media-body">
-      <h2 class="article-title"> <a href="{% url 'context-detail' recent_context.code %}">{% if recent_context != None  %} {{recent_context.Name}}  {% endif %} </a></h2>
-      <p class="article-content">{% if recent_context != None  %} Hydrofeature: {{ recent_context.hydroFeature }} {% endif %}</p>  
-    </div>
-</article>
-
-
-
-{% endif %}
-</div>
-
-<div>
-{% if request.user|has_group:"SensorManager" %} 
-
-<h2>Popular Sensor </h2>
-<article class="media content-section">
-    <div class="media-body">
-      <h2 class="article-title"> <a href="{% url 'sensor-detail' recent_sensor.code %}">{% if recent_sensor != None  %} {{recent_sensor.Name}}  {% endif %}</a></h2>
-      <p class="article-content">{% if recent_sensor != None  %} Code: {{ recent_sensor.code }} {% endif %}</p>  
-    </div>
-</article>
-
-
-
-{% endif %}
-</div>
+<!-- About Section-->
+<section class="page-section bg-primary text-white mb-0" id="about">
+  <div class="container">
+      <!-- About Section Heading-->
+      <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
+      <!-- Icon Divider-->
+      <div class="divider-custom divider-light">
+          <div class="divider-custom-line"></div>
+          <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+          <div class="divider-custom-line"></div>
+      </div>
+      <!-- About Section Content-->
+      <div class="row">
+          <div class="col-lg-4 ml-auto"><p class="lead">RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection.  </p></div>
+          <div class="col-lg-4 mr-auto"><p class="lead">Profiting from recent advances in collecting and processing crowdsourced information produced by riverine communities and shared in internet sites and social media, RiverCure will contribute to improve the forecasting capabilities of mathematical models of rivers by making an efficient and systematic use of curated crowdsourced and authoritative data through assimilation and calibration.</p></div>
+      </div>
+    
+  </div>
+</section>
 
 {% endblock %}
 

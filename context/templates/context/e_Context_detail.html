@@ -86,7 +86,7 @@
         </div>
             <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')"> Edit</button>  
             <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
-            <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' %}?Name=&type=&context={{context.code}}&startDatetime=&endDatetime=&"> Events</a>  
+            <a class="btn btn-info mt-1 mb-1" href="{% url 'context-event-list' context.code %}">Events</a>  
             <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' %}?context_code={{ context.code }}&context_name={{ context.Name }}">Sensors</a> 
             {% if context.hasMesh %}   
                 <a class="btn btn-warning mt-1 mb-1" href="{% url 'context-simulation-request' context.code %}">Regenerate Mesh</a> 

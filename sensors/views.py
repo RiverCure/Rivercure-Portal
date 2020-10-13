@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from context.models import e_ContextSensor, e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 class SensorObservationDetailView(DetailView):
@@ -15,16 +16,15 @@ class SensorObservationDetailView(DetailView):
     context_object_name = 'observation'
     template_name = 'sensors/e_SensorObservation_detail.html'
 
-
+@login_required
 def SensorObservationListView(request):
     qs = e_SensorObservation.objects.all()
     obs_filter = ObservationFilter(request.GET, queryset=qs)
     
     obs = obs_filter.qs
    
-
     page = request.GET.get('page', 1)
-    obs_paginator = Paginator(obs, 30)
+    obs_paginator = Paginator(obs, 15)
 
     page_obj = obs_paginator.get_page(page)
 
@@ -44,16 +44,8 @@ def SensorObservationListView(request):
 
     return render(request, "sensors/e_Sensor_observations.html", context)
 
-
-
-
-
-
-
-
-
-
-
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='SensorManager').exists())
 def SensorListView(request):
     
     sensor_list = e_Sensor.objects.all()
@@ -61,15 +53,20 @@ def SensorListView(request):
     context ={
         'filter': sensor_filter,
         
-
     }
 
     return render(request, 'sensors/e_Sensor_list.html', context)
 
-class SensorDetailView(DetailView):
+class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Sensor
     context_object_name = 'sensor'
     template_name = 'sensors/e_Sensor_detail.html'
+
+    def test_func(self):
+        if self.request.user.has_perm('can_view_sensors'):
+            return True
+        else:
+            return False
 
 class SensorForm(forms.ModelForm):
     class Meta:

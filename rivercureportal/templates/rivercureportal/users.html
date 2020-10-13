@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
 {% load auth_extras %}
 {% load static %}
 
@@ -6,28 +7,52 @@
 
 {% if request.user|has_group:"Administration" %} 
 
+<h1>Users</h1>
 
-{% for g in groups %}
-    <h4>{{g.name}}</h4>
-    {% for user in g.user_set.all %}
-      <article class="media content-section">
-      <div class="media-body">
-        <b class="mr-2">{{ user.profile.first_name }} {{ user.profile.last_name }}</b> <br>
-        <a class="mr-2">{{ user.profile.institution }}</a>
-      </div>
-      <div class="media-article">
-        <img class="article-img" src="{{ user.profile.image.url }}"></img>
-      </div>
-      </article>
+
+<div class="row">
+
+<div class="col-md-8">
+<table class="table table-hover ">
+  <thead>
+      <tr>
+        <th class="tr_class" scope="col">User</th>
+        <th class="tr_class" scope="col">Name</th>
+        <th class="tr_class" scope="col">Organization</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for user in filter.qs %}
+      <tr>
+        <td>{{user.username}}</td>
+        
+        <td>
+          <a href="{% url 'profile-detail' user.id %}">
+            <div style="height:100%;width:100%">
+              {{ user.profile.first_name }} {{ user.profile.last_name }} 
+            </div>
+          </a>
+        </td>
+        <td>{{user.profile.institution}}</td>
+        <td class="tr_class"><img src="{{ user.profile.image.url }}"  width="15%" height="15%" ></a></td>
+      </tr>
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
     {% endfor %}
+  </tbody>
+  </table>
+  </div>
  
-{% endfor %}
+<div class="filter-section col-md-3">
+  <h5>Filter</h5> 
+  <form method="get" >
+    {{ filter.form |crispy }}
+    <button type="submit" class="btn btn-info">Filter</button>
+  </form>
+</div>
+
+</div>
 
 {% endif %}
 
 {% endblock %}
-
-
-
-
-

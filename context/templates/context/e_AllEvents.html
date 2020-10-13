@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> </h1>
 <h1>Events</h1>
+
 
 <div class="row">
 
@@ -23,7 +23,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for event in events %}
+      {% for event in filter.qs %}
       <tr>
         <td>
           <a href="{% url 'event-detail' event.pk %}">
@@ -45,19 +45,23 @@
   </tbody>
   </table>
   </div>
-  
-</div>
 
+  <div class="filter-section col-md-3">
+    <h5>Filter</h5> 
+    <form method="get">
+      {{ filter.form |crispy }}
+      <button type="button" class="btn btn-info">Filter</button>
+    </form>
+    </div>
+
+  {% if perms.sensors.add_e_sensor %}
   <div>
-    {% if perms.sensors.add_e_event %}
     <a type="button" class="btn btn-info" href="{% url 'event-create' %}">Add Event</a>
-    {% endif %}
-    <a type="button" class="btn btn-info" href="{% url 'event-list' %}">All Events</a>
   </div>
+  {% endif %}
 
 
-
-
+</div>
 
 {% endblock content %}
 

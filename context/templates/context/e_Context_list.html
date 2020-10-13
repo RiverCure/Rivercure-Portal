@@ -23,8 +23,7 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
-      <p><a class="article-title" ><b>Code :</b> {{ context.code }}</a></p>
-      <p><a class="article-title" ><b>Owner :</b> {{ context.user }}</a></p>
+      <p><a class="article-title" ><b>My role :</b>{% if context.owner.username == self.request.user %} Admin {% endif %}</a></p>
       <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
     </div>
 </article>

@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views 
+from . import views
 from .views import (
     HydroFeatureCreateView, 
     HydroFeatureListView, 
@@ -8,6 +8,7 @@ from .views import (
     HydroFeatureDeleteView,
     home,
     users,
+    ProfileDetailView, 
 )
 
 urlpatterns = [
@@ -20,6 +21,6 @@ urlpatterns = [
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
     path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
     path('users/', users, name='users'),
-    
-   
+    path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile-detail'),
+
 ]

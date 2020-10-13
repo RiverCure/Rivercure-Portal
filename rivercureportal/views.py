@@ -4,18 +4,32 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from leaflet.forms.widgets import LeafletWidget
 from django.contrib.auth.models import Group
 from django import forms
-from users.models import User
+from users.models import User, Profile
 from context.models import e_Context
 from .models import e_HydroFeature
 from sensors.models import e_Sensor
+from .filters import UserFilter
+
+
+class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = User
+    context_object_name = 'u'
+    template_name = 'rivercureportal/userprofile.html'
+    def test_func(self):
+        if self.request.user.groups.filter(name='Administration').exists():
+            return True
+        else:
+            return False
 
 def users(request):
+
+    user_list = User.objects.all().distinct('username')
+    user_filter = UserFilter(request.GET, queryset=user_list)
+
     context = {
         'users': User.objects.all(),
         'groups': Group.objects.all(),
-        'contexts' : e_Context.objects.all(),
-        'recent_context' : e_Context.objects.all().first(),
-        'recent_sensor' : e_Sensor.objects.all().first()     
+        'filter' :  user_filter,
     }
 
     return render(request, 'rivercureportal/users.html', context)

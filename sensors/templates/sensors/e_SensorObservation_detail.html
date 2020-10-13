@@ -5,10 +5,10 @@
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <a class="mr-2">{{ object.sensor}} - observation{{ object.id }}</a>
+        <b> <a class="mr-2">{{ object.sensor}} - observation{{ object.id }} ({{observation.sensor.type}})</a></b>
       </div>
-      <p class="article-content">Sensor: {{observation.sensor}}</p>
-      <p class="article-content">Type: {{observation.sensor.type}}</p>
+      
+      
       <p class="article-content">Date: {{observation.date}}</p>
       <p class="article-content">Time: {{observation.time}}</p>
       <p class="article-content">Depth: {{observation.depth}}</p>
