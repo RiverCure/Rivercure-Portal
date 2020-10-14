@@ -385,7 +385,7 @@ var MyFunctions = {
                 </select>
                 <div class"container">
                     <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Add to Point</button>
-                    <button type="button" id='popup-btn-all' class="btn btn-outline-info btn-sm")">Add to Line</button>
+                    <button type="button" id='popup-btn-all' class="btn btn-outline-info btn-sm")">Add to Boundary</button>
                 </div>
             `   
         }

@@ -561,7 +561,7 @@ def prepare_domain(context_code):
     features = []
     features.append(context_main)
     domain_file = geojson.FeatureCollection(features)
-    domain_file['name'] = str.title(context_name)
+    domain_file['name'] = context_name
     domain_file['code'] = context_code
     domain_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763"} } # str(context.geomExternalBoundary.srid)
 
@@ -582,9 +582,9 @@ def prepare_alignment(context_code, context_name):
             features.append(context_alignment)
 
     alignment_file = geojson.FeatureCollection(features)
-    alignment_file['name'] = str.title(context_name) + '_alignments'
+    alignment_file['name'] = context_name + '_alignments'
     alignment_file['Context code'] = context_code
-    alignment_file['Context name'] = str.title(context_name)
+    alignment_file['Context name'] = context_name
     alignment_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
     return alignment_file
@@ -605,9 +605,9 @@ def prepare_refinement(context_code, context_name):
             features.append(context_refinement)
 
     refinement_file = geojson.FeatureCollection(features)
-    refinement_file['name'] = str.title(context_name) + '_refinements'
+    refinement_file['name'] = context_name + '_refinements'
     refinement_file['Context code'] = context_code
-    refinement_file['Context name'] = str.title(context_name)
+    refinement_file['Context name'] = context_name
     refinement_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
     return refinement_file
@@ -628,9 +628,9 @@ def prepare_boundaries(context_code, context_name):
             features.append(context_boundary)
 
     boundary_file = geojson.FeatureCollection(features)
-    boundary_file['name'] = str.title(context_name) + '_boundaries'
+    boundary_file['name'] = context_name + '_boundaries'
     boundary_file['Context code'] = context_code
-    boundary_file['Context name'] = str.title(context_name)
+    boundary_file['Context name'] = context_name
     boundary_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
     return boundary_file
@@ -658,9 +658,9 @@ def prepare_boundary_points(context_code, context_name):
             features.append(context_boundary_points)
 
     boundary_point_file = geojson.FeatureCollection(features)
-    boundary_point_file['name'] = str.title(context_name) + '_boundary_points'
+    boundary_point_file['name'] = context_name + '_boundary_points'
     boundary_point_file['Context code'] = context_code
-    boundary_point_file['Context name'] = str.title(context_name)
+    boundary_point_file['Context name'] = context_name
     boundary_point_file['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3763" } }
 
     return boundary_point_file
@@ -694,7 +694,7 @@ def request_pre_processing(request, context_code): # function to start simulatio
         r = requests.post(url, files=files, params=payload)
 
         if r.text == 'success':
-            messages.success(request, 'Mesh generation request successful<br>Simulation is under way')
+            messages.success(request, 'Mesh generation request successful\nMesh generation is under way')
         else:
             messages.warning(request,f'Pre-processing failed') 
             context = e_Context.objects.get(code=context_code)
