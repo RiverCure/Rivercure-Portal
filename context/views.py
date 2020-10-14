@@ -199,7 +199,7 @@ def ContextEventListView(request, context_code):
     events_list = e_ContextEvent.objects.filter(context__code=context_code)
     context = {
         'events': events_list,
-        'context': events_list.first().context,
+        'context': e_Context.objects.get(code=context_code) # events_list.first().context,
     }
     return render(request, 'context/e_Event_list.html', context)
 
@@ -730,19 +730,18 @@ def request_simulation(context, writing_perio, max_update_perio, writing_unit, u
 
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
     # transform periodicity
-    writing_freq = 1/writing_perio
-    max_update_freq = 1/max_update_perio
-
     if(writing_unit == 'hour'):
-        writing_freq *= 60 * 60
+        writing_perio *= 60 * 60
     elif(writing_unit == 'minute'):
-        writing_freq *= 60
+        writing_perio *= 60
 
     if(update_unit == 'hour'):
-        max_update_freq *= 60 * 60
+        max_update_perio *= 60 * 60
     elif(update_unit == 'minute'):
-        max_update_freq *= 60
+        max_update_perio *= 60
     
+    writing_freq = 1/writing_perio
+    max_update_freq = 1/max_update_perio
     #end transform
 
     output_file_data = f'{writing_freq}\r\n{max_update_freq}'
