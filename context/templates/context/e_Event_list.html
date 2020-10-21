@@ -50,7 +50,7 @@
 
   <div>
     {% if perms.sensors.add_e_event %}
-    <a type="button" class="btn btn-info" href="{% url 'event-create' %}">Add Event</a>
+    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}">Add Event</a>
     {% endif %}
     <a type="button" class="btn btn-info" href="{% url 'event-list' %}">All Events</a>
   </div>
