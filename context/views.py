@@ -5,10 +5,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction, connection
 from django.utils import timezone
 from .forms import ContextForm, UploadContextForm, EventForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest
+from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResults
 from raster.models import RasterLayer
 from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
@@ -708,7 +709,7 @@ def request_pre_processing(request, context_code): # function to start simulatio
         print(f'Error requesting context mesh generation: {e}')
         return redirect(request.META['HTTP_REFERER'])
 
-def simulation_results(request): # function to redirect the user to the paraviewweb visualizer
+def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
 
@@ -788,3 +789,66 @@ def mesh_status_change(request, context_name): # Function to mark mesh has gener
     context.save()
 
     return HttpResponse(status=200)
+
+def download_simulation_results(request, event_id): #function to handle the upload of the raster file
+    url = os.environ['SIMULATOR_ADDRESS']
+
+    try:
+        context_event = e_ContextEvent.objects.get(pk=event_id)
+    except:
+        messages.warning(request, 'Request unsuccesful')
+        return HttpResponseRedirect(reverse('event-list'))
+
+    context_name = context_event.context.Name
+
+    request = url + f'simulation/results/?event_id={event_id}&context_name={context_name}'
+    print(f'Simulation results requested for context {context_name} event {event_id}')
+    return HttpResponseRedirect(request)
+
+    # req = requests.get(url)
+    # open('results.zip', 'wb').write(req.content)
+    # os.system('unzip results.zip -d media/results && rm results.zip')
+    # try:
+    #     try:
+    #         event = e_ContextEvent.objects.get(pk=event)
+    #         results = event.context_event_results
+    #         results.time = timezone.now()
+    #     except ObjectDoesNotExist:
+    #         results = e_ContextEventResults()
+        
+    #     raster = RasterLayer()
+    #     raster.datatype='co'
+    #     raster.name = 'Max Depth'
+    #     raster.rasterfile = 'results/results/out-Max_Depth.tif'
+    #     raster.save()
+    #     results.max_depth = raster
+
+    #     # raster = RasterLayer()
+    #     # raster.datatype='co'
+    #     # raster.name = 'Max Level'
+    #     # raster.rasterfile = open('results/results/out-Max_Level.tif', 'rb')
+    #     # raster.save()
+    #     # results.max_level = raster
+
+    #     # raster = RasterLayer()
+    #     # raster.datatype='co'
+    #     # raster.name = 'Max Q'
+    #     # raster.rasterfile = open('results/results/out-Max_Q.tif', 'rb')
+    #     # raster.save()
+    #     # results.max_q = raster
+
+    #     # raster = RasterLayer()
+    #     # raster.datatype='co'
+    #     # raster.name = 'Max Vel'
+    #     # raster.rasterfile = open('results/results/out-Max_Vel.tif', 'rb')
+    #     # raster.save()
+    #     # results.max_vel = raster
+
+    #     results.save()
+    # except Exception as e:
+    #     print(f'Simulation results upload failed\nException: {e}')
+    #     # os.system('rm -R results/*')
+    #     return HttpResponse(status=404)
+
+    # # os.system('rm -R results/*')
+    # return HttpResponse(status=200)      

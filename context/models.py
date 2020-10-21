@@ -150,7 +150,21 @@ class e_ContextEvent(models.Model):
 
 	UpdateMaximumValueUnit = models.CharField(max_length=20, choices= TIME_UNITS, null=True, blank=True) 
 
+	def __str__(self):
+		return f'{self.context} event {self.id}'
 
+class e_ContextEventResults(models.Model):
+	context_event = models.OneToOneField('e_ContextEvent', on_delete=models.CASCADE, related_name='context_event_results', null=True, blank=True, default=None)
+
+	max_depth = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='event_max_depth_result')
+	max_level = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='event_max_level_result')
+	max_q = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='event_max_q_result') 
+	max_vel = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='event_max_vel_result') 
+
+	time = models.DateTimeField(default=timezone.now)
+
+	def __str__(self):
+		return f'{self.context_event} results'
 
 class e_ContextAccessRequest(models.Model):
 
