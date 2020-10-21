@@ -62,10 +62,9 @@
           </div>
             
             <!-- Navbar Right Side -->
-            {% if user.is_authenticated %} 
+           
             <div class="navbar-nav">
               {% if user.is_superuser %}
-              
               <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
                 <div class="dropdown-menu">
@@ -73,10 +72,9 @@
                       <a href="{% url 'users' %}" class="dropdown-item">Users</a>
                 </div>
               </div> 
-              {% endif %}
               <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
-              {% else %}
+            {% else %}
               <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
               <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
               {% endif %}
