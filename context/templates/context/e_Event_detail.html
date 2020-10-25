@@ -1,25 +1,26 @@
 {% extends "rivercureportal/base.html" %}
 
 {% block content %}
+  <h1>Event</h1>
+  <article class="media content-section">
+      <div class="media-body">
+        <h2 class="article-title">{{event.Name}} - Code: {{event.code}}</h2>
+        <p class="article-content">Context: {{ event.context }}</p>
+        <p class="article-content">Type: {{ event.type }}</p> 
+        <p class="article-content">Type: {{ event.subtype }}</p> 
+        <p class="article-content">State: {{ event.state }}</p> 
+        <p class="article-content">Start: {{ event.startDate }} - {{event.startTime}}</p> 
+        <p class="article-content">End: {{ event.endDate }} - {{event.endTime}}</p>
+        <p class="article-content">Description: {{ event.description}}</p>
+        <p class="article-content">Return Period: {{ event.returnPeriod}}</p>
+        <p class="article-content">WarmUp: {{ event.warmUp}}</p>
+  </article>
+  <a class="btn btn-outline-info" href="{% url 'event-list' %}">All Events</a>
 
-<h1>Event</h1>
-<article class="media content-section">
-    <div class="media-body">
-      <h2 class="article-title">{{event.Name}} - Code: {{event.code}}</h2>
-      <p class="article-content">Context: {{ event.context }}</p>
-      <p class="article-content">Type: {{ event.type }}</p> 
-      <p class="article-content">Type: {{ event.subtype }}</p> 
-      <p class="article-content">State: {{ event.state }}</p> 
-      <p class="article-content">Start: {{ event.startDate }} - {{event.startTime}}</p> 
-      <p class="article-content">End: {{ event.endDate }} - {{event.endTime}}</p>
-      <p class="article-content">Description: {{ event.description}}</p>
-      <p class="article-content">Return Period: {{ event.returnPeriod}}</p>
-      <p class="article-content">WarmUp: {{ event.warmUp}}</p>
-</article>
-<a class="btn btn-outline-info" href="{% url 'event-list' %}">All Events</a>
-
-<a class="btn btn-outline-info" href="{% url 'event-update' object.id %}">Update</a>
-
-<a class="btn btn-outline-info" href="{% url 'simulation-results-download' event.id %}">Download Results</a>
-
+  <a class="btn btn-outline-info" href="{% url 'event-update' object.id %}">Update</a>
+  
+  {% if event.context_event_results != '' %}
+    <a class="btn btn-outline-info" href="{% url 'simulation-results-download' event.id %}">Download Results</a>
+    <a class="btn btn-outline-info" href="{% url 'view-simulation-results' event.id %}">View Results</a>
+  {% endif %}
 {% endblock content %}

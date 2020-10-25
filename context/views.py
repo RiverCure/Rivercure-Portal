@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResults
+from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult
 from raster.models import RasterLayer
 from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
@@ -24,6 +24,7 @@ from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django import forms
 from pprint import pprint
+from django.conf import settings
 
 class ContextAccessCreateView(UserPassesTestMixin, CreateView):
     model = e_ContextAccessRequest
@@ -790,7 +791,7 @@ def mesh_status_change(request, context_name): # Function to mark mesh has gener
 
     return HttpResponse(status=200)
 
-def download_simulation_results(request, event_id): #function to handle the upload of the raster file
+def download_simulation_results(request, event_id): #function to download simulation results
     url = os.environ['SIMULATOR_ADDRESS']
 
     try:
@@ -805,50 +806,80 @@ def download_simulation_results(request, event_id): #function to handle the uplo
     print(f'Simulation results requested for context {context_name} event {event_id}')
     return HttpResponseRedirect(request)
 
-    # req = requests.get(url)
-    # open('results.zip', 'wb').write(req.content)
-    # os.system('unzip results.zip -d media/results && rm results.zip')
-    # try:
-    #     try:
-    #         event = e_ContextEvent.objects.get(pk=event)
-    #         results = event.context_event_results
-    #         results.time = timezone.now()
-    #     except ObjectDoesNotExist:
-    #         results = e_ContextEventResults()
-        
-    #     raster = RasterLayer()
-    #     raster.datatype='co'
-    #     raster.name = 'Max Depth'
-    #     raster.rasterfile = 'results/results/out-Max_Depth.tif'
-    #     raster.save()
-    #     results.max_depth = raster
+def handle_simulation_results(request, event_id): #function to handle simulation results
+    sim_url = os.environ['SIMULATOR_ADDRESS']
 
-    #     # raster = RasterLayer()
-    #     # raster.datatype='co'
-    #     # raster.name = 'Max Level'
-    #     # raster.rasterfile = open('results/results/out-Max_Level.tif', 'rb')
-    #     # raster.save()
-    #     # results.max_level = raster
+    event = e_ContextEvent.objects.get(pk=event_id)
+    context_name = event.context.Name
 
-    #     # raster = RasterLayer()
-    #     # raster.datatype='co'
-    #     # raster.name = 'Max Q'
-    #     # raster.rasterfile = open('results/results/out-Max_Q.tif', 'rb')
-    #     # raster.save()
-    #     # results.max_q = raster
+    url = f'{sim_url}/simulation/results/?event_id={event_id}&context_name={context_name}'
 
-    #     # raster = RasterLayer()
-    #     # raster.datatype='co'
-    #     # raster.name = 'Max Vel'
-    #     # raster.rasterfile = open('results/results/out-Max_Vel.tif', 'rb')
-    #     # raster.save()
-    #     # results.max_vel = raster
+    req = requests.get(url)
 
-    #     results.save()
-    # except Exception as e:
-    #     print(f'Simulation results upload failed\nException: {e}')
-    #     # os.system('rm -R results/*')
-    #     return HttpResponse(status=404)
+    with ZipFile(BytesIO(req.content)) as simulation_results_zip:
+        simulation_results_zip.extractall(f'{settings.MEDIA_ROOT}/rasters/')
 
-    # # os.system('rm -R results/*')
-    # return HttpResponse(status=200)      
+    try:
+        results = event.context_event_results
+        results.time = timezone.now()
+    except ObjectDoesNotExist:
+        results = e_ContextEventResult()
+        results.context_event = event
+        results.time = timezone.now()
+
+    try:
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = 'Max Depth'
+        raster.srid = 3763
+        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Depth.tif'
+        raster.save()
+        results.max_depth = raster
+
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = 'Max Level'
+        raster.srid = 3763
+        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Level.tif'
+        raster.save()
+        results.max_level = raster
+
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = 'Max Q'
+        raster.srid = 3763
+        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Q.tif'
+        raster.save()
+        results.max_q = raster
+
+        raster = RasterLayer()
+        raster.datatype='co'
+        raster.name = 'Max Vel'
+        raster.srid = 3763
+        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Vel.tif'
+        raster.save()
+        results.max_vel = raster
+
+        results.save()
+    except Exception as e:
+        print(f'Simulation results upload failed\nException: {e}')
+        return HttpResponse(status=404)
+
+    return HttpResponse(status=200)
+
+def view_events_results(request, event_id): #function to view the results of an event simulation
+    event = e_ContextEvent.objects.get(pk=event_id)
+    web_host = os.environ['CONTEXT_API']
+    
+    context = {
+        'api': f'http://{web_host}/contexts/api/context/',
+        'context': event.context,
+        'sensors': e_Sensor.objects.all(),
+        'event': event,
+        'max_depth': event.context_event_results.max_depth.id,
+        'max_level': event.context_event_results.max_level.id,
+        'max_q': event.context_event_results.max_q.id,
+        'max_vel': event.context_event_results.max_vel.id
+    }
+
+    return render(request, 'context/event_results.html', context)  

@@ -153,7 +153,7 @@ class e_ContextEvent(models.Model):
 	def __str__(self):
 		return f'{self.context} event {self.id}'
 
-class e_ContextEventResults(models.Model):
+class e_ContextEventResult(models.Model):
 	context_event = models.OneToOneField('e_ContextEvent', on_delete=models.CASCADE, related_name='context_event_results', null=True, blank=True, default=None)
 
 	max_depth = models.OneToOneField('raster.RasterLayer', on_delete=models.CASCADE, related_name='event_max_depth_result')
