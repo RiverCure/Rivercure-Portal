@@ -178,8 +178,11 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         obj.save() 
 
         try:
-            request_simulation(context, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
-            messages.success(self.request,f'Simulation request successful') 
+            request_simulation(context, obj.id, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
+            if r.text == 'success':
+                messages.success(self.request,f'Simulation request successful') 
+            else:
+                messages.warning(self.request,f'Simulation request failed') 
         except Exception as e:
             print(f'Failed simulation request!\nException: {e}')
             messages.warning(self.request,f'Simulation request failed') 
@@ -714,10 +717,11 @@ def preprocessing_results(request): # function to redirect the user to the parav
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
 
-def request_simulation(context, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
+def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
 
-    payload = {'context_name': context.Name}
+    payload = {'context_name': context.Name,
+                'event_id': event_id}
 
     #prepare files
 
@@ -728,6 +732,8 @@ def request_simulation(context, writing_perio, max_update_perio, writing_unit, u
     files.append(('frequency', frequency_file))
 
     r = requests.post(url, files=files, params=payload)
+
+    return r.text
 
 
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
@@ -811,10 +817,13 @@ def handle_simulation_results(request, event_id): #function to handle simulation
 
     event = e_ContextEvent.objects.get(pk=event_id)
     context_name = event.context.Name
-
     url = f'{sim_url}/simulation/results/?event_id={event_id}&context_name={context_name}'
 
-    req = requests.get(url)
+    try:
+        req = requests.get(url)
+    except Exception as e:
+        print(f'Simulation event request failed: {e}')
+        return HttpResponse(status=404)
 
     with ZipFile(BytesIO(req.content)) as simulation_results_zip:
         simulation_results_zip.extractall(f'{settings.MEDIA_ROOT}/rasters/')
@@ -828,37 +837,10 @@ def handle_simulation_results(request, event_id): #function to handle simulation
         results.time = timezone.now()
 
     try:
-        raster = RasterLayer()
-        raster.datatype='co'
-        raster.name = 'Max Depth'
-        raster.srid = 3763
-        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Depth.tif'
-        raster.save()
-        results.max_depth = raster
-
-        raster = RasterLayer()
-        raster.datatype='co'
-        raster.name = 'Max Level'
-        raster.srid = 3763
-        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Level.tif'
-        raster.save()
-        results.max_level = raster
-
-        raster = RasterLayer()
-        raster.datatype='co'
-        raster.name = 'Max Q'
-        raster.srid = 3763
-        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Q.tif'
-        raster.save()
-        results.max_q = raster
-
-        raster = RasterLayer()
-        raster.datatype='co'
-        raster.name = 'Max Vel'
-        raster.srid = 3763
-        raster.rasterfile = f'rasters/results/{context_name}_event_{event_id}-Max_Vel.tif'
-        raster.save()
-        results.max_vel = raster
+        results.max_depth = define_raster('Max Depth', f'rasters/results/{context_name}_event_{event_id}-Max_Depth.tif')
+        results.max_level = define_raster('Max Level', f'rasters/results/{context_name}_event_{event_id}-Max_Level.tif')
+        results.max_q = define_raster('Max Q', f'rasters/results/{context_name}_event_{event_id}-Max_Q.tif')
+        results.max_vel = define_raster('Max Vel', f'rasters/results/{context_name}_event_{event_id}-Max_Vel.tif')
 
         results.save()
     except Exception as e:
@@ -866,6 +848,16 @@ def handle_simulation_results(request, event_id): #function to handle simulation
         return HttpResponse(status=404)
 
     return HttpResponse(status=200)
+
+def define_raster(name, file): # fucntion to create and return a raster layer
+    raster = RasterLayer()
+    raster.datatype='co'
+    raster.name = name
+    raster.srid = 3763
+    raster.rasterfile = file
+    raster.save()
+
+    return raster
 
 def view_events_results(request, event_id): #function to view the results of an event simulation
     event = e_ContextEvent.objects.get(pk=event_id)
