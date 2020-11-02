@@ -1,0 +1,74 @@
+{% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+
+{% block scripts %}
+    {% leaflet_js plugins="ALL" %}
+    {% leaflet_css plugins="ALL" %}
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+    <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
+    <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener("map:init", e => {
+                const map = e.detail.map;   
+                map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
+                
+                MyFunctions.mode = 'view';
+                MyFunctions.showMousePosition();
+                MyFunctions.mouseMove(map, 'view');
+                //visual tools
+                map.on('dragstart', e => {
+                    e.target._container.style.cursor = 'grab';
+                });
+                map.on('dragend', e => {
+                    e.target._container.style.cursor = 'pointer';
+                });
+                MyFunctions.drawSensors(map, loadSensors());
+                MyFunctions.domainMarkers = L.markerClusterGroup();
+                MyFunctions.domainMarkers.addTo(map);
+                map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
+                MyFunctions.domainMarkers.bindTooltip("Boundary Line Point");
+                MyFunctions.polygonsInit(map); //init the polygon storing system
+                MyFunctions.boundariesInit(map); //init the boundaries variables
+
+
+                MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
+
+                var tile;
+                tile = L.tileLayer('http://127.0.0.1:8000/context/raster/tiles/' + '{{ max_depth }}' + '/{z}/{x}/{y}.png').addTo(map);
+                map.layerscontrol.addOverlay(tile, 'Max Depth');
+                tile = L.tileLayer('http://127.0.0.1:8000/context/raster/tiles/' + '{{ max_level }}' + '/{z}/{x}/{y}.png').addTo(map);
+                map.layerscontrol.addOverlay(tile, 'Max Level');
+                tile = L.tileLayer('http://127.0.0.1:8000/context/raster/tiles/' + '{{ max_q }}' + '/{z}/{x}/{y}.png').addTo(map);
+                map.layerscontrol.addOverlay(tile, 'Max Q');
+                tile = L.tileLayer('http://127.0.0.1:8000/context/raster/tiles/' + '{{ max_vel }}' + '/{z}/{x}/{y}.png').addTo(map);
+                map.layerscontrol.addOverlay(tile, 'Max Vel');
+            });
+
+            loadSensors = () => {
+                var sensors = [], sensor;
+                '{% for sensor in sensors %}'
+                    sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
+                    description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
+                    timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};
+                    sensors.push(sensor)
+                '{% endfor %}'
+                return sensors;
+            }  
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ context.Name }} context</h1>
+    <h2>Event {{ event.Name }}</h2>
+    
+    {% leaflet_map "my_map" %}
+{% endblock %}

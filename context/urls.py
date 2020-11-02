@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, ContextEventListView, show_context, download_context, simulation_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change
+from .views import GrantAccess, ContextRequestDecisionView, ContextEventListView, show_context, download_context, preprocessing_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -12,9 +12,12 @@ urlpatterns = [
     path('manage/<str:context_code>', show_context, name='context_manage'),
     path('upload/<str:pk>', UploadContext.as_view(), name='context_upload'),
     path('download/<str:context_code>', download_context, name='download_context'),
-    path('request_simulation/<str:context_code>', request_pre_processing, name='context-simulation-request'),
-    path('simulation_results/', simulation_results, name='context-simulation-results'),
+    path('request_preprocessing/<str:context_code>', request_pre_processing, name='context-preprocessing-request'),
+    path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
+    path('simulation/results/<int:event_id>', view_events_results, name='view-simulation-results'),
+    path('simulation/results/download/<int:event_id>', download_simulation_results, name='simulation-results-download'),
+    path('simulation/results/handle/<int:event_id>', handle_simulation_results, name='handle-simulation-results'),
     path('api/', include(router.urls)),
     path('context-sensors/', ContextSensorListView, name='context-sensor-list'),
     path('events/<int:pk>', EventDetailView.as_view(), name='event-detail'),
