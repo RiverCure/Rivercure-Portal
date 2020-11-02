@@ -1,18 +1,72 @@
 {% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
 
 <h1>Hydrofeatures</h1>
+<h1>{{string}}</h1>
 
-{% for object in hydrofeatures %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'hydrofeature-detail' object.id %}">{{ object.Name }}</a>
-      </div>
-      <p><a class="article-title">Type: {{ object.type }}</a></p>
-    </div>
-</article>
-{% endfor %}
+<div class="row">
 
-{% endblock content %} 
+<div class="col-md-8">
+  <table id="myTable" class="table table-hover ">
+    <thead>
+        <tr>
+          <th class="tr_class" scope="col">Name</th>
+          <th class="tr_class" scope="col">Type</th>
+        </tr>
+    </thead>
+      <tbody>
+      {% for hydro in object_list %}
+        <tr>  
+          <td>
+            <a href="{% url 'hydrofeature-detail' hydro.id %}"><div style="height:100%;width:100%">{{ hydro.Name }}</div></a>
+          </td>
+          <td>
+            {{ hydro.type }}
+          </td>
+        </tr>
+        {% empty %}
+        <td><h2 class="text-secondary font-italic no-context-data">No available hydrofeatures! :(</h2></td>
+      {% endfor %}
+      </tbody>
+  </table>
+</div>
+
+
+  <div class="filter-section col-md-3">
+    <h5>Filter</h5> 
+    <form method="get">
+      {{ filter.form |crispy }}
+      <button type="submit" class="btn btn-info">Filter</button>
+    </form>
+  </div>
+
+<div class="pagination mb-5">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+  </span>
+</div>
+
+<div>
+  {% if perms.rivercureportal.add_e_hydrofeature %}
+  <div>
+    <a type="button" class="btn btn-info ml-3" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock content %}

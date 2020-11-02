@@ -77,7 +77,9 @@ class ContextRequestListView(UserPassesTestMixin, ListView):
 def ContextListView(request):
     context_list = e_Context.objects.filter(user=request.user)
 
-    granted_list = e_ContextAccessRequest.objects.filter(state='Finished', access_granted='True', requestuser=request.user)
+    #granted_requests_qs = e_ContextAccessRequest.objects.filter(state='Finished', access_granted='True', requestuser=request.user)
+    #granted_list_contexts = granted_requests_qs.values('context')
+    #print(granted_list_contexts.first())
 
     context_filter = ContextFilter(request.GET, queryset=context_list)
     return render(request, 'context/e_Context_list.html', {'filter': context_filter})

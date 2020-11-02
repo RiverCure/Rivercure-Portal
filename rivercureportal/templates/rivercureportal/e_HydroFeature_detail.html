@@ -2,18 +2,25 @@
 
 {% block content %}
 
+
 <article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ object.Name }}</a>
-      </div>
-      {% if perms.rivercureportal.change_e_hydrofeature %}
-        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
-        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
-      {% endif %}
-      <p class="article-content">Code: {{ object.code }}</p></p>
-      <p class="article-content">Area: {{ object.area }}</p>
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ object.Name }}</a>
     </div>
+    <p class="article-content"><b>{{ object.code }}</b></p>
+    
+    <p class="article-content">Type: {{ object.type }}</p> 
+    <p class="article-content">Area: {{ object.area }}</p> 
+    <p class="article-content">Length: {{ object.length }}</p> 
+
+
+    {% if perms.rivercureportal.change_e_hydrofeature %}
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
+    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
+    {% endif %}
+  
+  </div>
 </article>
 
 

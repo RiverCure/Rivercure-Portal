@@ -8,15 +8,21 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q
 from context.models import e_ContextSensor, e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 
 
-class SensorObservationDetailView(DetailView):
+class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_SensorObservation
     context_object_name = 'observation'
     template_name = 'sensors/e_SensorObservation_detail.html'
+    def test_func(self):
+        if self.request.user.groups.filter(name='SensorManager').exists():
+            return True
+        else:
+            return False
 
-@login_required
+
+@permission_required('sensors.view_e_sensor_observation', raise_exception=True)
 def SensorObservationListView(request):
     qs = e_SensorObservation.objects.all()
     obs_filter = ObservationFilter(request.GET, queryset=qs)
@@ -44,8 +50,8 @@ def SensorObservationListView(request):
 
     return render(request, "sensors/e_Sensor_observations.html", context)
 
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name='SensorManager').exists())
+
+@permission_required('sensors.view_e_sensor', raise_exception=True)
 def SensorListView(request):
     
     sensor_list = e_Sensor.objects.all()
@@ -57,13 +63,14 @@ def SensorListView(request):
 
     return render(request, 'sensors/e_Sensor_list.html', context)
 
+
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Sensor
     context_object_name = 'sensor'
     template_name = 'sensors/e_Sensor_detail.html'
 
     def test_func(self):
-        if self.request.user.has_perm('can_view_sensors'):
+        if self.request.user.has_perm('sensors.view_e_sensor'):
             return True
         else:
             return False
@@ -74,13 +81,14 @@ class SensorForm(forms.ModelForm):
         fields = ['Name', 'type', 'modalityType', 'geom']
         widgets = {'geom': LeafletWidget()}
 
+
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
     form_class = SensorForm
     success_url = 'sensor-list'
 
     def test_func(self):
-        if self.request.user.has_perm('can_update_sensors'):
+        if self.request.user.has_perm('sensors.change_e_sensor'):
             return True
         else:
             return False
@@ -94,7 +102,7 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     success_url = 'sensor_list'
 
     def test_func(self):
-        if self.request.user.has_perm('can_delete_sensors'):
+        if self.request.user.has_perm('sensors.delete_e_sensor'):
             return True
         else:
             return False

@@ -18,7 +18,7 @@ EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipita
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
 
-HYDROFEATUREKIND_CHOICES = (  ('river','River'),  ('estuary','Estuary'),  ('lake','Lake'),  ('riverBasin','RiverBasin'),  ('drainageBasin','DrainageBasin'),  ('dam','Dam'),  )
+HYDROFEATUREKIND_CHOICES = (  ('river','River'),  ('estuary','Estuary'),  ('lake','Lake'),  ('RiverBasin','riverBasin'),  ('drainageBasin','DrainageBasin'),  ('dam','Dam'),  )
 
 GEOMETRYKIND_CHOICES = (  ('point','Point'),  ('polyline','Polyline'),  ('polygon','Polygon'),  )
 

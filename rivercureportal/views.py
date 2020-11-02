@@ -8,8 +8,8 @@ from users.models import User, Profile
 from context.models import e_Context
 from .models import e_HydroFeature
 from sensors.models import e_Sensor
-from .filters import UserFilter
-
+from .filters import UserFilter, HydroFeatureFilter
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -48,10 +48,18 @@ def home(request):
 def about(request):
     return render(request, 'rivercureportal/about.html')
 
-class HydroFeatureListView(ListView):
+class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_list.html'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = HydroFeatureFilter(self.request.GET, queryset=self.get_queryset())
+        #context['string'] = 'stringgg'
+        return context
+
 
 class HydroFeatureForm(forms.ModelForm):
     class Meta:
@@ -66,7 +74,7 @@ class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView)
     success_url = 'hydrofeature-list'
 
     def test_func(self):
-        if self.request.user.has_perm('can_add_hydrofeatures'):
+        if self.request.user.groups.filter(name='Manager').exists():
             return True
         else:
             return False
@@ -77,7 +85,7 @@ class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
     success_url = 'hydrofeature-list'
 
     def test_func(self):
-        if self.request.user.has_perm('can_update_hydrofeatures'):
+        if self.request.user.groups.filter(name='Manager').exists():
             return True
         else:
             return False
@@ -95,7 +103,7 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     success_url = 'hydrofeature_list'
 
     def test_func(self):
-        if self.request.user.has_perm('can_delete_hydrofeatures'):
+        if self.request.user.groups.filter(name='Manager').exists():
             return True
         else:
             return False
