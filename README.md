@@ -4,6 +4,7 @@ RiverCure web app. Follow this instrutions to set it up on your computer.
 ## Needed software:
     1. OSGeo (GDAL, PROJ.4, GEOS)
     2. The libraries in requirements.txt
+    3. Python 3.8
 
 ## Necessary environment variables:
     1. DATABASE_HOST
@@ -14,10 +15,12 @@ RiverCure web app. Follow this instrutions to set it up on your computer.
     4. DATABASE_NAME
     5. CONTEXT_API = {rivercure_portal_url}
     6. SIMULATOR_ADDRESS = {simulation_api_url}
+    7. DEBUG = True for dev and test env | False for production
 
 ## Database configuration:
-    1. CREATE EXTENSION postgis;
-    2. CREATE EXTENSION postgis_raster;
+    1. PostGres 12.3
+    2. CREATE EXTENSION postgis;
+    3. CREATE EXTENSION postgis_raster;
 
     Link: https://postgis.net/install/
 
