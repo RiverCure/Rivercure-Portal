@@ -24,15 +24,27 @@
       <div class="article-metadata">
         <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
       </div>
-      <p><a class="article-title" ><b>Public :</b>{% if context.isPublic == True %} Yes {% else %} No {% endif %}</a></p>
-      <p><a class="article-title" ><b>Access Granted :</b></p>
-      <p><a class="article-title" ><b>My role :</b>{% if context.owner.username == self.request.user %} None {% endif %}</a></p>
+      <p class="article-title" ><b>{% if context.isPublic == True %} Public {% else %} Private {% endif %}</b></p>
       <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
+
+
       {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
-      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">  Request Acess</a>
+      
+      {% for alr in processing %}
+      {% if alr.context == context %}
+      {% else %}
+      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">Request Acess</a>
+      {% endif %}
+      {% empty %}
+      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">Request Acess</a>
+      {% endfor %}
+
+      
+
       {% endif %}
     </div>
 </article>
+
 {% empty %}
 <h2 class="text-secondary font-italic no-context-data">No contexts found! :(</h2>
 {% endfor %}

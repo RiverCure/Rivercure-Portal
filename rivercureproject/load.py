@@ -38,6 +38,13 @@ def run():
     user.save()
     aU_SensorManager_group.user_set.add(user)
 
+    aU_ContextEventManager_group = Group(name='ContextEventManager')
+    aU_SensorManager_group.save()
+    user=User.objects.create_user('ContextEventManager', password='password')
+    user.is_staff=True
+    user.save()
+    aU_SensorManager_group.user_set.add(user)
+
     aU_Visitor_group = Group(name='Visitor')
     aU_Visitor_group.save()
     user=User.objects.create_user('Visitor', password='password')
@@ -45,6 +52,23 @@ def run():
     user.save()
     aU_Visitor_group.user_set.add(user)
 
-    permission_Create = Permission.objects.get(codename='add_e_hydrofeature')
-    aU_Admin_group.permissions.add(permission_Create)
+    permission_HydroFeatureCreate = Permission.objects.get(codename='add_e_hydrofeature')
+    aU_Manager_group.permissions.add(permission_HydroFeatureCreate)
+    permission_HydroFeatureChange = Permission.objects.get(codename='change_e_hydrofeature')
+    aU_Manager_group.permissions.add(permission_HydroFeatureChange)
+    permission_HydroFeatureDelete = Permission.objects.get(codename='delete_e_hydrofeature')
+    aU_Manager_group.permissions.add(permission_HydroFeatureDelete)
+    permission_HydroFeatureView = Permission.objects.get(codename='view_e_hydrofeature')
+    aU_Manager_group.permissions.add(permission_HydroFeatureView)
+    aU_Admin_group.permissions.add(permission_HydroFeatureView)
+    aU_Visitor_group.permissions.add(permission_HydroFeatureView)
+    aU_ContextEventManager_group.permissions.add(permission_HydroFeatureView)
+    aU_ContextAdmin_group.permissions.add(permission_HydroFeatureView)
+    aU_ContextManager_group.permissions.add(permission_HydroFeatureView)
+    aU_SensorManager_group.permissions.add(permission_HydroFeatureView)
+
+
+
+
+
 

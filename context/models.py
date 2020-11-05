@@ -170,10 +170,18 @@ class e_ContextAccessRequest(models.Model):
 
 	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
 
+	requestuser = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # REQUESTER
+
+	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES, null=True)
+
 	access_granted = models.BooleanField(default=False)
 
 	state = models.CharField(max_length=30, choices=ContextAccessRequestState_CHOICES, null=True, default="processing")
 
-	requestuser = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # REQUESTER
+class e_ContextUser(models.Model):
+
+	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_contextusers')
+
+	context_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # accepted
 
 	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES)

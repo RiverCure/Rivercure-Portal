@@ -5,6 +5,7 @@ from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
 
+
 class ContextForm(forms.Form):
     code = forms.CharField(widget=forms.HiddenInput())
     name = forms.CharField()

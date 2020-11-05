@@ -1,23 +1,86 @@
 {% extends "rivercureportal/base.html" %}
+{% load leaflet_tags %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block scripts %}
+    {% leaflet_js plugins="ALL" %}
+	{% leaflet_css plugins="ALL" %}
+	<script type='text/javascript' src={% static 'context/js/hydrofeature.js' %}></script>
+	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener("map:init", e => {
+                const map = e.detail.map;   
+                map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
+				MyHydroFeatureFunctions.showMousePosition();
+				MyHydroFeatureFunctions.mouseMove(map);
+                //visual tools
+                map.on('dragstart', e => {
+                    e.target._container.style.cursor = 'grab';
+                });
+                map.on('dragend', e => {
+                    e.target._container.style.cursor = 'pointer';
+				});
+				
+				var hydrofeature = L.polygon(MyHydroFeatureFunctions.coordStringToArray("{{ object.geom }}"))
+				hydrofeature.addTo(map)
+				
+				map.setView(hydrofeature.getCenter(), 12);
+          	})
+    	})
+	</script>
+	<style>
+		.leaflet-control-scale{
+			background-color: whitesmoke;	
+		}
+		
+		#my_map{
+			height: 600px;
+			cursor: pointer;
+		}
+		.django-leaflet-raw-textarea {
+        	width:100%; 
+    	}
+		#mouse-latlng {
+			border: 2px solid #777;
+			border-top-color: rgb(119, 119, 119);
+			border-top-style: solid;
+			border-top-width: 2px;
+			border-top: none;
+			border-left: none;
+			line-height: 1.1;
+			padding: 2px 5px 1px;
+			font-size: 11px;
+			white-space: nowrap;
+			overflow: hidden;
+			box-sizing: border-box;
+			background-color: whitesmoke;
+		}
+	</style>               
+{% endblock  %}
 
 {% block content %}
-
 
 <article class="media content-section">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="#">{{ object.Name }}</a>
+      <h1>{{ object.Name }}</h1>
     </div>
-    <p class="article-content"><b>{{ object.code }}</b></p>
-    
-    <p class="article-content">Type: {{ object.type }}</p> 
-    <p class="article-content">Area: {{ object.area }}</p> 
-    <p class="article-content">Length: {{ object.length }}</p> 
+    <p class="article-content"><b>Type:</b> {{ object.type }}</p> 
+    <p class="article-content"><b>Area:</b> {{ object.area }}</p> 
+    <p class="article-content"><b>Length:</b> {{ object.length }}</p> 
+
+    <div id="map-container" class="container">
+      {% leaflet_map "my_map" %}
+    </div>
 
 
     {% if perms.rivercureportal.change_e_hydrofeature %}
-    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
-    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
+    <a class="btn btn-secondary mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
+    <a class="btn btn-danger mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
     {% endif %}
   
   </div>

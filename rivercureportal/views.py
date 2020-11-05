@@ -15,6 +15,12 @@ class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
     context_object_name = 'u'
     template_name = 'rivercureportal/userprofile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = self.request.user.groups.all()
+        return context
+
     def test_func(self):
         if self.request.user.groups.filter(name='Administration').exists():
             return True
@@ -52,7 +58,7 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_list.html'
-    paginate_by = 10
+    paginate_by = 15
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

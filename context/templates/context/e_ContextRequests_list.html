@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<h1>Context Access Requests</h1>
+<h1>Contexts Access Requests</h1>
 
 {% if user|has_group:"ContextManager" or user|has_group:"ContextAdmin" %}
 
@@ -22,32 +22,32 @@
         <th scope="col">User</th>
         <th scope="col">Organization</th>
         <th scope="col">Context</th>
-        <th scope="col">Type</th>
+        <th scope="col">Role</th>
         
       </tr>
-    </thead>
-    <tbody>
-      {% for request in requests %}
+  </thead>
+  <tbody>
+    {% for request in requests %}
       {% if request.state == "processing" or request.state == "Processing" %}
-      <tr>
-        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
-        <td>{{ request.requestuser}}</td>
-        <td>{{ request.requestuser.profile.institution}}</td>
-        <td>{{ request.context.Name }}</td>
-        <td>{{ request.type }}</td>
-        <td><a href="{% url 'context-request-decision' request.id %}"> <img src="" alt="Manage" ></a></td>
-      </tr>
+        <tr>
+          <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+          <td>{{ request.requestuser}}</td>
+          <td>{{ request.requestuser.profile.institution}}</td>
+          <td>{{ request.context.Name }}</td>
+          <td>{{ request.type }}</td>
+          <td><a href="{% url 'context-request-decision' request.id %}"> <img src="" alt="Manage" ></a></td>
+        </tr>
       {% endif %}
-      {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+    {% empty %}
+        <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
           
-      {% endfor %}
+    {% endfor %}
   </tbody>
-  </table>
+</table>
 
 
 
-<h2>Finished</h2>
+<h2>Granted</h2>
 <table class="table table-hover ">
   <thead>
       <tr>
@@ -55,33 +55,62 @@
         <th scope="col">User</th>
         <th scope="col">Organization</th>
         <th scope="col">Context</th>
-        <th scope="col">Type</th>
-        <th scope="col">Granted</th>
-        
+        <th scope="col">Role</th>
       </tr>
-    </thead>
-    <tbody>
-      {% for request in requests %}
-      {% if request.state == "finished" or request.state == "Finished" %}
+  </thead>
+  <tbody>
+    {% for request in requests %}
+      {% if request.state == "Finished" and request.access_granted == True   %}
       <tr>
         <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
         <td>{{ request.requestuser}}</td>
         <td>{{ request.requestuser.profile.institution}}</td>
         <td>{{ request.context.Name }}</td>
         <td>{{ request.type }}</td>
-        <td>{{ request.access_granted }}</td>
+        <td><a href="{% url 'access-denied' request.id  %}">Deny Access</a></td>
+      </tr>
+      {% endif %}
+     
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+    {% endfor %}
+  
+  </tbody>
+  </table>
+
+  <h2>Denied</h2>
+<table class="table table-hover ">
+  <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">User</th>
+        <th scope="col">Organization</th>
+        <th scope="col">Context</th>
+        <th scope="col">Role</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for request in requests %}
+      {% if request.state == "Finished" and request.access_granted == False %}
+      <tr>
+        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+        <td>{{ request.requestuser}}</td>
+        <td>{{ request.requestuser.profile.institution}}</td>
+        <td>{{ request.context.Name }}</td>
+        <td>{{ request.type }}</td>
+        <td><a href="{% url 'access-granted' request.id  %}">Grant Access</a></td>
       </tr>
       {% endif %}
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
-      
-  {% endfor %}
+    {% endfor %}
+  
   </tbody>
   </table>
 
 
 
-  {% endif %}
+{% endif %}
 
 
 {% endblock content %}

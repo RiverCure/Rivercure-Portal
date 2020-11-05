@@ -39,7 +39,7 @@
                       <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
                     {% endif %}
                   
-                    {% if request.user|has_group:"ContextAdmin" %} 
+                    {% if user|has_group:"ContextAdmin" %} 
                     <a href="{% url 'context-requests-list' %}" class="dropdown-item">Access Requests</a>
                     {% endif %}
               

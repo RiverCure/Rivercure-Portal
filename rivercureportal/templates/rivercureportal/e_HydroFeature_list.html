@@ -4,33 +4,46 @@
 
 {% block content %}
 
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+
+</style>
+
+
+
+
 <h1>Hydrofeatures</h1>
-<h1>{{string}}</h1>
 
 <div class="row">
 
 <div class="col-md-8">
-  <table id="myTable" class="table table-hover ">
-    <thead>
-        <tr>
-          <th class="tr_class" scope="col">Name</th>
-          <th class="tr_class" scope="col">Type</th>
-        </tr>
-    </thead>
-      <tbody>
-      {% for hydro in object_list %}
-        <tr>  
-          <td>
+  <table name="table" id="table" class="table">
+    
+    <tr>
+      <th id="sd" class="tr_class" scope="col" >Name</th>
+      <th id="sd" class="tr_class" scope="col">Type</th>
+    </tr>
+    
+  
+    {% for hydro in object_list %}
+      <tr>  
+        <td>
             <a href="{% url 'hydrofeature-detail' hydro.id %}"><div style="height:100%;width:100%">{{ hydro.Name }}</div></a>
-          </td>
-          <td>
+        </td>
+        <td>
             {{ hydro.type }}
-          </td>
-        </tr>
+        </td>
+      </tr>
         {% empty %}
         <td><h2 class="text-secondary font-italic no-context-data">No available hydrofeatures! :(</h2></td>
       {% endfor %}
-      </tbody>
+      
   </table>
 </div>
 
@@ -69,4 +82,31 @@
   {% endif %}
 </div>
 
+
+
+<script>
+  
+  console.log("sort");
+  const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+  console.log(document.querySelector('table'));
+
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    console.log("listen");
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+})));
+ 
+
+  console.log("hello");
+</script>
+
 {% endblock content %}
+
+
+

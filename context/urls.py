@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import GrantAccess, ContextRequestDecisionView, ContextEventListView, show_context, download_context, preprocessing_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
+from .views import GrantAccess, DenyAccess, ContextRequestDecisionView, ContextEventListView, manage_context, download_context, preprocessing_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextAccessCreateView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
 from rest_framework import routers
  
 router = routers.DefaultRouter()
@@ -9,7 +9,7 @@ urlpatterns = [
     path('', ContextListView, name='context-list'),
     path('others/', OtherContextListView, name='other-contexts'),
     path('<str:pk>', ContextDetailView.as_view(), name='context-detail'),
-    path('manage/<str:context_code>', show_context, name='context_manage'),
+    path('manage/<str:context_code>', manage_context, name='context_manage'),
     path('upload/<str:pk>', UploadContext.as_view(), name='context_upload'),
     path('download/<str:context_code>', download_context, name='download_context'),
     path('request_preprocessing/<str:context_code>', request_pre_processing, name='context-preprocessing-request'),
@@ -28,5 +28,6 @@ urlpatterns = [
     path('events/new/', EventCreateView.as_view(), name='event-create'),
     path('event/<int:pk>/update/', EventUpdateView.as_view(), name='event-update'),
     path('access_granted/<int:pk>', GrantAccess, name='access-granted'),
+    path('access_denied/<int:pk>', DenyAccess, name='access-denied'),
     path('context_request_create/', ContextAccessCreateView.as_view(), name='context-requests-create'),
 ]

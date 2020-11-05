@@ -1,18 +1,23 @@
 {% extends "rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
+{% load auth_extras %}
 
 {% block content %}
 <div class="content-section">
     <div class="media">
       <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
       <div class="media-body">
-        <h2 class="account-heading">{{u.username}}</h2>
-        <p class="text-primary">{{u.profile.institution}}</p>
-        <p class="text-primary">{{u.profile.first_name}} {{u.profile.last_name}}</p>
-        <p class="text-primary">Roles: {{u.groups.values}}</p>
+        <div class="col-sm-6 col-md-8">
+          <h4>{{u.profile.first_name}} {{u.profile.last_name}} ({{u.username}})</h4>
+          {% for group in groups %}{% if u|has_group:group.name %}<small>{{group.name}}   </small>{% endif %}{% endfor %}
+          <p><i class="glyphicon glyphicon-envelope"></i>email@example.com<br />
+            <i class="glyphicon glyphicon-gift"></i>{{u.profile.institution}}</p>
+      </div>
       </div>
     </div>
   </div>
+
+  
 
  
 {% endblock content %}

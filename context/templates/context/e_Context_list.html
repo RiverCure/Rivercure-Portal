@@ -17,31 +17,58 @@
 </form>
 </div>
 
-{% for context in filter.qs %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
-      </div>
-      <p><a class="article-title" ><b>My role :</b>{% if context.owner.username == self.request.user %} Admin {% endif %}</a></p>
-      <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
+<div class="row">
+<div class="col-md-8">
+  <table class="table table-hover ">
+    <thead>
+        <tr>
+          <th class="tr_class" scope="col">Context</th>
+          <th class="tr_class" scope="col">Hydrofeature</th>
+          <th class="tr_class" scope="col">Privacy</th>
+          <th class="tr_class" scope="col">My Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for context in filter.qs %}
+        <tr>
+          <td>
+            <a href="{% url 'context-detail' context.code %}">
+              <div style="height:100%;width:100%">
+                {{ context.Name }}
+              </div>
+            </a>
+          </td>
+          <td> {{ context.hydroFeature }} </td>
+          <td>{% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
+          <td>{% if context.user.username == request.user.username %} Admin {% else %} {% for acc in already_accepted %} {% if acc.context == context %} {{acc.type}} {% endif %} {% endfor %} {% endif %}</td>
+        </tr>
+        {% empty %}
+        <td><h2 class="text-secondary font-italic no-context-data">You have no contexts! :(</h2></td>
+      {% endfor %}
+    </tbody>
+    </table>
     </div>
-</article>
-{% empty %}
-<h2 class="text-secondary font-italic no-context-data">No contexts found! :(</h2>
-{% endfor %}
-
-
-<a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
 
 
 
  
+
+
+
+
+
+
+
+
+
 {% comment %} <h1>Don't see your context?</h1>
 <div class="content">
   <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
 </div> {% endcomment %}
-  
+
+</div>
+
+<a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
 
 {% endblock content %}
 
