@@ -9,6 +9,16 @@
 
 {% block content %}
 
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+</style>
+
 <h1>Other Contexts</h1>
 <div class="filter-section">
 <h5>Filter</h5> 
@@ -18,41 +28,76 @@
 </form>
 </div>
 
-{% for context in filter.qs %}
-<article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'context-detail' context.code %}">{{ context.Name }}</a>
+
+<div class="row">
+  <div class="col-md-8">
+    <table class="table table-hover ">
+      
+          <tr>
+            <th class="tr_class" scope="col">Context</th>
+            <th class="tr_class" scope="col">Hydrofeature</th>
+            <th class="tr_class" scope="col">Privacy</th>
+            <th class="tr_class" scope="col"></th>
+          </tr>
+        
+       
+          {% for context in filter.qs %}
+          <tr>
+            <td>
+              <a href="{% url 'context-detail' context.code %}">
+                <div style="height:100%;width:100%">
+                  {{ context.Name }}
+                </div>
+              </a>
+            </td>
+            <td>  {{ context.hydroFeature }} </td>
+            <td>  {% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
+            <td>  {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%}
+
+                    {% for already_processing in processing %}
+                    <!--<h2>{{ processing.count }}</h2>   TO FIX -->  
+                      {% if already_processing.context != context %}
+                      <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
+                      {% else %}
+                        <p>Request submited!</p>
+                      {% endif %}
+                      {% empty %}
+                      <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
+                    {% endfor %}
+
+                  {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <td><h2 class="text-secondary font-italic no-context-data">No other contexts! :(</h2></td>
+          {% endfor %}
+        
+      </table>
       </div>
-      <p class="article-title" ><b>{% if context.isPublic == True %} Public {% else %} Private {% endif %}</b></p>
-      <p><a class="article-title" ><b>Hydrofeature :</b> {{ context.hydroFeature }}</a></p>
+      </div>
+  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'%}">My Contexts</a>  
 
-
-      {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%} 
-      
-      {% for alr in processing %}
-      {% if alr.context == context %}
-      {% else %}
-      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">Request Acess</a>
-      {% endif %}
-      {% empty %}
-      <a class="btn btn-info"  href="{% url 'context-requests-create' %}">Request Acess</a>
-      {% endfor %}
-
-      
-
-      {% endif %}
-    </div>
-</article>
-
-{% empty %}
-<h2 class="text-secondary font-italic no-context-data">No contexts found! :(</h2>
-{% endfor %}
-
-<div class="content">
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'  %}">My Contexts</a>  
-</div> 
+  <script>
   
+    console.log("sort");
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+      v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+      )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+  
+    console.log(document.querySelector('table'));
+  
+      document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+      const table = th.closest('table');
+      console.log("listen");
+      Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+          .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+          .forEach(tr => table.appendChild(tr) );
+  })));
+   
+  
+    console.log("hello");
+  </script> 
 
 
 {% endblock content %}

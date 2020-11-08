@@ -65,7 +65,7 @@
             <div class="navbar-nav">
               {% if user.is_authenticated %}
 
-              {% if user.is_superuser %}
+              {% if user|has_group:"Administration" or user.is_superuser %}
               
 
               <div class="nav-item dropdown">
@@ -75,7 +75,18 @@
                       <a href="{% url 'users' %}" class="dropdown-item">Users</a>
                 </div>
               </div> 
+              
+              {% elif user|has_group:"ContextAdmin" %}
+
+              <div class="nav-item dropdown">
+                <a href="#" class="{% url 'users' %}" data-toggle="dropdown">Users</a>
+              </div> 
+              
+              {% else %}
+
               {% endif %}
+
+
               <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
               {% else %}

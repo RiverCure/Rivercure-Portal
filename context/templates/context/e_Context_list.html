@@ -1,12 +1,23 @@
 {% extends "rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load auth_extras %}
 
 {% block scripts %}
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
 {% endblock %}
 
 {% block content %}
+
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+</style>
 
 <h1>My Contexts</h1>
 <div class="filter-section">
@@ -20,15 +31,12 @@
 <div class="row">
 <div class="col-md-8">
   <table class="table table-hover ">
-    <thead>
         <tr>
           <th class="tr_class" scope="col">Context</th>
           <th class="tr_class" scope="col">Hydrofeature</th>
           <th class="tr_class" scope="col">Privacy</th>
           <th class="tr_class" scope="col">My Role</th>
         </tr>
-      </thead>
-      <tbody>
         {% for context in filter.qs %}
         <tr>
           <td>
@@ -45,22 +53,8 @@
         {% empty %}
         <td><h2 class="text-secondary font-italic no-context-data">You have no contexts! :(</h2></td>
       {% endfor %}
-    </tbody>
     </table>
     </div>
-
-
-
- 
-
-
-
-
-
-
-
-
-
 {% comment %} <h1>Don't see your context?</h1>
 <div class="content">
   <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
@@ -69,6 +63,28 @@
 </div>
 
 <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+
+<script>
+  
+  console.log("sort");
+  const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+  console.log(document.querySelector('table'));
+
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    console.log("listen");
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+})));
+ 
+
+  console.log("hello");
+</script>
 
 {% endblock content %}
 

@@ -5,10 +5,6 @@
 {% block scripts %}
 
 <script>
-     document.addEventListener('DOMContentLoaded', () => {
-     }
-
-
 </script>
 
 {% endblock %}
@@ -18,12 +14,10 @@
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Submit an access request</legend>
-                {{ form|crispy }}
+                <legend class="border-bottom mb-0">Request sent to access context '{{context.Name}}'</legend>
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Submit Request</button>
-                <a class="btn btn-outline-secondary" href="{% url 'context-list' %}">Cancel</a>
+                <a class="btn btn-outline-danger" href="{% url 'context-list' %}">Back</a>            
             </div>
         </form>
     </div>

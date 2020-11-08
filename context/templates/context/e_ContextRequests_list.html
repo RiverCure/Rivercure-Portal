@@ -18,9 +18,7 @@
 <table class="table table-hover ">
   <thead>
       <tr>
-        <th scope="col"></th>
         <th scope="col">User</th>
-        <th scope="col">Organization</th>
         <th scope="col">Context</th>
         <th scope="col">Role</th>
         
@@ -30,11 +28,9 @@
     {% for request in requests %}
       {% if request.state == "processing" or request.state == "Processing" %}
         <tr>
-          <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+          <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
           <td>{{ request.requestuser}}</td>
-          <td>{{ request.requestuser.profile.institution}}</td>
           <td>{{ request.context.Name }}</td>
-          <td>{{ request.type }}</td>
           <td><a href="{% url 'context-request-decision' request.id %}"> <img src="" alt="Manage" ></a></td>
         </tr>
       {% endif %}
@@ -53,7 +49,6 @@
       <tr>
         <th scope="col"></th>
         <th scope="col">User</th>
-        <th scope="col">Organization</th>
         <th scope="col">Context</th>
         <th scope="col">Role</th>
       </tr>
@@ -62,9 +57,9 @@
     {% for request in requests %}
       {% if request.state == "Finished" and request.access_granted == True   %}
       <tr>
-        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
         <td>{{ request.requestuser}}</td>
-        <td>{{ request.requestuser.profile.institution}}</td>
+       
         <td>{{ request.context.Name }}</td>
         <td>{{ request.type }}</td>
         <td><a href="{% url 'access-denied' request.id  %}">Deny Access</a></td>
@@ -84,7 +79,6 @@
       <tr>
         <th scope="col"></th>
         <th scope="col">User</th>
-        <th scope="col">Organization</th>
         <th scope="col">Context</th>
         <th scope="col">Role</th>
       </tr>
@@ -93,9 +87,8 @@
     {% for request in requests %}
       {% if request.state == "Finished" and request.access_granted == False %}
       <tr>
-        <td><img class="article-img" src="{{ user.profile.image.url }}"></img></td>
+        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
         <td>{{ request.requestuser}}</td>
-        <td>{{ request.requestuser.profile.institution}}</td>
         <td>{{ request.context.Name }}</td>
         <td>{{ request.type }}</td>
         <td><a href="{% url 'access-granted' request.id  %}">Grant Access</a></td>

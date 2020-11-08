@@ -9,13 +9,23 @@
 
 {% block content %}
 
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+</style>
+
 <h1><a href="{% url 'context-detail' context_code %}"> {{ context_name }}</a> </h1>
 <h1>Sensors</h1>
 <div class="row">
 
 <div class="col-md-8">
 <table class="table table-hover ">
-  <thead>
+  
       <tr>
         <th class="tr_class" scope="col">Code</th>
         <th class="tr_class" scope="col">Name</th>
@@ -24,8 +34,6 @@
         <th class="tr_class" scope="col">Modality</th>
         <th class="tr_class" scope="col">Observations</th>
       </tr>
-    </thead>
-    <tbody>
       {% for sensor in filter.qs %}
       <tr>
         <td>{{ sensor.sensor.code }}</td>
@@ -44,7 +52,6 @@
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>
     {% endfor %}
-  </tbody>
   </table>
   </div>
 
@@ -66,6 +73,28 @@
     
   </div>
 </div>
+
+<script>
+  
+  console.log("sort");
+  const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+  console.log(document.querySelector('table'));
+
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    console.log("listen");
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+})));
+ 
+
+  console.log("hello");
+</script>
 
 
 

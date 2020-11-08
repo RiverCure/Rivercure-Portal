@@ -29,32 +29,32 @@ from django.contrib.auth.decorators import login_required, user_passes_test, per
 from django.db.models import Q
 
 
-class ContextAccessCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = e_ContextAccessRequest
-    fields = ['context']
-    template_name = "context/e_ContextAccessRequest_create.html"
-    
-    def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.requestuser = self.request.user
-        obj.state = 'Processing'
-        obj.save() 
-        return HttpResponseRedirect("/contexts")
-        
-    def test_func(self, *args , **kwargs):
-        if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists() :
-            return True 
+class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
+    model = e_Context
+    context_object_name = 'context'
+    template_name = 'context/e_context_confirm_delete.html'
+    success_url = 'context-list'
+
+    def test_func(self):
+        if self.request.user.groups.filter(name='ContextAdmin').exists():
+            return True
+        else:
+            return False
 
 
 
+def ContextAccessRequestCreate(request, context_code):
+    context_requested = e_Context.objects.get(code=context_code)
+    requester = request.user
+    request_obj = e_ContextAccessRequest.objects.create(context=context_requested, requestuser = requester)
+    request_obj.save()
+    context = {
+        'user': requester,
+        'context': context_requested,
+    }
+    return render(request, 'context/e_Context_AccessRequest_create.html', context)
 
 
-def context_owner_check(user, request):
-     pedido = e_ContextAccessRequest.objects.get(id=pk)
-     context = pedido.context
-     return user == context.user
-
-@user_passes_test(context_owner_check, login_url='/login/')
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
     requester = pedido.requestuser
@@ -75,8 +75,6 @@ def DenyAccess(request, pk):
     pedido.state = "Finished"
     pedido.save()
 
-    
-    
     context = {
         'user': requester,   
     }
@@ -90,7 +88,7 @@ def GrantAccess(request, pk):
     pedido.state = "Finished"
     pedido.save()
 
-    e_ContextUser(context_user = requester, context= pedido.context, type = pedido.type ).save()
+    e_ContextUser(context_user = requester, context= pedido.context, type = 'manager' ).save()   #temp always manager
     
     context = {
         'user': requester,   
@@ -139,9 +137,8 @@ def OtherContextListView(request):
     other_context_list = other_context_list.exclude(context_contextusers__context_user=request.user)
     other_context_filter = ContextFilter(request.GET, queryset=other_context_list)
 
-    already_processing = e_ContextAccessRequest.objects.filter(state='Processing')
-    #contextos que ja tem request processing 
-
+    already_processing = e_ContextAccessRequest.objects.filter(requestuser=request.user, state='processing').distinct('context')
+     #contextos que ja tem request processing 
     context ={
         'filter': other_context_filter,
         'processing' : already_processing,
