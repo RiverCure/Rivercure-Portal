@@ -838,7 +838,8 @@ var MyFunctions = {
 
         MyFunctions.drawGeometries(response, map);
 
-        map.setView(MyFunctions.createdPolygons.Domain.getLayers()[0].getCenter(), 12);
+        if(MyFunctions.createdPolygons.Domain.getLayers().length !== 0)
+            map.setView(MyFunctions.createdPolygons.Domain.getLayers()[0].getCenter(), 12);
 
         //get DTM if it exists
         if(response.context_dtm !== null) 
