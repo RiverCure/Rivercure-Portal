@@ -9,6 +9,7 @@ from django.db.models import Q
 from context.models import e_ContextSensor, e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.urls  import reverse
 
 
 class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -85,7 +86,10 @@ class SensorForm(forms.ModelForm):
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
     form_class = SensorForm
-    success_url = 'sensor-list'
+    
+
+    def get_success_url(self):
+        return reverse('sensor-list')
 
     def test_func(self):
         if self.request.user.has_perm('sensors.change_e_sensor'):
@@ -99,7 +103,8 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     model = e_Sensor
     context_object_name = 'Sensor'
     template_name = 'sensors/e_Sensor_confirm_delete.html'
-    success_url = 'sensor_list'
+    def get_success_url(self):
+        return reverse('sensor-list')
 
     def test_func(self):
         if self.request.user.has_perm('sensors.delete_e_sensor'):

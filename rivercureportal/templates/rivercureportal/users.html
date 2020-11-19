@@ -10,6 +10,10 @@
 <h1>Rivercure Users</h1>
 
 <style>
+  .row {
+    margin-bottom: 40px;
+  }
+  
   th {
     cursor: pointer;
   }
@@ -31,7 +35,7 @@
       </tr>
     {% for user in filter.qs %}
       <tr>
-        <td class="tr_class"><a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="70" height="70" ></img>
+        <td class="tr_class"><a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>
         {{user.username}}</a>
         <td>
           <a href="{% url 'profile-detail' user.id %}">
@@ -56,15 +60,16 @@
   </form>
 </div>
 
+
 {% if user|has_group:"Administration" or user.is_superuser %}
   <a href="{% url 'admin:auth_user_changelist' %}" type="button" class="btn btn-info">Manage Users/Groups</a>
 {% endif %}
 
 
-</div>
+
 
 {% endif %}
-
+</div>
 <script>
   
   console.log("sort");
