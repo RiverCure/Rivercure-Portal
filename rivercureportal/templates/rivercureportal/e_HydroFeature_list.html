@@ -54,6 +54,12 @@
       {{ filter.form |crispy }}
       <button type="submit" class="btn btn-info">Filter</button>
     </form>
+    <div>
+      {% if perms.rivercureportal.add_e_hydrofeature %}
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
+      {% endif %}
+    </div>
+
   </div>
 
 <div class="pagination mb-5">
@@ -74,13 +80,7 @@
   </span>
 </div>
 
-<div>
-  {% if perms.rivercureportal.add_e_hydrofeature %}
-  <div>
-    <a type="button" class="btn btn-info ml-3" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
-  </div>
-  {% endif %}
-</div>
+
 
 
 

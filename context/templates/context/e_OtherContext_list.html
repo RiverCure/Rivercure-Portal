@@ -44,9 +44,11 @@
           {% for context in filter.qs %}
           <tr>
             <td>
-              <a href="{% url 'context-detail' context.code %}">
-                <div style="height:100%;width:100%">
-                  {{ context.Name }}
+              {% if context.isPublic == True %}<a href="{% url 'context-detail' context.code %}"><div style="height:100%;width:100%">{{ context.Name }}
+              {% else %}
+              <div style="height:100%;width:100%">{{ context.Name }}
+              {% endif %}  
+                  
                 </div>
               </a>
             </td>
@@ -69,14 +71,12 @@
             </td>
           </tr>
           {% empty %}
-          <td><h2 class="text-secondary font-italic no-context-data">No other contexts! :(</h2></td>
+          <td><h3 class="text-secondary font-italic no-context-data">No other contexts!</h3></td>
           {% endfor %}
         
       </table>
       </div>
       </div>
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'%}">My Contexts</a>  
-
   <script>
   
     console.log("sort");

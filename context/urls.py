@@ -1,12 +1,23 @@
 from django.urls import path, include
-from .views import ContextAccessRequestCreate, ContextDeleteView, GrantAccess, DenyAccess, ContextRequestDecisionView, ContextEventListView, manage_context, download_context, preprocessing_results, request_pre_processing, ContextViewSet, UploadContext, EventCreateView, EventUpdateView, EventListView,EventDetailView, ContextSensorListView, ContextListView, ContextDetailView, OtherContextListView, ContextRequestListView, mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
 from rest_framework import routers
- 
+from .views import (
+    ContextAccessRequestCreate, ContextRequestDecisionView, ContextRequestListView, 
+    GrantAccess, DenyAccess, 
+    ContextEventListView, 
+    manage_context, download_context, preprocessing_results, request_pre_processing, 
+    ContextViewSet, 
+    UploadContext, 
+    EventCreateView, EventUpdateView,  EventListView,EventDetailView, 
+    ContextSensorListView, 
+    ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
+    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
+) 
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
 
 urlpatterns = [
     path('', ContextListView, name='context-list'),
+    path('new/', ContextCreateView.as_view(), name='context-create'),
     path('others/', OtherContextListView, name='other-contexts'),
     path('<str:pk>', ContextDetailView.as_view(), name='context-detail'),
     path('<str:pk>/delete/', ContextDeleteView.as_view(), name='context-delete'),

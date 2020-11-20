@@ -153,6 +153,26 @@ def OtherContextListView(request):
         #context['other_contexts'] = e_Context.objects.exclude(user=self.request.user)
         #return context
 
+
+class ContextForm(forms.ModelForm):
+    class Meta:
+        model = e_Context
+        fields = ['code','Name', 'hydroFeature', 'user', 'isPublic',]
+        #widgets = {'geom': LeafletWidget()}
+
+class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = e_Context
+    form_class = ContextForm
+    
+    def get_success_url(self):
+        return reverse('context-list')
+
+    def test_func(self):
+        if self.request.user.has_perm('context.add_e_context'):
+            return True
+        else:
+            return False
+
 class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Context
     context_object_name = 'context'

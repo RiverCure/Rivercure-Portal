@@ -79,10 +79,22 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class SensorForm(forms.ModelForm):
     class Meta:
         model = e_Sensor
-        fields = ['Name', 'type', 'modalityType', 'geom']
+        fields = ['code','Name','responsibleUser','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset', 'geom',]
         widgets = {'geom': LeafletWidget()}
 
+class SensorCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+    model = e_Sensor
+    form_class = SensorForm
 
+    def get_success_url(self):
+        return reverse('sensor-list')
+
+    def test_func(self):
+        if self.request.user.groups.filter(name='SensorManager').exists():
+            return True
+        else:
+            return False
+            
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
     form_class = SensorForm

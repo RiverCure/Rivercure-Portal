@@ -51,21 +51,31 @@
           <td>{% if context.user.username == request.user.username %} Admin {% else %} {% for acc in already_accepted %} {% if acc.context == context %} {{acc.type}} {% endif %} {% endfor %} {% endif %}</td>
         </tr>
         {% empty %}
-        <td><h2 class="text-secondary font-italic no-context-data">You have no contexts! :(</h2></td>
-      {% endfor %}
-    </table>
-    </div>
-{% comment %} <h1>Don't see your context?</h1>
-<div class="content">
-  <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
-</div> {% endcomment %}
+        <td><h3 class="text-secondary font-italic no-context-data">No contexts available!</h3></td>
+        {% endfor %}
+  </table>
+</div>
+</div>
+{% comment %}
+  <h1>Don't see your context?</h1>
+  <div class="content">
+    <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
+  </div> 
+{% endcomment %}
 
+
+<div class="mt-3">
+{% if perms.context.add_e_context %}
+<a class="btn-small btn-info btn-lg " href="{% url 'context-create' %}">Create Context</a>
+{% endif %}
+
+<a class="btn-small btn-info btn-lg " href="{% url 'other-contexts'  %}">Other Contexts</a>  
 </div>
 
-<a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'other-contexts'  %}">Other Contexts</a>  
 
-<script>
-  
+
+
+<script>  
   console.log("sort");
   const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
   const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
@@ -81,8 +91,6 @@
         .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
         .forEach(tr => table.appendChild(tr) );
 })));
- 
-
   console.log("hello");
 </script>
 

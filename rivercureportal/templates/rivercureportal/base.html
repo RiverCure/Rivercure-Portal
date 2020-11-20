@@ -30,8 +30,7 @@
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Context</a>
                 <div class="dropdown-menu">      
                     {% if user|has_group:"ContextAdmin" or request.user.is_superuser %} 
-                    <a href="{% url 'context-requests-list' %}" class="dropdown-item">Access Requests</a>
-                    <a href="{% url 'admin:context_e_context_add' %}" class="dropdown-item">Create Context</a>
+                    <a href="{% url 'context-requests-list' %}" class="dropdown-item">Contexts Permissions</a>
                     {% endif %}
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-list' %}" class="dropdown-item">Contexts List</a>

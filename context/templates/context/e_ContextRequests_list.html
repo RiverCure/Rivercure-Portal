@@ -9,33 +9,30 @@
 
 {% block content %}
 
-<h1>Contexts Access Requests</h1>
+<h1>Contexts Permissions</h1>
 
 {% if user|has_group:"ContextManager" or user|has_group:"ContextAdmin" %}
 
-<h2>Processing</h2>
+<h2 class="mt-5">Pending</h2>
 
 <table class="table table-hover ">
   <thead>
       <tr>
         <th scope="col">User</th>
         <th scope="col">Context</th>
-        <th scope="col">Role</th>
-        
       </tr>
   </thead>
   <tbody>
     {% for request in requests %}
       {% if request.state == "processing" or request.state == "Processing" %}
         <tr>
-          <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
-          <td>{{ request.requestuser}}</td>
+          <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img> &ensp;{{ request.requestuser}}</td>
           <td>{{ request.context.Name }}</td>
-          <td><a href="{% url 'context-request-decision' request.id %}"> <img src="" alt="Manage" ></a></td>
+          <td><a href="{% url 'context-request-decision' request.id %}">Administer</a></td>
         </tr>
       {% endif %}
     {% empty %}
-        <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+        <td><h3 class="text-secondary font-italic no-context-data">No pending requests!</h3></td>
           
     {% endfor %}
   </tbody>
@@ -43,11 +40,10 @@
 
 
 
-<h2>Granted</h2>
+<h2 class="mt-2">Granted</h2>
 <table class="table table-hover ">
   <thead>
       <tr>
-        <th scope="col"></th>
         <th scope="col">User</th>
         <th scope="col">Context</th>
         <th scope="col">Role</th>
@@ -57,9 +53,7 @@
     {% for request in requests %}
       {% if request.state == "Finished" and request.access_granted == True   %}
       <tr>
-        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
-        <td>{{ request.requestuser}}</td>
-       
+        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img>&ensp;{{ request.requestuser}}</td>
         <td>{{ request.context.Name }}</td>
         <td>{{ request.type }}</td>
         <td><a href="{% url 'access-denied' request.id  %}">Deny Access</a></td>
@@ -67,35 +61,33 @@
       {% endif %}
      
       {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+      <td><h3 class="text-secondary font-italic no-context-data">No pending requests! </h3></td>
     {% endfor %}
   
   </tbody>
   </table>
 
-  <h2>Denied</h2>
+<h2 class="mt-2">Denied</h2>
 <table class="table table-hover ">
   <thead>
       <tr>
         <th scope="col"></th>
         <th scope="col">User</th>
         <th scope="col">Context</th>
-        <th scope="col">Role</th>
       </tr>
   </thead>
   <tbody>
     {% for request in requests %}
       {% if request.state == "Finished" and request.access_granted == False %}
       <tr>
-        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img></td>
+        <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img>&ensp;{{ request.requestuser}}</td>
         <td>{{ request.requestuser}}</td>
         <td>{{ request.context.Name }}</td>
-        <td>{{ request.type }}</td>
         <td><a href="{% url 'access-granted' request.id  %}">Grant Access</a></td>
       </tr>
       {% endif %}
       {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No pending requests! :(</h2></td>
+      <td><h3 class="text-secondary font-italic no-context-data">No pending requests!</h3></td>
     {% endfor %}
   
   </tbody>
