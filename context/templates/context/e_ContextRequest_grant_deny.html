@@ -19,8 +19,7 @@
                   <option value="viewer">Viewer</option>
                 </select> 
                 <br>
-                <button id="submit-btn" class="btn btn-outline-danger" type="submit" formaction="{% url 'access-granted' request.id %}">Yesss</button>
-                <a class="btn btn-outline-danger" href="{% url 'access-granted' request.id %}">Yes</a> 
+                <button id="submit-btn" class="btn btn-outline-danger" type="submit" formaction="{% url 'access-granted' request.id %}">Yes</button>
                 <a class="btn btn-outline-danger" href="{% url 'access-denied' request.id %}">No</a>
                 <a class="btn btn-outline-secondary" href="{% url 'context-requests-list' %}">Back</a>
                 
