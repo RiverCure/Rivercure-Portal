@@ -54,29 +54,38 @@
             </td>
             <td>  {{ context.hydroFeature }} </td>
             <td>  {% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
-            <td>  {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%}
-
-                    {% for already_processing in processing %}
-                    <!--<h2>{{ processing.count }}</h2>   TO FIX -->  
-                      {% if already_processing.context != context %}
-                      <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
-                      {% else %}
-                        <p>Request submited!</p>
-                      {% endif %}
-                      {% empty %}
-                      <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
-                    {% endfor %}
-
+            <td>  
+              {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%}
+               
+                {% for already_processing in processing %}
+                  {% if context == already_processing.context %}
+                  <p>Request submited!</p>
                   {% endif %}
+                  {% empty %}
+                  {% endfor %}
+
+                  {% for not in not_processing %}
+                  {% if context.code == not.code %}
+                  <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
+                  {% endif %}
+                  {% empty %}
+                  {% endfor %}
+
+                  
+              {% endif %}
             </td>
           </tr>
           {% empty %}
           <td><h3 class="text-secondary font-italic no-context-data">No other contexts!</h3></td>
           {% endfor %}
-        
+  
       </table>
       </div>
       </div>
+      <div class="content">
+        <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'  %}">My Contexts</a>  
+      </div> 
+
   <script>
   
     console.log("sort");

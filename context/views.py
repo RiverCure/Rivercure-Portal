@@ -46,7 +46,7 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
 def ContextAccessRequestCreate(request, context_code):
     context_requested = e_Context.objects.get(code=context_code)
     requester = request.user
-    request_obj = e_ContextAccessRequest.objects.create(context=context_requested, requestuser = requester)
+    request_obj = e_ContextAccessRequest(context=context_requested, requestuser = requester, state='Processing')
     request_obj.save()
     context = {
         'user': requester,
@@ -86,9 +86,11 @@ def GrantAccess(request, pk):
     requester = pedido.requestuser
     pedido.access_granted = True
     pedido.state = "Finished"
+    role_chosen = request.POST.get("role") 
+    pedido.type=role_chosen
     pedido.save()
-
-    e_ContextUser(context_user = requester, context= pedido.context, type = 'manager' ).save()   #temp always manager
+    obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)   
+    obj.save()
     
     context = {
         'user': requester,   
@@ -137,12 +139,26 @@ def OtherContextListView(request):
     other_context_list = other_context_list.exclude(context_contextusers__context_user=request.user)
     other_context_filter = ContextFilter(request.GET, queryset=other_context_list)
 
-    already_processing = e_ContextAccessRequest.objects.filter(requestuser=request.user, state='processing').distinct('context')
-     #contextos que ja tem request processing 
+    already_processing = e_ContextAccessRequest.objects.filter(requestuser=request.user, state='Processing').distinct('context')
+    
+    not_processing = e_Context.objects.exclude(user=request.user)
+    for requ in already_processing:
+        if requ.context in not_processing:
+            a = requ.context.Name
+            not_processing = not_processing.exclude(Name=a)
+
+    print("YES PROCESSING")
+    for obj in already_processing:
+       print(obj.context.Name)
+    
+    print("NOT PROCESSING")
+    for obj in not_processing:
+        print(obj.Name)
+
     context ={
         'filter': other_context_filter,
         'processing' : already_processing,
-        
+        'not_processing' : not_processing,
     }
     return render(request, 'context/e_OtherContext_list.html', context)
 

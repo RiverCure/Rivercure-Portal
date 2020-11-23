@@ -185,3 +185,6 @@ class e_ContextUser(models.Model):
 	context_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # accepted
 
 	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES)
+
+	class Meta:
+		unique_together = ['context', 'context_user']
