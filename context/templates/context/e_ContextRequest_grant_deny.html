@@ -2,6 +2,7 @@
 {% load auth_extras %}
 {% load leaflet_tags %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 
 {% block content %}
@@ -9,19 +10,19 @@
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-0">Grant access to {{context}} for {{user}}?</legend>
+                <legend class="border-bottom mb-0">Do you want  {{user}} to access {{context}}?</legend>
             </fieldset>
             <div class="form-group">
-                <label >Choose a role:</label>
-                <select name="role" id="role">
+                <label style="font-size: larger;">Choose a role:</label>
+                <select class="custom-select " style="max-width: max-content" name="role" id="role">
                   <option value="admin">Administrator</option>
                   <option value="manager">Manager</option>
                   <option value="viewer">Viewer</option>
                 </select> 
                 <br>
-                <button id="submit-btn" class="btn btn-outline-danger" type="submit" formaction="{% url 'access-granted' request.id %}">Yes</button>
-                <a class="btn btn-outline-danger" href="{% url 'access-denied' request.id %}">No</a>
-                <a class="btn btn-outline-secondary" href="{% url 'context-requests-list' %}">Back</a>
+                <br><button id="submit-btn" class="btn btn-outline-success" type="submit" formaction="{% url 'access-granted' request.id %}">Grant</button>
+                <a class="btn btn-outline-danger ml-3" href="{% url 'access-denied' request.id %}">Deny</a>
+                <a class="btn btn-outline-secondary" style="float: right;" href="{% url 'context-requests-list' %}">Back</a>
                 
             </div>
         </form>

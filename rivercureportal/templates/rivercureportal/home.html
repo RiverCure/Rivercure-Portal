@@ -4,49 +4,40 @@
 
 {% block landing_page %}
 
-{% block scripts %}
-  <link rel="stylesheet" type="text/css" href="{% static 'sensors/css/style.css' %}">
-{% endblock %}
-
-
- <!-- Masthead-->
- <header class="masthead bg-white text-primary text-center">
-  <div class="container d-flex align-items-center flex-column">
-      <!-- Masthead Avatar Image-->
-      <img class="masthead-avatar mb-5" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
-      <!-- Masthead Heading-->
-      <!--<h1 class="masthead-heading text-uppercase mb-0">RiverCure</h1>-->
-      <!-- Icon Divider-->
-      <div class="divider-custom divider-light">
-          <div class="divider-custom-line"></div>
-          <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
-          <div class="divider-custom-line"></div>
-      </div>
-      <!-- Masthead Subheading-->
-      <p class="masthead-subheading font-weight-light mb-0">IST-ID, INESC-ID, APA I.P.</p>
-  </div>
-</header>
-
-<!-- About Section-->
-<section class="page-section bg-primary text-white mb-0" id="about">
-  <div class="container">
-      <!-- About Section Heading-->
-      <h2 class="page-section-heading text-center text-uppercase text-white">About</h2>
-      <!-- Icon Divider-->
-      <div class="divider-custom divider-light">
-          <div class="divider-custom-line"></div>
-          <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
-          <div class="divider-custom-line"></div>
-      </div>
-      <!-- About Section Content-->
-      <div class="row">
-          <div class="col-lg-4 ml-auto"><p class="lead">RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection.  </p></div>
-          <div class="col-lg-4 mr-auto"><p class="lead">Profiting from recent advances in collecting and processing crowdsourced information produced by riverine communities and shared in internet sites and social media, RiverCure will contribute to improve the forecasting capabilities of mathematical models of rivers by making an efficient and systematic use of curated crowdsourced and authoritative data through assimilation and calibration.</p></div>
-      </div>
+<style>
+  #wel{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    animation: mymove 5s forwards;
     
-  </div>
-</section>
+  }
+   @keyframes mymove {
+  from {opacity: 0;}
+  to {opacity: 1;} 
+   }
 
+   #subwel{
+    text-align: center;
+    animation: mymove 5s forwards;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: large;
+   }
+   #info{
+    text-align: center;
+    animation: mymove 5s forwards;
+    font-size: large;
+   }
+
+
+</style>
+      <img id="wel" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
+      <p id="subwel"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IST-ID, INESC-ID, APA I.P.</b></p>
+      <br>
+      <div id="info"><p class=lead>RiverCure addresses the issue of reducing uncertainty and improving forecasting 
+        capabilities of hydrodynamic and morphodynamic mathematical<br>  models for flood simulation, water resources management and habitat protection. </p>
+      </div>
+ 
 {% endblock %}
 
 

@@ -29,8 +29,8 @@
         <td><img  src="{{ request.requestuser.profile.image.url }}" width="30" height="30"></img> &ensp;{{ request.requestuser}}</td>
         <td>{{ request.context.Name }}</td>
         <td>{{ request.type }}</td>
-        <td>{{ request.state}} ({% if request.access_granted %}Granted {% else %} Denied {% endif %} )</td>
-        <td><a href="{% url 'context-request-decision' request.id %}">-></a></td>
+        <td>{% if request.state == "Processing" %} Pending {% else %} {% if request.access_granted %} Accepted {% else %} Denied {% endif %} {% endif %}</td>
+        <td><a href="{% url 'context-request-decision' request.id %}">Manage</a></td>
       </tr>
     
   {% empty %}

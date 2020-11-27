@@ -1,0 +1,24 @@
+{% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+
+{% block content %}
+    
+
+<div class="content-section">
+    <form method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Upload a Sensor (Not Available yet!)</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <input type="file" name="document">
+            <button class="btn btn-outline-info" type="submit">Upload</button>
+            <a class="btn btn-outline-secondary" href="{% url 'sensor-list' %}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

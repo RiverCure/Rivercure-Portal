@@ -74,6 +74,9 @@ def DenyAccess(request, pk):
     pedido.access_granted = False
     pedido.state = "Finished"
     pedido.save()
+    
+    context_user_obj = e_ContextUser.objects.get(context_user = requester, context= pedido.context)
+    context_user_obj.delete() 
 
     context = {
         'user': requester,   

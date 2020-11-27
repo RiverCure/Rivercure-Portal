@@ -10,6 +10,7 @@ from .models import e_HydroFeature
 from sensors.models import e_Sensor
 from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.urls import reverse_lazy
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -77,7 +78,7 @@ class HydroFeatureForm(forms.ModelForm):
 class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_HydroFeature
     form_class = HydroFeatureForm
-    success_url = 'hydrofeature-list'
+    success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
         if self.request.user.groups.filter(name='Manager').exists():
@@ -88,14 +89,14 @@ class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView)
 class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_HydroFeature
     form_class = HydroFeatureForm
-    success_url = 'hydrofeature-list'
+    success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
         if self.request.user.groups.filter(name='Manager').exists():
             return True
         else:
             return False
-#only checking if he has permission to update hydrofeatures
+
 
 class HydroFeatureDetailView(DetailView):
     model = e_HydroFeature
@@ -106,7 +107,7 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     model = e_HydroFeature
     context_object_name = 'Hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_confirm_delete.html'
-    success_url = 'hydrofeature_list'
+    success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
         if self.request.user.groups.filter(name='Manager').exists():

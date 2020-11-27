@@ -4,18 +4,70 @@ from .models import e_Sensor, e_SensorAlarm, e_SensorObservation
 from leaflet.forms.widgets import LeafletWidget
 from django import forms
 from .filters import SensorFilter, ObservationFilter
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 from django.db.models import Q
 from context.models import e_ContextSensor, e_Context, e_ContextBoundaryLine, e_ContextBoundaryPoint
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
-from django.urls  import reverse
+from django.urls  import reverse, reverse_lazy
+from django.core.files.storage import FileSystemStorage
 
+
+
+def SensorUploadView(request):
+    if request.method == 'POST':
+        uploaded_file = request.FILES['document']
+        print(uploaded_file.name)
+        #fs = FileSystemStorage()
+        #fs.save(uploaded_file.name, uploaded_file)
+        #CALL LOAD.PY
+
+    return render(request, 'sensors/e_Sensor_upload.html')
 
 class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_SensorObservation
     context_object_name = 'observation'
     template_name = 'sensors/e_SensorObservation_detail.html'
+
+    def test_func(self):
+        if self.request.user.groups.filter(name='SensorManager').exists():
+            return True
+        else:
+            return False
+
+class SensorObservationForm(forms.ModelForm):
+    class Meta:
+        model = e_SensorObservation
+        fields = ['date','time','depth','discharge',]
+        
+class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = SensorObservationForm
+    model = e_SensorObservation
+    context_object_name = 'observation'
+    #success_url = reverse_lazy('sensor-observation-detail')
+    def get_success_url(self):
+        return reverse('sensor-observation-detail',args=(self.object.id,))
+
+
+    def test_func(self):
+        if self.request.user.groups.filter(name='SensorManager').exists():
+            return True
+        else:
+            return False
+
+    #def get_success_url(self):
+          # if you are passing 'pk' from 'urls' to 'DeleteView' for company
+          # capture that 'pk' as companyid and pass it to 'reverse_lazy()' function
+          #observationid=self.kwargs['pk']
+          #return reverse_lazy('sensor-observation-detail', kwargs={'pk': companyid})
+
+
+class SensorObservationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = e_SensorObservation
+    context_object_name = 'observation'
+    success_url = reverse_lazy('sensor-list') #to fix
+    template_name = 'sensors/e_SensorObservation_confirm_delete.html'
+    
     def test_func(self):
         if self.request.user.groups.filter(name='SensorManager').exists():
             return True
@@ -23,15 +75,19 @@ class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, Detai
             return False
 
 
+
 @permission_required('sensors.view_e_sensor_observation', raise_exception=True)
 def SensorObservationListView(request):
-    qs = e_SensorObservation.objects.all()
-    obs_filter = ObservationFilter(request.GET, queryset=qs)
     
+    qs = e_SensorObservation.objects.filter(sensor=request.GET.get('sensor'))
+
+    sensor_name = e_Sensor.objects.get(code=request.GET.get('sensor'))
+
+    obs_filter = ObservationFilter(request.GET, queryset=qs)
     obs = obs_filter.qs
    
     page = request.GET.get('page', 1)
-    obs_paginator = Paginator(obs, 15)
+    obs_paginator = Paginator(obs, 30)
 
     page_obj = obs_paginator.get_page(page)
 
@@ -45,11 +101,43 @@ def SensorObservationListView(request):
     context={
         'obs': obs,
         'filter' : obs_filter,
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'sensor_name' : sensor_name,
+        'sensor_code': request.GET.get('sensor')
         
     }
 
     return render(request, "sensors/e_Sensor_observations.html", context)
+
+
+
+# @permission_required('sensors.view_e_sensor_observation', raise_exception=True)
+# def SensorObservationListView(request):
+#     qs = e_SensorObservation.objects.all()
+#     obs_filter = ObservationFilter(request.GET, queryset=qs)
+    
+#     obs = obs_filter.qs
+   
+#     page = request.GET.get('page', 1)
+#     obs_paginator = Paginator(obs, 15)
+
+#     page_obj = obs_paginator.get_page(page)
+
+#     try:
+#        obs = obs_paginator.page(page)
+#     except EmptyPage :
+#        obs = obs_paginator.page(page)
+#     except PageNotAnInteger:
+#        obs = obs_paginator.page(page)
+    
+#     context={
+#         'obs': obs,
+#         'filter' : obs_filter,
+#         'page_obj' : page_obj
+        
+#     }
+
+#     return render(request, "sensors/e_Sensor_observations.html", context)
 
 
 @permission_required('sensors.view_e_sensor', raise_exception=True)
@@ -108,8 +196,6 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         else:
             return False
-
-    #only checking if he has permission to update sensors
 
 class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     model = e_Sensor

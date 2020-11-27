@@ -17,6 +17,10 @@
   th:hover{
     background: #eee;
   }
+
+  th .tr_align {
+    text-align: left;
+  }
 </style>
 
 <h1>Other Contexts</h1>
@@ -26,6 +30,8 @@
   {{ filter.form |crispy }}
   <button type="submit" class="btn btn-info">Filter</button>
 </form>
+
+<a class="btn btn-info ml-0 mt-3" href="{% url 'context-list'  %}">My Contexts</a>  
 </div>
 
 
@@ -34,10 +40,10 @@
     <table class="table table-hover ">
       
           <tr>
-            <th class="tr_class" scope="col">Context</th>
-            <th class="tr_class" scope="col">Hydrofeature</th>
-            <th class="tr_class" scope="col">Privacy</th>
-            <th class="tr_class" scope="col"></th>
+            <th class="tr_align" scope="col">Context</th>
+            <th class="tr_align" scope="col">Hydrofeature</th>
+            <th class="tr_align" scope="col">Privacy</th>
+            <th class="tr_align" width="200%" scope="col"></th>
           </tr>
         
        
@@ -63,10 +69,12 @@
                   {% endif %}
                   {% empty %}
                   {% endfor %}
-
+                
                   {% for not in not_processing %}
+                  {% if context.isPublic == False %}
                   {% if context.code == not.code %}
-                  <a class="btn btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
+                  <a class="btn-sm btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
+                  {% endif %}
                   {% endif %}
                   {% empty %}
                   {% endfor %}
@@ -82,9 +90,7 @@
       </table>
       </div>
       </div>
-      <div class="content">
-        <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context-list'  %}">My Contexts</a>  
-      </div> 
+
 
   <script>
   

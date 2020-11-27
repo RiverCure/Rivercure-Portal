@@ -19,7 +19,6 @@ urlpatterns = [
     path('hydrofeature/new/', HydroFeatureCreateView.as_view(), name='hydrofeature-create'),
     path('hydrofeature/<int:pk>/update/', HydroFeatureUpdateView.as_view(), name='hydrofeature-update'),
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
-    path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
     path('users/', users, name='users'),
     path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile-detail'),
 

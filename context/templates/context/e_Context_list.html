@@ -17,6 +17,10 @@
   th:hover{
     background: #eee;
   }
+
+  th .tr_align {
+    text-align: left;
+  }
 </style>
 
 <h1>My Contexts</h1>
@@ -26,16 +30,24 @@
   {{ filter.form |crispy }}
   <button type="submit" class="btn btn-info">Filter</button>
 </form>
+
+<div class="mt-3">
+  {% if perms.context.add_e_context %}
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'context-create' %}">Add Context</a>
+  {% endif %}
+  
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+  </div>
 </div>
 
 <div class="row">
 <div class="col-md-8">
   <table class="table table-hover ">
         <tr>
-          <th class="tr_class" scope="col">Context</th>
-          <th class="tr_class" scope="col">Hydrofeature</th>
-          <th class="tr_class" scope="col">Privacy</th>
-          <th class="tr_class" scope="col">My Role</th>
+          <th class="tr_align" scope="col">Context</th>
+          <th class="tr_align" scope="col">Hydrofeature</th>
+          <th class="tr_align" scope="col">Privacy</th>
+          <th class="tr_align" scope="col">My Role</th>
         </tr>
         {% for context in filter.qs %}
         <tr>
@@ -64,13 +76,7 @@
 {% endcomment %}
 
 
-<div class="mt-3">
-{% if perms.context.add_e_context %}
-<a class="btn-small btn-info btn-lg " href="{% url 'context-create' %}">Create Context</a>
-{% endif %}
 
-<a class="btn-small btn-info btn-lg " href="{% url 'other-contexts'  %}">Other Contexts</a>  
-</div>
 
 
 

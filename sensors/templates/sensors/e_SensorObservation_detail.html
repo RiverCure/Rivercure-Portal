@@ -1,21 +1,29 @@
 {% extends "rivercureportal/base.html" %}
+{% load leaflet_tags %}
+{% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
 <article class="media content-section">
     <div class="media-body">
       <div class="article-metadata">
-        <b> <a class="mr-2">{{ object.sensor}} - observation{{ object.id }} ({{observation.sensor.type}})</a></b>
+        <h1> <a class="mr-2">{{ object.sensor}} - observation {{ object.id }}</a></h1>
       </div>
-      
-      
+      <p class="article-content">Sensor Type: {{observation.sensor.type}}</p>
       <p class="article-content">Date: {{observation.date}}</p>
       <p class="article-content">Time: {{observation.time}}</p>
       <p class="article-content">Depth: {{observation.depth}}</p>
-      <p class="article-content">Dishcarge: {{observation.discharge}}</p>
+      <p class="article-content">Discharge: {{observation.discharge}}</p>
+
+      {% if perms.sensors.change_e_sensor %}
+      <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' object.id %}">Edit</a>
+      <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' object.id %}"  >Delete</a>
+      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observations' %}?sensor={{observation.sensor.code}}">Back</a>
+      {% endif %}
+
     </div>
 </article>
-<a class="btn btn-outline-info" href="{% url 'sensor-observations' %}">All Observations</a>
 
 {% endblock content %}
 

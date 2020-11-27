@@ -13,12 +13,12 @@
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Sensor</legend>
+                <legend class="border-bottom mb-4">Create a Sensor</legend>
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Save</button>
-                <a class="btn btn-outline-secondary" href="{% url 'sensor-list'  %}">Cancel</a>
+                <a class="btn btn-outline-secondary" href="{% url 'sensor-list'  %}?sensor={{observation.sensor.code}}">Cancel</a>
             </div>
         </form>
     </div>
