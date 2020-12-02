@@ -827,6 +827,8 @@ var MyFunctions = {
         xmlHttp.send(null);
         response = JSON.parse(xmlHttp.responseText);
 
+        console.log(response);
+
         //show the form
         if(MyFunctions.mode == 'edit') {
             document.querySelector('#form-data').style.display = 'block';
@@ -834,7 +836,6 @@ var MyFunctions = {
             MyFunctions.fillForm(response);
         }
         
-        console.log(response);
 
         MyFunctions.drawGeometries(response, map);
 
@@ -880,9 +881,9 @@ var MyFunctions = {
     },
     //function to fill the form when the context with the api is called
     fillForm: (response) => {
-        document.querySelector('#id_code').value = response.code;
-        document.querySelector('#id_name').value = response.Name;
-        document.querySelector('#id_hydroFeature').value = response.hydroFeature;
+        try { document.querySelector('#id_code').value = response.code;} catch{}
+        try { document.querySelector('#id_Name').value = response.Name;} catch{}
+        try { document.querySelector('#id_hydroFeature').value = response.hydroFeature;} catch{}
     },
     //function to draw the geometries in the context from API call
     drawGeometries: (response, map) => {

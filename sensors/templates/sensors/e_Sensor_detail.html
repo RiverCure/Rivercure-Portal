@@ -3,32 +3,58 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block scripts %}
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+
+		});
+
+		showUploadDiv = (state) => {
+			document.querySelector('#observationsUploadDiv').style.display = state;
+
+			if(state == "block") {
+				window.scrollBy(0, 500);
+			}
+		}
+  	</script>
+{% endblock %}
+
 {% block content %}
+  	<article class="media content-section">
+    	<div class="media-body">
+			<div class="article-metadata">
+				<h1>{{ sensor.Name }}</h1>
+			</div>
+			<p class="article-content"><b>Code:</b> {{ sensor.code }}</p> 
+			<p class="article-content"><b>Type:</b> {{ sensor.type }}</p> 
+			<p class="article-content"><b>Modality:</b> {{ sensor.modalityType }}</p> 
+			<p class="article-content"><b>Description:</b> {{ sensor.description }}</p> 
 
 
-  <article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <h1>{{ sensor.Name }}</h1>
-      </div>
-      <p class="article-content"><b>Code:</b> {{ sensor.code }}</p> 
-      <p class="article-content"><b>Type:</b> {{ sensor.type }}</p> 
-      <p class="article-content"><b>Modality:</b> {{ sensor.modalityType }}</p> 
-      <p class="article-content"><b>Description:</b> {{ sensor.description }}</p> 
+			{% if perms.sensors.change_e_sensor %}
+				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
+				<a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  >Delete</a>
+				<a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observations' %}?sensor={{object.code}}">Observations</a>
+				<a class="btn btn-info btn mt-1 mb-1"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
+				<a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
+			{% endif %}
+		
+		</div>
+	</article>
 
-
-      {% if perms.sensors.change_e_sensor %}
-        <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
-        <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  >Delete</a>
-        <a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observations' %}?sensor={{object.code}}" >Observations</a>
-        
-        <a class="btn btn-secondary btn   mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
-      {% endif %}
-    
-    </div>
-</article>
-
-
+	<div id="observationsUploadDiv" class="container" style="display: none">
+		<h2>Upload excel</h2>
+		<div id="form-data" class="content-section">
+			<form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' %}">
+				{% csrf_token %}
+				{{ form|crispy }}
+				<div class="form-group">
+					<button id="submit-btn" class="btn btn-info" type="submit" >Upload</button>
+					<button id="submit-btn" class="btn btn-secondary btn mt-1 mb-1" style="float:right" onclick="showUploadDiv('none')" >Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
 {% endblock content %}
 
 
