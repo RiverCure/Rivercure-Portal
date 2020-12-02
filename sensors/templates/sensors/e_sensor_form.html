@@ -6,6 +6,51 @@
 {% block scripts %}
     {% leaflet_js plugins="ALL" %}
     {% leaflet_css plugins="ALL" %}
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+    <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.addEventListener("map:init", e => {
+                const map = e.detail.map;    
+                MyFunctions.showMousePosition();
+                MyFunctions.mouseMove(map);
+                //visual tools
+                map.on('dragstart', e => {
+                    e.target._container.style.cursor = 'grab';
+                });
+                map.on('dragend', e => {
+                    e.target._container.style.cursor = 'pointer';
+                });
+                //visual tools
+                map.on('dragstart', e => {
+                    e.target._container.style.cursor = 'grab';
+                });
+                map.on('dragend', e => {
+                    e.target._container.style.cursor = 'pointer';
+                });
+
+                var lat = document.querySelector('#id_lat');
+                var lng = document.querySelector('#id_lng');
+
+                var sensor = L.marker([0,0]).addTo(map);
+                var layer;
+
+                lat.addEventListener('keyup', e => {
+                    if(lng.value !== undefined && lng.value !== '') {
+                        sensor.setLatLng([lat.value, lng.value]);
+                    }
+                });
+
+                lng.addEventListener('keyup', e => {
+                    if(lng.value !== undefined && lng.value !== '') {
+                        sensor.setLatLng([lat.value, lng.value]);
+                    }
+                });
+
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -15,6 +60,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Create a Sensor</legend>
                 {{ form|crispy }}
+                {% leaflet_map "my_map" %}
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Save</button>

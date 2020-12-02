@@ -13,8 +13,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.urls  import reverse, reverse_lazy
 from django.core.files.storage import FileSystemStorage
-from .forms import SensorObservationsFileForm
-
+from .forms import SensorObservationsFileForm, SensorForm
+from django.contrib.gis.geos import Point
 
 
 def SensorUploadView(request):
@@ -173,12 +173,6 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context
     
 
-class SensorForm(forms.ModelForm):
-    class Meta:
-        model = e_Sensor
-        fields = ['code','Name','responsibleUser','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset', 'geom',]
-        widgets = {'geom': LeafletWidget()}
-
 class SensorCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_Sensor
     form_class = SensorForm
@@ -191,6 +185,12 @@ class SensorCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
             return True
         else:
             return False
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        obj.save()
+        return super().form_valid(form)
             
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
