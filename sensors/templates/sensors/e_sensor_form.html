@@ -15,6 +15,7 @@
                 const map = e.detail.map;    
                 MyFunctions.showMousePosition();
                 MyFunctions.mouseMove(map);
+                MyFunctions.mode = 'view';
                 //visual tools
                 map.on('dragstart', e => {
                     e.target._container.style.cursor = 'grab';
@@ -46,6 +47,12 @@
                     if(lng.value !== undefined && lng.value !== '') {
                         sensor.setLatLng([lat.value, lng.value]);
                     }
+                });
+
+                map.on('click', e => {
+                    lat.value = e.latlng.lat;
+                    lng.value = e.latlng.lng;
+                    sensor.setLatLng([lat.value, lng.value]);
                 });
 
             });
