@@ -200,6 +200,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rivercureportal@gmail.com'
 EMAIL_HOST_PASSWORD = 'rivercureportal.2020' 
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 5*60 #TIME FOR COOKIES TO EXPIRE 
+
+
 CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually
 
 # RASTER_USE_CELERY = True

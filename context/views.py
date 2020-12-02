@@ -27,13 +27,14 @@ from pprint import pprint
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.db.models import Q
+from django.urls import reverse_lazy
 
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     model = e_Context
     context_object_name = 'context'
     template_name = 'context/e_context_confirm_delete.html'
-    success_url = 'context-list'
+    success_url = reverse_lazy('context-list')
 
     def test_func(self):
         if self.request.user.groups.filter(name='ContextAdmin').exists():
