@@ -1,3 +1,5 @@
+import xlrd, datetime
+from datetime import time, date
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import e_Sensor, e_SensorAlarm, e_SensorObservation
@@ -11,6 +13,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.urls  import reverse, reverse_lazy
 from django.core.files.storage import FileSystemStorage
+from .forms import SensorObservationsFileForm
 
 
 
@@ -163,6 +166,12 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return True
         else:
             return False
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = SensorObservationsFileForm()
+        return context
+    
 
 class SensorForm(forms.ModelForm):
     class Meta:
@@ -210,3 +219,48 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
         else:
             return False
 
+def sensor_observations_upload(request):
+    if request.method == 'POST':
+        form = SensorObservationsFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_observations_file(request.FILES['excel_file'])
+            return HttpResponseRedirect('/sensors/')
+
+    return HttpResponseRedirect('/sensors/')
+
+def handle_uploaded_observations_file(file):
+    sensors_file = xlrd.open_workbook(file_contents=file.read())
+    observation_sheet = sensors_file.sheet_by_index(1)
+    
+    for i in range(6, 10000000):
+        if(observation_sheet.cell_value == ''):
+            break
+
+        observation = e_SensorObservation()
+        sensor_code = str(int(observation_sheet.cell_value(i,0)))
+
+        observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
+        
+        observation.sensorType = 'HydrometricSensor'
+        
+        raw_time = observation_sheet.cell_value(i,2) #time - float
+        converted_time = xlrd.xldate_as_tuple(raw_time,  sensors_file.datemode)
+        time_value = time(*converted_time[3:])
+        observation.time = time_value
+
+        raw_date = observation_sheet.cell_value(i,1)
+        converted_date = xlrd.xldate_as_tuple(raw_date, sensors_file.datemode)
+        observation.date = datetime.datetime(*converted_date)
+
+        if observation_sheet.cell_value(i,3) == '': 
+            observation.depth = None
+        else: 
+            observation.depth = observation_sheet.cell_value(i,3)
+
+        if observation_sheet.cell_value(i,4) == '': 
+            observation.discharge = None
+        else: 
+            observation.discharge = observation_sheet.cell_value(i,4)
+
+        observation.save()
+        print('Observation saved!')

@@ -11,10 +11,10 @@ from .views import (
     SensorObservationDetailView,
     SensorObservationDeleteView,
     SensorObservationUpdateView,
+    sensor_observations_upload,
 )
 
 urlpatterns = [
-
     path('', SensorListView, name='sensor-list'),
     path('new/', SensorCreateView.as_view(), name='sensor-create'),
     path('upload/', SensorUploadView, name='sensor-upload'),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('observation/<int:pk>', SensorObservationDetailView.as_view(), name='sensor-observation-detail'),
     path('observation/<int:pk>/update/', SensorObservationUpdateView.as_view(), name='sensor-observation-update'),
     path('observation/<int:pk>/delete/', SensorObservationDeleteView.as_view(), name='sensor-observation-delete'),
+    path('observation/upload/', sensor_observations_upload, name='sensor-observations-upload')
 ]

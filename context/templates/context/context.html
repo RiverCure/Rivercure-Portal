@@ -20,7 +20,6 @@
                 const map = e.detail.map;    
                 map.doubleClickZoom.disable(); //disable double click zoom
 
-                map.invalidateSize(true);
                 //document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
                 //visual tools
                 //function to draw mouse position on the map
@@ -78,6 +77,8 @@
                     MyFunctions.clearMap();
                     MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
                 '{% endif %}'
+
+                map.invalidateSize(true);
             });    
             //function to load sensor information to a dict so it can be processed by a function
             loadSensors = () => {
