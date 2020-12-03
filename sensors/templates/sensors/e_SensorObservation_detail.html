@@ -2,6 +2,7 @@
 {% load leaflet_tags %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load auth_extras %}
 
 {% block content %}
 
@@ -16,11 +17,12 @@
       <p class="article-content">Depth: {{observation.depth}}</p>
       <p class="article-content">Discharge: {{observation.discharge}}</p>
 
-      {% if perms.sensors.change_e_sensor %}
+      {% if user|has_group:"SensorManager" %} 
       <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' object.id %}">Edit</a>
       <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' object.id %}"  >Delete</a>
-      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observations' %}?sensor={{observation.sensor.code}}">Back</a>
       {% endif %}
+      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observations' %}?sensor={{observation.sensor.code}}">Back</a>
+      
 
     </div>
 </article>

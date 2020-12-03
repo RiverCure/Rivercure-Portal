@@ -13,16 +13,19 @@
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Add an Event</legend>
+                <legend class="border-bottom mb-4">Create an Event</legend>
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Create</button>
-                
+                <button class="btn btn-outline-info" type="submit">Save</button>
+                {% if event.context.code != null %}
+                <a class="btn btn-outline-secondary" href="{% url 'context-event-list' event.context.code %}">Cancel</a>
+                {% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'context-list' %}">Cancel</a>
+                {% endif %}
             </div>
         </form>
     </div>
-    <a class="btn btn-outline-info" href="{% url 'event-list' %}">All Events</a>    
 {% endblock content %}
 
 

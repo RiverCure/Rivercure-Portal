@@ -13,8 +13,12 @@
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit" href="{% url 'sensor-observation-detail' observation.id %}">Save</button>
+                <button class="btn btn-outline-info" type="submit" >Save</button>
+                {% if observation.id != null %}
                 <a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.id %}">Cancel</a>
+                {% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'sensor-list' %}">Cancel</a>
+                {% endif %}
             </div>
         </form>
     </div>

@@ -45,6 +45,10 @@
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
+  {% if perms.sensors.add_e_sensorobservation %}
+      <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' %}">Add Sensor Observation</a>
+      <a type="button" class="btn btn-info ml-0 mt-3" href="#">Upload Sensor Observation</a>
+    {% endif %}
 </div>
 </div>
 

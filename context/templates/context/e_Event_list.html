@@ -4,8 +4,39 @@
 
 {% block content %}
 
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+
+  th .tr_align {
+    text-align: left;
+  }
+</style>
+
+
 <h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> </h1>
 <h1>Events</h1>
+
+<div class="filter-section">
+  <h5>Filter</h5> 
+  <form method="get" >
+    {{ filter.form |crispy }}
+    <button type="submit" class="btn btn-info">Filter</button>
+  </form>
+
+  <div class="mt-3">
+    {% if perms.sensors.add_e_event %}
+    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}">Add Event</a>
+    {% endif %}
+  </div>
+
+</div>
+
 
 <div class="row">
 
@@ -14,7 +45,6 @@
     <thead>
       <tr>
         <th scope="col">Name</th>
-        <th scope="col">Context</th>
         <th scope="col">Type</th>
         <th scope="col">SubType</th>
         <th scope="col">Start</th>
@@ -32,31 +62,20 @@
             </div>
           </a>
         </td>
-        <td>{{ event.context }}</td>
         <td>{{ event.type }}</td>
-        <td> {{ event.subtype }}</td>
+        <td>{{ event.subtype }}</td>
         <td>{{ event.startDate }}</td>
         <td>{{ event.endDate }}</td>
         <td>{{ event.state }}</td>
       </tr>
       {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No Events! :(</h2></td>
+      <td><h3 class="text-secondary font-italic no-context-data">No Events!</h3></td>
     {% endfor %}
   </tbody>
   </table>
   </div>
   
 </div>
-
-  <div>
-    {% if perms.sensors.add_e_event %}
-    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}">Add Event</a>
-    {% endif %}
-    <a type="button" class="btn btn-info" href="{% url 'event-list' %}">All Events</a>
-  </div>
-
-
-
 
 
 {% endblock content %}

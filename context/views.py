@@ -17,7 +17,7 @@ from django.core.serializers import serialize
 from .serializers import ContextSerializer
 from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point, fromfile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .filters import EventFilter, EventSensorFilter, ContextFilter, ContextSensorFilter
+from .filters import EventFilter, ContextFilter, ContextSensorFilter
 from django.contrib.gis.gdal import SpatialReference, CoordTransform, GDALRaster
 from io import BytesIO, StringIO
 from zipfile import ZipFile
@@ -174,7 +174,7 @@ def OtherContextListView(request):
         #return context
 
 
-class ContextForm(forms.ModelForm):
+class ContextInitialForm(forms.ModelForm):
     class Meta:
         model = e_Context
         fields = ['code','Name', 'hydroFeature', 'user', 'isPublic',]
@@ -182,7 +182,7 @@ class ContextForm(forms.ModelForm):
 
 class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Context
-    form_class = ContextForm
+    form_class = ContextInitialForm
     
     def get_success_url(self):
         return reverse('context-list')
@@ -243,16 +243,13 @@ def ContextSensorListView(request):
 
     return render(request, 'context/e_ContextSensor_list.html', context )
 
-class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
-    success_url = 'event-list'
     template_name = 'context/e_Event_create.html'
     form_class = EventForm
-
-    #def form_valid(self, form):
-        #obj = form.save(commit=False)
-        #obj.save() 
-        #return HttpResponseRedirect(reverse('event-list'))
+    context_object_name = 'event'
+    def get_success_url(self):
+        return reverse('event-detail',args=(self.object.id,))
 
     def test_func(self):
         if self.request.user.groups.filter(name='ContextEventManager').exists():
@@ -262,9 +259,10 @@ class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
 
 class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_ContextEvent
-    success_url = 'event-list'
     template_name = 'context/e_Event_create.html'
     form_class = EventForm
+    context_object_name = 'event'
+
 
     def form_valid(self, form):
         context = form.cleaned_data['context']
@@ -305,9 +303,14 @@ def EventListView(request):
     return render(request, 'context/e_AllEvents.html', {'filter': event_filter})
 
 def ContextEventListView(request, context_code):
-    events_list = e_ContextEvent.objects.filter(context__code=context_code)
+    qs = e_ContextEvent.objects.filter(context__code=context_code)
+    
+    event_filter = EventFilter(request.GET, queryset=qs)
+    events_list = event_filter.qs
+    
     context = {
         'events': events_list,
+        'filter': event_filter,
         'context': e_Context.objects.get(code=context_code) # events_list.first().context,
     }
     return render(request, 'context/e_Event_list.html', context)

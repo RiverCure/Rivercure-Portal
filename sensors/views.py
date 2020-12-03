@@ -33,7 +33,7 @@ class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, Detai
     template_name = 'sensors/e_SensorObservation_detail.html'
 
     def test_func(self):
-        if self.request.user.groups.filter(name='SensorManager').exists():
+        if  self.request.user.has_perm('sensors.view_e_sensorobservation'):
             return True
         else:
             return False
@@ -43,11 +43,27 @@ class SensorObservationForm(forms.ModelForm):
         model = e_SensorObservation
         fields = ['date','time','depth','discharge',]
         
+
+class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    form_class = SensorObservationForm
+    model = e_SensorObservation
+    template_name = 'sensors/e_sensorobservation_form.html'
+    context_object_name = 'observation'
+
+    def get_success_url(self):
+        return reverse('sensor-observation-detail',args=(self.object.id,))
+   
+    def test_func(self):
+        if self.request.user.groups.filter(name='SensorManager').exists():
+            return True
+        else:
+            return False
+
 class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = SensorObservationForm
     model = e_SensorObservation
     context_object_name = 'observation'
-    #success_url = reverse_lazy('sensor-observation-detail')
+   
     def get_success_url(self):
         return reverse('sensor-observation-detail',args=(self.object.id,))
 
@@ -79,7 +95,7 @@ class SensorObservationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
 
 
 
-@permission_required('sensors.view_e_sensor_observation', raise_exception=True)
+@permission_required('sensors.view_e_sensorobservation', raise_exception=True)
 def SensorObservationListView(request):
     
     qs = e_SensorObservation.objects.filter(sensor=request.GET.get('sensor'))

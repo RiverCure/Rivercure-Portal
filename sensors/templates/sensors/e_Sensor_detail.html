@@ -2,6 +2,7 @@
 {% load leaflet_tags %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load auth_extras %}
 
 {% block scripts %}
 	{% leaflet_js plugins="ALL" %}
@@ -80,13 +81,14 @@
 			<p class="article-content"><b>Description:</b> {{ sensor.description }}</p> 
 
 
-			{% if perms.sensors.change_e_sensor %}
+			{% if user|has_group:"SensorManager" or request.user.is_superuser %} 
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
 				<a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  >Delete</a>
-				<a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observations' %}?sensor={{object.code}}">Observations</a>
 				<a class="btn btn-info btn mt-1 mb-1"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
-				<a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
 			{% endif %}
+				<a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observations' %}?sensor={{object.code}}">Observations</a>
+				<a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
+		
 		
 		</div>
 	</article>

@@ -11,19 +11,14 @@ class ContextSensorFilter(django_filters.FilterSet):
         model = e_ContextSensor
         fields = ['sensor', ]
 
-class EventSensorFilter(django_filters.FilterSet):
-     class Meta:
-        model = e_ContextSensor
-        fields = ['sensor',]
-
 class EventFilter(django_filters.FilterSet):  
 
-    startDate = DateFilter(field_name='startDate', lookup_expr='gte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
-    endDate = DateFilter(field_name='endDate', lookup_expr='lte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
+    date1 = DateFilter(field_name='startDate', lookup_expr='gte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
+    date2 = DateFilter(field_name='endDate', lookup_expr='lte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
     
     class Meta:
         model = e_ContextEvent
-        fields = ['Name','type','context', 'startDate', 'endDate']
+        fields = ['Name','type','date1', 'date2',]
         
 class ContextFilter(django_filters.FilterSet):  
     class Meta:
