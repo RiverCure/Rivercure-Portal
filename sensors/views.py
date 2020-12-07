@@ -13,19 +13,9 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.urls  import reverse, reverse_lazy
 from django.core.files.storage import FileSystemStorage
-from .forms import SensorObservationsFileForm, SensorForm
+from .forms import SensorObservationsFileForm, SensorForm, SensorFileForm
 from django.contrib.gis.geos import Point
-
-
-def SensorUploadView(request):
-    if request.method == 'POST':
-        uploaded_file = request.FILES['document']
-        print(uploaded_file.name)
-        #fs = FileSystemStorage()
-        #fs.save(uploaded_file.name, uploaded_file)
-        #CALL LOAD.PY
-
-    return render(request, 'sensors/e_Sensor_upload.html')
+from django.http import HttpResponseRedirect
 
 class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_SensorObservation
@@ -116,13 +106,16 @@ def SensorObservationListView(request):
        obs = obs_paginator.page(page)
     except PageNotAnInteger:
        obs = obs_paginator.page(page)
+
+
     
     context={
         'obs': obs,
         'filter' : obs_filter,
         'page_obj' : page_obj,
         'sensor_name' : sensor_name,
-        'sensor_code': request.GET.get('sensor')
+        'sensor_code': request.GET.get('sensor'),
+        'form': SensorObservationsFileForm(),
         
     }
 
@@ -166,6 +159,7 @@ def SensorListView(request):
     sensor_filter = SensorFilter(request.GET, queryset=sensor_list)
     context ={
         'filter': sensor_filter,
+        'form': SensorFileForm(),
         
     }
 
@@ -244,18 +238,39 @@ def sensor_observations_upload(request):
 
     return HttpResponseRedirect('/sensors/')
 
+def sensor_upload(request):
+    if request.method == 'POST':
+        form = SensorFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_sensors_file(request.FILES['excel_file'])
+            return HttpResponseRedirect('/sensors/')
+
+    return HttpResponseRedirect('/sensors/')
+
 def handle_uploaded_observations_file(file):
     sensors_file = xlrd.open_workbook(file_contents=file.read())
     observation_sheet = sensors_file.sheet_by_index(1)
     
-    for i in range(6, 10000000):
-        if(observation_sheet.cell_value == ''):
+    for i in range(6, observation_sheet.nrows):
+        if(observation_sheet.cell_value(i,0) == ''):
             break
-
+        
         observation = e_SensorObservation()
-        sensor_code = str(int(observation_sheet.cell_value(i,0)))
 
-        observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
+        check_float = isinstance(observation_sheet.cell_value(i,0), float)
+        if check_float:
+            print(observation_sheet.cell_value(i,0))
+            if int(observation_sheet.cell_value(i,0)) == observation_sheet.cell_value(i,0):
+                sensor_code = str(int(observation_sheet.cell_value(i,0)))
+                observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
+            else:
+                sensor_code = str(observation_sheet.cell_value(i,0))
+                observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
+                print("float")
+        
+        else:
+            sensor_code = str(observation_sheet.cell_value(i,0))
+            observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
         
         observation.sensorType = 'HydrometricSensor'
         
@@ -280,3 +295,50 @@ def handle_uploaded_observations_file(file):
 
         observation.save()
         print('Observation saved!')
+
+
+def handle_uploaded_sensors_file(file):
+    sensors_file = xlrd.open_workbook(file_contents=file.read())
+    sensors_sheet = sensors_file.sheet_by_index(0)
+    
+    for i in range(6, sensors_sheet.nrows):
+        if(sensors_sheet.cell_value == ''):
+            break
+
+        sensor = e_Sensor()
+
+        check_float = isinstance(sensors_sheet.cell_value(i,1), float)
+        if check_float:
+            if int(sensors_sheet.cell_value(i,1)) == sensors_sheet.cell_value(i,1):
+                sensor_code = str(int(sensors_sheet.cell_value(i,1)))
+                print("int")
+            else:
+                sensor_code = str(sensors_sheet.cell_value(i,1))
+                print("float")
+        
+        else:
+            sensor_code = str(sensors_sheet.cell_value(i,1))
+
+        sensor.code = sensor_code
+        sensor.Name = sensors_sheet.cell_value(i,2)
+        sensor.type = sensors_sheet.cell_value(i,3)
+        sensor.modalityType = sensors_sheet.cell_value(i,4)
+        sensor.description = sensors_sheet.cell_value(i,5)
+
+        if sensors_sheet.cell_value(i,6) == '': sensor.version = None
+        else: sensor.version = sensors_sheet.cell_value(i,6)
+        
+        if sensors_sheet.cell_value(i,7) == '': sensor.responsibleUser = None 
+        else: sensor.responsibleUser = sensors_sheet.cell_value(i,7)
+        
+        sensor.timeZoneAbbreviation = 'GMT'
+        sensor.timeZoneOffset = 1
+    
+        srid = int(sensors_sheet.cell_value(i,10))
+        coord_str = sensors_sheet.cell_value(i,11)
+        coords = coord_str.split(',')
+
+        sensor.geom = Point(float(coords[0]), float(coords[1]), srid=srid)
+
+        sensor.save()
+        print('Sensor saved!')

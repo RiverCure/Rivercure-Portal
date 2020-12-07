@@ -3,6 +3,10 @@ from .models import e_Sensor
 from leaflet.forms.widgets import LeafletWidget
 
 
+
+class SensorFileForm(forms.Form):
+    excel_file = forms.FileField()
+
 class SensorObservationsFileForm(forms.Form):
     excel_file = forms.FileField()
 

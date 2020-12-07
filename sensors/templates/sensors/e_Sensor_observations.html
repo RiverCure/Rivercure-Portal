@@ -3,6 +3,22 @@
 {% load static %}
 {% load auth_extras %}
 
+
+{% block scripts %}
+<script>
+showUploadDiv = (state) => {
+  document.querySelector('#observationsUploadDiv').style.display = state;
+
+  if(state == "block") {
+    window.scrollBy(0, 500);
+  }
+}
+</script>
+
+
+{% endblock %}
+
+
 {% block content %}
 
 
@@ -36,6 +52,24 @@
     {% endfor %}
   </tbody>
 </table>
+
+<div class="pagination mb-5">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?sensor={{sensor_code}}&page=1">&laquo; First</a>
+          <a href="?sensor={{sensor_code}}&page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+          <a href="?sensor={{sensor_code}}&page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?sensor={{sensor_code}}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+      {% endif %}
+  </span>
+</div>
 </div>
 
 <div class="filter-section col-md-3">
@@ -47,34 +81,27 @@
   </form>
   {% if perms.sensors.add_e_sensorobservation %}
       <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' %}">Add Sensor Observation</a>
-      <a type="button" class="btn btn-info ml-0 mt-3" href="#">Upload Sensor Observation</a>
-    {% endif %}
+      <!--<a type="button" class="btn btn-info ml-0 mt-3" href="#">Upload Sensor Observation</a>-->
+      <a class="btn btn-info btn ml-0 mt-2"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
+  {% endif %}
+
+
+
+</div> 
+
+<div id="observationsUploadDiv" class="container" style="display: none">
+  <h2>Upload excel</h2>
+  <div id="form-data" class="content-section">
+    <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="form-group">
+        <button id="submit-btn" class="btn btn-info" type="submit" >Upload</button>
+        <button id="submit-btn" class="btn btn-secondary btn " style="float:right" onclick="showUploadDiv('none')" >Close</button>
+      </div>
+    </form>
+  </div>
 </div>
-</div>
-
-<div class="pagination mb-5">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?sensor={{sensor_code}}&page=1">&laquo; first</a>
-            <a href="?sensor={{sensor_code}}&page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-
-        {% if page_obj.has_next %}
-            <a href="?sensor={{sensor_code}}&page={{ page_obj.next_page_number }}">next</a>
-            <a href="?sensor={{sensor_code}}&page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-</div>
-
-
-
-
-
-
 
 
 {% endblock content %}

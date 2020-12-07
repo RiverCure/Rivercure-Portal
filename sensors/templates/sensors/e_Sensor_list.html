@@ -57,8 +57,22 @@
   <div>
     {% if perms.sensors.add_e_sensor %}
       <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
-      <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-upload' %}">Upload Sensor</a>
+      <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
     {% endif %}
+  </div>
+</div>
+
+<div id="observationsUploadDiv" class="container" style="display: none">
+  <h2>Upload excel</h2>
+  <div id="form-data" class="content-section">
+    <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-upload' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="form-group">
+        <button id="submit-btn" class="btn btn-info" type="submit" >Upload</button>
+        <button id="submit-btn" class="btn btn-secondary btn mt-1 mb-1" style="float:right" onclick="showUploadDiv('none')" >Close</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -82,7 +96,18 @@
  
 
   console.log("hello");
+
+  showUploadDiv = (state) => {
+			document.querySelector('#observationsUploadDiv').style.display = state;
+
+			if(state == "block") {
+				window.scrollBy(0, 500);
+			}
+		}
+
 </script>
+
+
 
 
 {% endblock content %}
