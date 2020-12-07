@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction, connection
 from django.utils import timezone
-from .forms import ContextForm, UploadContextForm, EventForm
+from .forms import ContextForm, UploadContextForm, EventForm, EventEditForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
@@ -246,7 +246,7 @@ def ContextSensorListView(request):
 class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
     template_name = 'context/e_Event_create.html'
-    form_class = EventForm
+    form_class = EventEditForm
     context_object_name = 'event'
     def get_success_url(self):
         return reverse('event-detail',args=(self.object.id,))
