@@ -30,7 +30,7 @@
   </form>
 
   <div class="mt-3">
-    {% if perms.context.add_e_event %}
+    {% if perms.context.add_e_contextevent %}
     <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}">Add Event</a>
     {% endif %}
   </div>

@@ -263,7 +263,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     form_class = EventForm
     context_object_name = 'event'
 
-
+   
     def form_valid(self, form):
         context = form.cleaned_data['context']
         writing_period = form.cleaned_data['WritingPeriodicity']
