@@ -60,7 +60,7 @@
           </td>
           <td> {{ context.hydroFeature }} </td>
           <td>{% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
-          <td>{% if context.user.username == request.user.username %} Admin {% else %} {% for acc in already_accepted %} {% if acc.context == context %} {{acc.type}} {% endif %} {% endfor %} {% endif %}</td>
+          <td>{% if context.user.username == request.user.username %} Admin {% else %} {% for acc in already_accepted %} {% if acc.context == context and acc.context_user.username == request.user.username %} {{acc.type}} {% endif %} {% endfor %} {% endif %}</td>
         </tr>
         {% empty %}
         <td><h3 class="text-secondary font-italic no-context-data">No contexts available!</h3></td>

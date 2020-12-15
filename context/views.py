@@ -59,11 +59,13 @@ def ContextAccessRequestCreate(request, context_code):
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
     requester = pedido.requestuser
+    granted = pedido.access_granted
     context = {
         'sensors': e_Sensor.objects.all(),
         'user': requester,
         'context': e_Context.objects.first(),
         'request': pedido,
+        'granted' : granted,
     }
     return render(request, 'context/e_ContextRequest_grant_deny.html', context)
    
@@ -93,12 +95,20 @@ def GrantAccess(request, pk):
     role_chosen = request.POST.get("role") 
     pedido.type=role_chosen
     pedido.save()
-    obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)   
-    obj.save()
     
+    #if already existes, changes obj
+    try:
+        obj = e_ContextUser.objects.get(context_user = requester, context= pedido.context)
+        obj.type = pedido.type  
+        obj.save()
+    except e_ContextUser.DoesNotExist:
+        obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)
+        obj.save()
+ 
     context = {
         'user': requester,   
     }
+
     return render(request, 'context/access_granted.html', context)
 
 
