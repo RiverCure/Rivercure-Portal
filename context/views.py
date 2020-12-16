@@ -655,10 +655,14 @@ def download_context(request, context_code): #function that allows the download 
         mem_file = BytesIO() #memory where the zip file will be created
         with ZipFile(mem_file, 'w') as zipFolder: #create a zipped folder to return to the user
             zipFolder.writestr(f'{context_name}_domain.geojson', geojson.dumps(domain_file))
-            zipFolder.writestr(f'{context_name}_alignments.geojson', geojson.dumps(alignment_file))
-            zipFolder.writestr(f'{context_name}_refinements.geojson', geojson.dumps(refinement_file))
-            zipFolder.writestr(f'{context_name}_boundaries.geojson', geojson.dumps(boundary_file))
-            zipFolder.writestr(f'{context_name}_boundaries_points.geojson', geojson.dumps(boundary_point_file))
+            if alignment_file is not None:
+                zipFolder.writestr(f'{context_name}_alignments.geojson', geojson.dumps(alignment_file))
+            if refinement_file is not None:
+                zipFolder.writestr(f'{context_name}_refinements.geojson', geojson.dumps(refinement_file))
+            if boundary_file is not None:
+                zipFolder.writestr(f'{context_name}_boundaries.geojson', geojson.dumps(boundary_file))
+            if boundary_point_file is not None:
+                zipFolder.writestr(f'{context_name}_boundaries_points.geojson', geojson.dumps(boundary_point_file))
 
         mem_file.seek(0)
         response = HttpResponse(mem_file.read(), content_type="application/zip")
@@ -698,6 +702,8 @@ def prepare_alignment(context_code, context_name):
     with connection.cursor() as cursor:
         cursor.execute('SELECT ST_AsText(ST_Transform("geom", 3763)), "CL" FROM public.context_e_contextalignment WHERE context_id= %s', [context_code])
         rows = cursor.fetchall()
+        if len(rows) == 0:
+            return None
         for alignment in rows:
             alignment_geom = GEOSGeometry(alignment[0])
             context_alignment = geojson.Feature(geometry= geojson.LineString(alignment_geom.coords),
@@ -721,6 +727,8 @@ def prepare_refinement(context_code, context_name):
         cursor.execute('''SELECT ST_AsText(ST_Transform("geom", 3763)), "CL" 
                         FROM public.context_e_contextrefinement WHERE context_id= %s''', [context_code])
         rows = cursor.fetchall()
+        if len(rows) == 0:
+            return None
         for refinement in rows:
             refinement_geom = GEOSGeometry(refinement[0])
             context_refinement = geojson.Feature(geometry= geojson.Polygon(refinement_geom.coords),
@@ -743,6 +751,8 @@ def prepare_boundaries(context_code, context_name):
     with connection.cursor() as cursor:
         cursor.execute('SELECT ST_AsText(ST_Transform("geom", 3763)), "type", "dataType" FROM public.context_e_contextboundaryline WHERE context_id= %s', [context_code])
         rows = cursor.fetchall()
+        if len(rows) == 0:
+            return None
         for boundary in rows:
             boundary_geom = GEOSGeometry(boundary[0])
             context_boundary = geojson.Feature(geometry= geojson.LineString(boundary_geom.coords),
@@ -772,6 +782,8 @@ def prepare_boundary_points(context_code, context_name):
                             ON ("context_e_contextboundarypoint"."id" = "context_e_contextsensor"."boundary_point_id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
         rows = cursor.fetchall()
+        if len(rows) == 0:
+            return None
         for boundary_point in rows:
             boundary_point_geom = GEOSGeometry(boundary_point[0])
             context_boundary_points = geojson.Feature(geometry= geojson.Point(boundary_point_geom.coords),
@@ -810,11 +822,13 @@ def request_pre_processing(request, context_code): # function to start simulatio
 
         files = {
             'domain.geojson': geojson.dumps(domain_file),
-            'alignments.geojson': geojson.dumps(alignment_file),
             'refinements.geojson': geojson.dumps(refinement_file),
             'boundaries.geojson': geojson.dumps(boundary_file),
             'boundaries_points.geojson': geojson.dumps(boundary_point_file)
         }  
+        if alignment_file is not None:
+            files['alignments.geojson'] = geojson.dumps(alignment_file)
+
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
 
