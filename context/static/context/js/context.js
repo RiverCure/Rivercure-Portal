@@ -6,6 +6,8 @@ var MyFunctions = {
     //Variable to store sensors
     sensors: null,
     contextSensors: null,
+    //variable to set the association range for sensors
+    sensorDistance: 10,
     //Layer for highlights
     highlightLayer: null,
     highlightStatus: null,
@@ -379,6 +381,10 @@ var MyFunctions = {
                 ` + getAssociatedSensors().concat(associateNewSensors()) +
                 `</tbody>
                 </table>
+                <div style="display: inline-block;">
+                    <label for="sensor-distance"><big>Association distance:</big></label>
+                    <input type="number" id="sensor-distance" name="sensor-distance" min="1">
+                </div>
                 <label for="sensor-association"><big>Choose a sensor:</big></label>
                 <select id='sensor-association' class="form-control form-control-sm">
                     <option value='null'>--------------------</option>
@@ -411,7 +417,6 @@ var MyFunctions = {
         if(MyFunctions.mode == 'view') //if user is in context detail page do nothing
             return;
 
-        var sensorDistance = 100; //variable to store the distance at which a user can associate a sensor (meters)
         popup.on('popupopen', e => {
             if(MyFunctions.deleting || document.querySelector('#polygon-type').value == 'Boundary') {
                 popup.closePopup();
@@ -446,6 +451,13 @@ var MyFunctions = {
                     popup.closePopup();
                     popup.openPopup();
                 });
+                document.querySelector('#sensor-distance').value = MyFunctions.sensorDistance;
+                document.querySelector('#sensor-distance').addEventListener('blur', e => {
+                    MyFunctions.sensorDistance = document.querySelector('#sensor-distance').value;
+                    console.log(e)
+                    popup.closePopup();
+                    popup.openPopup();
+                })
                 if(document.querySelector('.close') !== null) {
                     document.querySelectorAll('.close').forEach( element => {
                         element.addEventListener('click', ev => { //button to remove added sensors
@@ -465,7 +477,7 @@ var MyFunctions = {
                 var option;
                 for(sensor of MyFunctions.sensors) {
                     if(!addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
-                        L.latLng(e.target.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= sensorDistance) { 
+                        L.latLng(e.target.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= MyFunctions.sensorDistance) { 
                         option = document.createElement('option');
                         option.value = sensor.code;
                         option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
@@ -1283,10 +1295,10 @@ var MyFunctions = {
     },
     //function to get sensors that are close enough to a marker
     getNearbySensors: (addedSensors, domainPoint) => {
-        let nearbySensors = [], sensorDistance = 100
+        let nearbySensors = []
         for(sensor of MyFunctions.sensors) {
             if(!addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
-                L.latLng(domainPoint.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= sensorDistance) { 
+                L.latLng(domainPoint.getLatLng()).distanceTo(L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])) <= MyFunctions.sensorDistance) { 
                 option = document.createElement('option');
                 option.value = sensor.code;
                 option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
