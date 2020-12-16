@@ -382,7 +382,7 @@ var MyFunctions = {
                 `</tbody>
                 </table>
                 <div style="display: inline-block;">
-                    <label for="sensor-distance"><big>Association distance:</big></label>
+                    <label for="sensor-distance"><big>Association distance (m):</big></label>
                     <input type="number" id="sensor-distance" name="sensor-distance" min="1">
                 </div>
                 <label for="sensor-association"><big>Choose a sensor:</big></label>
