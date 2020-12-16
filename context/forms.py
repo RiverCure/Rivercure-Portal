@@ -31,4 +31,9 @@ class UploadContextForm(forms.Form):
 class EventForm(forms.ModelForm):
     class Meta:
         model = e_ContextEvent
+        fields = ['Name', 'type', 'subtype', 'context', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']
+
+class EventEditForm(forms.ModelForm):
+      class Meta:
+        model = e_ContextEvent
         fields = ['Name', 'type', 'subtype', 'context', 'state', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']

@@ -90,7 +90,7 @@ showUploadDiv = (state) => {
 </div> 
 
 <div id="observationsUploadDiv" class="container" style="display: none">
-  <h2>Upload excel</h2>
+  <h2>Upload observations (Excel)</h2>
   <div id="form-data" class="content-section">
     <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' %}">
       {% csrf_token %}

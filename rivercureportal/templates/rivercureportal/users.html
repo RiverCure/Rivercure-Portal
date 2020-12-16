@@ -28,29 +28,37 @@
 
 <div class="col-md-8">
 <table class="table table-hover ">
-      <tr>
-        <th class="tr_class" scope="col">Username</th>
-        <th class="tr_class" scope="col">Name</th>
-        <th class="tr_class" scope="col">Institution</th>
-      </tr>
-    {% for user in filter.qs %}
-      <tr>
-        <td class="tr_class"><a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>
-        {{user.username}}</a>
-        <td>
-          <a href="{% url 'profile-detail' user.id %}">
-            <div style="height:100%;width:100%">
-              {{ user.profile.first_name }} {{ user.profile.last_name }} 
-            </div>
-          </a>
-        </td>
-        <td>{{user.profile.institution}}</td>
-      </tr>
-      {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
-    {% endfor %}
-  </table>
-  </div>
+  <tr>
+    <th class="tr_class" scope="col">Username</th>
+    <th class="tr_class" scope="col">Name</th>
+    <th class="tr_class" scope="col">Institution</th>
+  </tr>
+  {% for list_user in filter.qs %}
+  <tr>
+    
+    <td class="tr_class">
+        {% if user|has_group:"Administration" or user.is_superuser %}
+        <a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>{{list_user.username}}</a>
+        {% else %}
+        <img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>{{list_user.username}}</a>
+        {% endif %}
+    </td>  
+
+    <td>
+      {% if user|has_group:"Administration" or user.is_superuser %}
+      <a href="{% url 'profile-detail' user.id %}"><div style="height:100%;width:100%">{{ list_user.profile.first_name }} {{ list_user.profile.last_name }}</div></a>
+      {% else %}
+      <div style="height:100%;width:100%">{{ list_user.profile.first_name }} {{ list_user.profile.last_name }}</div>
+      {% endif %}
+    </td>
+
+    <td>{{list_user.profile.institution}}</td>
+  </tr>
+  {% empty %}
+  <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
+  {% endfor %}
+</table>
+</div>
  
 <div class="filter-section col-md-3">
   <h5>Filter</h5> 

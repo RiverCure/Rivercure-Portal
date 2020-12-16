@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction, connection
 from django.utils import timezone
-from .forms import ContextForm, UploadContextForm, EventForm
+from .forms import ContextForm, UploadContextForm, EventForm, EventEditForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
@@ -59,11 +59,13 @@ def ContextAccessRequestCreate(request, context_code):
 def ContextRequestDecisionView(request, pk):
     pedido = e_ContextAccessRequest.objects.get(id=pk)
     requester = pedido.requestuser
+    granted = pedido.access_granted
     context = {
         'sensors': e_Sensor.objects.all(),
         'user': requester,
         'context': e_Context.objects.first(),
         'request': pedido,
+        'granted' : granted,
     }
     return render(request, 'context/e_ContextRequest_grant_deny.html', context)
    
@@ -93,12 +95,20 @@ def GrantAccess(request, pk):
     role_chosen = request.POST.get("role") 
     pedido.type=role_chosen
     pedido.save()
-    obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)   
-    obj.save()
     
+    #if already existes, changes obj
+    try:
+        obj = e_ContextUser.objects.get(context_user = requester, context= pedido.context)
+        obj.type = pedido.type  
+        obj.save()
+    except e_ContextUser.DoesNotExist:
+        obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)
+        obj.save()
+ 
     context = {
         'user': requester,   
     }
+
     return render(request, 'context/access_granted.html', context)
 
 
@@ -246,7 +256,7 @@ def ContextSensorListView(request):
 class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
     template_name = 'context/e_Event_create.html'
-    form_class = EventForm
+    form_class = EventEditForm
     context_object_name = 'event'
     def get_success_url(self):
         return reverse('event-detail',args=(self.object.id,))
@@ -263,7 +273,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     form_class = EventForm
     context_object_name = 'event'
 
-
+   
     def form_valid(self, form):
         context = form.cleaned_data['context']
         writing_period = form.cleaned_data['WritingPeriodicity']

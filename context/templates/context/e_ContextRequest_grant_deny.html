@@ -21,7 +21,9 @@
                 </select> 
                 <br>
                 <br><button id="submit-btn" class="btn btn-outline-success" type="submit" formaction="{% url 'access-granted' request.id %}">Grant</button>
+                {% if granted == True %}
                 <a class="btn btn-outline-danger ml-3" href="{% url 'access-denied' request.id %}">Deny</a>
+                {% endif %}
                 <a class="btn btn-outline-secondary" style="float: right;" href="{% url 'context-requests-list' %}">Back</a>
                 
             </div>
