@@ -38,7 +38,7 @@
       <tr>
         <td>{{ sensor.sensor.code }}</td>
         <td>
-          <a href="{% url 'sensor-detail' sensor.pk %}">
+          <a href="{% url 'sensor-detail' sensor.sensor.code %}">
             <div style="height:100%;width:100%">
               {{ sensor.sensor.Name }}
             </div>

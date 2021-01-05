@@ -131,8 +131,7 @@
                 </div>
             </div>
             <div class="container" id="context-options">
-                <div class="container" style="display: flex">
-                    <button type="button" id='load-btn' class="btn btn-outline-danger">Validate Context</button>
+                <div id="polygon-type-div" class="container" style="display: flex">
                     <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
                         <option value="none" selected disabled>Select the polygon to define</option>
                         <option value="Domain">Domain</option>
@@ -140,6 +139,9 @@
                         <option value="Alignment">Alignment</option>
                         <option value="Refinement">Refinement</option>
                     </select>
+                </div>
+                <div class="container" style="display: flex">
+                    <button type="button" id='load-btn' class="btn btn-outline-danger">Validate Context</button>
                 </div>
                 {% comment %} <div id='load-context-result' style='display: none'></div> {% endcomment %}
                 <div id="load-context-result" class="alert alert-danger" role="alert">

@@ -1,13 +1,14 @@
 #context-options {
     margin-bottom: 20px;
 
-    #polygon-type {
-        margin-left: 10px;
-        max-width: 80%;
+    #polygon-type-div {
+        margin-bottom: 10px;
     }
     
     #load-context-result {
         margin-top: 10px;
+        width: 95%;
+        margin-left: 24px;
         // text-align: center;
     }
 }
