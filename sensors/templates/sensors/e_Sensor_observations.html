@@ -74,20 +74,18 @@ showUploadDiv = (state) => {
 
 <div class="filter-section col-md-3">
   <h5>Filter</h5> 
-  
   <form method="get" >
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
-  {% if perms.sensors.add_e_sensorobservation %}
-      <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' %}">Add Sensor Observation</a>
-      <!--<a type="button" class="btn btn-info ml-0 mt-3" href="#">Upload Sensor Observation</a>-->
-      <a class="btn btn-info btn ml-0 mt-2"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
-  {% endif %}
-
-
-
 </div> 
+
+<div>
+{% if perms.sensors.add_e_sensorobservation %}
+<a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' %}">Add Sensor Observation</a>
+<a type="button" class="btn btn-info ml-0 mt-3"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
+{% endif %}
+</div>
 
 <div id="observationsUploadDiv" class="container" style="display: none">
   <h2>Upload observations (Excel)</h2>
@@ -102,6 +100,8 @@ showUploadDiv = (state) => {
     </form>
   </div>
 </div>
+
+
 
 
 {% endblock content %}

@@ -54,12 +54,7 @@
       {{ filter.form |crispy }}
       <button type="submit" class="btn btn-info">Filter</button>
     </form>
-  <div>
-    {% if perms.sensors.add_e_sensor %}
-      <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
-      <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
-    {% endif %}
-  </div>
+  
 </div>
 
 <div id="observationsUploadDiv" class="container" style="display: none">
@@ -75,6 +70,14 @@
     </form>
   </div>
 </div>
+
+<div>
+  {% if perms.sensors.add_e_sensor %}
+    <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
+    <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
+  {% endif %}
+</div>
+
 
 <script>
   

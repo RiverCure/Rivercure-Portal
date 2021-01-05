@@ -292,8 +292,13 @@ def handle_uploaded_observations_file(file):
             observation.discharge = None
         else: 
             observation.discharge = observation_sheet.cell_value(i,4)
+        try:
+            observation.save()
+        except:
+            print("An exception occurred") 
+        
 
-        observation.save()
+        
         print('Observation saved!')
 
 

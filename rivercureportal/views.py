@@ -61,6 +61,7 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
     template_name = 'rivercureportal/e_HydroFeature_list.html'
     paginate_by = 15
 
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = HydroFeatureFilter(self.request.GET, queryset=self.get_queryset())
@@ -71,7 +72,7 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
 class HydroFeatureForm(forms.ModelForm):
     class Meta:
         model = e_HydroFeature
-        fields = ['Name', 'type', 'area', 'length','PartOf', 'flowsInto', 'geom']
+        fields = ['Name', 'type', 'PartOf', 'flowsInto', 'geom']
         widgets = {'geom': LeafletWidget()}
         
     

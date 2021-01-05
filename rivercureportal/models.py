@@ -136,9 +136,9 @@ class e_HydroFeature(models.Model):
 
 	type = models.CharField(max_length=100, choices=HYDROFEATUREKIND_CHOICES)
 
-	area = models.FloatField()
+	area = models.FloatField(null=True, blank=True)
 
-	length = models.FloatField()
+	length = models.FloatField(null=True, blank=True)
 
 	PartOf = models.ForeignKey('e_HydroFeature', on_delete=models.CASCADE, related_name='e_HydroFeature_PartOf', blank=True, null=True)
 
