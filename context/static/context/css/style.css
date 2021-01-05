@@ -58,12 +58,13 @@
 #context-options {
   margin-bottom: 20px;
 }
-#context-options #polygon-type {
-  margin-left: 10px;
-  max-width: 80%;
+#context-options #polygon-type-div {
+  margin-bottom: 10px;
 }
 #context-options #load-context-result {
   margin-top: 10px;
+  width: 95%;
+  margin-left: 24px;
 }
 
 #context-to-change {
