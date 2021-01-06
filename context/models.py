@@ -20,7 +20,8 @@ ContextAccessRequestState_CHOICES =  ( ('Processing', 'processing'), ('Finished'
 
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
 
-CONTEXTACCESS_CHOICES = (('admin', 'Admin'), ('manager', 'Manager'), ('viewer', 'Viewer'))
+#CONTEXTACCESS_CHOICES = (('admin', 'Admin'), ('manager', 'Manager'), ('viewer', 'Viewer'))
+CONTEXTACCESS_CHOICES = (('manager', 'Manager'), ('viewer', 'Viewer'))
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 

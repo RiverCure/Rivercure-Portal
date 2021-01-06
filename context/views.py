@@ -273,9 +273,13 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     form_class = EventForm
     context_object_name = 'event'
 
-   
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context["context_code"] = self.request.GET["context_code"]
+        return context
+
     def form_valid(self, form):
-        context = form.cleaned_data['context']
+        context = e_Context.objects.get(code=form.cleaned_data['context_code'])
         writing_period = form.cleaned_data['WritingPeriodicity']
         max_update_period = form.cleaned_data['UpdateMaximumValue']
         writing_unit = form.cleaned_data['WritingPeriodicityUnit']
@@ -286,6 +290,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         end_time = form.cleaned_data['endTime']
 
         obj = form.save(commit=False)
+        obj.context = context
         obj.save() 
 
         try:

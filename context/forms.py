@@ -29,9 +29,18 @@ class UploadContextForm(forms.Form):
     contour_lines = forms.FileField(required=False)
 
 class EventForm(forms.ModelForm):
+
+    context_code = forms.CharField(widget=forms.HiddenInput())
     class Meta:
         model = e_ContextEvent
-        fields = ['Name', 'type', 'subtype', 'context', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']
+        fields = ['Name', 'type', 'subtype', 'context_code', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']
+        widgets = {
+            'startDate': forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd'}),
+            'endDate': forms.TextInput(attrs={'placeholder': 'yyyy-mm-dd'}),
+            'startTime': forms.TextInput(attrs={'placeholder': 'hh:mm:ss'}),
+            'endTime': forms.TextInput(attrs={'placeholder': 'hh:mm:ss'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Enter description here'}),
+        }
 
 class EventEditForm(forms.ModelForm):
       class Meta:
