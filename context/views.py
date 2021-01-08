@@ -830,13 +830,17 @@ def request_pre_processing(request, context_code): # function to start simulatio
         if alignment_file is not None:
             files['alignments.geojson'] = geojson.dumps(alignment_file)
 
-        dtm_file = e_ContextDTM.objects.get(context__code=context_code).contextDTM.rasterfile
-        friction_coeff_file = e_ContextFrictionCoeff.objects.get(context__code=context_code).raster
-
-        if dtm_file is not None:
+        try:
+            dtm_file = e_ContextDTM.objects.get(context__code=context_code).contextDTM.rasterfile
             files['dtm.tif'] = dtm_file
-        if friction_coeff_file is not None:
+        except Exception:
+            print('No DTM defined')
+
+        try:
+            friction_coeff_file = e_ContextFrictionCoeff.objects.get(context__code=context_code).raster
             files['frictionCoef.tif'] = friction_coeff_file
+        except Exception:
+            print('No friction coef defined')
 
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
