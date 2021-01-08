@@ -864,6 +864,15 @@ def preprocessing_results(request): # function to redirect the user to the parav
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
 
+@user_passes_test(context_permission_check, login_url='/login/')    
+def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
+    url = os.environ['SIMULATOR_ADDRESS']
+    context = e_Context.objects.get(code=context_code)
+
+    request = url + f'/pre-processing/results/?context_name={context.Name}'
+    print(f'Pre-processing results requested for context {context.Name}')
+    return HttpResponseRedirect(request)
+
 def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
 

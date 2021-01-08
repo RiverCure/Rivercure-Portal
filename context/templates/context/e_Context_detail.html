@@ -95,6 +95,7 @@
             {% if context.hasMesh %}   
                 <a class="btn btn-warning mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Regenerate Mesh</a> 
                 <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results' %}" target='_blank'>View Mesh</a> 
+                <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results-download' context.code %}" target='_blank'>Download Mesh</a> 
             {% else %}
                 <a class="btn btn-success mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Generate Mesh</a> 
             {% endif %}
