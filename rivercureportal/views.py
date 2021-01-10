@@ -11,6 +11,7 @@ from sensors.models import e_Sensor
 from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse_lazy
+from django_filters.views import FilterView
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -60,13 +61,14 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
     context_object_name = 'hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_list.html'
     paginate_by = 15
-
     
     def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        context['filter'] = HydroFeatureFilter(self.request.GET, queryset=self.get_queryset())
-        #context['string'] = 'stringgg'
+        # Add in a QuerySet of all the books
+        context['filter'] = HydroFeatureFilter(self.request.GET, queryset=e_HydroFeature.objects.all())
         return context
+
 
 
 class HydroFeatureForm(forms.ModelForm):

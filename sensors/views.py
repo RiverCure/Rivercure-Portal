@@ -121,46 +121,29 @@ def SensorObservationListView(request):
 
     return render(request, "sensors/e_Sensor_observations.html", context)
 
-
-
-# @permission_required('sensors.view_e_sensor_observation', raise_exception=True)
-# def SensorObservationListView(request):
-#     qs = e_SensorObservation.objects.all()
-#     obs_filter = ObservationFilter(request.GET, queryset=qs)
-    
-#     obs = obs_filter.qs
-   
-#     page = request.GET.get('page', 1)
-#     obs_paginator = Paginator(obs, 15)
-
-#     page_obj = obs_paginator.get_page(page)
-
-#     try:
-#        obs = obs_paginator.page(page)
-#     except EmptyPage :
-#        obs = obs_paginator.page(page)
-#     except PageNotAnInteger:
-#        obs = obs_paginator.page(page)
-    
-#     context={
-#         'obs': obs,
-#         'filter' : obs_filter,
-#         'page_obj' : page_obj
-        
-#     }
-
-#     return render(request, "sensors/e_Sensor_observations.html", context)
-
-
 @permission_required('sensors.view_e_sensor', raise_exception=True)
 def SensorListView(request):
     
     sensor_list = e_Sensor.objects.all()
     sensor_filter = SensorFilter(request.GET, queryset=sensor_list)
+
+    sensors = sensor_filter.qs
+    sensor_paginator = Paginator(sensors, 15)
+    page = request.GET.get('page', 1)
+    page_obj = sensor_paginator.get_page(page)
+
+    try:
+        sensors = sensor_paginator.page(page)
+    except EmptyPage :
+       sensors = sensor_paginator.page(page)
+    except PageNotAnInteger:
+       sensors = sensor_paginator.page(page)
+
     context ={
+        'sensors' : sensors,
+        'page_obj' : page_obj,
         'filter': sensor_filter,
-        'form': SensorFileForm(),
-        
+        'form': SensorFileForm(),   
     }
 
     return render(request, 'sensors/e_Sensor_list.html', context)

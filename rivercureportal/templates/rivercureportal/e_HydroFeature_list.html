@@ -28,7 +28,7 @@
       <th id="sd" class="tr_class" scope="col" >Name</th>
       <th id="sd" class="tr_class" scope="col">Type</th>
     </tr>
-    {% for hydro in object_list %}
+    {% for hydro in filter.qs %}
       <tr>  
         <td>
             <a href="{% url 'hydrofeature-detail' hydro.id %}"><div style="height:100%;width:100%">{{ hydro.Name }}</div></a>
