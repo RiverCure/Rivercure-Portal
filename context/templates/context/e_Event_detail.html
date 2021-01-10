@@ -19,7 +19,8 @@
         <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{event.UpdateMaximumValueUnit }}</p>
  
  
-  <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'event-update' object.id %}">Edit</a>
+  <!--<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'event-update' object.id %}">Edit</a>-->
+  <a type="button" class="btn btn-info" href="{% url 'event-update' object.id %}?context_code={{ event.context.code }}&context_name={{ event.context.Name }}">Edit</a>
   <a class="btn btn-info btn mt-1 mb-1" href="#">Run Simulation</a>
   
   {% if event.context_event_results != '' %}

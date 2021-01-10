@@ -258,6 +258,13 @@ class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
     template_name = 'context/e_Event_create.html'
     form_class = EventEditForm
     context_object_name = 'event'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context["context_code"] = self.request.GET["context_code"]
+        context["context_name"] = self.request.GET["context_name"]
+        return context
+
     def get_success_url(self):
         return reverse('event-detail',args=(self.object.id,))
 
@@ -276,6 +283,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
         context["context_code"] = self.request.GET["context_code"]
+        context["context_name"] = self.request.GET["context_name"]
         return context
 
     def form_valid(self, form):

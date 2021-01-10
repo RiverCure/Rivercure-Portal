@@ -21,17 +21,16 @@
 
 <h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> </h1>
 <h1>Events</h1>
-
 <div class="filter-section">
   <h5>Filter</h5> 
   <form method="get" >
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
-
+        
   <div class="mt-3">
     {% if perms.context.add_e_contextevent %}
-    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}">Add Event</a>
+    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}&context_name={{ context.Name }}">Add Event</a>
     {% endif %}
   </div>
 
