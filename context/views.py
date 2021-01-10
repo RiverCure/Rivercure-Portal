@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextContourLine, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult, e_ContextUser
+from .models import e_Context, e_ContextDTM, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult, e_ContextUser
 from raster.models import RasterLayer
 from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
@@ -403,24 +403,10 @@ def handle_upload_raster(context, raster_file): #function to handle the upload o
    
     dtm.save()
 
-def handle_contour_lines_upload(context, contour_lines_file): #function to handle the upload of the contour lines file
-    contour_lines = e_ContextContourLine.objects.get_or_create(context=context)
-    contour_lines_features = json.load(contour_lines_file)
-    try:
-        srid = SpatialReference(contour_lines_features['crs']['properties']['name']).srid
-    except:
-        srid = 4326
-
-    contour_lines_geom = []
-    for feature in contour_lines_features['features']:
-        line = LineString(feature['geometry']['coordinates'][0], srid=srid)
-        contour_lines_geom.append(line)
-    
-    contour_lines[0].geom = MultiLineString(contour_lines_geom, srid=srid)
-    # contour_lines.geom = MultiPolygon(Polygon(contour_lines_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
-
-    contour_lines[0].save()
-
+def handle_friction_coeff_upload(context, friction_coeff_file): #function to handle the upload of the contour lines file
+    friction_coeff = e_ContextFrictionCoeff.objects.get_or_create(context=context)
+    friction_coeff[0].raster = friction_coeff_file
+    friction_coeff[0].save()
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
@@ -525,9 +511,9 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     handle_upload_raster(context, dtm)
 
                 #Save contour lines from file
-                contour_lines = self.request.FILES.get('contour_lines')
-                if contour_lines is not None:
-                    handle_contour_lines_upload(context, contour_lines)
+                friction_coeff = self.request.FILES.get('friction_coefficient_file')
+                if friction_coeff is not None:
+                    handle_friction_coeff_upload(context, friction_coeff)
                 
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
@@ -839,10 +825,22 @@ def request_pre_processing(request, context_code): # function to start simulatio
             'domain.geojson': geojson.dumps(domain_file),
             'refinements.geojson': geojson.dumps(refinement_file),
             'boundaries.geojson': geojson.dumps(boundary_file),
-            'boundaries_points.geojson': geojson.dumps(boundary_point_file)
+            'boundaries_points.geojson': geojson.dumps(boundary_point_file),
         }  
         if alignment_file is not None:
             files['alignments.geojson'] = geojson.dumps(alignment_file)
+
+        try:
+            dtm_file = e_ContextDTM.objects.get(context__code=context_code).contextDTM.rasterfile
+            files['dtm.tif'] = dtm_file
+        except Exception:
+            print('No DTM defined')
+
+        try:
+            friction_coeff_file = e_ContextFrictionCoeff.objects.get(context__code=context_code).raster
+            files['frictionCoef.tif'] = friction_coeff_file
+        except Exception:
+            print('No friction coef defined')
 
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
@@ -869,6 +867,15 @@ def request_pre_processing(request, context_code): # function to start simulatio
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
+
+@user_passes_test(context_permission_check, login_url='/login/')    
+def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
+    url = os.environ['SIMULATOR_ADDRESS']
+    context = e_Context.objects.get(code=context_code)
+
+    request = url + f'/pre-processing/results/?context_name={context.Name}'
+    print(f'Pre-processing results requested for context {context.Name}')
+    return HttpResponseRedirect(request)
 
 def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'

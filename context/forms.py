@@ -26,7 +26,7 @@ class UploadContextForm(forms.Form):
     boundaries = forms.FileField(required=False)
     # boundaries_points = forms.FileField(required=False)
     dtm_file = forms.FileField(required=False)
-    contour_lines = forms.FileField(required=False)
+    friction_coefficient_file = forms.FileField(required=False)
 
 class EventForm(forms.ModelForm):
 
