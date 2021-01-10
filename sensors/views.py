@@ -13,7 +13,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.urls  import reverse, reverse_lazy
 from django.core.files.storage import FileSystemStorage
-from .forms import SensorObservationsFileForm, SensorForm, SensorFileForm
+from .forms import SensorObservationsFileForm, SensorForm, SensorFileForm, GeoSensorForm
 from django.contrib.gis.geos import Point
 from django.http import HttpResponseRedirect
 
@@ -185,6 +185,21 @@ class SensorCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         obj.save()
         return super().form_valid(form)
             
+
+class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = e_Sensor
+    form_class = GeoSensorForm
+    object_name = 'sensor'
+
+    def get_success_url(self):
+        return reverse('sensor-list')
+
+    def test_func(self):
+        if self.request.user.has_perm('sensors.change_e_sensor'):
+            return True
+        else:
+            return False
+
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
     form_class = SensorForm

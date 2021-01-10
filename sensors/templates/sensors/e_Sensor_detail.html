@@ -83,6 +83,7 @@
 
 			{% if user|has_group:"SensorManager" or request.user.is_superuser %} 
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
+				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-geo-update' object.code %}" >Geo Edit</a>
 				<a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  >Delete</a>
 				<a class="btn btn-info btn mt-1 mb-1"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
 			{% endif %}

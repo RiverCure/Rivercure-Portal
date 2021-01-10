@@ -10,10 +10,22 @@ class SensorFileForm(forms.Form):
 class SensorObservationsFileForm(forms.Form):
     excel_file = forms.FileField()
 
-class SensorForm(forms.ModelForm):
+
+class GeoSensorForm(forms.ModelForm):
+    
     lat = forms.FloatField()
     lng = forms.FloatField()
+    #code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    Name = forms.CharField(disabled=True)
+    class Meta:
+        model = e_Sensor
+        fields = ['Name', 'lat', 'lng',]
+        
+
+class SensorForm(forms.ModelForm):
+    #lat = forms.FloatField()
+    #lng = forms.FloatField()
 
     class Meta:
         model = e_Sensor
-        fields = ['code','Name','responsibleUser','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset', 'lat', 'lng',]
+        fields = ['code','Name','responsibleUser','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
