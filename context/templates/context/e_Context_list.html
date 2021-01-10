@@ -31,13 +31,6 @@
   <button type="submit" class="btn btn-info">Filter</button>
 </form>
 
-<div class="mt-3">
-  {% if perms.context.add_e_context %}
-  <a class="btn btn-info ml-0 mt-3" href="{% url 'context-create' %}">Add Context</a>
-  {% endif %}
-  
-  <a class="btn btn-info ml-0 mt-3" href="{% url 'other-contexts'  %}">Other Contexts</a>  
-  </div>
 </div>
 
 <div class="row">
@@ -68,13 +61,14 @@
   </table>
 </div>
 </div>
-{% comment %}
-  <h1>Don't see your context?</h1>
-  <div class="content">
-    <a id='upload-context-btn' class="btn btn-info btn-lg mt-1" href="{% url 'context_upload'  %}">Upload It</a>  
-  </div> 
-{% endcomment %}
 
+<div class="mt-3">
+  {% if perms.context.add_e_context %}
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'context-create' %}">Add Context</a>
+  {% endif %}
+  
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+  </div>
 
 
 

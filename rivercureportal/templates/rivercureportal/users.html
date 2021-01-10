@@ -7,7 +7,7 @@
 
 {% if request.user|has_group:"ContextAdmin" or user.is_staff %} 
 
-<h1>Rivercure Users</h1>
+<h1>RiverCure Users</h1>
 
 <style>
   .row {
@@ -66,17 +66,14 @@
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
-  <div>
+  
+</div>
+
+<div>
   {% if user|has_group:"Administration" or user.is_superuser %}
   <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'admin:auth_user_changelist' %}" >Manage Users</a>
   {% endif %}
-  </div>
 </div>
-
-
-
-
-
 
 {% endif %}
 </div>

@@ -3,7 +3,6 @@
 {% load static %}
 {% load auth_extras %}
 
-
 {% block content %}
 
 <style>
@@ -23,7 +22,6 @@
 
 <div class="col-md-8">
   <table name="table" id="table" class="table">
-    
     <tr>
       <th id="sd" class="tr_class" scope="col" >Name</th>
       <th id="sd" class="tr_class" scope="col">Type</th>
@@ -41,6 +39,23 @@
         <td><h2 class="text-secondary font-italic no-context-data">No available hydrofeatures!</h2></td>
       {% endfor %}
   </table>
+  <div class="pagination mb-5">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+  
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+  
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
 </div>
 
 <div class="filter-section col-md-3">
@@ -49,31 +64,16 @@
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
+</div>
+
+
   <div>
     {% if perms.rivercureportal.add_e_hydrofeature %}
-      <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
+      <a type="button" class="btn btn-info ml-0 mt-0 mb-5" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
     {% endif %}
   </div>
 
-  </div>
 
-<div class="pagination mb-5">
-  <span class="step-links">
-      {% if page_obj.has_previous %}
-          <a href="?page=1">&laquo; first</a>
-          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-      {% endif %}
-
-      <span class="current">
-          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-      </span>
-
-      {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}">next</a>
-          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-      {% endif %}
-  </span>
-</div>
 
 <script>
   

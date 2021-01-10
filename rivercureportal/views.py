@@ -60,16 +60,12 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_list.html'
-    paginate_by = 15
+    paginate_by = 12
     
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
         context['filter'] = HydroFeatureFilter(self.request.GET, queryset=e_HydroFeature.objects.all())
         return context
-
-
 
 class HydroFeatureForm(forms.ModelForm):
     class Meta:
