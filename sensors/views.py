@@ -193,6 +193,12 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('sensor-list')
+    
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        obj.save()
+        return super().form_valid(form)
 
     def test_func(self):
         if self.request.user.has_perm('sensors.change_e_sensor'):
@@ -204,6 +210,11 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Sensor
     form_class = SensorForm
     
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        obj.save()
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('sensor-list')
@@ -336,8 +347,10 @@ def handle_uploaded_sensors_file(file):
         
         sensor.timeZoneAbbreviation = 'GMT'
         sensor.timeZoneOffset = 1
-    
-        srid = int(sensors_sheet.cell_value(i,10))
+
+        if sensors_sheet.cell_value(i,10) == '': srid = 3763
+        else: srid = int(sensors_sheet.cell_value(i,10))
+
         coord_str = sensors_sheet.cell_value(i,11)
         coords = coord_str.split(',')
 
