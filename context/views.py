@@ -880,10 +880,12 @@ def preprocessing_results(request): # function to redirect the user to the parav
 def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
     url = os.environ['SIMULATOR_ADDRESS']
     context = e_Context.objects.get(code=context_code)
-
-    request = url + f'/pre-processing/results/?context_name={context.Name}'
+    payload = {'context_name': context.Name}
+    request = requests.get(f'{url}pre-processing/results/', params=payload)
     print(f'Pre-processing results requested for context {context.Name}')
-    return HttpResponseRedirect(request)
+    response = HttpResponse(request.content)
+    response['Content-Disposition'] = 'attachment; filename="%s_mesh.vtk"'%context.Name
+    return response
 
 def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
@@ -980,10 +982,12 @@ def download_simulation_results(request, event_id): #function to download simula
 
     context_name = context_event.context.Name
 
-    request = url + f'simulation/results/?event_id={event_id}&context_name={context_name}'
+    payload = {'context_name': context.Name, 'event_id': event_id}
+    request = requests.get(f'{url}simulation/results/', params=payload)
     print(f'Simulation results requested for context {context_name} event {event_id}')
-    return HttpResponseRedirect(request)
-
+    response = HttpResponse(request.content)
+    response['Content-Disposition'] = 'attachment; filename="%s_%s_simulation_results.zip"'%context.Name%event_id
+    return response
 
 def handle_simulation_results(request, event_id): #function to handle simulation results
     sim_url = os.environ['SIMULATOR_ADDRESS']
