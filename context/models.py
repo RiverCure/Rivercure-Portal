@@ -52,6 +52,14 @@ class e_ContextDTM(models.Model):
 	def __str__(self):
 		return f"{self.context} context dtm"
 
+class e_ContextDTMFile(models.Model):
+	context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_dtm_file')
+	raster = models.FileField(null=True, blank=True) #This field corresponds to the context DTM (.tiff file)
+	# dtmFile = models.FileField()
+
+	def __str__(self):
+		return f"{self.context} context dtm"
+
 class e_ContextFrictionCoeff(models.Model):
 	context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_contour_lines')
 	raster = models.FileField(null=True, blank=True)  		#aka contour lines

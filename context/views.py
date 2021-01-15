@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult, e_ContextUser
+from .models import e_Context, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult, e_ContextUser
 from raster.models import RasterLayer
 from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
@@ -302,7 +302,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         obj.save() 
 
         try:
-            request_simulation(context, obj.id, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
+            r = request_simulation(context, obj.id, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
             if r.text == 'success':
                 messages.success(self.request,f'Simulation request successful') 
             else:
@@ -411,6 +411,11 @@ def handle_upload_raster(context, raster_file): #function to handle the upload o
    
     dtm.save()
 
+def handle_upload_raster_file(context, raster_file):
+    dtm = e_ContextDTMFile.objects.get_or_create(context=context)
+    dtm[0].raster = raster_file
+    dtm[0].save()
+
 def handle_friction_coeff_upload(context, friction_coeff_file): #function to handle the upload of the contour lines file
     friction_coeff = e_ContextFrictionCoeff.objects.get_or_create(context=context)
     friction_coeff[0].raster = friction_coeff_file
@@ -516,13 +521,14 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                 #Save dtm from raster file field
                 dtm = self.request.FILES.get('dtm_file')
                 if dtm is not None:
-                    handle_upload_raster(context, dtm)
+                    # handle_upload_raster(context, dtm)
+                    handle_upload_raster_file(context, dtm)
 
                 #Save contour lines from file
                 friction_coeff = self.request.FILES.get('friction_coefficient_file')
                 if friction_coeff is not None:
                     handle_friction_coeff_upload(context, friction_coeff)
-                
+        
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
@@ -896,14 +902,16 @@ def request_simulation(context, event_id, writing_perio, max_update_perio, writi
     #prepare files
 
     frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
+    time_file = prepare_time_file(init_date, end_date, init_time, end_time)
 
     files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
 
     files.append(('frequency', frequency_file))
+    files.append(('time', time_file))
 
     r = requests.post(url, files=files, params=payload)
 
-    return r.text
+    return r
 
 
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
@@ -926,6 +934,13 @@ def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update
 
     return output_file_data
     
+def prepare_time_file(init_date, end_date, init_time, end_time): #prepare time file
+    init_time = datetime.datetime.combine(datetime.date.today(), init_time)
+    end_time = datetime.datetime.combine(datetime.date.today(), end_time)
+    duration = (end_date - init_date).seconds + (end_time - init_time).seconds
+    time_file = f'0\r\n{duration}'
+    return time_file
+
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
     files = []
 
