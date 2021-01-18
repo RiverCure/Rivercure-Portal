@@ -7,10 +7,10 @@ from .views import (
     manage_context, download_context, preprocessing_results, request_pre_processing, download_preprocessing_results,
     ContextViewSet, 
     UploadContext, 
-    EventCreateView, EventUpdateView,  EventListView,EventDetailView, 
+    EventCreateView, EventUpdateView, EventDetailView, 
     ContextSensorListView, 
     ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
-    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results
+    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview
 ) 
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
@@ -34,9 +34,9 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('context-sensors/', ContextSensorListView, name='context-sensor-list'),
     path('events/<int:pk>', EventDetailView.as_view(), name='event-detail'),
+    path('events/run/<int:event_id>', runsimulationview, name='event-run'),
     path('context_requests/', ContextRequestListView.as_view(), name='context-requests-list'), 
     path('context_request/<int:pk>', ContextRequestDecisionView, name='context-request-decision'),
-    path('events/', EventListView, name='event-list'),
     path('events/list/<str:context_code>', ContextEventListView, name='context-event-list'),
     path('events/new/', EventCreateView.as_view(), name='event-create'),
     path('event/<int:pk>/update/', EventUpdateView.as_view(), name='event-update'),

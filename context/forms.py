@@ -41,8 +41,3 @@ class EventForm(forms.ModelForm):
             'endTime': forms.TextInput(attrs={'placeholder': 'hh:mm:ss'}),
             'description': forms.Textarea(attrs={'placeholder': 'Enter description here'}),
         }
-
-class EventEditForm(forms.ModelForm):
-      class Meta:
-        model = e_ContextEvent
-        fields = ['Name', 'type', 'subtype', 'startDate', 'startTime', 'endDate', 'endTime', 'description', 'returnPeriod', 'warmUp', 'WritingPeriodicity', 'WritingPeriodicityUnit', 'UpdateMaximumValue', 'UpdateMaximumValueUnit']

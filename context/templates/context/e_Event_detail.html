@@ -9,26 +9,23 @@
         <p class="article-content"><b>Context: </b>{{ event.context }}</p>
         <p class="article-content"><b>Type: </b>{{ event.type }}</p> 
         <p class="article-content"><b>SubType: </b>{{ event.subtype }}</p> 
-        <!--<p class="article-content"><b>State: </b>{{ event.state }}</p>--> 
         <p class="article-content"><b>Start: </b>{{ event.startDate }} - {{event.startTime}}</p> 
         <p class="article-content"><b>End: </b>{{ event.endDate }} - {{event.endTime}}</p>
         <p class="article-content"><b>Description: </b>{{ event.description}}</p>
         <p class="article-content"><b>Return Period: </b>{{ event.returnPeriod}}</p>
         <p class="article-content"><b>WarmUp: </b>{{ event.warmUp}}</p>
-        <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{event.WritingPeriodicityUnit }}</p>
-        <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{event.UpdateMaximumValueUnit }}</p>
+        <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{ event.WritingPeriodicityUnit }}</p>
+        <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{ event.UpdateMaximumValueUnit }}</p>
  
- 
-  <!--<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'event-update' object.id %}">Edit</a>-->
   <a type="button" class="btn btn-info" href="{% url 'event-update' object.id %}?context_code={{ event.context.code }}&context_name={{ event.context.Name }}">Edit</a>
-  <a class="btn btn-info btn mt-1 mb-1" href="#">Run Simulation</a>
+  <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' object.id %}">Run Simulation</a>
   
   {% if event.context_event_results != '' %}
     <a class="btn btn-info btn mt-1 mb-1" href="{% url 'simulation-results-download' event.id %}">Download Results</a>
     <a class="btn btn-info btn mt-1 mb-1" href="{% url 'view-simulation-results' event.id %}">View Results</a>
   {% endif %}
 
-  <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'context-event-list' event.context.code %}" >Back to Events List</a>
+  <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'context-event-list' event.context.code %}" >Back</a>
                                                              
 </article>
 {% endblock content %}

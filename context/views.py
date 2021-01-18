@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction, connection
 from django.utils import timezone
-from .forms import ContextForm, UploadContextForm, EventForm, EventEditForm
+from .forms import ContextForm, UploadContextForm, EventForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
@@ -256,7 +256,7 @@ def ContextSensorListView(request):
 class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
     template_name = 'context/e_Event_create.html'
-    form_class = EventEditForm
+    form_class = EventForm
     context_object_name = 'event'
 
     def get_context_data(self, **kwargs):
@@ -285,7 +285,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         context["context_code"] = self.request.GET["context_code"]
         context["context_name"] = self.request.GET["context_name"]
         return context
-
+    
     def form_valid(self, form):
         context = e_Context.objects.get(code=form.cleaned_data['context_code'])
         writing_period = form.cleaned_data['WritingPeriodicity']
@@ -296,22 +296,21 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         end_date = form.cleaned_data['endDate']
         init_time = form.cleaned_data['startTime']
         end_time = form.cleaned_data['endTime']
-
+        
         obj = form.save(commit=False)
         obj.context = context
         obj.save() 
 
-        try:
-            r = request_simulation(context, obj.id, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
-            if r.text == 'success':
-                messages.success(self.request,f'Simulation request successful') 
-            else:
-                messages.warning(self.request,f'Simulation request failed') 
-        except Exception as e:
-            print(f'Failed simulation request!\nException: {e}')
-            messages.warning(self.request,f'Simulation request failed') 
-
-        return HttpResponseRedirect(reverse('event-list'))
+        #try:
+            #r = request_simulation(context, obj.id, writing_period, max_update_period, writing_unit, update_unit, init_date, end_date, init_time, end_time)
+            #if r.text == 'success':
+                #messages.success(self.request,f'Simulation request successful') 
+            #else:
+                #messages.warning(self.request,f'Simulation request failed') 
+        #except Exception as e:
+            #print(f'Failed simulation request!\nException: {e}')
+            #messages.warning(self.request,f'Simulation request failed') 
+        return HttpResponseRedirect(reverse('event-detail',args=(obj.id,)))
 
     def test_func(self):
         if self.request.user.groups.filter(name='ContextEventManager').exists():
@@ -319,11 +318,31 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         else:
             return False
 
-@permission_required('context.view_e_context', raise_exception=True)
-def EventListView(request):
-    event_list = e_ContextEvent.objects.all()
-    event_filter = EventFilter(request.GET, queryset=event_list)
-    return render(request, 'context/e_AllEvents.html', {'filter': event_filter})
+
+@permission_required('context.create_e_contextevent', raise_exception=True)
+def runsimulationview(request, event_id):
+    
+    event = e_ContextEvent.objects.get(id=event_id)
+    try:
+        r = request_simulation(event.context, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, 
+        event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime)
+        if r.text == 'success':
+            messages.success(request,f'Simulation request successful') 
+        else:
+            messages.warning(request,f'Simulation request failed') 
+    except Exception as e:
+        print(f'Failed simulation request!\nException: {e}')
+        messages.warning(request,f'Simulation request failed') 
+    
+    print("RUN SIMULATION")
+    return HttpResponseRedirect(reverse('event-detail', args=(event.id,)))
+    #return HttpResponseRedirect('about')
+
+#@permission_required('context.view_e_context', raise_exception=True)
+#def EventListView(request):
+    #event_list = e_ContextEvent.objects.all()
+    #event_filter = EventFilter(request.GET, queryset=event_list)
+    #return render(request, 'context/e_AllEvents.html', {'filter': event_filter})
 
 def ContextEventListView(request, context_code):
     qs = e_ContextEvent.objects.filter(context__code=context_code)
