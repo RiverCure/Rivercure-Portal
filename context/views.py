@@ -903,11 +903,13 @@ def request_simulation(context, event_id, writing_perio, max_update_perio, writi
 
     frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
     time_file = prepare_time_file(init_date, end_date, init_time, end_time)
+    boundary_file = prepare_boundaries_file(context)
 
     files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
 
     files.append(('frequency', frequency_file))
     files.append(('time', time_file))
+    files.append(('boundaries', boundary_file))
 
     r = requests.post(url, files=files, params=payload)
 
@@ -970,6 +972,26 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
         files.append((f'sensor_{point.sensor.code}.bnd', file_data))
         
     return files
+
+def prepare_boundaries_file(context):
+    boundaries = e_ContextBoundaryLine.objects.filter(context=context)
+    i = 0
+    result = ''
+
+    for boundary in boundaries:
+        result += f'{i}\r\n'
+        i += 1
+        
+        if boundary.type.lower() == 'input':
+            result += '2\r\n'
+        elif boundary.type.lower() == 'output':
+            result += '3\r\n'
+        else:
+            result += '4\r\n'
+
+        result += '0.0\r\n10.0\r\n\r\n'
+
+    return result
 
 def mesh_status_change(request, context_name): # Function to mark mesh has generated
     context = e_Context.objects.get(Name=context_name)
