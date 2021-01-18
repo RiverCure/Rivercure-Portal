@@ -845,7 +845,7 @@ def request_pre_processing(request, context_code): # function to start simulatio
             files['alignments.geojson'] = geojson.dumps(alignment_file)
 
         try:
-            dtm_file = e_ContextDTM.objects.get(context__code=context_code).contextDTM.rasterfile
+            dtm_file = e_ContextDTMFile.objects.get(context__code=context_code).raster
             files['dtm.tif'] = dtm_file
         except Exception:
             print('No DTM defined')
@@ -981,7 +981,7 @@ def prepare_boundaries_file(context):
     for boundary in boundaries:
         result += f'{i}\r\n'
         i += 1
-        
+
         if boundary.type.lower() == 'input':
             result += '2\r\n'
         elif boundary.type.lower() == 'output':
