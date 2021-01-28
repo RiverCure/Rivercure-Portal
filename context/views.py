@@ -1,7 +1,7 @@
 import json, os, geojson, tempfile, datetime, requests
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.db import transaction, connection
 from django.utils import timezone
 from .forms import ContextForm, UploadContextForm, EventForm
@@ -710,7 +710,7 @@ def download_context(request, context_code): #function that allows the download 
                 zipFolder.writestr(f'{context_name}_boundaries_points.geojson', geojson.dumps(boundary_point_file))
 
         mem_file.seek(0)
-        response = HttpResponse(mem_file.read(), content_type="application/zip")
+        response = FileResponse(mem_file, content_type="application/zip")
         response['Content-Disposition'] = f'attachment; filename="{context_name}.zip"'
         return response
     except Exception as e:
@@ -919,7 +919,7 @@ def download_preprocessing_results(request, context_code): # function to redirec
     payload = {'context_name': context.Name}
     request = requests.get(f'{url}pre-processing/results/', params=payload, stream=True)
     print(f'Pre-processing results requested for context {context.Name}')
-    response = HttpResponse(BytesIO(request.content))
+    response = FileResponse(BytesIO(request.content))
     response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
 
     return response
@@ -1057,8 +1057,15 @@ def download_simulation_results(request, event_id): #function to download simula
 
     payload = {'context_name': context_name, 'event_id': event_id}
     request = requests.get(f'{url}simulation/results/', params=payload, stream=True)
+
+    # mem_file = BytesIO()
+    # with ZipFile(mem_file, 'w') as destination:
+    #     for chunk in request.iter_content(chunk_size=1024):
+    #             destination.write(chunk)
+
+            
     print(f'Simulation results requested for context {context_name} event {event_id}')
-    response = HttpResponse(BytesIO(request.content))
+    response = FileResponse(BytesIO(request.content))
     response['Content-Disposition'] = f'attachment; filename="{context_name}_{event_id}_simulation_results.zip"'
     return response
 
