@@ -432,11 +432,22 @@ def handle_upload_raster(context, raster_file): #function to handle the upload o
 
 def handle_upload_raster_file(context, raster_file):
     dtm = e_ContextDTMFile.objects.get_or_create(context=context)
-    dtm[0].raster = raster_file
+    file_name = f'{context.Name}_dtm.tif'
+    with open(f'media/{file_name}', 'wb+') as destination:
+        for chunk in raster_file.chunks():
+            destination.write(chunk)
+    
+    dtm[0].raster = file_name
     dtm[0].save()
 
 def handle_friction_coeff_upload(context, friction_coeff_file): #function to handle the upload of the contour lines file
     friction_coeff = e_ContextFrictionCoeff.objects.get_or_create(context=context)
+    file_name = f'{context.Name}_frictionCoef.tif'
+    with open(f'media/{file_name}', 'wb+') as destination:
+        for chunk in friction_coeff_file.chunks():
+            destination.write(chunk)
+
+
     friction_coeff[0].raster = friction_coeff_file
     friction_coeff[0].save()
 
