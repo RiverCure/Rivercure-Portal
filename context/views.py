@@ -711,7 +711,7 @@ def download_context(request, context_code): #function that allows the download 
 
         mem_file.seek(0)
         response = HttpResponse(mem_file.read(), content_type="application/zip")
-        response['Content-Disposition'] = 'attachment; filename="%s.zip"'%context_name
+        response['Content-Disposition'] = f'attachment; filename="{context_name}.zip"'
         return response
     except Exception as e:
         messages.warning(request,f'Context not complete for download') 
@@ -920,7 +920,7 @@ def download_preprocessing_results(request, context_code): # function to redirec
     request = requests.get(f'{url}pre-processing/results/', params=payload, stream=True)
     print(f'Pre-processing results requested for context {context.Name}')
     response = HttpResponse(BytesIO(request.content))
-    response['Content-Disposition'] = 'attachment; filename="%s_mesh.vtk"'%context.Name
+    response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
 
     return response
 
@@ -1041,7 +1041,7 @@ def mesh_status_change(request, context_name): # Function to mark mesh has gener
     return HttpResponse(status=200)
 
 def event_permission_check(user):
-    return self.request.user.groups.filter(name='ContextEventManager').exists()   
+    return user.groups.filter(name='ContextEventManager').exists()   
 
 @user_passes_test(event_permission_check, login_url='/login/')    
 def download_simulation_results(request, event_id): #function to download simulation results
@@ -1055,11 +1055,11 @@ def download_simulation_results(request, event_id): #function to download simula
 
     context_name = context_event.context.Name
 
-    payload = {'context_name': context.Name, 'event_id': event_id}
-    request = requests.get(f'{url}simulation/results/', params=payload)
+    payload = {'context_name': context_name, 'event_id': event_id}
+    request = requests.get(f'{url}simulation/results/', params=payload, stream=True)
     print(f'Simulation results requested for context {context_name} event {event_id}')
-    response = HttpResponse(request.content)
-    response['Content-Disposition'] = 'attachment; filename="%s_%s_simulation_results.zip"'%context.Name%event_id
+    response = HttpResponse(BytesIO(request.content))
+    response['Content-Disposition'] = f'attachment; filename="{context_name}_{event_id}_simulation_results.zip"'
     return response
 
 def handle_simulation_results(request, event_id): #function to handle simulation results
@@ -1072,7 +1072,7 @@ def handle_simulation_results(request, event_id): #function to handle simulation
     try:
         req = requests.get(url)
     except Exception as e:
-        print(f'Simulation event request failed: {e}')
+        print(f'Simulation event handling failed: {e}')
         return HttpResponse(status=404)
 
     with ZipFile(BytesIO(req.content)) as simulation_results_zip:
