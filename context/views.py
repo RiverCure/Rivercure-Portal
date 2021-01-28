@@ -917,11 +917,17 @@ def download_preprocessing_results(request, context_code): # function to redirec
     url = os.environ['SIMULATOR_ADDRESS']
     context = e_Context.objects.get(code=context_code)
     payload = {'context_name': context.Name}
-    request = requests.get(f'{url}pre-processing/results/', params=payload)
+    request = requests.get(f'{url}pre-processing/results/', params=payload, stream=True)
     print(f'Pre-processing results requested for context {context.Name}')
-    response = HttpResponse(request.content)
+    response = HttpResponse(BytesIO(request.content))
     response['Content-Disposition'] = 'attachment; filename="%s_mesh.vtk"'%context.Name
+
     return response
+
+    # messages.warning(self.request, 'Mesh download failed') 
+    # return redirect(reverse('context-detail', kwargs={'pk': context_code}))
+
+    
 
 def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
