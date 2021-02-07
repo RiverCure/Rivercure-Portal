@@ -1135,23 +1135,17 @@ var MyFunctions = {
     polygonInTreeHTML: (id, polygonType, CL) => {
         return `
             <div ` + 'id=polygon-tree-' + polygonType + '-' + id + ` class="polygon-tree container border-bottom">
-                <div class="row">
-                    <div class="col-md-12" polygon-tree-label">
-                        <span class="tree-titles"><b>` + polygonType + ' ' + id + `</b></span>
-                    </div>
+                <div class="row" polygon-tree-label">
+                    <span class="tree-titles"><b>` + polygonType + ' ' + id + `</b></span>
                 </div>
                 <div ` + 'id=polygon-' + id + '-CL-value' + ` class="row">
-                    <div class="col-md-12">
-                        <b>Current CL:</b> ` + CL + `
-                    </div>
+                    <b>Current CL:</b> ` + CL + `
                 </div>
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="input-group mb-3">
-                            <input type="text" ` + 'id=polygon-' + id + '-CL-input' + ` class="form-control" placeholder="Insert new CL">
-                            <div class="input-group-append">
-                                <button type="button" ` + 'id=polygon-' + id + '-CL-input-btn' + ` class="btn btn-outline-info">Save</button>
-                            </div>
+                    <div class="input-group mb-3">
+                        <input type="number" ` + 'id=polygon-' + id + '-CL-input' + ` class="form-control" placeholder="Insert new CL">
+                        <div class="input-group-append">
+                            <button type="button" ` + 'id=polygon-' + id + '-CL-input-btn' + ` class="btn btn-outline-info">Save</button>
                         </div>
                     </div>
                 </div>

@@ -85,6 +85,10 @@
   height: 100px;
   overflow: scroll;
   margin-left: inherit;
+  padding: 0px;
+  /*Remove arrows from number input*/
+  /* Chrome, Safari, Edge, Opera */
+  /* Firefox */
 }
 #polygon-tree-id .polygon-tree:hover {
   background: #eee;
@@ -96,6 +100,14 @@
 }
 #polygon-tree-id .polygon-tree .polygon-tree-label {
   margin-bottom: 5px;
+}
+#polygon-tree-id input::-webkit-outer-spin-button,
+#polygon-tree-id input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#polygon-tree-id input[type=number] {
+  -moz-appearance: textfield;
 }
 
 .tr_class {
