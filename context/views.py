@@ -531,38 +531,63 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
             return False
 
     def form_valid(self, form):
+        message = ''
         try:
             with transaction.atomic():
                 context = e_Context.objects.get(code=form.cleaned_data['code'])
-                if form.cleaned_data['domain'] is not None:
-                    handle_domain(form.cleaned_data['domain'], context, self.request.user)
-                
-                #Mark edited context for mesh regeneration need
-                context.hasMesh = False
-                context.save()
+                try:
+                    if form.cleaned_data['domain'] is not None:
+                        handle_domain(form.cleaned_data['domain'], context, self.request.user)
+                    
+                    #Mark edited context for mesh regeneration need
+                    context.hasMesh = False
+                    context.save()
+                except Exception as e:
+                    message = 'Error in Domain definition'
+                    raise Exception(e)
 
-                if form.cleaned_data['alignments'] is not None:
-                    handle_alignment(form.cleaned_data['alignments'], context)
-                if form.cleaned_data['refinements'] is not None:
-                    handle_refinement(form.cleaned_data['refinements'], context)
-                if form.cleaned_data['boundaries'] is not None:
-                    handle_boundaries(form.cleaned_data['boundaries'], context)
+                try:
+                    if form.cleaned_data['alignments'] is not None:
+                        handle_alignment(form.cleaned_data['alignments'], context)
+                except Exception as e:
+                    message = 'Error in Alignment definition'
+                    raise Exception(e)
+                try:
+                    if form.cleaned_data['refinements'] is not None:
+                        handle_refinement(form.cleaned_data['refinements'], context)
+                except Exception as e:
+                    message = 'Error in Refinement definition'
+                    raise Exception(e)
+                try:
+                    if form.cleaned_data['boundaries'] is not None:
+                        handle_boundaries(form.cleaned_data['boundaries'], context)
+                except Exception as e:
+                    message = 'Error in Boundary definition'
+                    raise Exception(e)
 
                 #Save dtm from raster file field
-                dtm = self.request.FILES.get('dtm_file')
-                if dtm is not None:
-                    # handle_upload_raster(context, dtm)
-                    handle_upload_raster_file(context, dtm)
-
+                try:
+                    dtm = self.request.FILES.get('dtm_file')
+                    if dtm is not None:
+                        # handle_upload_raster(context, dtm)
+                        handle_upload_raster_file(context, dtm)
+                except Exception as e:
+                    message = 'Error in DTM definition'
+                    raise Exception(e)
                 #Save contour lines from file
-                friction_coeff = self.request.FILES.get('friction_coefficient_file')
-                if friction_coeff is not None:
-                    handle_friction_coeff_upload(context, friction_coeff)
-        
+                
+                try:
+                    friction_coeff = self.request.FILES.get('friction_coefficient_file')
+                    if friction_coeff is not None:
+                        handle_friction_coeff_upload(context, friction_coeff)
+                except Exception as e:
+                    message = 'Error in Friction coefficient definition'
+                    raise Exception(e)
+
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
-            messages.warning(self.request, 'Context Upload Failed') 
+            messages.warning(self.request, f'Context Upload Failed. Detail: {message}') 
 
         
         return super().form_valid(form)
