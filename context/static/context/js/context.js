@@ -1163,44 +1163,34 @@ var MyFunctions = {
 
         return `
             <div ` + 'id=boundaryline-tree-id-' + id + ` class="polygon-tree container border-bottom">
-                <div class="row">
-                    <div class="col-md-12" style="margin-bottom:5px;">
-                        <span class="tree-titles"><b>Boundary ` + id + `</b></span>
-                    </div>
+                <div class="row" style="margin-bottom:5px;">
+                    <span class="tree-titles"><b>Boundary ` + id + `</b></span>
+                </div>
+                <div class="row polygon-tree-label">
+                    <b>Type:</b>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 polygon-tree-label">
-                        <b>Type:</b>
+                    <div class="input-group mb-3">
+                        <select ` + 'id=boundaryline-' + id + '-type-value' + ` class="custom-select">
+                            <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
+                            <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
+                            <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
+                        </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="input-group mb-3">
-                            <select ` + 'id=boundaryline-' + id + '-type-value' + ` class="custom-select">
-                                <option value="Input" ` + findSelected('Input', selectedType) + `>Input</option>
-                                <option value="Output" ` + findSelected('Output', selectedType) + `>Output</option>
-                                <option value="InputOutput" ` + findSelected('InputOutput', selectedType) + `>Input Output</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="row polygon-tree-label" style="margin-top:-8px">
+                    <b>Data Type:</b>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 polygon-tree-label" style="margin-top:-8px">
-                        <b>Data Type:</b>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="input-group mb-3">
-                            <select ` + 'id=boundaryline-' + id + '-datatype-value' + ` class="custom-select">
-                                <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
-                                <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
-                                <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
-                                <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
-                            </select>
-                            <div class="input-group-append">
-                                <button type="button" ` + 'id=boundaryline-' + id + '-types-input-btn' + ` class="btn btn-outline-info">Save</button>
-                            </div>
+                    <div class="input-group mb-3">
+                        <select ` + 'id=boundaryline-' + id + '-datatype-value' + ` class="custom-select">
+                            <option value="H" ` + findSelected('H', selectedDataType) + `>Depth</option>
+                            <option value="Q" ` + findSelected('Q', selectedDataType) + `>Discharge</option>
+                            <option value="Z" ` + findSelected('Z', selectedDataType) + `>Elevation</option>
+                            <option value="V" ` + findSelected('V', selectedDataType) + `>Velocity</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button type="button" ` + 'id=boundaryline-' + id + '-types-input-btn' + ` class="btn btn-outline-info">Save</button>
                         </div>
                     </div>
                 </div>

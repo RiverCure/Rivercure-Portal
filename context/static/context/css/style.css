@@ -101,6 +101,9 @@
 #polygon-tree-id .polygon-tree .polygon-tree-label {
   margin-bottom: 5px;
 }
+#polygon-tree-id .polygon-tree b {
+  padding-left: 3px;
+}
 #polygon-tree-id input::-webkit-outer-spin-button,
 #polygon-tree-id input::-webkit-inner-spin-button {
   -webkit-appearance: none;
