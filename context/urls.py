@@ -10,7 +10,7 @@ from .views import (
     EventCreateView, EventUpdateView, EventDetailView, 
     ContextSensorListView, 
     ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
-    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview
+    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview, inform_mesh_status
 ) 
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
@@ -28,6 +28,7 @@ urlpatterns = [
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     path('preprocessing_results/download/<str:context_code>', download_preprocessing_results, name='context-preprocessing-results-download'),
     path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
+    path('mesh-status/request/<str:context_code>', inform_mesh_status, name='mesh-status-request'),
     path('simulation/results/<int:event_id>', view_events_results, name='view-simulation-results'),
     path('simulation/results/download/<int:event_id>', download_simulation_results, name='simulation-results-download'),
     path('simulation/results/handle/<int:event_id>', handle_simulation_results, name='handle-simulation-results'),

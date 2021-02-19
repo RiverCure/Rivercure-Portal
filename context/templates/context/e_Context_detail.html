@@ -68,6 +68,24 @@
                     window.scrollBy(0, 500);
                 }
             }
+
+            requestMesh = async () => {
+                const request = new XMLHttpRequest();
+                const url = "{% url 'mesh-status-request' context.code %}";
+                request.open("GET", url);
+                setTimeout (() => {
+                    request.send();
+                    request.onreadystatechange = e => {
+                        if(request.status == 200)
+                            location.reload(true);
+                    }
+                    requestMesh(request);
+                }, 5000);
+            }
+
+            if("{{ context.hasMesh }}" == "False") { //check if mesh exists
+                requestMesh();
+            }
       });
     </script>
 {% endblock %}

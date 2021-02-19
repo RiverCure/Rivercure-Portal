@@ -911,6 +911,8 @@ def request_pre_processing(request, context_code): # function to start simulatio
         except Exception:
             print('No friction coef defined')
 
+        context.hasMesh = False # Assume there is no mesh generated
+
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
 
@@ -919,7 +921,6 @@ def request_pre_processing(request, context_code): # function to start simulatio
         else:
             messages.warning(request,f'Pre-processing failed') 
             context = e_Context.objects.get(code=context_code)
-            context.hasMesh = False
             context.save()
 
         return redirect(request.META['HTTP_REFERER'])
@@ -1064,6 +1065,13 @@ def mesh_status_change(request, context_name): # Function to mark mesh has gener
     context.save()
 
     return HttpResponse(status=200)
+
+def inform_mesh_status(request, context_code): # Function to inform if mesh is generated
+    context = e_Context.objects.get(code=context_code)
+    if context.hasMesh:
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)
 
 def event_permission_check(user):
     return user.groups.filter(name='ContextEventManager').exists()   

@@ -454,7 +454,7 @@ var MyFunctions = {
                 document.querySelector('#sensor-distance').value = MyFunctions.sensorDistance;
                 document.querySelector('#sensor-distance').addEventListener('blur', e => {
                     MyFunctions.sensorDistance = document.querySelector('#sensor-distance').value;
-                    console.log(e)
+                    //console.log(e)
                     popup.closePopup();
                     popup.openPopup();
                 })
@@ -805,7 +805,7 @@ var MyFunctions = {
             document.querySelector('#submit-btn').innerHTML = 'Save Context'
         }
         catch(err) { //In case of invalid context
-            console.log(err);
+            //console.log(err);
             document.querySelector('#load-context-result').setAttribute("class", "alert alert-danger");
             document.querySelector('#load-context-result').innerHTML = "Unable to save Context<br>Hint: Start by drawing the Domain";
         }
@@ -839,7 +839,7 @@ var MyFunctions = {
         xmlHttp.send(null);
         response = JSON.parse(xmlHttp.responseText);
 
-        console.log(response);
+        //console.log(response);
 
         //show the form
         if(MyFunctions.mode == 'edit') {
@@ -1218,9 +1218,9 @@ var MyFunctions = {
                 addOptions += option.outerHTML;
             }
 
-            console.log('Sensors ' + id)
-            console.log(MyFunctions.getNearbySensors(addedSensors, MyFunctions.domainMarkers.getLayer(id)))
-            console.log(addOptions)
+            //console.log('Sensors ' + id)
+            //console.log(MyFunctions.getNearbySensors(addedSensors, MyFunctions.domainMarkers.getLayer(id)))
+            //console.log(addOptions)
             return addOptions;
 
             // option = document.createElement('option');
