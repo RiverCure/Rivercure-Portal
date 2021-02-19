@@ -170,6 +170,7 @@ LEAFLET_CONFIG = {
                                 <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
             }),
             ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
+            ('Blank', '', {}),
     ]
 }
 
