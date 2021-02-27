@@ -23,8 +23,8 @@ class GeoSensorForm(forms.ModelForm):
         
 
 class SensorForm(forms.ModelForm):
-    #lat = forms.FloatField()
-    #lng = forms.FloatField()
+    lat = forms.FloatField()
+    lng = forms.FloatField()
 
     class Meta:
         model = e_Sensor

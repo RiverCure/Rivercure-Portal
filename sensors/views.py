@@ -252,6 +252,7 @@ def sensor_upload(request):
         form = SensorFileForm(request.POST, request.FILES)
         if form.is_valid():
             handle_uploaded_sensors_file(request.FILES['excel_file'])
+            handle_uploaded_observations_file(request.FILES['excel_file'])
             return HttpResponseRedirect('/sensors/')
 
     return HttpResponseRedirect('/sensors/')

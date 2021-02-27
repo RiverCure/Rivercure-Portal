@@ -85,7 +85,7 @@
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-geo-update' object.code %}" >Geo Edit</a>
 				<a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' object.code %}"  >Delete</a>
-				<a class="btn btn-info btn mt-1 mb-1"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
+				<!--<a class="btn btn-info btn mt-1 mb-1"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>-->
 			{% endif %}
 				<a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observations' %}?sensor={{object.code}}">Observations</a>
 				<a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
@@ -94,7 +94,7 @@
 		</div>
 	</article>
 
-	<div id="observationsUploadDiv" class="container" style="display: none">
+	<!--<div id="observationsUploadDiv" class="container" style="display: none">
 		<h2>Upload excel</h2>
 		<div id="form-data" class="content-section">
 			<form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' %}">
@@ -106,7 +106,7 @@
 				</div>
 			</form>
 		</div>
-	</div>
+	</div>-->
 
 	<div id="map-container" class="container">
 		{% leaflet_map "my_map" %}
