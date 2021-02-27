@@ -911,7 +911,9 @@ def request_pre_processing(request, context_code): # function to start simulatio
         except Exception:
             print('No friction coef defined')
 
+        context = e_Context.objects.get(code=context_code)
         context.hasMesh = False # Assume there is no mesh generated
+        context.save()
 
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
@@ -920,8 +922,6 @@ def request_pre_processing(request, context_code): # function to start simulatio
             messages.success(request, 'Mesh generation request successful\nMesh generation is under way')
         else:
             messages.warning(request,f'Pre-processing failed') 
-            context = e_Context.objects.get(code=context_code)
-            context.save()
 
         return redirect(request.META['HTTP_REFERER'])
 
