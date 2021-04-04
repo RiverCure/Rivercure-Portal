@@ -23,7 +23,10 @@ class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, Detai
     template_name = 'sensors/e_SensorObservation_detail.html'
 
     def test_func(self):
-        if  self.request.user.has_perm('sensors.view_e_sensorobservation'):
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if  self.request.user.has_perm('sensors.view_e_sensorobservation') and (self.get_object() in qs):
             return True
         else:
             return False
@@ -44,7 +47,10 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         return reverse('sensor-observation-detail',args=(self.object.id,))
    
     def test_func(self):
-        if self.request.user.groups.filter(name='SensorManager').exists():
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.groups.filter(name='SensorManager').exists() and (self.get_object() in qs):
             return True
         else:
             return False
@@ -59,7 +65,10 @@ class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
 
 
     def test_func(self):
-        if self.request.user.groups.filter(name='SensorManager').exists():
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.groups.filter(name='SensorManager').exists() and (self.get_object() in qs):
             return True
         else:
             return False
@@ -78,7 +87,10 @@ class SensorObservationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
     template_name = 'sensors/e_SensorObservation_confirm_delete.html'
     
     def test_func(self):
-        if self.request.user.groups.filter(name='SensorManager').exists():
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.groups.filter(name='SensorManager').exists() and (self.get_object() in qs):
             return True
         else:
             return False
@@ -123,8 +135,8 @@ def SensorObservationListView(request):
 
 @permission_required('sensors.view_e_sensor', raise_exception=True)
 def SensorListView(request):
-    
-    sensor_list = e_Sensor.objects.all()
+    # Lists sensors that are public together with the ones which the user is responsible
+    sensor_list = e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(responsibleUser=request.user.id)
     sensor_filter = SensorFilter(request.GET, queryset=sensor_list)
 
     sensors = sensor_filter.qs
@@ -155,7 +167,10 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = 'sensors/e_Sensor_detail.html'
 
     def test_func(self):
-        if self.request.user.has_perm('sensors.view_e_sensor'):
+        # # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.has_perm('sensors.view_e_sensor') and (self.get_object() in qs):
             return True
         else:
             return False
@@ -180,6 +195,10 @@ class SensorCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
             return False
 
     def form_valid(self, form):
+        # If the sensor has no responsible user, then it should always be public
+        if form.cleaned_data["responsibleUser"] is None:
+            form.cleaned_data["isPublic"] = True
+
         obj = form.save(commit=False)
         obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         obj.save()
@@ -201,7 +220,10 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def test_func(self):
-        if self.request.user.has_perm('sensors.change_e_sensor'):
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.has_perm('sensors.change_e_sensor') and (self.get_object() in qs):
             return True
         else:
             return False
@@ -211,6 +233,10 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = SensorForm
     
     def form_valid(self, form):
+        # If the sensor has no responsible user, then it should always be public
+        if form.cleaned_data["responsibleUser"] is None:
+            form.cleaned_data["isPublic"] = True
+        
         obj = form.save(commit=False)
         obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         obj.save()
@@ -220,7 +246,10 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse('sensor-list')
 
     def test_func(self):
-        if self.request.user.has_perm('sensors.change_e_sensor'):
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.has_perm('sensors.change_e_sensor') and (self.get_object() in qs):
             return True
         else:
             return False
@@ -233,7 +262,10 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
         return reverse('sensor-list')
 
     def test_func(self):
-        if self.request.user.has_perm('sensors.delete_e_sensor'):
+        # We only want the sensors that are either public or are private and this user is the responsible user
+        qs = e_Sensor.objects.filter(responsibleUser=self.request.user.id) | e_Sensor.objects.exclude(isPublic=False)
+        
+        if self.request.user.has_perm('sensors.delete_e_sensor') and (self.get_object() in qs):
             return True
         else:
             return False

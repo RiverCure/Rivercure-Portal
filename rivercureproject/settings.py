@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +45,7 @@ DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = [
     'localhost',
+    '127.0.0.1',
     'rivercure.inesc-id.pt'
 ] # Must be changed to allow host in production
 
@@ -204,8 +208,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'rivercureportal@gmail.com'
 EMAIL_HOST_PASSWORD = 'rivercureportal.2020' 
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 8*60 #TIME FOR COOKIES TO EXPIRE 
+if os.environ['DEBUG'] == True:
+    SESSION_COOKIE_AGE = 8000*60 #TIME FOR COOKIES TO EXPIRE 
+    SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+else:
+    SESSION_COOKIE_AGE = 8*60 #TIME FOR COOKIES TO EXPIRE 
+    SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 SESSION_SAVE_EVERY_REQUEST = True
 
 CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually

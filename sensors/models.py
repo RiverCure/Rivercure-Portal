@@ -18,6 +18,8 @@ class e_Sensor(models.Model):
 
     responsibleUser = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
+    isPublic = models.BooleanField(default=True)
+
     modalityType = models.CharField(max_length=50, choices=SENSORMODALITYKIND_CHOICES)
 
     type = models.CharField(max_length=50, choices= SENSORKIND_CHOICES )

@@ -156,3 +156,4 @@ data/
 migrations/
 .vscode/
 results/
+.DS_Store

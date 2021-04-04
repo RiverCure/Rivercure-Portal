@@ -28,4 +28,4 @@ class SensorForm(forms.ModelForm):
 
     class Meta:
         model = e_Sensor
-        fields = ['code','Name','responsibleUser','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
+        fields = ['code','Name','responsibleUser','isPublic','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
