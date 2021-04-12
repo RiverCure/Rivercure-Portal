@@ -1,0 +1,37 @@
+{% extends "rivercureportal/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata">
+            <h1>{{ organization.name }}</h1>
+        </div>
+        {% if organization.type %}
+        <p class="article-content mt-4"><b>Type: </b>{{ organization.get_type_display }}</p>
+        {% endif %}
+        {% if organization.country %}
+        <p class="article-content mt-4"><b>Country: </b>{{ organization.get_country_display }}</p>
+        {% endif %}
+        {% if organization.city %}
+        <p class="article-content mt-4"><b>City: </b>{{ organization.get_city_display }}</p>
+        {% endif %}
+        {% if organization.manager %}
+        <p class="article-content mt-4"><b>Manager: </b>{{ organization.manager }} {% if organization.manager == user %}(me){% endif %}</p>
+        {% endif %}
+
+        {% if hasPerm %}
+            <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'organization-manage' organization.pk %}">Manage users</a>
+            <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'organization-update' organization.pk %}">Edit</a>
+            <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'organization-delete' organization.pk %}">Delete</a>
+        {% endif %}
+        <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'organization-list' %}" >Back to Organizations List</a>
+    </div>
+</article>
+
+{% endblock content %}
+
+
+
+

@@ -28,7 +28,7 @@
               <div class="nav-item dropdown">
                 {% if user.is_authenticated %}
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Contexts</a>
-                <div class="dropdown-menu">     
+                <div class="dropdown-menu">
                     {% if perms.context.view_e_context %}
                     <a href="{% url 'context-list' %}" class="dropdown-item">My Contexts</a>
                     {% endif %} 
@@ -48,7 +48,12 @@
                 {% if perms.sensors.view_e_sensor %}
                 <a href="{% url 'sensor-list' %}" class="nav-link">Sensors</a>
                 {% endif %}
-              </div> 
+              </div>
+              <div class="nav-item dropdown">
+                {% if user.is_authenticated %}
+                <a href="{% url 'organization-list' %}" class="nav-link">Organizations</a>
+                {% endif %}
+              </div>
           </div>
             
             <!-- Navbar Right Side -->

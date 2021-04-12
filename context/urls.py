@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views import (
+    ContextUpdateView,
     ContextAccessRequestCreate, ContextRequestDecisionView, ContextRequestListView, 
     GrantAccess, DenyAccess, 
     ContextEventListView, 
@@ -12,6 +13,7 @@ from .views import (
     ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
     mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview, inform_mesh_status
 ) 
+
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
 
@@ -20,6 +22,7 @@ urlpatterns = [
     path('new/', ContextCreateView.as_view(), name='context-create'),
     path('others/', OtherContextListView, name='other-contexts'),
     path('<str:pk>', ContextDetailView.as_view(), name='context-detail'),
+    path('<str:pk>/update/', ContextUpdateView.as_view(), name='context-update'),
     path('<str:pk>/delete/', ContextDeleteView.as_view(), name='context-delete'),
     path('manage/<str:context_code>', manage_context, name='context_manage'),
     path('upload/<str:pk>', UploadContext.as_view(), name='context_upload'),

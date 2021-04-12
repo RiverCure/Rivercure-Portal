@@ -38,6 +38,7 @@ urlpatterns = [
     path('contexts/', include('context.urls')),
     path('sensors/', include('sensors.urls')),
     path('context/raster/', include('raster.urls')),
+    path('organization/', include('organization.urls')),
 ]
 
 if settings.DEBUG:

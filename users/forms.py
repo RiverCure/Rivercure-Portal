@@ -20,9 +20,8 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-    institution = forms.CharField(required=False)
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     class Meta:
         model = Profile
-        fields = ['institution','image', 'first_name', 'last_name']
+        fields = ['image', 'first_name', 'last_name']

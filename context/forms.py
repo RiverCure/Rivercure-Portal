@@ -5,13 +5,23 @@ from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
 
+class ContextDetailsForm(forms.ModelForm):
+
+    hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
+    class Meta:
+        model = e_Context
+        fields = ['Name','hydroFeature']
+
+# class ContextDetailsForm(forms.Form):
+#     name = forms.CharField()
+#     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
 
 class ContextForm(forms.Form):
     code = forms.CharField(widget=forms.HiddenInput())
-    name = forms.CharField()
+    # name = forms.CharField()
     # dtm_file = forms.FileField(required=False)
     # contour_lines = forms.FileField(required=False)
-    hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
+    # hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
     domain = forms.CharField(widget=forms.HiddenInput())
     alignment = forms.CharField(widget=forms.HiddenInput())
     refinement = forms.CharField(widget=forms.HiddenInput())

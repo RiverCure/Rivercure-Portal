@@ -39,10 +39,12 @@ def run():
     aU_SensorManager_group.user_set.add(user)
 
     aU_ContextEventManager_group = Group(name='ContextEventManager')
+    # Should be aU_ContextEventManager_group.save() ?
     aU_SensorManager_group.save()
     user=User.objects.create_user('ContextEventManager', password='password')
     user.is_staff=True
     user.save()
+    # Should be aU_ContextEventManager_group.user_set.add(user) ?
     aU_SensorManager_group.user_set.add(user)
 
     aU_Visitor_group = Group(name='Visitor')

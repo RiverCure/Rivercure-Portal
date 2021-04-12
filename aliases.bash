@@ -12,3 +12,9 @@ alias makemigrations=makeMigrationsFunc;
 
 # Applies migrations
 alias migrate="python manage.py migrate";
+
+# Creates a new app
+function startAppFunc {
+    python manage.py startapp "$1";
+}
+alias startApp=startAppFunc;

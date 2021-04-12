@@ -1,0 +1,104 @@
+{% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover{
+    background: #eee;
+  }
+</style>
+
+<h1>Organizations</h1>
+
+<div class="row">
+
+  <div class="col-md-12">
+    <table class="table table-hover ">
+      <tr>
+        <th  scope="col">Name</th>
+        <th  scope="col">Type</th>
+        <th  scope="col">Country</th>
+        <th  scope="col">City</th>
+        <th  scope="col">Manager</th>
+        <th  scope="col">Public</th>
+      </tr>
+      {% for organization in organizations %}
+      <tr>
+        <td>
+          <a href="{% url 'organization-detail' organization.pk %}">
+            <div style="height:100%;width:100%">
+              {{ organization.name }}
+            </div>
+          </a>
+        </td>
+        <td>{% if organization.type %}{{ organization.get_type_display }}{% else %}-----{% endif %}</td>
+        <td>{% if organization.country %}{{ organization.get_country_display }}{% else %}-----{% endif %}</td>
+        <td>{% if organization.city %}{{ organization.get_city_display }}{% else %}-----{% endif %}</td>
+        <td>{{ organization.manager }}</td>
+        <td>
+        {% if organization.isPublic %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/></svg>
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        {% endif %}
+        </td>
+        <td>
+          {% if user_organization %}
+            {% if user_organization == organization %}
+              <a class="btn-link disabled" href="#">Member</a>
+            {% endif %}
+          {% else %}
+            {% if access_request %}
+              {% if access_request.organization == organization %}
+              <a class="btn-link disabled text-primary mr-2" href="#">Pending</a> 
+              <a href="{% url 'organization-access-request-cancel' organization.pk %}"><span class="label label-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ff0000" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span></a>
+              {% else %}
+              <a class="btn-link disabled" href="#">Request access</a>
+              {% endif %}
+            {% else %}
+              <a href="{% url 'organization-access-request' organization.pk %}">Request access</a>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">There are no organizations</h2></td>
+    {% endfor %}
+  </table>
+  <div class="pagination mb-5">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+  
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+  
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+</div>
+
+<div>
+  {% if user.is_staff %}
+    <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'organization-create' %}">Create Organization</a>
+  {% endif %}
+</div>
+
+{% endblock content %}
+
+
+
+

@@ -54,6 +54,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'leaflet',
+    'organization.apps.OrganizationConfig',
     'sensors.apps.SensorsConfig',
     'rivercureportal.apps.RivercureportalConfig',
     'users.apps.UsersConfig',
@@ -202,11 +203,11 @@ LOGIN_REDIRECT_URL = 'rivercure-home'
 LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_PORT = os.environ['EMAIL_PORT']
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'rivercureportal@gmail.com'
-EMAIL_HOST_PASSWORD = 'rivercureportal.2020' 
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 if os.environ['DEBUG'] == True:
     SESSION_COOKIE_AGE = 8000*60 #TIME FOR COOKIES TO EXPIRE 

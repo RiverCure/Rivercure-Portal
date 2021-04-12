@@ -28,6 +28,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.db.models import Q
 from django.urls import reverse_lazy
+from context.forms import ContextDetailsForm
 
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
@@ -42,7 +43,18 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
         else:
             return False
 
+class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
+    model = e_Context
+    form_class = ContextDetailsForm
+    
+    def get_success_url(self):
+        return reverse('context-detail',args=(self.object.code,))
 
+    def test_func(self):
+        if self.request.user.groups.filter(name='ContextAdmin').exists():
+            return True
+        else:
+            return False
 
 def ContextAccessRequestCreate(request, context_code):
     context_requested = e_Context.objects.get(code=context_code)
@@ -212,17 +224,13 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         self.object = self.get_object()
         if self.object.isPublic:
             if self.request.user.has_perm('context.view_e_context'):
-                print("Era publico")
                 return True
         else:
-            print("Era o owner")
             if self.request.user == self.object.user:
-                print("Era o owner")
                 return True
             else:
                 if self.request.user.has_perm('context.view_e_context'):
                     if e_ContextUser.objects.filter(context_user=self.request.user, context=self.object).exists():  #para ver context detail!
-                        print("Tinha acesso")
                         return True
                     else:
                         return False
@@ -232,7 +240,7 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         web_host = os.environ['CONTEXT_API']
         context = super().get_context_data(**kwargs)
         context['api'] = f'http://{web_host}/contexts/api/context/'
-        context['sensors'] = e_Sensor.objects.all()
+        context['sensors'] = e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(responsibleUser=self.request.user.id)
         context['form'] = UploadContextForm()
                
         return context
@@ -373,7 +381,7 @@ def manage_context(request, context_code):
     web_host = os.environ['CONTEXT_API']
     context = {
         # 'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
-        'sensors': e_Sensor.objects.all(),
+        'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(responsibleUser=request.user.id),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
         # 'context': request.GET.get('context_code'),
@@ -458,8 +466,6 @@ def context_creation(form, user): # function to initialize and save the context 
         print('User that doesn\'t own the context tried to change it!')
         return None
                 
-    context.Name = form.cleaned_data['name']
-    context.hydroFeature = form.cleaned_data['hydroFeature']
     context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
     context.CLExternalBoundary = json.loads(form.cleaned_data['domain'])['properties']['CL']
     context.hasMesh = False
