@@ -12,6 +12,7 @@ from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse_lazy
 from django_filters.views import FilterView
+from organization.models import OrganizationAccessRequest
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -43,12 +44,13 @@ def users(request):
     return render(request, 'rivercureportal/users.html', context)
 
 def home(request):
+    
     context = {
         'users': User.objects.all(),
         'groups': Group.objects.all(),
         'contexts' : e_Context.objects.all(),
         'recent_context' : e_Context.objects.all().first(),
-        'recent_sensor' : e_Sensor.objects.all().first()     
+        'recent_sensor' : e_Sensor.objects.all().first()
     }
 
     return render(request, 'rivercureportal/home.html', context)

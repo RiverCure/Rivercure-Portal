@@ -6,6 +6,10 @@ from django.urls import reverse_lazy
 from users.models import Profile
 from django.contrib.auth.decorators import login_required
 from django.db import connection
+from notifications.signals import notify
+from django.contrib.auth.models import User
+from notifications.models import Notification
+from django.contrib.auth.views import redirect_to_login
 
 
 class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -85,7 +89,7 @@ class OrganizationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
         else:
             return False
 
-class OrganizationManageView(LoginRequiredMixin, ListView):
+class OrganizationManageView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Profile
     template_name = 'organization/organization_manage.html'
     context_object_name = 'userProfiles'
@@ -124,6 +128,23 @@ class OrganizationManageView(LoginRequiredMixin, ListView):
             for row in cursor.fetchall()
         ]
 
+    def test_func(self):
+        # To read notifications for both managers and non-managers
+        user = self.request.user
+        user.notifications.unread().delete()
+
+        if Organization.objects.filter(pk=self.kwargs.get('pk'), manager=self.request.user.id).exists() or self.request.user.is_staff:
+            return True
+        else:
+            # In this case, goes to handle_no_permission
+            return False
+    
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return redirect('organization-list')
+        else:
+            return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+
 
 #TODO: FOR ALL BELOW FUNCTIONS: USER VERFICATION (IF HAS PERMISSION)
 @login_required
@@ -135,6 +156,9 @@ def organizationAccessRequest(request, pk):
         accessRequest = OrganizationAccessRequest(organization_id=organization, requester=user)
         accessRequest.save()
 
+    org = Organization.objects.get(pk=pk)
+    notify.send(sender=user, recipient=Organization.objects.get(pk=pk).manager, action_object=org, verb=f"{user.username} requested to enter your organization")
+
     return redirect('organization-list')
 
 @login_required
@@ -144,6 +168,9 @@ def organizationAccessRequestCancel(request, pk):
     # Make sure an user doesn't request to two organizations at the same time
     if OrganizationAccessRequest.objects.filter(requester=user).exists():
         OrganizationAccessRequest.objects.filter(requester=user).delete()
+
+    if Notification.objects.get(verb=f"{user.username} requested to enter your organization") is not None:
+        Notification.objects.get(verb=f"{user.username} requested to enter your organization").delete()
 
     return redirect('organization-list') 
 
@@ -155,6 +182,9 @@ def organizationAccessRequestDeny(request, pk1, pk2):
 
     if OrganizationAccessRequest.objects.filter(requester=user).exists():
         OrganizationAccessRequest.objects.filter(requester=user).delete()
+    
+    org = Organization.objects.get(pk=pk1)
+    notify.send(sender=org, recipient=User.objects.get(pk=pk2), action_object=org, verb=f"You have been denied access to organization {org.name}")
 
     return redirect('organization-manage', organization)
 
@@ -171,6 +201,9 @@ def organizationAccessRemove(request, pk1, pk2):
     userObj.organization = None
     userObj.save()
 
+    org = Organization.objects.get(pk=pk1)
+    notify.send(sender=org, recipient=User.objects.get(pk=pk2), action_object=org, verb=f"Your access to organization {org.name} has been removed")
+
     return redirect('organization-manage', organization)
 
 @login_required
@@ -186,5 +219,8 @@ def organizationAccessAllow(request, pk1, pk2):
     userObj = Profile.objects.get(pk=user)
     userObj.organization = Organization.objects.get(pk=organization)
     userObj.save()
+
+    org = Organization.objects.get(pk=pk1)
+    notify.send(sender=org, recipient=User.objects.get(pk=pk2), action_object=org, verb=f"You have been granted access to organization {org.name}")
 
     return redirect('organization-manage', organization) 
