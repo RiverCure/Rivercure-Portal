@@ -23,5 +23,14 @@ class EventFilter(django_filters.FilterSet):
 class ContextFilter(django_filters.FilterSet):  
     class Meta:
         model = e_Context
-        fields = ['Name', 'hydroFeature']    
+        fields = ['Name', 'hydroFeature', 'organization']    
+
+    # Overrides filter 'organization' to only contain correct organizations
+    def __init__(self, *args, **kwargs):
+        organizations = kwargs['organizations']
+        del kwargs['organizations']
+        super(ContextFilter, self).__init__(*args, **kwargs)
+        print(self.filters['organization'])
+        self.filters['organization'].extra.update({'queryset': organizations})
+        self.filters['organization'].queryset = organizations
         

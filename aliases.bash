@@ -18,3 +18,6 @@ function startAppFunc {
     python manage.py startapp "$1";
 }
 alias startApp=startAppFunc;
+
+# Opens python shell
+alias shell="python manage.py shell";

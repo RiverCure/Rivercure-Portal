@@ -12,7 +12,9 @@ from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse_lazy
 from django_filters.views import FilterView
-from organization.models import OrganizationAccessRequest
+from notifications.models import Notification
+from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -115,3 +117,11 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
             return True
         else:
             return False
+
+@login_required
+def clearNotifications(request):
+    notifications = Notification.objects.filter(recipient=request.user)
+    if notifications.exists():
+        notifications.delete()
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

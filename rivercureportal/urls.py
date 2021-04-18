@@ -9,6 +9,7 @@ from .views import (
     home,
     users,
     ProfileDetailView, 
+    clearNotifications
 )
 
 urlpatterns = [
@@ -21,5 +22,5 @@ urlpatterns = [
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
     path('users/', users, name='users'),
     path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile-detail'),
-
+    path('notification/clear', clearNotifications, name='notifications-clear')
 ]

@@ -7,7 +7,6 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20, null=True)
     last_name = models.CharField(max_length=20, null=True)
-    organization = models.ForeignKey('organization.Organization', on_delete=models.SET_NULL, null=True)
     image = models.ImageField(default='default.jpg', upload_to="profile_pics")
 
     def __str__(self):

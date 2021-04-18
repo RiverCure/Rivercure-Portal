@@ -6,6 +6,7 @@ from .views import (
     OrganizationUpdateView,
     OrganizationDeleteView,
     OrganizationManageView,
+    MemberRoleUpdateView,
     organizationAccessRequest,
     organizationAccessRequestCancel,
     organizationAccessRequestDeny,
@@ -16,13 +17,14 @@ from .views import (
 urlpatterns = [
     path('', OrganizationListView.as_view(), name='organization-list'),
     path('new/', OrganizationCreateView.as_view(), name='organization-create'),
-    path('<str:pk>', OrganizationDetailView.as_view(), name='organization-detail'),
-    path('<str:pk>/update/', OrganizationUpdateView.as_view(), name='organization-update'),
-    path('<str:pk>/delete/', OrganizationDeleteView.as_view(), name='organization-delete'),
-    path('<str:pk>/manage/', OrganizationManageView.as_view(), name='organization-manage'),
-    path('<str:pk>/request/', organizationAccessRequest, name='organization-access-request'),
-    path('<str:pk>/request/cancel/', organizationAccessRequestCancel, name='organization-access-request-cancel'),
-    path('<str:pk1>/manage/<str:pk2>/deny/', organizationAccessRequestDeny, name='organization-access-request-deny'),
-    path('<str:pk1>/manage/<str:pk2>/remove/', organizationAccessRemove, name='organization-access-remove'),
-    path('<str:pk1>/manage/<str:pk2>/allow/', organizationAccessAllow, name='organization-access-allow')
+    path('<int:pk>', OrganizationDetailView.as_view(), name='organization-detail'),
+    path('<int:pk>/update/', OrganizationUpdateView.as_view(), name='organization-update'),
+    path('<int:pk>/delete/', OrganizationDeleteView.as_view(), name='organization-delete'),
+    path('<int:pk>/manage/', OrganizationManageView.as_view(), name='organization-manage'),
+    path('<int:pk>/update/member/', MemberRoleUpdateView.as_view(), name='organization-member-role-update'),
+    path('<int:pk>/request/', organizationAccessRequest, name='organization-access-request'),
+    path('<int:pk>/request/cancel/', organizationAccessRequestCancel, name='organization-access-request-cancel'),
+    path('<int:pk1>/manage/<int:pk2>/deny/', organizationAccessRequestDeny, name='organization-access-request-deny'),
+    path('<int:pk1>/manage/<int:pk2>/remove/', organizationAccessRemove, name='organization-access-remove'),
+    path('<int:pk1>/manage/<int:pk2>/allow/', organizationAccessAllow, name='organization-access-allow')
 ]

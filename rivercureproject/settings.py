@@ -74,7 +74,7 @@ INSTALLED_APPS = [
 	'django.contrib.gis',
     'django_filters',
     'bootstrapform',
-    'notifications'
+    'notifications',
 ]
 
 MIDDLEWARE = [

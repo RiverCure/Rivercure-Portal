@@ -43,6 +43,7 @@
             <th class="tr_align" scope="col">Context</th>
             <th class="tr_align" scope="col">Hydrofeature</th>
             <th class="tr_align" scope="col">Privacy</th>
+            <th class="tr_align" scope="col">Organization</th>
             <th class="tr_align" width="200%" scope="col"></th>
           </tr>
         
@@ -60,6 +61,7 @@
             </td>
             <td>  {{ context.hydroFeature }} </td>
             <td>  {% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
+            <td>  {{ context.organization }}</td>
             <td>  
               {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%}
                

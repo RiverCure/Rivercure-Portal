@@ -5,6 +5,7 @@ from rivercureportal.models import e_HydroFeature
 from django.contrib.auth.models import User
 from sensors.models import e_Sensor
 from raster.models import RasterLayer
+from organization.models import Organization
 
 EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  
 ('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  
@@ -35,8 +36,12 @@ class e_Context(models.Model):
 	geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  		#aka Domain
 	CLExternalBoundary  = models.FloatField(null=True, blank=True)  			#aka Domain's CL, characteristic lenght 
 
-	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # Owner do contexto
+	organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True) # Owner do contexto
 
+	creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+	create_date = models.DateTimeField()
+	
 	isPublic = models.BooleanField(default=False)
 
 	hasMesh = models.BooleanField(default=False)

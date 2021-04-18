@@ -36,16 +36,10 @@ def profile(request):
     else:
          u_form = UserUpdateForm(instance=request.user)
          p_form = ProfileUpdateForm(instance=request.user.profile)
-
-    if request.user.profile.organization is not None:
-        organization = request.user.profile.organization.name
-    else:
-        organization = ''
         
     context = {
         'u_form' : u_form,
-        'p_form' : p_form,
-        'organization': organization
+        'p_form' : p_form
     } 
 
 

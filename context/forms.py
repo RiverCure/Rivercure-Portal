@@ -10,7 +10,7 @@ class ContextDetailsForm(forms.ModelForm):
     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
     class Meta:
         model = e_Context
-        fields = ['Name','hydroFeature']
+        fields = ['Name','hydroFeature','isPublic']
 
 # class ContextDetailsForm(forms.Form):
 #     name = forms.CharField()
