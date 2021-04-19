@@ -48,6 +48,11 @@ class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
     model = e_Context
     form_class = ContextDetailsForm
     context_object_name = 'context'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['current_view'] = 'edit'
+        return context
     
     def get_success_url(self):
         return reverse('context-detail',args=(self.object.code,))
@@ -210,6 +215,11 @@ class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Context
     form_class = ContextInitialForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['current_view'] = 'create'
+        return context
+
     def get_form_kwargs(self):
         kwargs = super(ContextCreateView, self).get_form_kwargs()
         kwargs.update({'user_id': self.request.user.id})
@@ -230,10 +240,7 @@ class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def test_func(self):
         # Is manager/contextManager of any organization? If so, can create contexts
-        if Membership.objects.filter(user=self.request.user, access_granted=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists():
-            return True
-        else:
-            return False
+        return Membership.objects.filter(user=self.request.user, access_granted=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
 
 class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Context
@@ -416,7 +423,7 @@ def manage_context(request, context_code):
                 return HttpResponseRedirect(reverse('context-detail', kwargs={'pk': e_context.code}))
             except Exception as e:
                 print(f'Error saving context: {e}')
-                messages.warning(request,f'Context update failed') 
+                messages.warning(request,f'Context update failed')
 
         else:
             messages.warning(request,f'Context info is not complete') 
@@ -467,8 +474,9 @@ def handle_friction_coeff_upload(context, friction_coeff_file): #function to han
 
 def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
     context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
+    organization_members = Organization.objects.get(pk=context.organization.id).members.all()
 
-    if context.user != user: # if user doesn't own the context
+    if user not in organization_members: # if user doesn't own the context
         print('User that doesn\'t own the context tried to change it!')
         return None
                 

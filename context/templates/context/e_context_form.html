@@ -18,7 +18,11 @@
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Save</button>
-                <a class="btn btn-outline-secondary" href="{% url 'context-detail' context.pk %}">Cancel</a>
+                {% if current_view == 'create' %}
+                    <a class="btn btn-outline-secondary" href="{% url 'context-list' %}">Cancel</a>
+                {% elif current_view == 'edit' %}
+                    <a class="btn btn-outline-secondary" href="{% url 'context-detail' context.pk %}">Cancel</a>
+                {% endif %}
             </div>
         </form>
     </div>
