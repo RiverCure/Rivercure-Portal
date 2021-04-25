@@ -30,8 +30,8 @@
         <td>{{ member.user.username }}</td>
         <td>{{ member.user.email }}</td>
         {% if member.access_granted %}
-          {% if member.permission == 'org_manager' %}
-          <td>Manager</td>
+          {% if member.permission == 'org_admin' %}
+          <td>Admin</td>
           {% else %}
           <td>
             {{ member.get_permission_display }}

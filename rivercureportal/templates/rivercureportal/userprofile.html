@@ -1,6 +1,5 @@
 {% extends "rivercureportal/base.html" %}
 {% load crispy_forms_tags %}
-{% load auth_extras %}
 
 {% block content %}
 <div class="content-section">
@@ -9,23 +8,13 @@
       <div class="media-body">
         <div class="col-sm-6 col-md-8">
           <h4>{{u.profile.first_name}} {{u.profile.last_name}} ({{u.username}})</h4>
-         <b>Institution :</b> {{u.profile.institution}}<br>
          <b>E-mail:</b>{{u.email}}<br>
-         <b>Roles:</b>
-          <ul>
-          {% for group in groups %}{% if u|has_group:group.name %}
-          <li>{{group.name}}  </li>
-          {% endif %}{% endfor %}
-          </ul>    
       </div>
       </div>
     </div>
     <a href="{% url 'users' %}" type="button" class="btn btn-secondary">Back</a>
   </div>
   
-  
-
- 
 {% endblock content %}
 
 

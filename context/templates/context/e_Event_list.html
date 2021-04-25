@@ -51,14 +51,14 @@
       {% for event in events %}
       <tr>
         <td>
-          <a href="{% url 'event-detail' event.pk %}">
+          <a href="{% url 'event-detail' event.context.code event.pk %}">
             <div style="height:100%;width:100%">
               {{ event.Name }}
             </div>
           </a>
         </td>
-        <td>{{ event.type }}</td>
-        <td>{{ event.subtype }}</td>
+        <td>{{ event.get_type_display }}</td>
+        <td>{% if event.subtype %} {{ event.get_subtype_display }} {% endif %}</td>
         <td>{{ event.startDate }}</td>
         <td>{{ event.endDate }}</td>
         <td>{{ event.state }}</td>
@@ -68,8 +68,8 @@
     {% endfor %}
   </tbody>
   </table>
-{% if perms.context.add_e_contextevent %}
-    <a type="button" class="btn btn-info" href="{% url 'event-create' %}?context_code={{ context.code }}&context_name={{ context.Name }}">Add Event</a>
+{% if hasPerm %}
+    <a type="button" class="btn btn-info" href="{% url 'event-create' context.code %}">Add Event</a>
 {% endif %}
   </div>
 

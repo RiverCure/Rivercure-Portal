@@ -99,8 +99,6 @@
 {% endblock %}
 
 
-{% if user.is_superuser %}
-
 {% block content %}
 
     <h1>{{ context.Name }} context</h1>
@@ -114,10 +112,10 @@
             {% if canEdit %}
             <a class="btn btn-info mt-1 mb-1" href="{% url 'context-update' context.code %}">Edit</a>
             <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')">GeoEdit</button>  
-            {% endif %}
             <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
+            {% endif %}
             <a class="btn btn-info mt-1 mb-1" href="{% url 'context-event-list' context.code %}">Events</a>  
-            <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' %}?context_code={{ context.code }}&context_name={{ context.Name }}">Sensors</a>
+            <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' context.code %}">Sensors</a>
             {% if canEdit %}
             <a class="btn btn-danger mt-1 mb-1" href="{% url 'context-delete' context.code %}">Delete</a>  
             {% endif %}
@@ -158,7 +156,6 @@
         </script>
     </div>
 {% endblock content %}
-{% endif %}
 
 
 

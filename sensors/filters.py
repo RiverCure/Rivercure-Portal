@@ -8,7 +8,7 @@ from django.forms.widgets import TextInput
 class SensorFilter(django_filters.FilterSet):   
     class Meta:
         model = e_Sensor
-        fields = ['type', 'code', 'modalityType',]
+        fields = ['type', 'code', 'modalityType', 'organization']
     
 class ObservationFilter(django_filters.FilterSet):
 

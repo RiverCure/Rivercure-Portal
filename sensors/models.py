@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime, date
 from django.contrib.auth.models import User
+from organization.models import Organization
 
 SENSORKIND_CHOICES = (  ('HydrometricSensor','Hydrometric Sensor'),  ('WeatherSensor','Weather Sensor'),  ('SocialNetworkScanner','Social Network Scanner'),  ('HumanSensor','Human Sensor'),  ('TBDSensor','TBD Sensor'),  )
 
@@ -16,7 +17,7 @@ class e_Sensor(models.Model):
 
     Name = models.CharField(max_length=100)
 
-    responsibleUser = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
 
     isPublic = models.BooleanField(default=True)
 

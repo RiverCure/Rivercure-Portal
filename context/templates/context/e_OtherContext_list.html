@@ -38,7 +38,6 @@
 <div class="row">
   <div class="col-md-8">
     <table class="table table-hover ">
-      
           <tr>
             <th class="tr_align" scope="col">Context</th>
             <th class="tr_align" scope="col">Hydrofeature</th>
@@ -46,44 +45,20 @@
             <th class="tr_align" scope="col">Organization</th>
             <th class="tr_align" width="200%" scope="col"></th>
           </tr>
-        
        
           {% for context in filter.qs %}
           <tr>
             <td>
-              {% if context.isPublic == True %}<a href="{% url 'context-detail' context.code %}"><div style="height:100%;width:100%">{{ context.Name }}
+              {% if context.isPublic %}<a href="{% url 'context-detail' context.code %}"><div style="height:100%;width:100%">{{ context.Name }}
               {% else %}
               <div style="height:100%;width:100%">{{ context.Name }}
-              {% endif %}  
-                  
-                </div>
+              {% endif %}
+              </div>
               </a>
             </td>
             <td>  {{ context.hydroFeature }} </td>
-            <td>  {% if context.isPublic == True %} Public {% else %} Private {% endif %}</td>
+            <td>  {% if context.isPublic %} Public {% else %} Private {% endif %}</td>
             <td>  {{ context.organization }}</td>
-            <td>  
-              {% if request.user|has_group:"ContextAdmin" or request.user|has_group:"ContextManager"%}
-               
-                {% for already_processing in processing %}
-                  {% if context == already_processing.context %}
-                  <p>Request submited!</p>
-                  {% endif %}
-                  {% empty %}
-                  {% endfor %}
-                
-                  {% for not in not_processing %}
-                  {% if context.isPublic == False %}
-                  {% if context.code == not.code %}
-                  <a class="btn-sm btn-info"  href="{% url 'context-request-create' context.code %}">Request Access</a>
-                  {% endif %}
-                  {% endif %}
-                  {% empty %}
-                  {% endfor %}
-
-                  
-              {% endif %}
-            </td>
           </tr>
           {% empty %}
           <td><h3 class="text-secondary font-italic no-context-data">No other contexts!</h3></td>

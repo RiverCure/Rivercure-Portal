@@ -17,7 +17,7 @@
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-danger" type="submit">Yes, delete</button>
-                <a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.id %}">Cancel</a>
+                <a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.code observation.id %}">Cancel</a>
             </div>
         </form>
     </div>

@@ -11,7 +11,9 @@ from .views import (
     organizationAccessRequestCancel,
     organizationAccessRequestDeny,
     organizationAccessRemove,
-    organizationAccessAllow
+    organizationAccessAllow,
+    organizationReactivate,
+    organizationSuspend
 )
 
 urlpatterns = [
@@ -26,5 +28,7 @@ urlpatterns = [
     path('<int:pk>/request/cancel/', organizationAccessRequestCancel, name='organization-access-request-cancel'),
     path('<int:pk1>/manage/<int:pk2>/deny/', organizationAccessRequestDeny, name='organization-access-request-deny'),
     path('<int:pk1>/manage/<int:pk2>/remove/', organizationAccessRemove, name='organization-access-remove'),
-    path('<int:pk1>/manage/<int:pk2>/allow/', organizationAccessAllow, name='organization-access-allow')
+    path('<int:pk1>/manage/<int:pk2>/allow/', organizationAccessAllow, name='organization-access-allow'),
+    path('<int:organization_id>/reactivate/', organizationReactivate, name='organization-reactivate'),
+    path('<int:organization_id>/suspend/', organizationSuspend, name='organization-suspend'),
 ]

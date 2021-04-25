@@ -1,6 +1,9 @@
 from django import forms
 from .models import e_Sensor
 from leaflet.forms.widgets import LeafletWidget
+from organization.models import Membership, Organization
+from django.db.models import Q
+from sensors.models import e_SensorObservation
 
 
 
@@ -28,4 +31,16 @@ class SensorForm(forms.ModelForm):
 
     class Meta:
         model = e_Sensor
-        fields = ['code','Name','responsibleUser','isPublic','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
+        fields = ['code','Name','organization','isPublic','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
+
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id')
+        super(SensorForm, self).__init__(*args, **kwargs)
+        # We only want to allow to choose options where the user is org_admin or org_contextManager of the organization
+        memberships = Membership.objects.filter(user_id=user_id, access_granted=True).filter(Q(permission='org_admin') | Q(permission='org_sensorManager'))
+        self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
+
+class SensorObservationForm(forms.ModelForm):
+    class Meta:
+        model = e_SensorObservation
+        fields = ['date','time','depth','discharge',]

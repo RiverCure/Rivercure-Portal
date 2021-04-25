@@ -4,6 +4,8 @@ from django.contrib.gis.forms import fields
 from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
+from organization.models import Membership
+from django.db.models import Q
 
 class ContextDetailsForm(forms.ModelForm):
 
@@ -12,16 +14,8 @@ class ContextDetailsForm(forms.ModelForm):
         model = e_Context
         fields = ['Name','hydroFeature','isPublic']
 
-# class ContextDetailsForm(forms.Form):
-#     name = forms.CharField()
-#     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
-
 class ContextForm(forms.Form):
     code = forms.CharField(widget=forms.HiddenInput())
-    # name = forms.CharField()
-    # dtm_file = forms.FileField(required=False)
-    # contour_lines = forms.FileField(required=False)
-    # hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
     domain = forms.CharField(widget=forms.HiddenInput())
     alignment = forms.CharField(widget=forms.HiddenInput())
     refinement = forms.CharField(widget=forms.HiddenInput())
@@ -34,7 +28,6 @@ class UploadContextForm(forms.Form):
     alignments = forms.FileField(required=False)
     refinements = forms.FileField(required=False)
     boundaries = forms.FileField(required=False)
-    # boundaries_points = forms.FileField(required=False)
     dtm_file = forms.FileField(required=False)
     friction_coefficient_file = forms.FileField(required=False)
 

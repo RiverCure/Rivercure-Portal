@@ -19,7 +19,7 @@
   }
 </style>
 
-<h1><a href="{% url 'context-detail' context_code %}"> {{ context_name }}</a> </h1>
+<h1><a href="{% url 'context-detail' context.code %}"> {{ context.Name }}</a> </h1>
 <h1>Sensors</h1>
 <div class="row">
 
@@ -47,7 +47,7 @@
         <td>{{ sensor.sensor.type }}</td>
         <td>{{ sensor.sensor.subtype }}</td>
         <td>{{ sensor.sensor.modalityType }}</td>
-        <td class="tr_class"><a href="{% url 'sensor-observations' %}?sensor={{ sensor.sensor.code }}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" ></a></td>
+        <td class="tr_class"><a href="{% url 'sensor-observation-list' sensor.sensor.code %}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" ></a></td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>

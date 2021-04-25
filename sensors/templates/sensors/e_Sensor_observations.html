@@ -22,7 +22,7 @@ showUploadDiv = (state) => {
 {% block content %}
 
 
-<h1><a href="{% url 'sensor-detail' sensor_code %}"> {{sensor_name}}</a>- Observations</h1>
+<h1><a href="{% url 'sensor-detail' sensor.code %}"> {{ sensor }}</a>- Observations</h1>
 
 <div class="row">
 
@@ -45,7 +45,7 @@ showUploadDiv = (state) => {
       <td>{{ observation.time }}</td>
       <td>{{ observation.depth }}</td>
       <td>{{ observation.discharge }}</td>
-      <td><a class="mr-2" href="{% url 'sensor-observation-detail' observation.id %}">Details</a></td>
+      <td><a class="mr-2" href="{% url 'sensor-observation-detail' sensor.code observation.id %}">Details</a></td>
     </tr>
       {% empty %}
       <td><h3 class="text-secondary font-italic no-context-data">No available observations</h3></td>
@@ -56,8 +56,8 @@ showUploadDiv = (state) => {
 <div class="pagination mb-5">
   <span class="step-links">
       {% if page_obj.has_previous %}
-          <a href="?sensor={{sensor_code}}&page=1">&laquo; First</a>
-          <a href="?sensor={{sensor_code}}&page={{ page_obj.previous_page_number }}">Previous</a>
+          <a href="?sensor={{ sensor.code }}&page=1">&laquo; First</a>
+          <a href="?sensor={{ sensor.code }}&page={{ page_obj.previous_page_number }}">Previous</a>
       {% endif %}
 
       <span class="current">
@@ -65,8 +65,8 @@ showUploadDiv = (state) => {
       </span>
 
       {% if page_obj.has_next %}
-          <a href="?sensor={{sensor_code}}&page={{ page_obj.next_page_number }}">Next</a>
-          <a href="?sensor={{sensor_code}}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+          <a href="?sensor={{ sensor.code }}&page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?sensor={{ sensor.code }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
       {% endif %}
   </span>
 </div>
@@ -81,8 +81,8 @@ showUploadDiv = (state) => {
 </div> 
 
 <div>
-{% if perms.sensors.add_e_sensorobservation %}
-<a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' %}">Add Sensor Observation</a>
+{% if hasPerm %}
+<a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.code %}">Add Sensor Observation</a>
 <a type="button" class="btn btn-info ml-0 mt-3"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
 {% endif %}
 </div>
@@ -90,7 +90,7 @@ showUploadDiv = (state) => {
 <div id="observationsUploadDiv" class="container" style="display: none">
   <h2>Upload observations (Excel)</h2>
   <div id="form-data" class="content-section">
-    <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' %}">
+    <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' sensor.code %}">
       {% csrf_token %}
       {{ form|crispy }}
       <div class="form-group">

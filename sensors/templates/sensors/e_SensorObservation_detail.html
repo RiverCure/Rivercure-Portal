@@ -17,11 +17,11 @@
       <p class="article-content">Depth: {{observation.depth}}</p>
       <p class="article-content">Discharge: {{observation.discharge}}</p>
 
-      {% if user|has_group:"SensorManager" %} 
-      <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' object.id %}">Edit</a>
-      <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' object.id %}"  >Delete</a>
+      {% if hasPerm %} 
+      <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.code observation.id %}">Edit</a>
+      <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.code observation.id %}"  >Delete</a>
       {% endif %}
-      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observations' %}?sensor={{observation.sensor.code}}">Back</a>
+      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observation-list' observation.sensor.code %}">Back</a>
       
 
     </div>

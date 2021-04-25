@@ -2,22 +2,17 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block scripts %}
-
-<script>
-</script>
-
-{% endblock %}
-
 {% block content %}
     <div class="content-section">
         <form method='POST'>
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-0">Request sent to access context '{{context.Name}}'</legend>
+                <legend class="border-bottom mb-4">{{ view.name }}</legend>
+                {{ form|crispy }}
             </fieldset>
             <div class="form-group">
-                <a class="btn btn-outline-danger" href="{% url 'context-list' %}">Back</a>            
+                <button class="btn btn-outline-info" type="submit">Save</button>
+                <a class="btn btn-outline-secondary" href="{% url 'organization-detail' organization.pk %}">Cancel</a>
             </div>
         </form>
     </div>

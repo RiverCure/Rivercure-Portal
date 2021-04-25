@@ -19,13 +19,14 @@
 
 <div class="row">
 
-<div class="col-md-8">
+<div class="col-md-9">
 <table class="table table-hover ">
       <tr>
         <th  scope="col">Code</th>
         <th  scope="col">Name</th>
         <th  scope="col">Type</th>
         <th  scope="col">Modality</th>
+        <th  scope="col">Organization</th>
         <th  scope="col">Observations</th>
       </tr>
       {% for sensor in sensors %}
@@ -40,12 +41,14 @@
         </td>
         <td>{{ sensor.type }}</td>
         <td>{{ sensor.modalityType }}</td>
-        <td><a href="{% url 'sensor-observations' %}?sensor={{sensor.code}}"><img src="{% static 'sensors/sensor-images/data.png' %}"  width="30" height="30" alt="observations"></a></td>
+        <td>{{ sensor.organization }} ({% if sensor.isPublic %}Public{% else %}Private{% endif %})</td>
+        <td><a href="{% url 'sensor-observation-list' sensor.code %}"><img src="{% static 'sensors/sensor-images/data.png' %}"  width="30" height="30" alt="observations"></a></td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors!</h2></td>
     {% endfor %}
   </table>
+
   <div class="pagination mb-5">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -65,7 +68,7 @@
   </div>
 </div>
 
-  <div class="filter-section col-md-3">
+  <div class="filter-section col-md-2">
     <h5>Filter</h5> 
     <form method="get">
       {{ filter.form |crispy }}
@@ -88,7 +91,7 @@
 </div>
 
 <div>
-  {% if perms.sensors.add_e_sensor %}
+  {% if hasPerm %}
     <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
     <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
   {% endif %}

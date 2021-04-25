@@ -1,5 +1,5 @@
 import json, os, geojson, tempfile, datetime, requests
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.db import transaction, connection
@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.contrib.gis.geos import Polygon
-from .models import e_Context, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextAccessRequest, e_ContextEventResult, e_ContextUser
+from .models import e_Context, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextEventResult
 from raster.models import RasterLayer
 from sensors.models import e_Sensor, e_SensorObservation
 from rest_framework import viewsets
@@ -25,12 +25,44 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django import forms
 from pprint import pprint
 from django.conf import settings
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm
 from organization.models import Membership, Organization
 
+# Checks if the user is a manager or contextManager on any organization. If so, he can add contexts (from which organization is seen in the create view)
+def context_general_create_permission_check(user):
+    try:
+        return Membership.objects.filter(user=user).filter(Q(permission='org_admin') | Q(permission='org_contextManager')).exists()
+    except:
+        return False
+
+def context_general_event_create_permission_check(user):
+    try:
+        return Membership.objects.filter(user=user).filter(Q(permission='org_admin') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
+    except:
+        return False
+
+# Checks if the user is a manager or contextManager of an organization
+def context_organization_edit_permission_check(user, organization):
+    try:
+        return Membership.objects.filter(user=user, organization=organization).filter(Q(permission='org_admin') | Q(permission='org_contextManager')).exists()
+    except:
+        return False
+
+# Checks if the user is a manager or eventManager of an organization
+def context_organization_event_permission_check(user, organization):
+    try:
+        return Membership.objects.filter(user=user, organization=organization).filter(Q(permission='org_admin') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
+    except:
+        return False
+
+def belongs_to_organization(user, organization):
+    try:
+        return Membership.objects.filter(user=user, organization=organization, access_granted=True).exists()
+    except:
+        return False
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     model = e_Context
@@ -39,10 +71,7 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     success_url = reverse_lazy('context-list')
 
     def test_func(self):
-        if self.request.user.groups.filter(name='ContextAdmin').exists():
-            return True
-        else:
-            return False
+        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
     model = e_Context
@@ -58,117 +87,22 @@ class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
         return reverse('context-detail',args=(self.object.code,))
 
     def test_func(self):
-        if self.request.user.groups.filter(name='ContextAdmin').exists():
-            return True
-        else:
-            return False
-
-def ContextAccessRequestCreate(request, context_code):
-    context_requested = e_Context.objects.get(code=context_code)
-    requester = request.user
-    request_obj = e_ContextAccessRequest(context=context_requested, requestuser = requester, state='Processing')
-    request_obj.save()
-    context = {
-        'user': requester,
-        'context': context_requested,
-    }
-    return render(request, 'context/e_Context_AccessRequest_create.html', context)
-
-
-def ContextRequestDecisionView(request, pk):
-    pedido = e_ContextAccessRequest.objects.get(id=pk)
-    requester = pedido.requestuser
-    granted = pedido.access_granted
-    context = {
-        'sensors': e_Sensor.objects.all(),
-        'user': requester,
-        'context': e_Context.objects.first(),
-        'request': pedido,
-        'granted' : granted,
-    }
-    return render(request, 'context/e_ContextRequest_grant_deny.html', context)
-   
-
-@permission_required('context.add_e_context', raise_exception=True)
-def DenyAccess(request, pk):
-    pedido = e_ContextAccessRequest.objects.get(id=pk)
-    requester = pedido.requestuser
-    pedido.access_granted = False
-    pedido.state = "Finished"
-    pedido.save()
-    
-    context_user_obj = e_ContextUser.objects.get(context_user = requester, context= pedido.context)
-    context_user_obj.delete() 
-
-    context = {
-        'user': requester,   
-    }
-    return render(request, 'context/access_denied.html', context)
-
-@permission_required('context.add_e_context', raise_exception=True)
-def GrantAccess(request, pk):
-    pedido = e_ContextAccessRequest.objects.get(id=pk)
-    requester = pedido.requestuser
-    pedido.access_granted = True
-    pedido.state = "Finished"
-    role_chosen = request.POST.get("role") 
-    pedido.type=role_chosen
-    pedido.save()
-    
-    #if already existes, changes obj
-    try:
-        obj = e_ContextUser.objects.get(context_user = requester, context= pedido.context)
-        obj.type = pedido.type  
-        obj.save()
-    except e_ContextUser.DoesNotExist:
-        obj = e_ContextUser(context_user = requester, context= pedido.context, type = role_chosen)
-        obj.save()
- 
-    context = {
-        'user': requester,   
-    }
-
-    return render(request, 'context/access_granted.html', context)
-
-
-class ContextRequestListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = e_ContextAccessRequest
-    context_object_name = 'requests'
-    template_name = 'context/e_ContextRequests_list.html'
-
-    def get_queryset(self):
-        queryset = e_ContextAccessRequest.objects.filter(context__user=self.request.user)
-        return queryset
-
-    def test_func(self):
-        if self.request.user.groups.filter(name='ContextAdmin').exists() :
-            return True
-        else:
-            return False
-
-def context_permission_check(user):
-    return user.groups.filter(name='ContextManager').exists() or user.groups.filter(name='ContextAdmin').exists()
+        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
 @login_required
 def ContextListView(request):
     
-    organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=request.user, access_granted=True))
+    organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=request.user, access_granted=True), is_active=True)
     context_list = e_Context.objects.filter(organization__in=organizations)
 
     context_filter = ContextFilter(request.GET, queryset=context_list, organizations=organizations)
 
-    already_accepted = e_ContextUser.objects.filter()
-
-    # Checks if the user is a manager or contextManager. If so, he can add contexts (from which organization is seen in the create view)
-    if Membership.objects.filter(user=request.user).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists():
-        permission_to_add = True
-    else:
-        permission_to_add = False
+    # Needs to have permission to add in, at least, one organization. The choice list in add form is then filtered to the ones he is actually capable of adding
+    permission_to_add = context_general_create_permission_check(request.user)
 
     context = {
         'permission_to_add': permission_to_add,
-        'filter' : context_filter,
-        'already_accepted' : already_accepted
+        'filter' : context_filter
     }
 
     return render(request, 'context/e_Context_list.html', context)
@@ -176,23 +110,12 @@ def ContextListView(request):
 @login_required
 def OtherContextListView(request):
     # Exclude (the contexts) with organizations the user is in
-    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user))
-    other_context_list = other_context_list.exclude(context_contextusers__context_user=request.user)
-    other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user))
-
-    already_processing = e_ContextAccessRequest.objects.filter(requestuser=request.user, state='Processing').distinct('context')
-
-    not_processing = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user))
-
-    for requ in already_processing:
-        if requ.context in not_processing:
-            a = requ.context.Name
-            not_processing = not_processing.exclude(Name=a)
+    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user, is_active=False))
+    other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user, is_active=False))
 
     context = {
-        'filter': other_context_filter,
-        'processing' : already_processing,
-        'not_processing' : not_processing,
+        'context_list': other_context_list,
+        'filter': other_context_filter
     }
     return render(request, 'context/e_OtherContext_list.html', context)
 
@@ -205,18 +128,17 @@ class ContextInitialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
         super(ContextInitialForm, self).__init__(*args, **kwargs)
-        # We only want to allow to choose options where the user is org_manager or org_contextManager of the organization
-        memberships = Membership.objects.filter(user_id=user_id, access_granted=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager'))
+        # We only want to allow to choose options where the user is org_admin or org_contextManager of the organization
+        memberships = Membership.objects.filter(user_id=user_id, access_granted=True).filter(Q(permission='org_admin') | Q(permission='org_contextManager'))
         self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
     
-
 
 class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Context
     form_class = ContextInitialForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
+        context = super().get_context_data(**kwargs)
         context['current_view'] = 'create'
         return context
 
@@ -239,8 +161,7 @@ class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse('context-list')
 
     def test_func(self):
-        # Is manager/contextManager of any organization? If so, can create contexts
-        return Membership.objects.filter(user=self.request.user, access_granted=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
+        return context_general_create_permission_check(self.request.user)
 
 class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Context
@@ -248,67 +169,57 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = 'context/e_Context_detail.html'
 
     def test_func(self, *args , **kwargs):
-        self.object = self.get_object()
-        if self.object.isPublic:
-            # if self.request.user.has_perm('context.view_e_context'):
-                return True
-        else:
-            if Membership.objects.filter(user=self.request.user, organization=self.object.organization).exists():
-                return True
-            else:
-                # if self.request.user.has_perm('context.view_e_context'):
-                if e_ContextUser.objects.filter(context_user=self.request.user, context=self.object).exists():  #para ver context detail!
-                    return True
-                else:
-                    return False
-                return False
+        context = self.get_object()
+        return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
+        organization = self.get_object().organization
+
         web_host = os.environ['CONTEXT_API']
         context = super().get_context_data(**kwargs)
         context['api'] = f'http://{web_host}/contexts/api/context/'
-        context['sensors'] = e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(responsibleUser=self.request.user.id)
+        context['sensors'] = e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=organization)
         context['form'] = UploadContextForm()
-        context['canEdit'] = Membership.objects.filter(user=self.request.user, organization=self.get_object().organization).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
+        context['canEdit'] = context_organization_edit_permission_check(user, organization)
 
         return context
 
-@user_passes_test(context_permission_check, login_url='/login/')    
-def ContextSensorListView(request):
+@login_required
+def ContextSensorListView(request, context_code):
+    context = get_object_or_404(e_Context, code=context_code)
     
-    context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=request.GET.get('context_code')).distinct('sensor')
+    if not( context.isPublic or belongs_to_organization(request.user, context.organization)):
+        return HttpResponseRedirect(reverse('context-detail', kwargs={'pk': context.code}))
+    
+    context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=context.code).distinct('sensor')
 
     context_sensor_filter = ContextSensorFilter(request.GET, queryset=context_sensor_list)
     
-    context={
+    context= {
         'filter' :  context_sensor_filter,
-        'context_code' : request.GET.get('context_code'),
-        'context_name' : request.GET.get('context_name'),
-        
+        'context': context
     }
 
     return render(request, 'context/e_ContextSensor_list.html', context )
 
-class EventUpdateView(LoginRequiredMixin,UserPassesTestMixin, UpdateView):
+class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
     template_name = 'context/e_Event_create.html'
     form_class = EventForm
+    pk_url_kwarg = 'event_id'
     context_object_name = 'event'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        context["context_code"] = self.request.GET["context_code"]
-        context["context_name"] = self.request.GET["context_name"]
+        context = super().get_context_data(**kwargs)
+        context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
         return context
 
     def get_success_url(self):
-        return reverse('event-detail',args=(self.object.id,))
+        return reverse('context-event-list',args=(self.get_object().context.code, ))
 
     def test_func(self):
-        if self.request.user.groups.filter(name='ContextEventManager').exists():
-            return True
-        else:
-            return False
+        return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
 
 class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_ContextEvent
@@ -318,8 +229,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
-        context["context_code"] = self.request.GET["context_code"]
-        context["context_name"] = self.request.GET["context_name"]
+        context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
         return context
     
     def form_valid(self, form):
@@ -337,19 +247,18 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         obj.context = context
         obj.save() 
 
-        return HttpResponseRedirect(reverse('event-detail',args=(obj.id,)))
+        return HttpResponseRedirect(reverse('event-detail',args=(context.code, obj.id,)))
 
     def test_func(self):
-        if self.request.user.groups.filter(name='ContextEventManager').exists():
-            return True
-        else:
-            return False
+        organization = e_Context.objects.get(pk=self.kwargs['pk']).organization
+        return context_organization_event_permission_check(self.request.user, organization)
 
 
-@permission_required('context.create_e_contextevent', raise_exception=True)
-def runsimulationview(request, event_id):
+def runsimulationview(request, pk, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    if not context_organization_event_permission_check(request.user, event.context.organization):
+        return HttpResponseRedirect(reverse('event-detail', args=(pk, event_id, )))
     
-    event = e_ContextEvent.objects.get(id=event_id)
     try:
         r = request_simulation(event.context, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, 
         event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime)
@@ -362,11 +271,16 @@ def runsimulationview(request, event_id):
         messages.warning(request,f'Simulation request failed') 
     
     print("RUN SIMULATION")
-    return HttpResponseRedirect(reverse('event-detail', args=(event.id,)))
+    return HttpResponseRedirect(reverse('event-detail', args=(pk, event.id,)))
 
 
 def ContextEventListView(request, context_code):
-    qs = e_ContextEvent.objects.filter(context__code=context_code)
+    context = get_object_or_404(e_Context, pk=context_code)
+
+    if not (context.isPublic or belongs_to_organization(request.user, context.organization)):
+        return HttpResponse('Unauthorized', status=401)
+
+    qs = e_ContextEvent.objects.filter(context=context)
     
     event_filter = EventFilter(request.GET, queryset=qs)
     events_list = event_filter.qs
@@ -374,27 +288,33 @@ def ContextEventListView(request, context_code):
     context = {
         'events': events_list,
         'filter': event_filter,
-        'context': e_Context.objects.get(code=context_code) # events_list.first().context,
+        'context': e_Context.objects.get(code=context_code),
+        'hasPerm': context_organization_event_permission_check(request.user, context.organization)
     }
     return render(request, 'context/e_Event_list.html', context)
 
-class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+# class EventDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class EventDetailView(LoginRequiredMixin, DetailView):
     model = e_ContextEvent
     context_object_name = 'event'
+    pk_url_kwarg = 'event_id'
     template_name = 'context/e_Event_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['hasPerm'] = context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
+        return context
     
-    def test_func(self):
-        if self.request.user.groups.filter(name='ContextEventManager').exists():
-            return True
-        else:
-            return False
+    # TODO: question "Eu como não membro da organização posso ver os eventos criados de um contexto de outra organização? "
+    # def test_func(self):
+    #     return belongs_to_organization(self.request.user, self.get_object().context.organization)
 
 
 def manage_context(request, context_code):
     web_host = os.environ['CONTEXT_API']
     context = {
         # 'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
-        'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(responsibleUser=request.user.id),
+        'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
         # 'context': request.GET.get('context_code'),
@@ -545,10 +465,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     form_class = UploadContextForm
 
     def test_func(self):
-        if self.request.user.groups.filter(name='ContextManager').exists() or self.request.user.groups.filter(name='ContextAdmin').exists():
-            return True
-        else:
-            return False
+        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
     def form_valid(self, form):
         message = ''
@@ -719,9 +636,9 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
                 # boundary_point.geom = Point(point['geometry']['coordinates'], srid=srid)
                 # boundary_point.save()
 
-@user_passes_test(context_permission_check, login_url='/login/')    
+@login_required
 def download_context(request, context_code): #function that allows the download of an context
-    if not request.user.is_authenticated: #verify that the user is logged in
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
@@ -892,8 +809,11 @@ def prepare_boundary_points(context_code, context_name):
 
     return boundary_point_file
 
-@user_passes_test(context_permission_check, login_url='/login/')    
+@login_required
 def request_pre_processing(request, context_code): # function to start simulation
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
+        
     url = os.environ['SIMULATOR_ADDRESS'] + 'process/'
 
     try:
@@ -953,13 +873,16 @@ def request_pre_processing(request, context_code): # function to start simulatio
 
 
 
-@user_passes_test(context_permission_check, login_url='/login/')    
+@login_required
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
 
-@user_passes_test(context_permission_check, login_url='/login/')    
+@login_required
 def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
+
     url = os.environ['SIMULATOR_ADDRESS']
     context = e_Context.objects.get(code=context_code)
     payload = {'context_name': context.Name}
@@ -1093,10 +1016,8 @@ def inform_mesh_status(request, context_code): # Function to inform if mesh is g
     else:
         return HttpResponse(status=400)
 
-def event_permission_check(user):
-    return user.groups.filter(name='ContextEventManager').exists()   
-
-@user_passes_test(event_permission_check, login_url='/login/')    
+# TODO: check for permissions
+@login_required
 def download_simulation_results(request, event_id): #function to download simulation results
     url = os.environ['SIMULATOR_ADDRESS']
 
@@ -1169,7 +1090,8 @@ def define_raster(name, file): # fucntion to create and return a raster layer
 
     return raster
 
-@user_passes_test(event_permission_check, login_url='/login/')   
+# TODO: check for permissions
+@login_required
 def view_events_results(request, event_id): #function to view the results of an event simulation
     event = e_ContextEvent.objects.get(pk=event_id)
     web_host = os.environ['CONTEXT_API']

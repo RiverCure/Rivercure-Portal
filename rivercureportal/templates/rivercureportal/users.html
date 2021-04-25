@@ -5,8 +5,6 @@
 
 {% block content %}
 
-{% if request.user|has_group:"ContextAdmin" or user.is_staff %} 
-
 <h1>RiverCure Users</h1>
 
 <style>
@@ -31,28 +29,29 @@
   <tr>
     <th class="tr_class" scope="col">Username</th>
     <th class="tr_class" scope="col">Name</th>
-    <th class="tr_class" scope="col">Institution</th>
+    <th class="tr_class" scope="col">Email</th>
   </tr>
   {% for list_user in filter.qs %}
   <tr>
     
     <td class="tr_class">
-        {% if user|has_group:"Administration" or user.is_superuser %}
         <a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>{{list_user.username}}</a>
-        {% else %}
-        <img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>{{list_user.username}}</a>
-        {% endif %}
     </td>  
 
     <td>
-      {% if user|has_group:"Administration" or user.is_superuser %}
-      <a href="{% url 'profile-detail' user.id %}"><div style="height:100%;width:100%">{{ list_user.profile.first_name }} {{ list_user.profile.last_name }}</div></a>
-      {% else %}
-      <div style="height:100%;width:100%">{{ list_user.profile.first_name }} {{ list_user.profile.last_name }}</div>
-      {% endif %}
+      <div>
+        {% if list_user.profile.first_name %}
+        {{ list_user.profile.first_name }} 
+        {% endif %}
+        {% if list_user.profile.last_name %}
+        {{ list_user.profile.last_name }}
+        {% endif %}
+      </div>
     </td>
 
-    <td>{{list_user.profile.institution}}</td>
+    <td class="tr_class">
+      <div>{{ list_user.email }}</div>
+  </td>  
   </tr>
   {% empty %}
   <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
@@ -70,12 +69,9 @@
 </div>
 
 <div>
-  {% if user|has_group:"Administration" or user.is_superuser %}
   <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'admin:auth_user_changelist' %}" >Manage Users</a>
-  {% endif %}
 </div>
 
-{% endif %}
 </div>
 <script>
   

@@ -68,7 +68,7 @@
 
 
   <div>
-    {% if perms.rivercureportal.add_e_hydrofeature %}
+    {% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}
       <a type="button" class="btn btn-info ml-0 mt-0 mb-5" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
     {% endif %}
   </div>

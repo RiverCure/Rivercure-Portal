@@ -17,9 +17,11 @@
         <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{ event.WritingPeriodicityUnit }}</p>
         <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{ event.UpdateMaximumValueUnit }}</p>
  
-  <a type="button" class="btn btn-info" href="{% url 'event-update' object.id %}?context_code={{ event.context.code }}&context_name={{ event.context.Name }}">Edit</a>
-  <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' object.id %}">Run Simulation</a>
-  
+  {% if hasPerm %}
+  <a type="button" class="btn btn-info" href="{% url 'event-update' event.context.code object.id %}">Edit</a>
+  <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code object.id %}">Run Simulation</a>
+  {% endif %}
+
   {% if event.context_event_results != '' %}
     <a class="btn btn-info btn mt-1 mb-1" href="{% url 'simulation-results-download' event.id %}">Download Results</a>
     <a class="btn btn-info btn mt-1 mb-1" href="{% url 'view-simulation-results' event.id %}">View Results</a>

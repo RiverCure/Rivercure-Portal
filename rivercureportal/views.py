@@ -13,32 +13,39 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse_lazy
 from django_filters.views import FilterView
 from notifications.models import Notification
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+def is_admin(user):
+    try:
+        return user.groups.filter(name='Admin').exists()
+    except:
+        return False
+
+def is_admin_or_manager(user):
+    try:
+        return user.groups.filter(name='Admin').exists() or user.groups.filter(name='Manager').exists()
+    except:
+        return False
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
     context_object_name = 'u'
     template_name = 'rivercureportal/userprofile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['groups'] = self.request.user.groups.all()
-        return context
-
     def test_func(self):
-        if self.request.user.groups.filter(name='Administration').exists():
-            return True
-        else:
-            return False
+        return is_admin(self.request.user) or self.request.user == self.get_object()
 
+@user_passes_test(is_admin)
 def users(request):
+    if not is_admin(request.user):
+        return HttpResponse('Unauthorized', status=401)
 
-    user_list = User.objects.all().distinct('username')
+    user_list = User.objects.all()
     user_filter = UserFilter(request.GET, queryset=user_list)
 
     context = {
-        'users': User.objects.all(),
+        'users': user_list,
         'groups': Group.objects.all(),
         'filter' :  user_filter,
     }
@@ -84,10 +91,7 @@ class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView)
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        if self.request.user.groups.filter(name='Manager').exists():
-            return True
-        else:
-            return False
+        return is_admin_or_manager(self.request.user)
 
 class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_HydroFeature
@@ -95,10 +99,7 @@ class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        if self.request.user.groups.filter(name='Manager').exists():
-            return True
-        else:
-            return False
+        return is_admin_or_manager(self.request.user)
 
 
 class HydroFeatureDetailView(DetailView):
@@ -113,10 +114,7 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        if self.request.user.groups.filter(name='Manager').exists():
-            return True
-        else:
-            return False
+        return is_admin_or_manager(self.request.user)
 
 @login_required
 def clearNotifications(request):

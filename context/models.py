@@ -8,8 +8,8 @@ from raster.models import RasterLayer
 from organization.models import Organization
 
 EVENTKIND_CHOICES = (  ('flood','Flood'),  ('heavyPrecipitation','HeavyPrecipitation'),  
-('hydrologicalDrought','HydrologicalDrought'),  ('meteorologicalDrought','MeteorologicalDrought'),  
-('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','LandSlide'),  )
+('hydrologicalDrought','Hydrological Drought'),  ('meteorological Drought','Meteorological Drought'),  
+('hurricane','Hurricane'),  ('tsunami','Tsunami'),  ('storm','Storm'),  ('landSlide','Land Slide'),  )
 
 EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  ('concluded','Concluded'),  )
 
@@ -17,12 +17,7 @@ EVENTSUBKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'), ('Pl
 
 CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
 
-ContextAccessRequestState_CHOICES =  ( ('Processing', 'processing'), ('Finished', 'finished'), )
-
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
-
-#CONTEXTACCESS_CHOICES = (('admin', 'Admin'), ('manager', 'Manager'), ('viewer', 'Viewer'))
-CONTEXTACCESS_CHOICES = (('manager', 'Manager'), ('viewer', 'Viewer'))
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
@@ -120,7 +115,6 @@ class e_ContextSensor(models.Model):
 	description = models.TextField()
 	
 	associateDatetime = models.DateTimeField(default=timezone.now)
-	# user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 	def __str__(self):
 		return f"{self.boundary_point} sensor"
@@ -179,26 +173,3 @@ class e_ContextEventResult(models.Model):
 
 	def __str__(self):
 		return f'{self.context_event} results'
-
-class e_ContextAccessRequest(models.Model):
-
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE)
-
-	requestuser = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # REQUESTER
-
-	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES, null=True)
-
-	access_granted = models.BooleanField(default=False)
-
-	state = models.CharField(max_length=30, choices=ContextAccessRequestState_CHOICES, null=True, default="processing")
-
-class e_ContextUser(models.Model):
-
-	context = models.ForeignKey('e_Context', on_delete=models.CASCADE, related_name='context_contextusers')
-
-	context_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True) # accepted
-
-	type = models.CharField(max_length=30, choices=CONTEXTACCESS_CHOICES)
-
-	class Meta:
-		unique_together = ['context', 'context_user']
