@@ -16,16 +16,16 @@ from datetime import datetime
 from django.http import HttpResponseRedirect
 from rivercureportal.views import is_admin
 
-def is_org_admin(obj):
+def is_org_manager(obj):
     try:
         organization_id = obj.kwargs.get('pk')
-        return Membership.objects.filter(organization_id=organization_id, user=obj.request.user, permission='org_admin').exists()
+        return Membership.objects.filter(organization_id=organization_id, user=obj.request.user, permission='org_manager').exists()
     except:
         return False
 
-def is_org_admin_check(user, organization_id):
+def is_org_manager_check(user, organization_id):
     try:
-        return Membership.objects.filter(organization_id=organization_id, user=user, permission='org_admin').exists()
+        return Membership.objects.filter(organization_id=organization_id, user=user, permission='org_manager').exists()
     except:
         return False
 
@@ -67,7 +67,7 @@ class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         # Set manager permissions
         manager = form.cleaned_data['manager']
         # Create membership entry for manager
-        membership = Membership(user=manager, organization=organization, access_granted=True, access_grant_date=currentTime, permission='org_admin')
+        membership = Membership(user=manager, organization=organization, access_granted=True, access_grant_date=currentTime, permission='org_manager')
         membership.save()
 
         # Notify new manager
@@ -86,7 +86,7 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs) # get the default context data
-        context['isManager'] = is_org_admin(self)
+        context['isManager'] = is_org_manager(self)
         return context
 
 class OrganizationUpdateView(UserPassesTestMixin, UpdateView):
@@ -99,16 +99,7 @@ class OrganizationUpdateView(UserPassesTestMixin, UpdateView):
         return reverse_lazy('organization-detail', args=(self.get_object().id,))
 
     def test_func(self):
-        return is_org_admin(self)
-
-class OrganizationDeleteView(UserPassesTestMixin, DeleteView ):
-    model = Organization
-    context_object_name = 'organization'
-    template_name = 'organization/organization_confirm_delete.html'
-    success_url = reverse_lazy('organization-list')
-
-    def test_func(self):
-        return is_org_admin(self)
+        return is_org_manager(self) and self.get_object().is_active
 
 class OrganizationManageView(UserPassesTestMixin, ListView):
     model = User
@@ -128,7 +119,7 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def test_func(self):
-        return is_org_admin(self)
+        return is_org_manager(self)
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationManageView, self).get_context_data(**kwargs) # get the default context data
@@ -162,7 +153,7 @@ class MemberRoleUpdateView(UpdateView):
         newRole = Membership.objects.get(user=user, organization=organization).get_permission_display()
         
         # Notify other managers
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_admin')).exclude(pk=self.request.user.id)
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=self.request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} role on organization {organization.name} has been changed to {newRole} by {self.request.user}")
         # Notify user
         notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your role on organization {organization.name} has been changed to {newRole} by {self.request.user}")
@@ -171,19 +162,19 @@ class MemberRoleUpdateView(UpdateView):
 
     def test_func(self):
         organization = self.get_object().organization
-        return self.request.user in User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_admin'))
+        return self.request.user in User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')) and organization.is_active
 
 @login_required
 def organizationAccessRequest(request, pk):
 
-    organization = Organization.objects.get(pk=pk)
+    organization = get_object_or_404(Organization, pk=pk)
     user = request.user
     
-    if not Membership.objects.filter(user=user, organization=organization).exists():
+    if (not Membership.objects.filter(user=user, organization=organization).exists()) and organization.is_active == True:
         accessRequest = Membership(organization=organization, user=user)
         accessRequest.save()
 
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization_id=pk, permission='org_admin'))
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization_id=pk, permission='org_manager'))
         notify.send(sender=user, recipient=managers, action_object=organization, verb=f"{user.username} requested to enter the organization {organization.name}")
 
     return redirect('organization-list')
@@ -191,11 +182,11 @@ def organizationAccessRequest(request, pk):
 @login_required
 def organizationAccessRequestCancel(request, pk):
 
-    organization = Organization.objects.get(pk=pk)
+    organization = get_object_or_404(Organization, pk=pk)
     user = request.user
     # Make sure an user doesn't request to two organizations at the same time
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
-    if membership_user:
+    if membership_user and organization.is_active == True:
         membership_user.delete()
 
     notifications = Notification.objects.filter(verb=f"{user.username} requested to enter the organization {organization.name}")
@@ -207,53 +198,53 @@ def organizationAccessRequestCancel(request, pk):
 
 @login_required
 def organizationAccessRequestDeny(request, pk1, pk2):
-    if not is_org_admin_check(request.user, pk1):
+    if not is_org_manager_check(request.user, pk1):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = Organization.objects.get(pk=pk1)
-    user = User.objects.get(pk=pk2) # requester
+    organization = get_object_or_404(Organization, pk=pk1)
+    user = get_object_or_404(User, pk=pk2) # requester
 
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
-    if membership_user:
+    if membership_user and organization.is_active == True:
         membership_user.delete()
     
         # Notify the user
         notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been denied access to organization {organization.name}")
         # Notify all managers of the organization
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_admin')).exclude(pk=request.user.id)
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been denied access to organization {organization.name}")
 
     return redirect('organization-manage', pk1)
 
 @login_required
 def organizationAccessRemove(request, pk1, pk2):
-    if not is_org_admin_check(request.user, pk1):
+    if not is_org_manager_check(request.user, pk1):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = Organization.objects.get(pk=pk1)
-    user = User.objects.get(pk=pk2)
+    organization = get_object_or_404(Organization, pk=pk1)
+    user = get_object_or_404(User, pk=pk2)
     # Make sure an user doesn't request to two organizations at the same time
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
-    if membership_user:
+    if membership_user and organization.is_active == True:
         membership_user.delete()
 
         notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your access to organization {organization.name} has been removed")
         # Notify all managers of the organization
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_admin')).exclude(pk=request.user.id)
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} access to organization {organization.name} has been removed")
 
     return redirect('organization-manage', pk1)
 
 @login_required
 def organizationAccessAllow(request, pk1, pk2):
-    if not is_org_admin_check(request.user, pk1):
+    if not is_org_manager_check(request.user, pk1):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = Organization.objects.get(pk=pk1)
-    user = User.objects.get(pk=pk2)
+    organization = get_object_or_404(Organization, pk=pk1)
+    user = get_object_or_404(User, pk=pk2)
     
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
-    if membership_user:
+    if membership_user and organization.is_active == True:
         print(membership_user.access_granted)
         membership_user.access_granted = True
         membership_user.access_grant_date = datetime.now()
@@ -264,7 +255,7 @@ def organizationAccessAllow(request, pk1, pk2):
         # Notify the user
         notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been granted access to organization {organization.name}")
         # Notify all managers of the organization
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_admin')).exclude(pk=request.user.id)
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been granted access to organization {organization.name}")
 
     return redirect('organization-manage', pk1)
@@ -274,9 +265,13 @@ def organizationReactivate(request, organization_id):
     if not is_admin(request.user):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = Organization.objects.get(pk=organization_id)
+    organization = get_object_or_404(Organization, pk=organization_id)
     organization.is_active = True
     organization.save()
+
+    # Notify all members of the organization
+    members = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, access_granted=True)).exclude(pk=request.user.id)
+    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.name} has been reactivated by {request.user}")
 
     return redirect('organization-list')
 
@@ -285,8 +280,12 @@ def organizationSuspend(request, organization_id):
     if not is_admin(request.user):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = Organization.objects.get(pk=organization_id)
+    organization = get_object_or_404(Organization, pk=organization_id)
     organization.is_active = False
     organization.save()
+
+    # Notify all members of the organization
+    members = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, access_granted=True)).exclude(pk=request.user.id)
+    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.name} has been suspended by {request.user}")
 
     return redirect('organization-list')

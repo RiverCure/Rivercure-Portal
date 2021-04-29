@@ -20,8 +20,9 @@
         
         {% if isManager %}
             <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'organization-manage' organization.pk %}">Manage users</a>
+            {% if organization.is_active %}
             <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'organization-update' organization.pk %}">Edit</a>
-            <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'organization-delete' organization.pk %}">Delete</a>
+            {% endif %}
         {% endif %}
         <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'organization-list' %}" >Back to Organizations List</a>
     </div>

@@ -34,27 +34,27 @@ from organization.models import Membership, Organization
 # Checks if the user is a manager or contextManager on any organization. If so, he can add contexts (from which organization is seen in the create view)
 def context_general_create_permission_check(user):
     try:
-        return Membership.objects.filter(user=user).filter(Q(permission='org_admin') | Q(permission='org_contextManager')).exists()
+        return Membership.objects.filter(user=user, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
     except:
         return False
 
 def context_general_event_create_permission_check(user):
     try:
-        return Membership.objects.filter(user=user).filter(Q(permission='org_admin') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
+        return Membership.objects.filter(user=user, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
     except:
         return False
 
 # Checks if the user is a manager or contextManager of an organization
 def context_organization_edit_permission_check(user, organization):
     try:
-        return Membership.objects.filter(user=user, organization=organization).filter(Q(permission='org_admin') | Q(permission='org_contextManager')).exists()
+        return Membership.objects.filter(user=user, organization=organization, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
     except:
         return False
 
 # Checks if the user is a manager or eventManager of an organization
 def context_organization_event_permission_check(user, organization):
     try:
-        return Membership.objects.filter(user=user, organization=organization).filter(Q(permission='org_admin') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
+        return Membership.objects.filter(user=user, organization=organization, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
     except:
         return False
 
@@ -92,7 +92,7 @@ class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
 @login_required
 def ContextListView(request):
     
-    organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=request.user, access_granted=True), is_active=True)
+    organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=request.user, access_granted=True))
     context_list = e_Context.objects.filter(organization__in=organizations)
 
     context_filter = ContextFilter(request.GET, queryset=context_list, organizations=organizations)
@@ -110,8 +110,8 @@ def ContextListView(request):
 @login_required
 def OtherContextListView(request):
     # Exclude (the contexts) with organizations the user is in
-    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user, is_active=False))
-    other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user, is_active=False))
+    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user))
+    other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user))
 
     context = {
         'context_list': other_context_list,
@@ -128,8 +128,8 @@ class ContextInitialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
         super(ContextInitialForm, self).__init__(*args, **kwargs)
-        # We only want to allow to choose options where the user is org_admin or org_contextManager of the organization
-        memberships = Membership.objects.filter(user_id=user_id, access_granted=True).filter(Q(permission='org_admin') | Q(permission='org_contextManager'))
+        # We only want to allow to choose options where the user is org_manager or org_contextManager of the organization
+        memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager'))
         self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
     
 
@@ -179,7 +179,7 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         web_host = os.environ['CONTEXT_API']
         context = super().get_context_data(**kwargs)
         context['api'] = f'http://{web_host}/contexts/api/context/'
-        context['sensors'] = e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=organization)
+        context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
 
@@ -304,17 +304,26 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs) 
         context['hasPerm'] = context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
         return context
-    
-    # TODO: question "Eu como não membro da organização posso ver os eventos criados de um contexto de outra organização? "
-    # def test_func(self):
-    #     return belongs_to_organization(self.request.user, self.get_object().context.organization)
 
+
+def get_context_sensors(context_code):
+    context_sensors = e_Sensor.objects.filter(isPublic=True, organization__is_active=True)
+    context_sensors = context_sensors | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization, organization__is_active=True)
+    
+    previous_context_sensors = set()
+    for elem in e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=get_object_or_404(e_Context, pk=context_code)):
+        previous_context_sensors.add(elem.sensor.pk)
+    # Adds previously added sensors (from other organizations that are suspended) to the queryset
+    context_sensors = context_sensors | e_Sensor.objects.filter(pk__in=previous_context_sensors)
+    return context_sensors
 
 def manage_context(request, context_code):
     web_host = os.environ['CONTEXT_API']
+
     context = {
         # 'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
-        'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization),
+        # 'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization),
+        'sensors': get_context_sensors(context_code),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
         # 'context': request.GET.get('context_code'),
@@ -465,7 +474,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     form_class = UploadContextForm
 
     def test_func(self):
-        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
+        return context_organization_edit_permission_check(self.request.user, get_object_or_404(e_Context, pk=self.kwargs['pk']).organization)
 
     def form_valid(self, form):
         message = ''

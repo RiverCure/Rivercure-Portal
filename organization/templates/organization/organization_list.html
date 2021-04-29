@@ -44,17 +44,21 @@
         
         <td>
           {% if organization.permission %}
-            {% if organization.permission == 'org_admin' %}<a class="btn-link disabled" href="#">Admin</a>
+            {% if organization.permission == 'org_manager' %}<a class="btn-link disabled" href="#">Manager</a>
             {% elif organization.permission == 'org_contextManager' %}<a class="btn-link disabled" href="#">Context Manager</a>
             {% elif organization.permission == 'org_eventManager' %}<a class="btn-link disabled" href="#">Event Manager</a>
             {% elif organization.permission == 'org_sensorManager' %}<a class="btn-link disabled" href="#">Sensor Manager</a>
             {% elif organization.permission == 'org_member' %}<a class="btn-link disabled" href="#">Member</a>
             {% endif %}
           {% elif organization.pending %}
+              {% if organization.is_active %}
               <a class="btn-link disabled text-primary mr-2" href="#">Pending</a> 
               <a href="{% url 'organization-access-request-cancel' organization.pk %}"><span class="label label-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ff0000" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg></span></a>
+              {% endif %}
           {% else %}
-            <a href="{% url 'organization-access-request' organization.pk %}">Request access</a>
+              {% if organization.is_active %}
+              <a href="{% url 'organization-access-request' organization.pk %}">Request access</a>
+              {% endif %}
           {% endif %}
         </td>
         <td>

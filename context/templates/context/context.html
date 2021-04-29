@@ -86,7 +86,7 @@
                 '{% for sensor in sensors %}'
                     sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
                     description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
-                    timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};
+                    timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}', organization_active: '{{ sensor.organization.is_active }}'};
                     sensors.push(sensor)
                 '{% endfor %}'
                 return sensors;

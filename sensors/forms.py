@@ -36,8 +36,8 @@ class SensorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
         super(SensorForm, self).__init__(*args, **kwargs)
-        # We only want to allow to choose options where the user is org_admin or org_contextManager of the organization
-        memberships = Membership.objects.filter(user_id=user_id, access_granted=True).filter(Q(permission='org_admin') | Q(permission='org_sensorManager'))
+        # We only want to allow to choose options where the user is org_manager or org_contextManager of the organization
+        memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_sensorManager') | Q(permission='org_contextManager'))
         self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
 
 class SensorObservationForm(forms.ModelForm):

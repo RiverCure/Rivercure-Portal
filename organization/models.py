@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 OrganizationKind_Choices = ( ('waterAuthority','Water Authority'), ('municipality','Municipality'), ('researchLab','Research Lab'), ('partner','Partner'), ('other','Other'),)
 Country_Choices = ( ('pt', 'Portugal'), ('br', 'Brasil'))
 City_Choices = ( ('coimbra', 'Coimbra'), ('lisboa', 'Lisboa'))
-Permissions = (('org_admin', 'Admin'), ('org_contextManager', 'Context Manager'), ('org_eventManager', 'Event Manager'), ('org_sensorManager', 'Sensor Manager'), ('org_member', 'Member'))
+Permissions = (('org_manager', 'Manager'), ('org_contextManager', 'Context Manager'), ('org_eventManager', 'Event Manager'), ('org_sensorManager', 'Sensor Manager'), ('org_member', 'Member'))
 
 class Organization(models.Model):
     name        = models.CharField(max_length=50, null=True)

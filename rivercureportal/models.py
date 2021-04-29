@@ -30,8 +30,6 @@ CITYKIND_CHOICES = (  ('city','City'),  ('town','Town'),  ('village','Village'),
 
 ORGANIZATIONKIND_CHOICES = (  ('waterAuthority','WaterAuthority'),  ('municipality','Municipality'),  ('researchLab','ResearchLab'),  ('partner','Partner'),  ('other','Other'),  )
 
-USERKIND_CHOICES = (  ('sysAdmin','SysAdmin'),  ('contextAdmin','ContextAdmin'),  ('contextManager','ContextManager'),  ('contextSimulationManager','ContextSimulationManager'),  ('contextTechnician','ContextTechnician'),  ('citizen','Citizen'),  )
-
 USERSTATE_CHOICES = (  ('suspended','Suspended'),  ('active','Active'),  ('inactive','Inactive'),  ('deleted','Deleted'),  )
 
 ALARMPERMISSION_CHOICES = (  ('yes','Yes'),  ('yes (only authorities alarms)','Yes (only authorities alarms)'),  ('no','No'),  ('depend on secondary role','Depend on secondary role'),  )
@@ -152,24 +150,3 @@ class e_HydroFeature(models.Model):
 
 	def __str__(self):
 		return self.Name
-	
-class e_Organization(models.Model):
-
-	Name = models.CharField(max_length=20)
-
-	type = models.CharField(max_length=15, choices=ORGANIZATIONKIND_CHOICES)
-
-	sector = models.CharField(max_length=20)
-
-	address = models.CharField(max_length=20)
-
-	city = models.ForeignKey('e_City', on_delete=models.CASCADE, related_name='e_Organization_city')
-
-	country = models.ForeignKey('e_Country', on_delete=models.CASCADE, related_name='e_Organization_country')
-
-	email = models.EmailField(max_length=254)
-
-	phone = models.CharField(max_length=20)
-
-#TYPE GEOGRAFICO
-	geom = models.PointField()
