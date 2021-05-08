@@ -141,9 +141,9 @@ def SensorListView(request):
     try:
         sensors = sensor_paginator.page(page)
     except EmptyPage :
-       sensors = sensor_paginator.page(page)
+        sensors = sensor_paginator.page(page)
     except PageNotAnInteger:
-       sensors = sensor_paginator.page(page)
+        sensors = sensor_paginator.page(page)
 
     context ={
         'sensors' : sensors,

@@ -1,20 +1,13 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load static %}
-{% load auth_extras %}
-
-{% block scripts %}
-    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
-{% endblock %}
-
-{% block content %}
+{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock %} {% block content %}
 
 <style>
   th {
     cursor: pointer;
   }
 
-  th:hover{
+  th:hover {
     background: #eee;
   }
 
@@ -25,77 +18,65 @@
 
 <h1>My Contexts</h1>
 <div class="filter-section">
-<h5>Filter</h5> 
-<form method="get">
-  {{ filter.form |crispy }}
-  <button type="submit" class="btn btn-info">Filter</button>
-</form>
-
+  <h5>Filter</h5>
+  <form method="get">
+    {{ filter.form |crispy }}
+    <button type="submit" class="btn btn-info">Filter</button>
+  </form>
 </div>
 
 <div class="row">
-<div class="col-md-8">
-  <table class="table table-hover ">
-        <tr>
-          <th class="tr_align" scope="col">Context</th>
-          <th class="tr_align" scope="col">Hydrofeature</th>
-          <th class="tr_align" scope="col">Privacy</th>
-          <th class="tr_align" scope="col">Organization</th>
-        </tr>
-        {% for context in filter.qs %}
-        <tr>
-          <td>
-            <a href="{% url 'context-detail' context.code %}">
-              <div style="height:100%;width:100%">
-                {{ context.Name }}
-              </div>
-            </a>
-          </td>
-          <td> {{ context.hydroFeature }} </td>
-          <td>{% if context.isPublic %} Public {% else %} Private {% endif %}</td>
-          <td>{{ context.organization }}</td>
-        </tr>
-        {% empty %}
-        <td><h3 class="text-secondary font-italic no-context-data">No contexts available!</h3></td>
-        {% endfor %}
-  </table>
-</div>
+  <div class="col-md-8">
+    <table class="table table-hover">
+      <tr>
+        <th class="tr_align" scope="col">Organization</th>
+        <th class="tr_align" scope="col">Context</th>
+        <th class="tr_align" scope="col">Hydrofeature</th>
+        <th class="tr_align" scope="col">Privacy</th>
+      </tr>
+      {% for context in filter.qs %}
+      <tr>
+        <td>{{ context.organization }}</td>
+        <td>
+          <a href="{% url 'context-detail' context.code %}">
+            <div style="height: 100%; width: 100%">{{ context.Name }}</div>
+          </a>
+        </td>
+        <td>{{ context.hydroFeature }}</td>
+        <td>{% if context.isPublic %} Public {% else %} Private {% endif %}</td>
+      </tr>
+      {% empty %}
+      <td><h3 class="text-secondary font-italic no-context-data">No contexts available!</h3></td>
+      {% endfor %}
+    </table>
+  </div>
 </div>
 
 <div class="mt-3">
   {% if permission_to_add %}
-    <a class="btn btn-info ml-0 mt-3" href="{% url 'context-create' %}">Add Context</a>
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'context-create' %}">Add Context</a>
   {% endif %}
-  
-  <a class="btn btn-info ml-0 mt-3" href="{% url 'other-contexts'  %}">Other Contexts</a>  
+
+  <a class="btn btn-info ml-0 mt-3" href="{% url 'other-contexts'  %}">Other Contexts</a>
 </div>
 
-
-
-
-
-
-<script>  
-  console.log("sort");
+<script>
+  console.log('sort');
   const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+  const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
   console.log(document.querySelector('table'));
 
-    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    console.log("listen");
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
-})));
-  console.log("hello");
+  document.querySelectorAll('th').forEach((th) =>
+    th.addEventListener('click', () => {
+      const table = th.closest('table');
+      console.log('listen');
+      Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
+        .forEach((tr) => table.appendChild(tr));
+    })
+  );
+  console.log('hello');
 </script>
 
 {% endblock content %}
-
-
-
-

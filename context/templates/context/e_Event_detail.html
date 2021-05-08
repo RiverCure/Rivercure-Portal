@@ -16,7 +16,7 @@
         <p class="article-content"><b>WarmUp: </b>{{ event.warmUp}}</p>
         <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{ event.WritingPeriodicityUnit }}</p>
         <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{ event.UpdateMaximumValueUnit }}</p>
- 
+
   {% if hasPerm %}
   <a type="button" class="btn btn-info" href="{% url 'event-update' event.context.code object.id %}">Edit</a>
   <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code object.id %}">Run Simulation</a>
@@ -28,6 +28,5 @@
   {% endif %}
 
   <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'context-event-list' event.context.code %}" >Back</a>
-                                                             
 </article>
 {% endblock content %}

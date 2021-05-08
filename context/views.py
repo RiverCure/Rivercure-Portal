@@ -110,7 +110,7 @@ def ContextListView(request):
 @login_required
 def OtherContextListView(request):
     # Exclude (the contexts) with organizations the user is in
-    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user))
+    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user)).exclude(isPublic=False)
     other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user))
 
     context = {
@@ -820,7 +820,8 @@ def prepare_boundary_points(context_code, context_name):
 
 @login_required
 def request_pre_processing(request, context_code): # function to start simulation
-    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
+    context = get_object_or_404(e_Context, code=context_code)
+    if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
         
     url = os.environ['SIMULATOR_ADDRESS'] + 'process/'
@@ -860,7 +861,6 @@ def request_pre_processing(request, context_code): # function to start simulatio
         except Exception:
             print('No friction coef defined')
 
-        context = e_Context.objects.get(code=context_code)
         context.hasMesh = False # Assume there is no mesh generated
         context.save()
 
@@ -889,11 +889,11 @@ def preprocessing_results(request): # function to redirect the user to the parav
 
 @login_required
 def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
-    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
+    context = get_object_or_404(e_Context, code=context_code)
+    if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
     url = os.environ['SIMULATOR_ADDRESS']
-    context = e_Context.objects.get(code=context_code)
     payload = {'context_name': context.Name}
     request = requests.get(f'{url}pre-processing/results/', params=payload, stream=True)
     print(f'Pre-processing results requested for context {context.Name}')

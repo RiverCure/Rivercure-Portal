@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile, User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.models import Group
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from rivercureportal.views import is_admin
 
 
 
@@ -11,7 +14,9 @@ def register(request):
     if request.method =='POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            visitor_group = Group.objects.get(name='Visitor')
+            visitor_group.user_set.add(user)
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}')
             return redirect('login')
@@ -44,3 +49,11 @@ def profile(request):
 
 
     return render(request, 'users/profile.html', context) 
+
+class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = User
+    context_object_name = 'u'
+    template_name = 'users/user_form.html'
+
+    def test_func(self):
+        return is_admin(self.request.user)

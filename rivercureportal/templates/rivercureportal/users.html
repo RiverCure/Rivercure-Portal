@@ -30,12 +30,14 @@
     <th class="tr_class" scope="col">Username</th>
     <th class="tr_class" scope="col">Name</th>
     <th class="tr_class" scope="col">Email</th>
+    <th class="tr_class" scope="col">Role</th>
   </tr>
   {% for list_user in filter.qs %}
   <tr>
     
     <td class="tr_class">
-        <a href="{% url 'profile-detail' user.id %}"><img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>{{list_user.username}}</a>
+        <img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>
+        <a href="{% url 'profile-detail' list_user.pk %}">{{list_user.username}}</a>
     </td>  
 
     <td>
@@ -52,13 +54,16 @@
     <td class="tr_class">
       <div>{{ list_user.email }}</div>
   </td>  
+  <td>
+    <div>{% if list_user|has_group:"Admin" %}Admin{% elif list_user|has_group:"Manager" %}Manager{% else %}Visitor{% endif %}</div>
+  </td>
   </tr>
   {% empty %}
   <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
   {% endfor %}
 </table>
 </div>
- 
+
 <div class="filter-section col-md-3">
   <h5>Filter</h5> 
   <form method="get" >

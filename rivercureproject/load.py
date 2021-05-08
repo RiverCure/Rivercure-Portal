@@ -7,3 +7,6 @@ def run():
 
     aU_Manager_group = Group(name='Manager')
     aU_Manager_group.save()
+
+    aU_Manager_group = Group(name='Visitor')
+    aU_Manager_group.save()

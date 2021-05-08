@@ -86,6 +86,7 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs) # get the default context data
+        context['managers'] = Membership.objects.filter(organization=self.get_object(), permission='org_manager')
         context['isManager'] = is_org_manager(self)
         return context
 
@@ -139,7 +140,7 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
             return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
 
 
-class MemberRoleUpdateView(UpdateView):
+class MemberRoleUpdateView(UserPassesTestMixin, UpdateView):
     name = 'Edit role'
     model = Membership
     context_object_name = 'organization'
@@ -149,7 +150,7 @@ class MemberRoleUpdateView(UpdateView):
     def get_success_url(self):
         user = self.get_object().user
         organization = self.get_object().organization
-
+        
         newRole = Membership.objects.get(user=user, organization=organization).get_permission_display()
         
         # Notify other managers
@@ -162,7 +163,29 @@ class MemberRoleUpdateView(UpdateView):
 
     def test_func(self):
         organization = self.get_object().organization
-        return self.request.user in User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')) and organization.is_active
+        cond1 = self.request.user in User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager'))
+        cond2 = Membership.objects.filter(organization=organization, permission='org_manager').count() == 1 and self.get_object().permission == 'org_manager' and is_admin(self.request.user)
+        return (cond1 or cond2) and organization.is_active
+
+class OrganizationManageManagersView(UserPassesTestMixin, ListView):
+    model = User
+    template_name = 'organization/organization_manage_managers.html'
+    context_object_name = 'users'
+    paginate_by = 10
+    ordering = ['-id'] # newer first
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganizationManageManagersView, self).get_context_data(**kwargs) # get the default context data
+        
+        organization_id = self.kwargs.get('pk')
+        organization = Organization.objects.get(pk=organization_id)
+        context['organization'] = organization
+        context['managers'] = Membership.objects.filter(organization=organization, permission='org_manager')
+
+        return context
 
 @login_required
 def organizationAccessRequest(request, pk):
@@ -203,8 +226,8 @@ def organizationAccessRequestDeny(request, pk1, pk2):
 
     organization = get_object_or_404(Organization, pk=pk1)
     user = get_object_or_404(User, pk=pk2) # requester
+    membership_user = get_object_or_404(Membership, user=user, organization=organization)
 
-    membership_user = Membership.objects.filter(user=user, organization=organization).first()
     if membership_user and organization.is_active == True:
         membership_user.delete()
     
@@ -218,13 +241,18 @@ def organizationAccessRequestDeny(request, pk1, pk2):
 
 @login_required
 def organizationAccessRemove(request, pk1, pk2):
-    if not is_org_manager_check(request.user, pk1):
+    if not is_org_manager_check(request.user, pk1) and not is_admin(request.user):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
     organization = get_object_or_404(Organization, pk=pk1)
     user = get_object_or_404(User, pk=pk2)
     # Make sure an user doesn't request to two organizations at the same time
-    membership_user = Membership.objects.filter(user=user, organization=organization).first()
+    membership_user = get_object_or_404(Membership, user=user, organization=organization)
+
+    # Don't allow the last manager to be removed
+    if Membership.objects.filter(organization=organization, permission='org_manager').count() == 1 and membership_user.permission == 'org_manager':
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
     if membership_user and organization.is_active == True:
         membership_user.delete()
 

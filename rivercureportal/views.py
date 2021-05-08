@@ -123,3 +123,17 @@ def clearNotifications(request):
         notifications.delete()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    name = 'Edit user'
+    model = User
+    context_object_name = 'u'
+    template_name = 'rivercureportal/user_form.html'
+    fields = ['groups']
+
+    def get_success_url(self):
+        return reverse_lazy('profile-detail', args=(self.get_object().pk,))
+
+    def test_func(self):
+        return is_admin(self)
