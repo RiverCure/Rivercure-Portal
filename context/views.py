@@ -647,7 +647,7 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
 
 @login_required
 def download_context(request, context_code): #function that allows the download of an context
-    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code)): #verify that the user is logged in
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code).organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure

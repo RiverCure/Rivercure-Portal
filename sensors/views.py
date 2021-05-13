@@ -146,7 +146,6 @@ def SensorListView(request):
         sensors = sensor_paginator.page(page)
 
     context ={
-        'sensors' : sensors,
         'page_obj' : page_obj,
         'filter': sensor_filter,
         'hasPerm': hasPerm,

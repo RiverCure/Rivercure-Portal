@@ -23,7 +23,7 @@
         <th scope="col">Modality</th>
         <th scope="col">Observations</th>
       </tr>
-      {% for sensor in sensors %}
+      {% for sensor in filter.qs %}
       <tr>
         <td>{{ sensor.organization }} ({% if sensor.isPublic %}Public{% else %}Private{% endif %})</td>
         <td>{{ sensor.code }}</td>
