@@ -825,21 +825,21 @@ def request_pre_processing(request, context_code): # function to start simulatio
     if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
         
-    url = os.environ['SIMULATOR_ADDRESS'] + 'process/'
-    
-    post_files.delay(url, context_code) #HERE
+    simulator_address = os.environ['SIMULATOR_ADDRESS']
+    url = simulator_address + 'process/'
+
     try:
+        r = requests.get(simulator_address) # ping iStav to check if it's online
+        post_files.delay(url, context_code)
+        context.hasMesh = False # Assume there is no mesh generated
+        context.save()
         messages.success(request, 'Mesh generation request sent')
-        if not request.META['HTTP_REFERER']:
-            redirect(request.META['HTTP_REFERER']) # here redirect to self's page
-        return redirect(request.META['HTTP_REFERER'])
-    except Exception as e:
-        messages.warning(request,f'Context mesh generation request failed') 
-        print(f'Error requesting context mesh generation: {e}')
-        return redirect(request.META['HTTP_REFERER'])
+    except: # iStav not online
+        messages.error(request, 'Couldn\'t connect to iStav')
 
-
-
+    if not request.META['HTTP_REFERER']:
+            redirect('context-detail', pk=context_code)
+    return redirect(request.META['HTTP_REFERER'])
 
 @login_required
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer

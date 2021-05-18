@@ -46,13 +46,13 @@ def post_files(url, context_code):
         except Exception:
             print('No friction coef defined')
 
-        context.hasMesh = False # Assume there is no mesh generated
-        context.save()
+        # context.hasMesh = False # Assume there is no mesh generated
+        # context.save()
 
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
 
-        return True
+        return 'OK'
     except Exception as e:
         print(f'Exception:{e}')
-        return False
+        return f'Exception:{e}'
