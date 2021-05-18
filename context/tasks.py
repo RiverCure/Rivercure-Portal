@@ -1,26 +1,15 @@
-from celery import task
+from celery import shared_task
 import requests
-from .views import *
 import geojson
 from .models import e_ContextDTMFile, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
+from context.models import e_Context
 
 logger = get_task_logger(__name__)
 
-@task
-def test_task():
-    logger.info("testing print")
-    return 'TESTING OK'
-
-@task
-def post_files(url, context_name, files):
-    payload = {'context_name': context_name}
-    r = requests.post(url, files=files, params=payload)
-    return 'Files successfully sent to iStav'
-
-@task
-def post_f(url, context_code):
-    print('starting task')
+@shared_task
+def post_files(url, context_code):
+    from .views import prepare_domain, prepare_alignment, prepare_refinement, prepare_boundaries, prepare_boundary_points
     context = e_Context.objects.get(code=context_code)
     try:
         #------------------ Domain --------------------------------
@@ -62,6 +51,8 @@ def post_f(url, context_code):
 
         payload = {'context_name': context_name}
         r = requests.post(url, files=files, params=payload)
-        return 'Files successfully sent to iStav'
+
+        return True
     except Exception as e:
-        return redirect(f'Error requesting context mesh generation: {e}')
+        print(f'Exception:{e}')
+        return False

@@ -30,7 +30,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm
 from organization.models import Membership, Organization
-from .tasks import post_f, post_files, test_task
+from .tasks import post_files
 
 # Checks if the user is a manager or contextManager on any organization. If so, he can add contexts (from which organization is seen in the create view)
 def context_general_create_permission_check(user):
@@ -826,61 +826,13 @@ def request_pre_processing(request, context_code): # function to start simulatio
         return HttpResponse('Unauthorized', status=401)
         
     url = os.environ['SIMULATOR_ADDRESS'] + 'process/'
-
-    test_task.delay()
+    
+    post_files.delay(url, context_code) #HERE
     try:
-        # #------------------ Domain --------------------------------
-        # domain_file = prepare_domain(context_code)
-        # context_name = domain_file['name']
-        # #------------------ Alignment --------------------------------
-        # alignment_file = prepare_alignment(context_code, context_name)
-        # #------------------ Refinement --------------------------------  
-        # refinement_file = prepare_refinement(context_code, context_name)
-        # #------------------ Boundary --------------------------------
-        # boundary_file = prepare_boundaries(context_code, context_name)
-        # #------------------ Boundary Points --------------------------------
-        # boundary_point_file = prepare_boundary_points(context_code, context_name)
-        # #endof json preparation
-
-        # files = {
-        #     'domain.geojson': geojson.dumps(domain_file),
-        #     'refinements.geojson': geojson.dumps(refinement_file),
-        #     'boundaries.geojson': geojson.dumps(boundary_file),
-        #     'boundaries_points.geojson': geojson.dumps(boundary_point_file),
-        # }  
-        # if alignment_file is not None:
-        #     files['alignments.geojson'] = geojson.dumps(alignment_file)
-
-        # try:
-        #     dtm_file = e_ContextDTMFile.objects.get(context__code=context_code).raster
-        #     files['dtm.tif'] = dtm_file
-        # except Exception:
-        #     print('No DTM defined')
-
-        # try:
-        #     friction_coeff_file = e_ContextFrictionCoeff.objects.get(context__code=context_code).raster
-        #     files['frictionCoef.tif'] = friction_coeff_file
-        # except Exception:
-        #     print('No friction coef defined')
-
-        # context.hasMesh = False # Assume there is no mesh generated
-        # context.save()
-
-        # payload = {'context_name': context_name}
-        # print(files)
-        # r = requests.post(url, files=files, params=payload)
-        print('hey')
-        # post_files.delay(url, context_name, files)
-        post_f.delay(url, context_code)
-
         messages.success(request, 'Mesh generation request sent')
-        # if r.text == 'success':
-        #     messages.success(request, 'Mesh generation request successful\nMesh generation is under way')
-        # else:
-        #     messages.warning(request,f'Pre-processing failed') 
-
+        if not request.META['HTTP_REFERER']:
+            redirect(request.META['HTTP_REFERER']) # here redirect to self's page
         return redirect(request.META['HTTP_REFERER'])
-
     except Exception as e:
         messages.warning(request,f'Context mesh generation request failed') 
         print(f'Error requesting context mesh generation: {e}')
