@@ -8,6 +8,13 @@
   th:hover {
     background: #eee;
   }
+
+  body {
+    margin-bottom: 50px;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
 </style>
 
 <h1>Sensors</h1>
@@ -111,7 +118,9 @@
       document.querySelector('#observationsUploadDiv').style.display = state;
 
       if (state == 'block') {
-        window.scrollBy(0, 500);
+        setTimeout(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 500);
       }
     };
   </script>

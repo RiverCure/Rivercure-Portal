@@ -1,111 +1,99 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load static %}
-{% load auth_extras %}
+{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block scripts %}
 
-
-{% block scripts %}
-<script>
-showUploadDiv = (state) => {
-  document.querySelector('#observationsUploadDiv').style.display = state;
-
-  if(state == "block") {
-    window.scrollBy(0, 500);
+<style>
+  html {
+    scroll-behavior: smooth;
+    margin-bottom: 50px;
   }
-}
+</style>
+
+<script>
+  showUploadDiv = (state) => {
+    document.querySelector('#observationsUploadDiv').style.display = state;
+
+    if (state == 'block') {
+      setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      }, 500);
+    }
+  };
 </script>
 
-
-{% endblock %}
-
-
-{% block content %}
-
+{% endblock %} {% block content %}
 
 <h1><a href="{% url 'sensor-detail' sensor.code %}"> {{ sensor }}</a>- Observations</h1>
 
 <div class="row">
+  <div class="col-md-8">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Depth</th>
+          <th scope="col">Discharge</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for observation in obs %}
+        <tr>
+          <td>{{ observation.date }}</td>
+          <td>{{ observation.time }}</td>
+          <td>{{ observation.depth }}</td>
+          <td>{{ observation.discharge }}</td>
+          <td><a class="mr-2" href="{% url 'sensor-observation-detail' sensor.code observation.id %}">Details</a></td>
+        </tr>
+        {% empty %}
+        <td><h3 class="text-secondary font-italic no-context-data">No available observations</h3></td>
+        {% endfor %}
+      </tbody>
+    </table>
 
-<div class="col-md-8">
-<table class="table table-hover">
- 
-  <thead>
-    <tr>
-      <th scope="col">Date</th>
-      <th scope="col">Time</th>
-      <th scope="col">Depth</th>
-      <th scope="col">Discharge</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for observation in obs %}
-    <tr>
-      <td>{{ observation.date }}</td>
-      <td>{{ observation.time }}</td>
-      <td>{{ observation.depth }}</td>
-      <td>{{ observation.discharge }}</td>
-      <td><a class="mr-2" href="{% url 'sensor-observation-detail' sensor.code observation.id %}">Details</a></td>
-    </tr>
-      {% empty %}
-      <td><h3 class="text-secondary font-italic no-context-data">No available observations</h3></td>
-    {% endfor %}
-  </tbody>
-</table>
+    <div class="pagination mb-5">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?sensor={{ sensor.code }}&page=1">&laquo; First</a>
+        <a href="?sensor={{ sensor.code }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
 
-<div class="pagination mb-5">
-  <span class="step-links">
-      {% if page_obj.has_previous %}
-          <a href="?sensor={{ sensor.code }}&page=1">&laquo; First</a>
-          <a href="?sensor={{ sensor.code }}&page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+        <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </span>
 
-      <span class="current">
-          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        {% if page_obj.has_next %}
+        <a href="?sensor={{ sensor.code }}&page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?sensor={{ sensor.code }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
       </span>
+    </div>
+  </div>
 
-      {% if page_obj.has_next %}
-          <a href="?sensor={{ sensor.code }}&page={{ page_obj.next_page_number }}">Next</a>
-          <a href="?sensor={{ sensor.code }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
-      {% endif %}
-  </span>
-</div>
-</div>
-
-<div class="filter-section col-md-3">
-  <h5>Filter</h5> 
-  <form method="get" >
-    {{ filter.form |crispy }}
-    <button type="submit" class="btn btn-info">Filter</button>
-  </form>
-</div> 
-
-<div>
-{% if hasPerm %}
-<a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.code %}">Add Sensor Observation</a>
-<a type="button" class="btn btn-info ml-0 mt-3"  href="#" onclick="showUploadDiv('block')">Upload Observations</a>
-{% endif %}
-</div>
-
-<div id="observationsUploadDiv" class="container" style="display: none">
-  <h2>Upload observations (Excel)</h2>
-  <div id="form-data" class="content-section">
-    <form method='POST' enctype="multipart/form-data" action="{% url 'sensor-observations-upload' sensor.code %}">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <div class="form-group">
-        <button id="submit-btn" class="btn btn-info" type="submit" >Upload</button>
-        <button id="submit-btn" class="btn btn-secondary btn " style="float:right" onclick="showUploadDiv('none')" >Close</button>
-      </div>
+  <div class="filter-section col-md-3">
+    <h5>Filter</h5>
+    <form method="get">
+      {{ filter.form |crispy }}
+      <button type="submit" class="btn btn-info">Filter</button>
     </form>
   </div>
+
+  <div>
+    {% if hasPerm %}
+    <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.code %}">Add Sensor Observation</a>
+    <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Observations</a>
+    {% endif %}
+  </div>
+
+  <div id="observationsUploadDiv" class="container" style="display: none">
+    <h2>Upload observations (Excel)</h2>
+    <div id="form-data" class="content-section">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-observations-upload' sensor.code %}">
+        {% csrf_token %} {{ form|crispy }}
+        <div class="form-group">
+          <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
+          <button id="submit-btn" class="btn btn-secondary btn" style="float: right" onclick="showUploadDiv('none')">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% endblock content %}
 </div>
-
-
-
-
-{% endblock content %}
-
-
-
-

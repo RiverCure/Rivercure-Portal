@@ -1,6 +1,6 @@
 import xlrd, datetime
 from datetime import time, date
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import e_Sensor, e_SensorAlarm, e_SensorObservation
 from leaflet.forms.widgets import LeafletWidget
@@ -16,8 +16,10 @@ from django.core.files.storage import FileSystemStorage
 from .forms import SensorObservationsFileForm, SensorForm, SensorFileForm, GeoSensorForm
 from django.contrib.gis.geos import Point
 from django.http import HttpResponse, HttpResponseRedirect
-from organization.models import Membership
+from organization.models import Membership, Organization
 from sensors.forms import SensorObservationForm
+from django.contrib import messages
+from django.db import IntegrityError
 
 def sensor_general_create_permission_check(user):
     return Membership.objects.filter(user=user, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_sensorManager') | Q(permission='org_contextManager')).exists()
@@ -242,27 +244,56 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())
 
-def sensor_observations_upload(request):
+def sensor_observations_upload(request, pk):
     if request.method == 'POST':
         form = SensorObservationsFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_observations_file(request.FILES['excel_file'])
-            return HttpResponseRedirect('/sensors/')
+            f = request.FILES['excel_file'].read()
+            try:
+                print(request.FILES['excel_file'])
+                handle_uploaded_observations_file(f)
+                messages.success(request, 'Observations uploaded successfully')
+            except Exception as error:
+                if hasattr(error, 'message'):
+                    messages.error(request, f'Error parsing observation\'s Excel file: {error.message}')
+                else:
+                    messages.error(request, f'Error parsing observation\'s Excel file: {error}')
 
-    return HttpResponseRedirect('/sensors/')
+            return redirect('sensor-observation-list', pk=pk)
+
+    return redirect('sensor-observation-list', pk=pk)
 
 def sensor_upload(request):
     if request.method == 'POST':
         form = SensorFileForm(request.POST, request.FILES)
         if form.is_valid():
-            handle_uploaded_sensors_file(request.FILES['excel_file'])
-            handle_uploaded_observations_file(request.FILES['excel_file'])
+            f = request.FILES['excel_file'].read()
+            # Sensors
+            try:
+                handle_uploaded_sensors_file(f)
+                messages.success(request, 'Sensors uploaded successfully')
+            except Exception as error:
+                if hasattr(error, 'message'):
+                    messages.error(request, f'Error parsing sensor\'s Excel file: {error.message}')
+                else:
+                    messages.error(request, f'Error parsing sensor\'s Excel file: {error}')
+            # Observations
+            try:
+                handle_uploaded_observations_file(f)
+                messages.success(request, 'Observations uploaded successfully')
+            except Exception as error:
+                if hasattr(error, 'message'):
+                    messages.error(request, f'Error parsing observation\'s Excel file: {error.message}')
+                else:
+                    messages.error(request, f'Error parsing observation\'s Excel file: {error}')
+
+
             return HttpResponseRedirect('/sensors/')
 
     return HttpResponseRedirect('/sensors/')
 
 def handle_uploaded_observations_file(file):
-    sensors_file = xlrd.open_workbook(file_contents=file.read())
+    sensors_file = xlrd.open_workbook(file_contents=file)
     observation_sheet = sensors_file.sheet_by_index(1)
     
     for i in range(6, observation_sheet.nrows):
@@ -280,7 +311,6 @@ def handle_uploaded_observations_file(file):
             else:
                 sensor_code = str(observation_sheet.cell_value(i,0))
                 observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
-                print("float")
         
         else:
             sensor_code = str(observation_sheet.cell_value(i,0))
@@ -308,16 +338,16 @@ def handle_uploaded_observations_file(file):
             observation.discharge = observation_sheet.cell_value(i,4)
         try:
             observation.save()
-        except:
-            print("An exception occurred") 
-        
+            print('Observation saved!')
+        except Exception as error:
+            if type(error) is not IntegrityError: # if it isn't an error of duplicate entry in database, raise it
+                raise Exception(error)
+                return
 
-        
-        print('Observation saved!')
 
 
 def handle_uploaded_sensors_file(file):
-    sensors_file = xlrd.open_workbook(file_contents=file.read())
+    sensors_file = xlrd.open_workbook(file_contents=file)
     sensors_sheet = sensors_file.sheet_by_index(0)
     
     for i in range(6, sensors_sheet.nrows):
@@ -326,20 +356,24 @@ def handle_uploaded_sensors_file(file):
 
         sensor = e_Sensor()
 
-        check_float = isinstance(sensors_sheet.cell_value(i,1), float)
+        check_float = isinstance(sensors_sheet.cell_value(i,0), float)
         if check_float:
-            if int(sensors_sheet.cell_value(i,1)) == sensors_sheet.cell_value(i,1):
-                sensor_code = str(int(sensors_sheet.cell_value(i,1)))
-                print("int")
+            if int(sensors_sheet.cell_value(i,0)) == sensors_sheet.cell_value(i,0):
+                sensor_code = str(int(sensors_sheet.cell_value(i,0)))
             else:
-                sensor_code = str(sensors_sheet.cell_value(i,1))
-                print("float")
+                sensor_code = str(sensors_sheet.cell_value(i,0))
         
         else:
-            sensor_code = str(sensors_sheet.cell_value(i,1))
+            sensor_code = str(sensors_sheet.cell_value(i,0))
 
         sensor.code = sensor_code
-        sensor.Name = sensors_sheet.cell_value(i,2)
+        sensor.Name = sensors_sheet.cell_value(i,1)
+        try:
+            sensor.organization = Organization.objects.get(name=sensors_sheet.cell_value(i,2))
+        except:
+            raise Exception('That organization doesn\'t exist')
+            return
+
         sensor.type = sensors_sheet.cell_value(i,3)
         sensor.modalityType = sensors_sheet.cell_value(i,4)
         sensor.description = sensors_sheet.cell_value(i,5)
