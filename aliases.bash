@@ -21,3 +21,8 @@ alias startApp=startAppFunc;
 
 # Opens python shell
 alias shell="python manage.py shell";
+
+# Other aliases
+alias startRabbitmq="brew services start rabbitmq";
+alias stopRabbitmq="brew services stop rabbitmq";
+alias startCelery="celery -A rivercureproject worker -l INFO";
