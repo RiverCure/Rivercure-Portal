@@ -15,7 +15,6 @@
         const status_upload = document.getElementById('status_upload');
         const progress_istav = document.getElementById('progress_istav');
         const status_istav = document.getElementById('status_istav');
-        var timeout;
 
         function customSuccess(resultElement, result) {
             status_upload.innerHTML = "Finished successfully";
@@ -58,7 +57,6 @@
                     progress_istav.innerHTML = "";
                     status_istav.innerHTML = result.status;
                     const redirect_url = "{% url 'context-detail' context.code %}";
-                    clearTimeout(timeout);
                     setTimeout(() => location.href = redirect_url, 3000);
                 } else {
                     progress_istav.innerHTML = result.message;
@@ -75,7 +73,7 @@
             }
 
             if(!finished) {
-                timeout = setTimeout(() => {
+                setTimeout(() => {
                     requestMeshStatus();
                 }, 500);
             }

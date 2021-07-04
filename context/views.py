@@ -1008,7 +1008,8 @@ def mesh_status_progress(request, context_name):
 
         # Notification
         if ("Fail" in status) or ("Finished successfully" in status):
-            notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
+            if not request.user.notifications.unread().values_list('verb').order_by('verb').distinct():
+                notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
 
         return JsonResponse({'status' : status, 'message' : lastline})
     except: # iStav not online
