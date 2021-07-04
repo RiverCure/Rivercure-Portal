@@ -41,6 +41,10 @@ class e_Context(models.Model):
 
 	hasMesh = models.BooleanField(default=False)
 
+	task_id = models.CharField(max_length=200, null=True)
+	# Requester of a mesh generation request
+	requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='requester')
+
 	def __str__(self):
 		return self.Name
 
@@ -139,7 +143,7 @@ class e_ContextEvent(models.Model):
 	endDate = models.DateField(default=date.today, null=True, blank=True)
 
 	endTime = models.TimeField(null=True, blank=True)
-	   									
+
 	description = models.TextField()
 
 	#Attributes for "Flood Simulation" event, with iStav

@@ -4,11 +4,15 @@ import geojson
 from .models import e_ContextDTMFile, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
 from context.models import e_Context
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+from celery_progress.backend import ProgressRecorder
+
 
 logger = get_task_logger(__name__)
 
-@shared_task
-def post_files(url, context_code):
+
+@shared_task(bind=True)
+def post_files(self, url, context_code):
     from .views import prepare_domain, prepare_alignment, prepare_refinement, prepare_boundaries, prepare_boundary_points
     context = e_Context.objects.get(code=context_code)
     try:
@@ -49,8 +53,19 @@ def post_files(url, context_code):
         # context.hasMesh = False # Assume there is no mesh generated
         # context.save()
 
+        # Send file
+        encoder = MultipartEncoder(files)
+        progress_recorder = ProgressRecorder(self)
+        files_len = encoder.len
+
+        def my_callback(monitor):
+            # Your callback function
+            print(monitor.bytes_read)
+            progress_recorder.set_progress(monitor.bytes_read, files_len)
+
         payload = {'context_name': context_name}
-        r = requests.post(url, files=files, params=payload)
+        monitor = MultipartEncoderMonitor(encoder, my_callback)
+        r = requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
 
         return 'OK'
     except Exception as e:

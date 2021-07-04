@@ -115,7 +115,7 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
             # To read notifications, for both managers and non-managers
             notification = Notification.objects.filter(pk=notification_id)
             if notification.first():
-                notification.delete()
+                notification.mark_as_read()
 
         return super().setup(request, *args, **kwargs)
 
@@ -214,7 +214,7 @@ def organizationAccessRequestCancel(request, pk):
 
     notifications = Notification.objects.filter(verb=f"{user.username} requested to enter the organization {organization.name}")
     if notifications is not None:
-        notifications.delete()
+        notifications.mark_as_read()
 
     return redirect('organization-list') 
 

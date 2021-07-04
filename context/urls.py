@@ -11,6 +11,7 @@ from .views import (
     ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
     mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview, inform_mesh_status
 ) 
+from context.views import mesh_progress, mesh_status_progress, regenerate_mesh_confirm
 
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
@@ -28,8 +29,11 @@ urlpatterns = [
     path('request_preprocessing/<str:context_code>', request_pre_processing, name='context-preprocessing-request'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     path('preprocessing_results/download/<str:context_code>', download_preprocessing_results, name='context-preprocessing-results-download'),
+    path('mesh-status/progress/<str:context_name>', mesh_status_progress, name='mesh-status-progress'),
     path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
+    path('<str:context_code>/regenerate-mesh-confirm/', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
     path('mesh-status/request/<str:context_code>', inform_mesh_status, name='mesh-status-request'),
+    path('<str:context_code>/mesh-progress/', mesh_progress, name='mesh-progress'),
     path('simulation/results/<int:event_id>', view_events_results, name='view-simulation-results'),
     path('simulation/results/download/<int:event_id>', download_simulation_results, name='simulation-results-download'),
     path('simulation/results/handle/<int:event_id>', handle_simulation_results, name='handle-simulation-results'),

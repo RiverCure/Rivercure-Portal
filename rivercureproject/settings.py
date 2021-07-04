@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'bootstrapform',
     'notifications',
     'django_celery_results',
+    'celery_progress'
 ]
 
 MIDDLEWARE = [

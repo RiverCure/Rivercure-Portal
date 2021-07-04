@@ -10,7 +10,8 @@ from .views import (
     users,
     ProfileDetailView, 
     clearNotifications,
-    UserUpdateView
+    UserUpdateView,
+    NotificationListView
 )
 
 urlpatterns = [
@@ -24,5 +25,6 @@ urlpatterns = [
     path('users/', users, name='users'),
     path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile-detail'),
     path('profile/<int:pk>/update', UserUpdateView.as_view(), name='profile-update'),
-    path('notification/clear', clearNotifications, name='notifications-clear')
+    path('notification/clear', clearNotifications, name='notifications-clear'),
+    path('notification/all', NotificationListView.as_view(), name='notifications-all'),
 ]

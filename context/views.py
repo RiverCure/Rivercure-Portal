@@ -1,7 +1,7 @@
 import json, os, geojson, tempfile, datetime, requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction, connection
 from django.utils import timezone
 from .forms import ContextForm, UploadContextForm, EventForm
@@ -31,6 +31,7 @@ from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm
 from organization.models import Membership, Organization
 from .tasks import post_files
+from notifications.signals import notify
 
 # Checks if the user is a manager or contextManager on any organization. If so, he can add contexts (from which organization is seen in the create view)
 def context_general_create_permission_check(user):
@@ -820,7 +821,7 @@ def prepare_boundary_points(context_code, context_name):
     return boundary_point_file
 
 @login_required
-def request_pre_processing(request, context_code): # function to start simulation
+def request_pre_processing(request, context_code):
     context = get_object_or_404(e_Context, code=context_code)
     if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
@@ -830,16 +831,20 @@ def request_pre_processing(request, context_code): # function to start simulatio
 
     try:
         r = requests.get(simulator_address) # ping iStav to check if it's online
-        post_files.delay(url, context_code)
+        result = post_files.delay(url, context_code)
+        # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False # Assume there is no mesh generated
+        context.task_id = result.task_id
+        context.requester = request.user
         context.save()
         messages.success(request, 'Mesh generation request sent')
     except: # iStav not online
         messages.error(request, 'Couldn\'t connect to iStav')
 
-    if not request.META['HTTP_REFERER']:
-            redirect('context-detail', pk=context_code)
-    return redirect(request.META['HTTP_REFERER'])
+    if 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect('context-detail', pk=context_code)
 
 @login_required
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
@@ -966,10 +971,56 @@ def prepare_boundaries_file(context):
 
     return result
 
+# Return last line of output
+def get_last_line(status:str):
+    if status == "":
+        return ""
+    lines:list = status.splitlines()
+    if lines[-1] == "" or lines[-1].isspace():
+        return get_last_line("\n".join(lines[0:len(lines)-1]))
+    return lines[-1]
+
+# Enhance this
+def get_status(last_line:str):
+    if ("Permission denied" in last_line) or ("Fail" in last_line) or ("Error" in last_line):
+        return "Fail"
+    elif ("all files written in" in last_line) or ("--:--:--" in last_line):
+        return "Finished successfully"
+    else:
+        return "Processing"
+
+@login_required
+def mesh_status_progress(request, context_name):
+    context = get_object_or_404(e_Context, Name=context_name)
+    get_object_or_404(Membership, organization=context.organization, user=request.user)
+    simulator_address = os.environ['SIMULATOR_ADDRESS']
+    url = simulator_address + 'process-status/'
+
+    try:
+        payload = {'context_name': context_name}
+        response = requests.get(url, params=payload)
+        if response.status_code != 200:
+            return HttpResponse(status=400)
+        
+        body = response.content
+        lastline = get_last_line(body.decode("utf-8"))
+        status = get_status(lastline)
+
+        # Notification
+        if ("Fail" in status) or ("Finished successfully" in status):
+            notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
+
+        return JsonResponse({'status' : status, 'message' : lastline})
+    except: # iStav not online
+        # 503 = service unavailable
+        return HttpResponse(status=503)
+    
+
 def mesh_status_change(request, context_name): # Function to mark mesh has generated
     context = e_Context.objects.get(Name=context_name)
     if request.GET.get('status'):
         context.hasMesh = True
+        context.task_id = None # task finished
     else:
         context.hasMesh = False
 
@@ -1076,3 +1127,28 @@ def view_events_results(request, event_id): #function to view the results of an 
     }
 
     return render(request, 'context/event_results.html', context)  
+
+
+@login_required
+def mesh_progress(request, context_code):
+    e_context = get_object_or_404(e_Context, code=context_code)
+    if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
+
+    context = {
+        'context': e_context
+    }
+    
+    return render(request, 'context/mesh_progress.html', context)
+
+@login_required
+def regenerate_mesh_confirm(request, context_code):
+    e_context = get_object_or_404(e_Context, code=context_code)
+    if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
+        return HttpResponse('Unauthorized', status=401)
+
+    context = {
+        'context': e_context
+    }
+    
+    return render(request, 'context/regenerate_mesh_confirm.html', context)

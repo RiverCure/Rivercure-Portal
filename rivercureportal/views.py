@@ -10,7 +10,7 @@ from .models import e_HydroFeature
 from sensors.models import e_Sensor
 from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django_filters.views import FilterView
 from notifications.models import Notification
 from django.http import HttpResponse, HttpResponseRedirect
@@ -120,9 +120,25 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
 def clearNotifications(request):
     notifications = Notification.objects.filter(recipient=request.user)
     if notifications.exists():
-        notifications.delete()
+        notifications.mark_all_as_read()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    context_object_name = 'notifications'
+    template_name = 'rivercureportal/notification_list.html'
+    paginate_by = 12
+
+    def get_context_data(self, **kwargs):
+        context = super(ListView, self).get_context_data(**kwargs)
+
+        if 'HTTP_REFERER' in self.request.META:
+            context["previous_page"] = self.request.META['HTTP_REFERER']
+        else:
+            context["previous_page"] = reverse('rivercure-home')
+        return context
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
