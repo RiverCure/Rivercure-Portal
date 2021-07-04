@@ -1,38 +1,26 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load leaflet_tags %}
-{% load static %}
-
-{% block scripts %}
-    {% leaflet_js plugins="ALL" %}
-    {% leaflet_css plugins="ALL" %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-           console.log("{{ context.code }}") 
-           document.querySelector("#id_context_code").value="{{ context.code }}";
-        });    
-   </script>
-{% endblock %}
-
-{% block content %}
-    <div class="content-section">
-        <form method='POST'>
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Event for context {{ context.name }}</legend>
-                {{ form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Save</button>
-                {% if event.context.code != null %}
-                <a class="btn btn-outline-secondary" href="{% url 'context-event-list' event.context.code %}">Cancel</a>
-                {% else %}
-                <a class="btn btn-outline-secondary" href="{% url 'context-event-list' context.code %}">Cancel</a>
-                {% endif %}
-            </div>
-        </form>
+{% extends "rivercureportal/base.html" %} {% block title %} Context event create {% endblock %} {% load crispy_forms_tags %} {% load leaflet_tags %} {% load static %} {% block scripts %} {% leaflet_js plugins="ALL" %} {% leaflet_css plugins="ALL" %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('{{ context.code }}');
+    document.querySelector('#id_context_code').value = '{{ context.code }}';
+  });
+</script>
+{% endblock %} {% block content %}
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Event for context {{ context.name }}</legend>
+      {{ form|crispy }}
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-info" type="submit">Save</button>
+      {% if event.context.code != null %}
+      <a class="btn btn-outline-secondary" href="{% url 'context-event-list' event.context.code %}">Cancel</a>
+      {% else %}
+      <a class="btn btn-outline-secondary" href="{% url 'context-event-list' context.code %}">Cancel</a>
+      {% endif %}
     </div>
+  </form>
+</div>
 {% endblock content %}
-
-
-

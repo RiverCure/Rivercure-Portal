@@ -1,4 +1,4 @@
-{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Sensor list {% endblock %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block content %}
 
 <style>
   th {
@@ -32,7 +32,7 @@
       </tr>
       {% for sensor in filter.qs %}
       <tr>
-        <td>{{ sensor.organization }} ({% if sensor.isPublic %}Public{% else %}Private{% endif %})</td>
+        <td>{{ sensor.organization }} ({{ sensor.isPublic|yesno:"Public,Private" }})</td>
         <td>{{ sensor.code }}</td>
         <td>
           <a href="{% url 'sensor-detail' sensor.pk %}">

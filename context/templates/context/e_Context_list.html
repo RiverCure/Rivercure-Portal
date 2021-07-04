@@ -1,4 +1,4 @@
-{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block scripts %}
+{% extends "rivercureportal/base.html" %} {% block title %} Context list {% endblock %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block scripts %}
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 {% endblock %} {% block content %}
 
@@ -43,7 +43,7 @@
           </a>
         </td>
         <td>{{ context.hydroFeature }}</td>
-        <td>{% if context.isPublic %} Public {% else %} Private {% endif %}</td>
+        <td>{{ context.isPublic|yesno:"Public,Private" }}</td>
       </tr>
       {% empty %}
       <td><h3 class="text-secondary font-italic no-context-data">No contexts available!</h3></td>

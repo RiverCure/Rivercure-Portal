@@ -1,25 +1,16 @@
-{% extends "rivercureportal/base.html" %}
-{% load leaflet_tags %}
-{% load static %}
-
-{% block scripts %}
-    {% leaflet_js plugins="ALL" %}
-    {% leaflet_css plugins="ALL" %}
-{% endblock %}
-
-{% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Delete context {% endblock %} {% load leaflet_tags %} {% load static %} {% block scripts %} {% leaflet_js plugins="ALL" %} {% leaflet_css plugins="ALL" %} {% endblock %} {% block content %}
 <div class="content-section">
-    <form method='POST'>
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Delete {{context.Name}}</legend>
-            <h2>Are you sure you want to delete the context '{{context.Name}}'?</h2>
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-danger" type="submit">Yes, delete</button>
-            <a class="btn btn-outline-secondary" href="{% url 'context-detail' context.code %}">Cancel</a>
-        </div>
-    </form>
+  <form method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Delete {{context.Name}}</legend>
+      <h2>Are you sure you want to delete the context '{{context.Name}}'?</h2>
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-danger" type="submit">Yes, delete</button>
+      <a class="btn btn-outline-secondary" href="{% url 'context-detail' context.code %}">Cancel</a>
+    </div>
+  </form>
 </div>
-    
+
 {% endblock content %}

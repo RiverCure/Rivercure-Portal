@@ -1,34 +1,22 @@
-{% extends "rivercureportal/base.html" %}
-{% load leaflet_tags %}
-{% load static %}
-{% load crispy_forms_tags %}
-{% load auth_extras %}
-
-{% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Observation detail {% endblock %} {% load leaflet_tags %} {% load static %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
 
 <article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        <h1> <a class="mr-2">{{ object.sensor}} - observation {{ object.id }}</a></h1>
-      </div>
-      <p class="article-content">Sensor Type: {{observation.sensor.type}}</p>
-      <p class="article-content">Date: {{observation.date}}</p>
-      <p class="article-content">Time: {{observation.time}}</p>
-      <p class="article-content">Depth: {{observation.depth}}</p>
-      <p class="article-content">Discharge: {{observation.discharge}}</p>
-
-      {% if hasPerm %} 
-      <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.code observation.id %}">Edit</a>
-      <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.code observation.id %}"  >Delete</a>
-      {% endif %}
-      <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'sensor-observation-list' observation.sensor.code %}">Back</a>
-      
-
+  <div class="media-body">
+    <div class="article-metadata">
+      <h1><a class="mr-2">{{ object.sensor}} - observation {{ object.id }}</a></h1>
     </div>
+    <p class="article-content">Sensor Type: {{observation.sensor.type}}</p>
+    <p class="article-content">Date: {{observation.date}}</p>
+    <p class="article-content">Time: {{observation.time}}</p>
+    <p class="article-content">Depth: {{observation.depth}}</p>
+    <p class="article-content">Discharge: {{observation.discharge}}</p>
+
+    {% if hasPerm %}
+    <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.code observation.id %}">Edit</a>
+    <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.code observation.id %}">Delete</a>
+    {% endif %}
+    <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'sensor-observation-list' observation.sensor.code %}">Back</a>
+  </div>
 </article>
 
 {% endblock content %}
-
-
-
-

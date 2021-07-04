@@ -1,4 +1,4 @@
-{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Profile {% endblock %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
 <div class="content-section">
   <div class="media">
     <img class="rounded-circle account-img" src="{{ u.profile.image.url }}" />

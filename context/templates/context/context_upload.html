@@ -1,25 +1,19 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load leaflet_tags %}
-{% load static %}
-
-{% block content %}
-    <h1>{{ context.Name }} context</h1>
-    <h2>Files upload</h2>
-    <div id="form-data" class="content-section">
-        <form method='POST' enctype="multipart/form-data" action="{% url 'context_upload' context.code %}">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <div class="form-group">
-                <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
-                <a class="btn btn-dark" href="{% url 'context-detail' context.code %}">Upload & define manually</a>
-                <a class="btn btn-info" href="{% url 'context_manage' context.code %}">Define manually</a>
-                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
-            </div>
-        </form>
+{% extends "rivercureportal/base.html" %} {% block title %} Context upload {% endblock %} {% load crispy_forms_tags %} {% load leaflet_tags %} {% load static %} {% block content %}
+<h1>{{ context.Name }} context</h1>
+<h2>Files upload</h2>
+<div id="form-data" class="content-section">
+  <form method="POST" enctype="multipart/form-data" action="{% url 'context_upload' context.code %}">
+    {% csrf_token %} {{ form|crispy }}
+    <div class="form-group">
+      <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
+      <a class="btn btn-dark" href="{% url 'context-detail' context.code %}">Upload & define manually</a>
+      <a class="btn btn-info" href="{% url 'context_manage' context.code %}">Define manually</a>
+      <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float: right">Back</a>
     </div>
+  </form>
+</div>
 
-    <script>
-        document.querySelector('#id_code').value = '{{ context.code }}';
-    </script>
+<script>
+  document.querySelector('#id_code').value = '{{ context.code }}';
+</script>
 {% endblock %}

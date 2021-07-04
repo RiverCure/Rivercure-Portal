@@ -1,0 +1,136 @@
+{% extends "rivercureportal/base.html" %} {% block title %} Mesh generation progress {% endblock %} {% load static %}
+
+{% block scripts %}
+<script src="{% static 'celery_progress/celery_progress.js' %}"></script>
+
+<style>
+.table {
+    margin-top: 60px;
+}
+</style>
+
+<script>
+    document.onreadystatechange = function () {
+        const progress_bar = document.getElementById('custom_progress');
+        const status_upload = document.getElementById('status_upload');
+        const progress_istav = document.getElementById('progress_istav');
+        const status_istav = document.getElementById('status_istav');
+        var timeout;
+
+        function customSuccess(resultElement, result) {
+            status_upload.innerHTML = "Finished successfully";
+            requestMeshStatus();
+            progress_istav.innerHTML = "iStav requested. Please wait...";
+            status_istav.innerHTML = "Pending";
+        }
+
+        function customProgress(progressBarElement, progressBarMessageElement, progress) {
+            progress_bar.style.width = `${progress.percent}%`; // Update percentage
+            if(progress.percent != 100) status_upload.innerHTML = `Uploading (${progress.percent}%)`;
+            progress_bar.setAttribute("aria-valuenow", progress.percent); // Update aria-valuenow
+            if(progress.pending === false) progress_bar.classList.remove('progress-bar-animated'); // If it's not pending, don't animate
+        }
+
+        function customError(progressBarElement, progressBarMessageElement, excMessage, data) {
+            status_upload.innerHTML = `Error: ${excMessage}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+        var progressUrl = "{% url 'celery_progress:task_status' context.task_id %}";
+        CeleryProgressBar.initProgressBar(progressUrl, {
+            onResult: () => {},
+            onSuccess: customSuccess,
+            onProgress: customProgress,
+            onTaskError: customError,
+            onNetworkError: customError,
+            onHttpError: customError,
+            onDataError: customError
+        })});
+
+        function receiveResponse(e) {
+            request = e.target;
+
+            var finished = false;
+            if(request.status == 200) {
+                result = request.response;
+                
+                if(result.status == "Finished successfully") {
+                    progress_istav.innerHTML = "";
+                    status_istav.innerHTML = result.status;
+                    const redirect_url = "{% url 'context-detail' context.code %}";
+                    clearTimeout(timeout);
+                    setTimeout(() => location.href = redirect_url, 3000);
+                } else {
+                    progress_istav.innerHTML = result.message;
+                    status_istav.innerHTML = result.status;
+                }
+
+            } else if(request.status == 503) {
+                // iStav failed to respond
+                progress_istav.innerHTML = "Retrying because Rivercure failed to connect to iStav";
+                status_istav.innerHTML = "Retrying"
+            } else if(request.status == 400) {
+                progress_istav.innerHTML = "iStav couldn't find a log file for this context";
+                status_istav.innerHTML = "Fail"
+            }
+
+            if(!finished) {
+                timeout = setTimeout(() => {
+                    requestMeshStatus();
+                }, 500);
+            }
+        }
+
+        requestMeshStatus = () => {
+            const xhr = new XMLHttpRequest();
+            const url = "{% url 'mesh-status-progress' context.Name %}";
+            xhr.open('GET', url, true);
+            xhr.responseType="json";
+            xhr.onload =  (e) => {
+                receiveResponse(e);
+            };
+
+            xhr.send(null);
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+
+<h1 style>Context '{{ context }}' progress</a></h1>
+{% if context.requester %}
+<h4 style>Requested by '{{ context.requester }}'</h4>
+{% endif %}
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th style="width:20%" scope="col">#</th>
+            <th style="width:60%" scope="col">Progress</th>
+            <th style="width:20%" scope="col">Status</th>
+        </tr>
+        <tr>
+            <th class="text-nowrap" scope="row">Upload to iStav</th>
+            <td>
+                <div class="progress">
+                    <div id="custom_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                </div>
+            </td>
+            <td class="text-nowrap" id="status_upload">Uploading (0%)</td>
+        </tr>
+        <tr>
+            <th class="text-nowrap" scope="row">iStav processing</th>
+            <!-- PROGRESS BAR OF ISTAV -->
+            <td id="progress_istav">Not started</td>
+            <!-- PERCENTAGE OF ISTAV -->
+            <td class="text-nowrap" id="status_istav">Not started</td>
+        </tr>
+    </tbody>
+</table>
+
+<div>
+    <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
+</div>
+
+{% endblock content %}

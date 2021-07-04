@@ -4,6 +4,7 @@
 <html lang="en">
   <head>
     <!-- Required meta tags -->
+    <title>Rivercure Portal - {% block title %} {% endblock %}</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 
     <link rel="stylesheet" type="text/css" href="{% static 'rivercureportal/main.css' %}" />
+    <link rel="RCP icon" href="{% static 'rivercureportal/icons/logo.ico' %}" type="image/x-icon" />
 
     {% block scripts %}{% endblock scripts %}
   </head>
@@ -52,7 +54,11 @@
             <div class="navbar-nav">
               {% if user.is_authenticated %}
               <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown" data-toggle="dropdown">
+                {% if user.notifications.unread|length != 0 %}
+                  <a href="#" class="nav-link dropdown" data-toggle="dropdown">
+                {% else %}
+                  <a href="{% url 'notifications-all' %}" class="nav-link dropdown">
+                {% endif %}
                   <span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" /></svg>
                   </span>
@@ -69,7 +75,17 @@
                   >
                   <div class="dropdown-divider"></div>
                   {% if forloop.last %}
-                  <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>Clear all notifications</small></a>
+                  <div>
+                    <div class="row">
+                      <div class="col-sm" style="border-right: 1px solid #e9ecef">
+                        <a class="dropdown-item" href="{% url 'notifications-all' %}" type="button"><small>See all notifications</small></a>
+                      </div>
+                      <div class="col-sm">
+                        <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>Clear all notifications</small></a>
+                      </div>
+                    </div>
+                  </div>
+
                   {% endif %} {% endfor %}
                 </div>
                 {% endif %}

@@ -1,4 +1,4 @@
-{% extends "rivercureportal/base.html" %} {% load crispy_forms_tags %} {% load static %} {% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Update profile {% endblock %} {% load crispy_forms_tags %} {% load static %} {% block content %}
 <div class="content-section">
   <form method="POST">
     {% csrf_token %}

@@ -1,31 +1,22 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load static %}
-
-{% block scripts %}
-<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
-{% endblock %}
-
-
-{% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Context sensor list {% endblock %} {% load crispy_forms_tags %} {% load static %} {% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock %} {% block content %}
 
 <style>
   th {
     cursor: pointer;
   }
 
-  th:hover{
+  th:hover {
     background: #eee;
   }
 </style>
 
-<h1><a href="{% url 'context-detail' context.code %}"> {{ context.Name }}</a> </h1>
+<h1><a href="{% url 'context-detail' context.code %}"> {{ context.Name }}</a></h1>
 <h1>Sensors</h1>
 <div class="row">
-
-<div class="col-md-8">
-<table class="table table-hover ">
-  
+  <div class="col-md-8">
+    <table class="table table-hover">
       <tr>
         <th class="tr_class" scope="col">Code</th>
         <th class="tr_class" scope="col">Name</th>
@@ -39,68 +30,54 @@
         <td>{{ sensor.sensor.code }}</td>
         <td>
           <a href="{% url 'sensor-detail' sensor.sensor.code %}">
-            <div style="height:100%;width:100%">
-              {{ sensor.sensor.Name }}
-            </div>
+            <div style="height: 100%; width: 100%">{{ sensor.sensor.Name }}</div>
           </a>
         </td>
         <td>{{ sensor.sensor.type }}</td>
         <td>{{ sensor.sensor.subtype }}</td>
         <td>{{ sensor.sensor.modalityType }}</td>
-        <td class="tr_class"><a href="{% url 'sensor-observation-list' sensor.sensor.code %}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" ></a></td>
+        <td class="tr_class">
+          <a href="{% url 'sensor-observation-list' sensor.sensor.code %}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" /></a>
+        </td>
       </tr>
       {% empty %}
       <td><h2 class="text-secondary font-italic no-context-data">No available sensors! :(</h2></td>
-    {% endfor %}
-  </table>
+      {% endfor %}
+    </table>
   </div>
 
-
-
-  
   <div class="filter-section col-md-3">
-    <h5>Filter</h5> 
+    <h5>Filter</h5>
     <form method="get">
       {{ filter.form |crispy }}
       <button type="submit" class="btn btn-info">Filter</button>
     </form>
   </div>
 
- 
   <div>
-    <a type="button" class="btn btn-info " href="{% url 'context-list' %}">All Contexts</a>
-    <a type="button" class="btn btn-info " href="{% url 'sensor-list' %}">All Sensors</a>
-    
+    <a type="button" class="btn btn-info" href="{% url 'context-list' %}">All Contexts</a>
+    <a type="button" class="btn btn-info" href="{% url 'sensor-list' %}">All Sensors</a>
   </div>
 </div>
 
 <script>
-  
-  console.log("sort");
+  console.log('sort');
   const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+  const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
   console.log(document.querySelector('table'));
 
-    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    console.log("listen");
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
-})));
- 
+  document.querySelectorAll('th').forEach((th) =>
+    th.addEventListener('click', () => {
+      const table = th.closest('table');
+      console.log('listen');
+      Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
+        .forEach((tr) => table.appendChild(tr));
+    })
+  );
 
-  console.log("hello");
+  console.log('hello');
 </script>
 
-
-
-
-
 {% endblock content %}
-
-
-

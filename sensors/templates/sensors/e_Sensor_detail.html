@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% block title %} Sensor detail {% endblock %}
 {% load leaflet_tags %}
 {% load static %}
 {% load crispy_forms_tags %}
@@ -75,6 +76,8 @@
 			<div class="article-metadata">
 				<h1>{{ sensor.Name }}</h1>
 			</div>
+			<p class="article-content"><b>Organization:</b> {{ sensor.organization }}</p> 
+			<p class="article-content"><b>Visibility:</b> {{ sensor.isPublic|yesno:"Public,Private" }}</p> 
 			<p class="article-content"><b>Code:</b> {{ sensor.code }}</p> 
 			<p class="article-content"><b>Type:</b> {{ sensor.type }}</p> 
 			<p class="article-content"><b>Modality:</b> {{ sensor.modalityType }}</p> 

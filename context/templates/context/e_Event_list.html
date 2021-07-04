@@ -1,15 +1,11 @@
-{% extends "rivercureportal/base.html" %}
-{% load crispy_forms_tags %}
-{% load auth_extras %}
-
-{% block content %}
+{% extends "rivercureportal/base.html" %} {% block title %} Context event list {% endblock %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
 
 <style>
   th {
     cursor: pointer;
   }
 
-  th:hover{
+  th:hover {
     background: #eee;
   }
 
@@ -18,65 +14,54 @@
   }
 </style>
 
-<h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> </h1>
+<h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a></h1>
 <h1>Events</h1>
 <div class="filter-section">
-  <h5>Filter</h5> 
-  <form method="get" >
+  <h5>Filter</h5>
+  <form method="get">
     {{ filter.form |crispy }}
     <button type="submit" class="btn btn-info">Filter</button>
   </form>
-        
-  <div class="mt-3">
-    
-  </div>
 
+  <div class="mt-3"></div>
 </div>
 
 <div class="row">
-
   <div class="col-md-8">
-  <table class="table table-hover ">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Type</th>
-        <th scope="col">SubType</th>
-        <th scope="col">Start</th>
-        <th scope="col">End</th>
-        <th scope="col">State</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for event in events %}
-      <tr>
-        <td>
-          <a href="{% url 'event-detail' event.context.code event.pk %}">
-            <div style="height:100%;width:100%">
-              {{ event.Name }}
-            </div>
-          </a>
-        </td>
-        <td>{{ event.get_type_display }}</td>
-        <td>{% if event.subtype %} {{ event.get_subtype_display }} {% endif %}</td>
-        <td>{{ event.startDate }}</td>
-        <td>{{ event.endDate }}</td>
-        <td>{{ event.state }}</td>
-      </tr>
-      {% empty %}
-      <td><h3 class="text-secondary font-italic no-context-data">No Events!</h3></td>
-    {% endfor %}
-  </tbody>
-  </table>
-{% if hasPerm %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Type</th>
+          <th scope="col">SubType</th>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+          <th scope="col">State</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>
+            <a href="{% url 'event-detail' event.context.code event.pk %}">
+              <div style="height: 100%; width: 100%">{{ event.Name }}</div>
+            </a>
+          </td>
+          <td>{{ event.get_type_display }}</td>
+          <td>{% if event.subtype %} {{ event.get_subtype_display }} {% endif %}</td>
+          <td>{{ event.startDate }}</td>
+          <td>{{ event.endDate }}</td>
+          <td>{{ event.state }}</td>
+        </tr>
+        {% empty %}
+        <td><h3 class="text-secondary font-italic no-context-data">No Events!</h3></td>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if hasPerm %}
     <a type="button" class="btn btn-info" href="{% url 'event-create' context.code %}">Add Event</a>
-{% endif %}
+    {% endif %}
   </div>
-
 </div>
 
 {% endblock content %}
-
-
-
-

@@ -1,0 +1,56 @@
+{% extends "rivercureportal/base.html" %} {% block title %} Notification list {% endblock %} {% load static %} {% load auth_extras %} {% block content %}
+
+<style>
+  th {
+    cursor: pointer;
+  }
+
+  th:hover {
+    background: #eee;
+  }
+</style>
+
+<h1>My notifications</h1>
+
+<div class="row">
+  <div class="col-md">
+    <table name="table" id="table" class="table">
+      <tr>
+        <th id="sd" class="tr_class" scope="col"><b>#</b></th>
+        <th id="sd" class="tr_class" scope="col">Notification</th>
+        <th id="sd" class="tr_class" scope="col">Date</th>
+        <th id="sd" class="tr_class" scope="col">Read</th>
+      </tr>
+      {% for notification in notifications %}
+      <tr>
+        <td><b>{{ forloop.counter }}</b></td>
+        <td>{{ notification.verb }}</td>
+        <td>{{ notification.timestamp }}</td>
+        <td>{{ notification.unread|yesno:"No,Yes" }}</td>
+      </tr>
+      {% empty %}
+      <td><h2 class="text-secondary font-italic no-context-data">No notifications!</h2></td>
+      {% endfor %}
+    </table>
+
+    <div class="pagination mb-5">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+
+<a class="btn btn-secondary btn mt-1 mb-4" style="float: right" href="{{ previous_page }}">Back</a>
+
+{% endblock content %}
