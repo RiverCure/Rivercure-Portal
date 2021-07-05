@@ -34,7 +34,7 @@ class e_Sensor(models.Model):
     timeZoneOffset = models.IntegerField(null=True, blank=True)
 
     geom = models.PointField()
-   
+
     # FixedInSituSensor
     recRhythmValue = models.IntegerField(null=True, blank=True)                                           # Recording rhythm value
     recRhythmMetric = models.CharField(max_length=20, choices=METRICKIND_CHOICES, null=True)              # Recording rhythm metric                                                                  

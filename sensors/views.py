@@ -59,7 +59,7 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         observation.sensor = e_Sensor.objects.get(pk=self.kwargs['pk'])
         observation.save()
         return super().form_valid(form)
-   
+
     def test_func(self):
         # We only want the sensors that are either public or are private and this user is the responsible user
         return sensor_general_create_permission_check(self.request.user)
@@ -68,7 +68,7 @@ class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
     form_class = SensorObservationForm
     model = e_SensorObservation
     context_object_name = 'observation'
-   
+
     def get_success_url(self):
         return reverse('sensor-observation-detail',args=(self.object.sensor.code,self.object.id,))
 
@@ -101,18 +101,18 @@ def SensorObservationListView(request, pk):
 
     obs_filter = ObservationFilter(request.GET, queryset=qs)
     obs = obs_filter.qs
-   
+
     page = request.GET.get('page', 1)
     obs_paginator = Paginator(obs, 30)
 
     page_obj = obs_paginator.get_page(page)
 
     try:
-       obs = obs_paginator.page(page)
+        obs = obs_paginator.page(page)
     except EmptyPage :
-       obs = obs_paginator.page(page)
+        obs = obs_paginator.page(page)
     except PageNotAnInteger:
-       obs = obs_paginator.page(page)
+        obs = obs_paginator.page(page)
 
     hasPerm = sensor_edit_permission_check(request.user, sensor)
 
@@ -127,34 +127,29 @@ def SensorObservationListView(request, pk):
 
     return render(request, "sensors/e_Sensor_observations.html", context)
 
-@login_required
-def SensorListView(request):
-    # Lists sensors that are public together with the ones in which the user is in the organization
-    sensor_list = e_Sensor.objects.filter(isPublic=True).union(e_Sensor.objects.filter(organization__membership__in=Membership.objects.filter(user=request.user, access_granted=True)))
-    sensor_filter = SensorFilter(request.GET, queryset=sensor_list)
+class SensorListView(LoginRequiredMixin, ListView):
+    model = e_Sensor
+    context_object_name = 'sensor'
+    template_name = 'sensors/e_Sensor_list.html'
+    paginate_by = 15
+    ordering = ['code']
 
-    hasPerm = sensor_general_create_permission_check(request.user)
+    def get_queryset(self):
+        # Public sensors + Private sensors where the current user is member of the organization
+        queryset = (e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(isPublic=False, organization__membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))).distinct()
+        filter = SensorFilter(self.request.GET, queryset.order_by('code'))
+        return filter.qs
 
-    sensors = sensor_filter.qs
-    sensor_paginator = Paginator(sensors, 15)
-    page = request.GET.get('page', 1)
-    page_obj = sensor_paginator.get_page(page)
+    def get_context_data(self, **kwargs):
+        context = super(ListView, self).get_context_data(**kwargs)
 
-    try:
-        sensors = sensor_paginator.page(page)
-    except EmptyPage :
-        sensors = sensor_paginator.page(page)
-    except PageNotAnInteger:
-        sensors = sensor_paginator.page(page)
+        context["hasPerm"] = sensor_general_create_permission_check(self.request.user)
+        context["form"] = SensorFileForm()
+        queryset = self.get_queryset()
+        filter = SensorFilter(self.request.GET, queryset)
+        context["filter"] = filter
 
-    context ={
-        'page_obj' : page_obj,
-        'filter': sensor_filter,
-        'hasPerm': hasPerm,
-        'form': SensorFileForm(),
-    }
-
-    return render(request, 'sensors/e_Sensor_list.html', context)
+        return context
 
 
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

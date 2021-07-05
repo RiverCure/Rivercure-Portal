@@ -13,6 +13,7 @@ class ContextSensorFilter(django_filters.FilterSet):
 
 class EventFilter(django_filters.FilterSet):  
 
+    Name = django_filters.CharFilter(label="Name", lookup_expr='icontains')
     date1 = DateFilter(field_name='startDate', lookup_expr='gte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
     date2 = DateFilter(field_name='endDate', lookup_expr='lte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
     
@@ -20,7 +21,9 @@ class EventFilter(django_filters.FilterSet):
         model = e_ContextEvent
         fields = ['Name','type','date1', 'date2',]
         
-class ContextFilter(django_filters.FilterSet):  
+class ContextFilter(django_filters.FilterSet):
+    Name = django_filters.CharFilter(label="Name", lookup_expr='icontains')
+
     class Meta:
         model = e_Context
         fields = ['Name', 'hydroFeature', 'organization']    
