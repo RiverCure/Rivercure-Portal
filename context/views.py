@@ -1002,8 +1002,8 @@ def mesh_status_progress(request, context_name):
         if response.status_code != 200:
             return HttpResponse(status=400)
         
-        body = response.content
-        lastline = get_last_line(body.decode("utf-8"))
+        body = response.content.decode("utf-8")
+        lastline = get_last_line(body)
         status = get_status(lastline)
 
         # Notification
@@ -1011,7 +1011,7 @@ def mesh_status_progress(request, context_name):
             if not request.user.notifications.unread().values_list('verb').order_by('verb').distinct():
                 notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
 
-        return JsonResponse({'status' : status, 'message' : lastline})
+        return JsonResponse({'status' : status, 'message' : lastline, 'full_log' : body})
     except: # HiSTAV not online
         # 503 = service unavailable
         return HttpResponse(status=503)
