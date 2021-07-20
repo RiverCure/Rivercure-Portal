@@ -830,7 +830,7 @@ def request_pre_processing(request, context_code):
     url = simulator_address + 'process/'
 
     try:
-        r = requests.get(simulator_address) # ping iStav to check if it's online
+        r = requests.get(simulator_address) # ping HiSTAV to check if it's online
         result = post_files.delay(url, context_code)
         # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False # Assume there is no mesh generated
@@ -838,8 +838,8 @@ def request_pre_processing(request, context_code):
         context.requester = request.user
         context.save()
         messages.success(request, 'Mesh generation request sent')
-    except: # iStav not online
-        messages.error(request, 'Couldn\'t connect to iStav')
+    except: # HiSTAV not online
+        messages.error(request, 'Couldn\'t connect to HiSTAV')
 
     if 'HTTP_REFERER' in request.META:
         return redirect(request.META['HTTP_REFERER'])
@@ -1012,7 +1012,7 @@ def mesh_status_progress(request, context_name):
                 notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
 
         return JsonResponse({'status' : status, 'message' : lastline})
-    except: # iStav not online
+    except: # HiSTAV not online
         # 503 = service unavailable
         return HttpResponse(status=503)
     

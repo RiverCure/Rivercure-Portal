@@ -146,7 +146,7 @@ class e_ContextEvent(models.Model):
 
 	description = models.TextField()
 
-	#Attributes for "Flood Simulation" event, with iStav
+	#Attributes for "Flood Simulation" event, with HiSTAV
 
 	returnPeriod = models.IntegerField(default=1)
 
