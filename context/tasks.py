@@ -30,23 +30,23 @@ def post_files(self, url, context_code):
         #endof json preparation
 
         files = {
-            'domain.geojson': geojson.dumps(domain_file),
-            'refinements.geojson': geojson.dumps(refinement_file),
-            'boundaries.geojson': geojson.dumps(boundary_file),
-            'boundaries_points.geojson': geojson.dumps(boundary_point_file),
+            'domain.geojson': ('domain.geojson', geojson.dumps(domain_file)),
+            'refinements.geojson': ('refinements.geojson', geojson.dumps(refinement_file)),
+            'boundaries.geojson': ('boundaries.geojson', geojson.dumps(boundary_file)),
+            'boundaries_points.geojson': ('boundaries_points.geojson', geojson.dumps(boundary_point_file)),
         }  
         if alignment_file is not None:
-            files['alignments.geojson'] = geojson.dumps(alignment_file)
+            files['alignments.geojson'] = ('alignments.geojson', geojson.dumps(alignment_file))
 
         try:
             dtm_file = e_ContextDTMFile.objects.get(context__code=context_code).raster
-            files['dtm.tif'] = dtm_file
+            files['dtm.tif'] = ('dtm.tif', dtm_file)
         except Exception:
             print('No DTM defined')
 
         try:
             friction_coeff_file = e_ContextFrictionCoeff.objects.get(context__code=context_code).raster
-            files['frictionCoef.tif'] = friction_coeff_file
+            files['frictionCoef.tif'] = ('frictionCoef.tif', friction_coeff_file)
         except Exception:
             print('No friction coef defined')
 
