@@ -469,7 +469,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     lookup_field = 'code'
     serializer_class = ContextSerializer
 
-  
+
 class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     http_method_names = ['post']
     template_name = 'context/context_upload.html'
@@ -841,10 +841,10 @@ def request_pre_processing(request, context_code):
     except: # HiSTAV not online
         messages.error(request, 'Couldn\'t connect to HiSTAV')
 
-    if 'HTTP_REFERER' in request.META:
-        return redirect(request.META['HTTP_REFERER'])
-    else:
-        return redirect('context-detail', pk=context_code)
+    # if 'HTTP_REFERER' in request.META:
+    #     return redirect(request.META['HTTP_REFERER'])
+    # else:
+    return redirect('context-detail', pk=context_code)
 
 @login_required
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
@@ -1008,8 +1008,7 @@ def mesh_status_progress(request, context_name):
 
         # Notification
         if ("Fail" in status) or ("Finished successfully" in status):
-            if not request.user.notifications.unread().values_list('verb').order_by('verb').distinct():
-                notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
+            notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
 
         return JsonResponse({'status' : status, 'message' : lastline, 'full_log' : body})
     except: # HiSTAV not online

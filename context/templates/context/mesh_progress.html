@@ -47,7 +47,7 @@
             onDataError: customError
         })});
 
-        function receiveResponse(e) {
+        async function receiveResponse(e) {
             request = e.target;
 
             var finished = false;
@@ -61,7 +61,8 @@
                 if(result.status == "Finished successfully") {
                     progress_histav.innerHTML = "";
                     const redirect_url = "{% url 'context-detail' context.code %}";
-                    setTimeout(() => location.href = redirect_url, 3000);
+                    // Wait 2s and redirect
+                    await new Promise(r => setTimeout(() => location.href = redirect_url, 2000));
                 } else {
                     progress_histav.innerHTML = result.message;
                 }
