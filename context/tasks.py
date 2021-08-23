@@ -12,7 +12,7 @@ logger = get_task_logger(__name__)
 
 
 @shared_task(bind=True)
-def post_files(self, url, context_code):
+def preprocess_task(self, url, context_code):
     from .views import prepare_domain, prepare_alignment, prepare_refinement, prepare_boundaries, prepare_boundary_points
     context = e_Context.objects.get(code=context_code)
     try:
@@ -71,3 +71,4 @@ def post_files(self, url, context_code):
     except Exception as e:
         print(f'Exception:{e}')
         return f'Exception:{e}'
+    
