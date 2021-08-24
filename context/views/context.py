@@ -45,13 +45,18 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
 
     def delete(self, *args, **kwargs):
         context : e_Context = self.get_object()
+        base_path = 'media/'
 
         # Delete DTM and frictionCoef files
-        if os.path.exists(f'media/{context.Name}_dtm.tif'):
-            os.remove(f'media/{context.Name}_dtm.tif')
+        if os.path.exists(f'{base_path}{context.Name}_dtm.tif'):
+            os.remove(f'{base_path}{context.Name}_dtm.tif')
 
-        if os.path.exists(f'media/{context.Name}_frictionCoef.tif'):
-            os.remove(f'media/{context.Name}_frictionCoef.tif')
+        if os.path.exists(f'{base_path}{context.Name}_frictionCoef.tif'):
+            os.remove(f'{base_path}{context.Name}_frictionCoef.tif')
+
+        for i in os.listdir(base_path):
+            if os.path.isfile(os.path.join(base_path,i)) and f'frictionCoef_{context.Name}' in i:
+                os.remove(f'{base_path}{i}')
 
         return super(ContextDeleteView, self).delete(*args, **kwargs)
 
