@@ -43,6 +43,18 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     template_name = 'context/e_context_confirm_delete.html'
     success_url = reverse_lazy('context-list')
 
+    def delete(self, *args, **kwargs):
+        context : e_Context = self.get_object()
+
+        # Delete DTM and frictionCoef files
+        if os.path.exists(f'media/{context.Name}_dtm.tif'):
+            os.remove(f'media/{context.Name}_dtm.tif')
+
+        if os.path.exists(f'media/{context.Name}_frictionCoef.tif'):
+            os.remove(f'media/{context.Name}_frictionCoef.tif')
+
+        return super(ContextDeleteView, self).delete(*args, **kwargs)
+
     def test_func(self):
         return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
