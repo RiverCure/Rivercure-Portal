@@ -224,7 +224,7 @@ CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually
 # RASTER_USE_CELERY = True
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/London'
 CELERY_RESULT_BACKEND = 'django-db'

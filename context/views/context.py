@@ -427,3 +427,10 @@ def regenerate_mesh_confirm(request, context_code):
     }
     
     return render(request, 'context/regenerate_mesh_confirm.html', context)
+
+def inform_mesh_status(request, context_code): # Function to inform if mesh is generated
+    context = e_Context.objects.get(code=context_code)
+    if context.hasMesh:
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)

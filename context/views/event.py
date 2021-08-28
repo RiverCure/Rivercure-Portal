@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from .authorization import *
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter
 from sensors.models import e_Sensor
 import os
@@ -18,6 +18,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .prepare_files import *
+from context.tasks import simulate_task
+from notifications.signals import notify
 
 def ContextEventListView(request, context_code):
     context = get_object_or_404(e_Context, pk=context_code)
@@ -188,47 +190,136 @@ def runsimulationview(request, pk, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
     if not context_organization_event_permission_check(request.user, event.context.organization):
         return HttpResponseRedirect(reverse('event-detail', args=(pk, event_id, )))
-    
+
+    simulator_address = os.environ['SIMULATOR_ADDRESS']
+    url = simulator_address + 'simulate/'
+
     try:
-        r = request_simulation(event.context, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, 
-        event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime)
-        if r.text == 'success':
-            messages.success(request,f'Simulation request successful') 
-        else:
-            messages.warning(request,f'Simulation request failed') 
-    except Exception as e:
-        print(f'Failed simulation request!\nException: {e}')
-        messages.warning(request,f'Simulation request failed') 
+        r = requests.get(simulator_address) # ping HiSTAV to check if it's online
+        # Using pickle serializer to have the datetime objects not transformed to string : https://stackoverflow.com/questions/48811824/how-can-i-deserialize-a-datetime-string-in-celery/48812310
+        result = simulate_task.apply_async(args=[url, pk, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
+        # # Combination hasSimulation = False + task_id = val means it's processing
+        event.hasSimulation = False # Assume there is no simulation generated
+        event.task_id = result.task_id
+        event.requester = request.user
+        event.save()
+        messages.success(request, 'Simulation run request sent')
+    except: # HiSTAV not online
+        messages.error(request, 'Couldn\'t connect to HiSTAV')
     
     print("RUN SIMULATION")
     return HttpResponseRedirect(reverse('event-detail', args=(pk, event.id,)))
 
-# TODO: This is to be putted in a task
-def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
-    url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
+# # TODO: This is to be putted in a task
+# def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
+#     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
 
-    payload = {'context_name': context.Name,
-                'event_id': event_id}
+#     payload = {'context_name': context.Name,
+#                 'event_id': event_id}
 
-    #prepare files
+#     #prepare files
 
-    frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
-    time_file = prepare_time_file(init_date, end_date, init_time, end_time)
-    boundary_file = prepare_boundaries_file(context)
+#     frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
+#     time_file = prepare_time_file(init_date, end_date, init_time, end_time)
+#     boundary_file = prepare_boundaries_file(context)
 
-    files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
+#     files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
 
-    files.append(('frequency', frequency_file))
-    files.append(('time', time_file))
-    files.append(('boundaries', boundary_file))
+#     files.append(('frequency', frequency_file))
+#     files.append(('time', time_file))
+#     files.append(('boundaries', boundary_file))
 
-    r = requests.post(url, files=files, params=payload)
+#     r = requests.post(url, files=files, params=payload)
 
-    return r
+#     return r
 
-def inform_mesh_status(request, context_code): # Function to inform if mesh is generated
-    context = e_Context.objects.get(code=context_code)
-    if context.hasMesh:
+# Return last line of output
+def get_last_line(status:str):
+    if status == "":
+        return ""
+    lines:list = status.splitlines()
+    if lines[-1] == "" or lines[-1].isspace():
+        return get_last_line("\n".join(lines[0:len(lines)-1]))
+    return lines[-1]
+
+# Enhance this
+def get_status(last_line:str):
+    if ("Permission denied" in last_line) or ("Fail" in last_line) or ("Error" in last_line):
+        return "Fail"
+    elif ("all files written in" in last_line) or ("--:--:--" in last_line):
+        return "Finished successfully"
+    else:
+        return "Processing"
+
+# TODO: this checks if the simulation generation has finished when the user is in the event main page
+def inform_event_status(request, event_id): # Function to inform if event is generated
+    event = e_ContextEvent.objects.get(id=event_id)
+    if event.hasSimulation:
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
+
+
+@login_required
+def event_status_progress(request, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    # get_object_or_404(Membership, organization=context.organization, user=request.user)
+    simulator_address = os.environ['SIMULATOR_ADDRESS']
+    url = simulator_address + 'simulate-status/'
+
+    try:
+        payload = {'event_id': event_id, 'context_name': event.context.Name}
+        response = requests.get(url, params=payload)
+        if response.status_code != 200:
+            return HttpResponse(status=400)
+        
+        body = response.content.decode("utf-8")
+        lastline = get_last_line(body)
+        status = get_status(lastline)
+
+        # Notification
+        if ("Fail" in status) or ("Finished successfully" in status):
+            notify.send(sender=event, recipient=event.requester, action_object=event.context.organization, verb=f"Event {event.Name} has finished its simulation with status '{status}'")
+
+        return JsonResponse({'status' : status, 'message' : lastline, 'full_log' : body})
+    except: # HiSTAV not online
+        # 503 = service unavailable
+        return HttpResponse(status=503)
+    
+
+def event_status_change(request, event_id): # Function to mark event has generated
+    event = e_ContextEvent.objects.get(event_id)
+    if request.GET.get('status'):
+        event.hasSimulation = True
+        event.task_id = None # task finished
+    else:
+        event.hasSimulation = False
+
+    event.save()
+
+    return HttpResponse(status=200)
+
+@login_required
+def event_progress(request, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    # if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
+    #     return HttpResponse('Unauthorized', status=401)
+
+    event = {
+        'event': event
+    }
+    
+    return render(request, 'context/event_progress.html', event)
+
+@login_required
+def regenerate_event_confirm(request, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    # if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
+    #     return HttpResponse('Unauthorized', status=401)
+
+    event = {
+        'event': event
+    }
+    
+    return render(request, 'context/regenerate_event_confirm.html', event)
+

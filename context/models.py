@@ -162,6 +162,12 @@ class e_ContextEvent(models.Model):
 
 	UpdateMaximumValueUnit = models.CharField(max_length=20, choices= TIME_UNITS, null=True, blank=True) 
 
+	hasSimulation = models.BooleanField(default=False)
+
+	task_id = models.TextField(null=True)
+	# Requester of a mesh generation request
+	requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
 	def __str__(self):
 		return f'{self.context} event {self.id}'
 

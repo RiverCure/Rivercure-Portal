@@ -1,4 +1,5 @@
 from celery import shared_task
+import datetime
 import requests
 import geojson
 from .models import e_ContextDTMFile, e_ContextFrictionCoeff
@@ -50,17 +51,13 @@ def preprocess_task(self, url, context_code):
         except Exception:
             print('No friction coef defined')
 
-        # context.hasMesh = False # Assume there is no mesh generated
-        # context.save()
-
         # Send file
         encoder = MultipartEncoder(files)
         progress_recorder = ProgressRecorder(self)
         files_len = encoder.len
 
         def my_callback(monitor):
-            # Your callback function
-            print(monitor.bytes_read)
+            # print(monitor.bytes_read)
             progress_recorder.set_progress(monitor.bytes_read, files_len)
 
         payload = {'context_name': context_name}
@@ -71,4 +68,45 @@ def preprocess_task(self, url, context_code):
     except Exception as e:
         print(f'Exception:{e}')
         return f'Exception:{e}'
+
+
+@shared_task(bind=True)
+def simulate_task(self, url, context_code, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
+    from .views import prepare_frequency_file, prepare_time_file, prepare_boundaries_file, prepare_gauge_file
+    context = e_Context.objects.get(code=context_code)
+
+    # Prepare files
+    try:
+        print("preparing files...")
+        frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
+        print("frequency OK")
+        time_file = prepare_time_file(init_date, end_date, init_time, end_time)
+        print("time OK")
+        boundary_file = prepare_boundaries_file(context)
+        print("boundary OK")
+        files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
+        print("gauge OK")
+
+        files.append(('frequency', frequency_file))
+        files.append(('time', time_file))
+        files.append(('boundaries', boundary_file))
+        print("append OK")
+
+        # Send file
+        encoder = MultipartEncoder(files)
+        progress_recorder = ProgressRecorder(self)
+        files_len = encoder.len
+
+        def my_callback(monitor):
+            # print(monitor.bytes_read)
+            progress_recorder.set_progress(monitor.bytes_read, files_len)
+
+        payload = {'context_name': context.Name, 'event_id': event_id}
+        monitor = MultipartEncoderMonitor(encoder, my_callback)
+        r = requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
     
+        return 'OK'
+    except Exception as e:
+        print(f'Exception:{e}')
+        print(e.with_traceback())
+        return f'Exception:{e}'
