@@ -1,6 +1,6 @@
 import datetime
 from context.models import e_ContextBoundaryLine, e_ContextSensor
-from sensors.models import e_SensorObservation
+from sensors.models import SensorObservation
 from raster.models import RasterLayer
 from django.db import connection
 import geojson
@@ -39,7 +39,7 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
     context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
     for point in context_points: 
-        sensor_obs = e_SensorObservation.objects.filter(sensor=point.sensor)
+        sensor_obs = SensorObservation.objects.filter(sensor=point.sensor)
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
         file_data = ''
         instant = 0

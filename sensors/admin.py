@@ -1,9 +1,8 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin
-from .models import e_Sensor, e_SensorAlarm, e_SensorObservation
+from .models import Sensor, SensorObservation
 
-admin.site.register(e_Sensor, LeafletGeoAdmin)
-admin.site.register(e_SensorAlarm, LeafletGeoAdmin)
-admin.site.register(e_SensorObservation, LeafletGeoAdmin)
+admin.site.register(Sensor, LeafletGeoAdmin)
+admin.site.register(SensorObservation, LeafletGeoAdmin)
 
 

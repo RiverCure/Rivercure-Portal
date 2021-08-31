@@ -7,7 +7,7 @@ from django import forms
 from users.models import User, Profile
 from context.models import e_Context
 from .models import e_HydroFeature
-from sensors.models import e_Sensor
+from sensors.models import Sensor
 from .filters import UserFilter, HydroFeatureFilter
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse, reverse_lazy
@@ -59,7 +59,7 @@ def home(request):
         'groups': Group.objects.all(),
         'contexts' : e_Context.objects.all(),
         'recent_context' : e_Context.objects.all().first(),
-        'recent_sensor' : e_Sensor.objects.all().first()
+        'recent_sensor' : Sensor.objects.all().first()
     }
 
     return render(request, 'rivercureportal/home.html', context)

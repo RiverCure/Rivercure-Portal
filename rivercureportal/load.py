@@ -1,6 +1,6 @@
 import os
 from django.contrib.gis.utils import LayerMapping
-from .models import e_District, e_Municipality, e_Parish, e_HydroFeature
+from rivercureportal.models import e_District, e_Municipality, e_Parish, e_HydroFeature
 
 
 class CustomLayerMapping(LayerMapping):

@@ -1,9 +1,9 @@
 from django import forms
-from .models import e_Sensor
+from .models import Sensor
 from leaflet.forms.widgets import LeafletWidget
 from organization.models import Membership, Organization
 from django.db.models import Q
-from sensors.models import e_SensorObservation
+from sensors.models import SensorClass, SensorObservation
 
 
 
@@ -21,17 +21,24 @@ class GeoSensorForm(forms.ModelForm):
     #code = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
     Name = forms.CharField(disabled=True)
     class Meta:
-        model = e_Sensor
+        model = Sensor
         fields = ['Name', 'lat', 'lng',]
         
 
 class SensorForm(forms.ModelForm):
-    lat = forms.FloatField()
-    lng = forms.FloatField()
+    # These fields are not the ones in the form - they are some who needed a bit customization
+    code        = forms.CharField()
+    name        = forms.CharField()
+    description = forms.CharField(widget=forms.Textarea, required=False)
+    isPublic    = forms.BooleanField(label='Public')
+    lat         = forms.FloatField()
+    lng         = forms.FloatField()
 
     class Meta:
-        model = e_Sensor
-        fields = ['code','Name','organization','isPublic','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
+        model = Sensor
+        # These are the fields in the form, appearing by this order
+        fields = ['code', 'name', 'organization', 'isPublic', 'description']
+        # fields = ['code','Name','organization','isPublic','modalityType','type','description','version', 'timeZoneAbbreviation', 'timeZoneOffset',]
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
@@ -42,5 +49,16 @@ class SensorForm(forms.ModelForm):
 
 class SensorObservationForm(forms.ModelForm):
     class Meta:
-        model = e_SensorObservation
-        fields = ['date','time','depth','discharge',]
+        model = SensorObservation
+        fields = ['date', 'time']
+        # fields = ['date','time','depth','discharge',]
+
+class SensorClassForm(forms.ModelForm):
+    code    = forms.CharField()
+    name    = forms.CharField()
+    vendor  = forms.CharField(required=False)
+    version = forms.CharField(required=False)
+
+    class Meta:
+        model = SensorClass
+        fields = ['code', 'name', 'state', 'vendor', 'version', 'modality', 'kind']

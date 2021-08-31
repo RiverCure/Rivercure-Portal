@@ -9,7 +9,7 @@ import json
 from raster.models import RasterLayer
 from django.urls import reverse
 from django.utils import timezone
-from sensors.models import e_Sensor
+from sensors.models import Sensor
 from django.contrib import messages
 from django.contrib.gis.gdal import SpatialReference
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -195,7 +195,7 @@ def boundaryline_creation(form, context): # function to create the several lines
                 for sensor in point['properties']['sensors']:
                     boundary_point_sensor = e_ContextSensor()
                     boundary_point_sensor.associateDatetime = timezone.now()
-                    boundary_point_sensor.sensor = e_Sensor.objects.get(code=sensor)
+                    boundary_point_sensor.sensor = Sensor.objects.get(code=sensor)
                     boundary_point_sensor.boundary_point = boundary_point
                     boundary_point_sensor.save()
                 

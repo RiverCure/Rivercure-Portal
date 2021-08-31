@@ -22,6 +22,12 @@ alias startApp=startAppFunc;
 # Opens python shell
 alias shell="python manage.py shell";
 
+# Dump a database data into JSON
+function dumpDataFunc {
+    python manage.py dumpdata "$1" --ident 2 > "$1".json;
+}
+alias dumpdata=dumpDataFunc;
+
 # Other aliases
 alias startRabbitmq="brew services start rabbitmq";
 alias stopRabbitmq="brew services stop rabbitmq";

@@ -1,6 +1,6 @@
 import django_filters
 from django import forms
-from .models import e_Sensor, e_SensorObservation
+from .models import Sensor, SensorObservation
 from django_filters import DateFilter
 from django.forms.widgets import TextInput
 
@@ -9,8 +9,9 @@ class SensorFilter(django_filters.FilterSet):
     code = django_filters.CharFilter(label="Code", lookup_expr='icontains')
     
     class Meta:
-        model = e_Sensor
-        fields = ['type', 'code', 'modalityType', 'organization']
+        model = Sensor
+        fields = ['code', 'organization']
+        # fields = ['type', 'code', 'modalityType', 'organization']
     
 class ObservationFilter(django_filters.FilterSet):
 
@@ -18,6 +19,6 @@ class ObservationFilter(django_filters.FilterSet):
     Date2 = DateFilter(field_name='date', lookup_expr='lte', widget=TextInput(attrs={'placeholder': 'yyyy-mm-dd'}))
 
     class Meta:
-        model = e_SensorObservation
+        model = SensorObservation
         fields = ['Date', 'Date2', ]
         

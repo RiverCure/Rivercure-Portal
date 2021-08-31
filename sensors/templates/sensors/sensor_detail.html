@@ -83,7 +83,6 @@
 			<p class="article-content"><b>Modality:</b> {{ sensor.modalityType }}</p> 
 			<p class="article-content"><b>Description:</b> {{ sensor.description }}</p> 
 
-
 			{% if hasPerm %} 
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-update' object.code %}" >Edit</a>
 				<a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-geo-update' object.code %}" >Geo Edit</a>
@@ -91,8 +90,6 @@
 			{% endif %}
 				<a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observation-list' object.code %}">Observations</a>
 				<a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back to Sensors List</a>
-		
-		
 		</div>
 	</article>
 

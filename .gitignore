@@ -157,3 +157,4 @@ migrations/
 .vscode/
 results/
 .DS_Store
+.prettierignore

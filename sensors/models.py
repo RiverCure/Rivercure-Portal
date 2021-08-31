@@ -1,138 +1,78 @@
 from django.contrib.gis.db import models
-from datetime import datetime, date
-from django.contrib.auth.models import User
 from organization.models import Organization
+from datetime import date
 
-SENSORKIND_CHOICES = (  ('HydrometricSensor','Hydrometric Sensor'),  ('WeatherSensor','Weather Sensor'),  ('SocialNetworkScanner','Social Network Scanner'),  ('HumanSensor','Human Sensor'),  ('TBDSensor','TBD Sensor'),  )
+SENSOR_CLASS_STATE = ( ('active', 'Active'), ('inactive', 'Inactive') )
 
-SENSORMODALITYKIND_CHOICES = (  ('PhysicalFixed', 'Physical Fixed'),  ('PhysicalMobile', 'Physical Mobile'),  ('DigitalSocialNetworkScanner','Digital Social Network Scanner'),  ('DigitalHumanUpload','Digital Human Upload'),  )
+SENSOR_MODALITY_KIND = ( ('PhysicalFixed', 'Physical Fixed'), ('PhysicalMobile', 'Physical Mobile'), ('Digital','Digital'), ('Human','Human') )
 
-COLOURKIND_CHOICES = (  ('red','Red'),  ('yellow','Yellow'),  ('green','Green'),  )
+SENSOR_STATE = ( ('active', 'Active'), ('inactive', 'Inactive'), ('deleted', 'Deleted') )
 
-METRICKIND_CHOICES = (  ('sec','Sec'),  ('min','Min'),  ('hour','Hour'),  ('day','Day'), ('week','Week'), ('month','Month'), ('year','Year'),)
+SENSOR_VISIBILITY_KIND = ( ('public', 'Public'), ('private', 'Private') )
 
+SEVERITY_KIND = ( ('ok', 'Ok'), ('attention', 'Attention'), ('critical', 'Critical') )
 
-class e_Sensor(models.Model):
-    code = models.CharField(primary_key=True, max_length=100, unique=True)
+SENSOR_OBSERVATION_VALUE_TYPE = ( ('number', 'Number'), ('string', 'String'), ('image', 'Image') )
 
-    Name = models.CharField(max_length=100)
-
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True)
-
-    isPublic = models.BooleanField(default=True)
-
-    modalityType = models.CharField(max_length=50, choices=SENSORMODALITYKIND_CHOICES)
-
-    type = models.CharField(max_length=50, choices= SENSORKIND_CHOICES )
-    
-    description = models.TextField()
-
-    version = models.CharField(max_length=20, blank=True, null=True)
-
-    timeZoneAbbreviation = models.CharField(null=True, blank=True, max_length=20)
-
-    timeZoneOffset = models.IntegerField(null=True, blank=True)
-
-    geom = models.PointField()
-
-    # FixedInSituSensor
-    recRhythmValue = models.IntegerField(null=True, blank=True)                                           # Recording rhythm value
-    recRhythmMetric = models.CharField(max_length=20, choices=METRICKIND_CHOICES, null=True)              # Recording rhythm metric                                                                  
-
-
-#  HydrometricSensor
-    zeroLevelScale = models.DecimalField(null=True, max_digits=3, decimal_places=2)
-
-
-#  WeatherSensor
-    maxRange = models.IntegerField(null=True, blank=True)   
-    PRF = models.IntegerField(null=True, blank=True)   
-
-# 	PhotoSensor
-# 	attribute isSocialNetwork "is from a social network" : Boolean [defaultValue "False"]
-# 	attribute isUpload "is from an upload" : Boolean [defaultValue "False"]
-# 	attribute source "Source" : String 
-# 	attribute url "URL" : URL
-# 	attribute isAgreeTerms "is agreed with terms and conditions" : Boolean [defaultValue "True"]
+class SensorKind(models.Model):
+    name = models.TextField(unique=True)
 
     def __str__(self):
-        return self.Name
+        return self.name
 
+class QuantityKind(models.Model):
+    fullName     = models.TextField(unique=True) # E.g.: Length
+    abbreviation = models.TextField() # E.g.: len
 
-class e_SensorAlarm(models.Model):
+class Unit(models.Model):
+    fullName     = models.TextField(unique=True) # E.g.: Meter
+    abbreviation = models.TextField() # E.g.: m
+    quantity     = models.ForeignKey(to=QuantityKind, on_delete=models.CASCADE)
 
-    sensor = models.ForeignKey('e_Sensor', on_delete=models.CASCADE, null=True, blank=False)
-
-    Name = models.CharField(max_length=100)
-
-    action = models.CharField(max_length=100)
-
-    description = models.TextField()
-
-    colour = models.CharField(max_length=50, choices=COLOURKIND_CHOICES)
-    
-    redMinthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-    redMaxthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-    yellowMinthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-    yellowMaxthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-    greenMinthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-    greenMaxthreshold = models.DecimalField(max_digits=10, decimal_places=2)
-
-
-class e_SensorObservation(models.Model):
-
-    sensor = models.ForeignKey('e_Sensor', on_delete=models.CASCADE, null=True, blank=False)
-
-    sensorType = models.CharField(max_length=50, choices=SENSORKIND_CHOICES )
-
-    date = models.DateField(default=date.today)
-
-    time = models.TimeField(null=True)
-
-    #HYDROMETRIC SENSORS
-    depth = models.FloatField(blank=True, null=True)        #profundidade (m)
-    discharge = models.FloatField(blank=True, null=True)    #caudal (m3/seg)
-    volume  = models.FloatField(blank=True, null=True)      #volume (m3)
-    velocity  = models.FloatField(blank=True, null=True)   #velocidade (m/seg)
-    elevation  = models.FloatField(blank=True, null=True)   #cota (m)
-
-    test  = models.IntegerField(blank=True, null=True)   #cota (m)
-
-    #WeatherSensorObservation
-    WeatherSensorRainFall = models.FloatField(blank=True, null=True)  #precipitação (m)
-    soilWaterContent = models.FloatField(blank=True, null=True)    # teor em água do solo (%)
-
-    #RadarSensorObservation
-    RadarSensorRainfall = models.FloatField(blank=True, null=True)  #precipitação (m)
-    
-    class Meta:
-	    unique_together = ['sensor', 'date', 'time',]
-
-    #HumanSensorObservation
-	#photo : Image
-	#geom  : GeoPoint 
-	#elevation : Double                              #"ML techniques from Photo" 	// cota (m3)
-	#attribute velocity : Double	                 #"ML techniques from Photo"	// velocidade (m/seg)
-
-	#isCummulative "is Cummulative" : Boolean [defaultValue "False"]
-	#nValueTotal "Total number of values" : Integer [constraints (NotNull)]
-
-    ##e_PhotoSensorObservation
-	#attribute url "URL" : URL
-	#attribute fileName "File name" : String 
-	#attribute height "Height" : Integer
-	#attribute horizontalRes "Horizontal resolution" : Integer
-	#attribute verticalRes "Vertical resolution" : Integer
-	#attribute nBits "Number of bits" : Integer
-	#attribute width "Width" : Integer
-	#attribute fileFormat "File format" : String
-
-
+class SensorClass(models.Model):
+    code         = models.TextField(unique=True)
+    name         = models.TextField()
+    state        = models.TextField(choices=SENSOR_CLASS_STATE)
+    vendor       = models.TextField(blank=True)
+    version      = models.TextField(blank=True)
+    modality     = models.TextField(choices=SENSOR_MODALITY_KIND)
+    kind         = models.ForeignKey(to=SensorKind, on_delete=models.CASCADE)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.sensor} observation {self.id}"
+        return self.name
+
+class Sensor(models.Model):
+    code         = models.TextField(unique=True)
+    name         = models.TextField()
+    description  = models.TextField()
+    state        = models.TextField(choices=SENSOR_STATE)
+    # visibility   = models.TextField(choices=SENSOR_VISIBILITY_KIND) -> not needed (yet). Replaced by isPublic
+    isPublic     = models.BooleanField(default=True)
+    local        = models.PointField(null=True) # being null=True allows 0..1 relationship
+    sensorClass  = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
+    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
+
+class SensorClassProperty(models.Model):
+    code                      = models.TextField(unique=True)
+    name                      = models.TextField()
+    type                      = models.TextField(choices=SENSOR_OBSERVATION_VALUE_TYPE)
+    isOptional                = models.BooleanField()
+    thresholdLowerCritical    = models.DecimalField(max_digits=10, decimal_places=2)
+    thresholdLowerNoncritical = models.DecimalField(max_digits=10, decimal_places=2)
+    thresholdUpperCritical    = models.DecimalField(max_digits=10, decimal_places=2)
+    thresholdUpperNoncritical = models.DecimalField(max_digits=10, decimal_places=2)
+    sensorClass               = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
+    unit                      = models.ForeignKey(to=Unit, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.name
+
+class SensorObservation(models.Model):
+    # dateTime would be better, but preivously it used dateTime and it has many dependencies to change. Perhaps change in the future?
+    date     = models.DateField(default=date.today)
+    time     = models.TimeField()
+    value    = models.TextField()
+    severity = models.TextField(choices=SEVERITY_KIND)
+    property = models.ForeignKey(to=SensorClassProperty, on_delete=models.CASCADE)
+    sensor   = models.ForeignKey(to=Sensor, on_delete=models.CASCADE)

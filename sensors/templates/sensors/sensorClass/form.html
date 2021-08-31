@@ -1,0 +1,28 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor Class {% if sensorClass %}edit{% else %}create{% endif %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="content-section">
+	<form method="POST">
+		{% csrf_token %}
+		<fieldset class="form-group">
+			<legend class="border-bottom mb-4">
+                {% if sensorClass %} Edit Sensor Class '{{ sensorClass.name }}'{% else %} Create a Sensor Class{% endif %}
+            </legend>
+			{{ form|crispy }}
+		</fieldset>
+		<div class="form-group">
+			<button class="btn btn-outline-info" type="submit">Save</button>
+			{% if sensorClass %}
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-class-detail' sensorClass.pk %}">Cancel</a>
+			{% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'sensor-class-list' view.kwargs.organizationId %}">Cancel</a>
+			{% endif %}
+		</div>
+	</form>
+</div>
+
+{% endblock content %}

@@ -1,9 +1,16 @@
 import os, xlrd, datetime
-from .models import e_Sensor, e_SensorObservation
+from .models import Sensor, SensorObservation
 from django.contrib.gis.geos import Point
 from datetime import date, time
+from sensors.models import SensorKind
+
+def create_default():
+    SensorKind.objects.create(name='Hydrometric Sensor')
+    SensorKind.objects.create(name='Weather Sensor')
+    SensorKind.objects.create(name='Social Network Scanner')
 
 def run(load_sensors=True, load_observations=True):
+    create_default()
     loc = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'sensors_data.xlsx'))
     sensors_file = xlrd.open_workbook(loc)
 
@@ -20,7 +27,7 @@ def upload_sensor(sensors_file):
         if(sheet.cell_value == ''):
             break
 
-        sensor = e_Sensor()
+        sensor = Sensor()
 
         sensor.code = str(int(sheet.cell_value(i,1))) #Eventually this might need to be an int
         sensor.Name = sheet.cell_value(i,2)
@@ -49,36 +56,36 @@ def upload_sensor(sensors_file):
 def upload_sensor_observations(sensors_file):
     observation_sheet = sensors_file.sheet_by_index(1) #where the sheet starts
 
-        for i in range(6, 100):
-            if(observation_sheet.cell_value == ''):
-                break
+    for i in range(6, 100):
+        if(observation_sheet.cell_value == ''):
+            break
 
-            observation = e_SensorObservation()
+        observation = SensorObservation()
 
-            sensor_code = str(int(observation_sheet.cell_value(i,0)))
+        sensor_code = str(int(observation_sheet.cell_value(i,0)))
 
-            observation.sensor = e_Sensor.objects.filter(code=sensor_code).first()
-            
-            observation.sensorType = 'HydrometricSensor'
-            
-            raw_time = observation_sheet.cell_value(i,2) #time - float
-            converted_time = xlrd.xldate_as_tuple(raw_time,  sensors_file.datemode)
-            time_value = time(*converted_time[3:])
-            observation.time = time_value
+        observation.sensor = Sensor.objects.filter(code=sensor_code).first()
+        
+        observation.sensorType = 'HydrometricSensor'
+        
+        raw_time = observation_sheet.cell_value(i,2) #time - float
+        converted_time = xlrd.xldate_as_tuple(raw_time,  sensors_file.datemode)
+        time_value = time(*converted_time[3:])
+        observation.time = time_value
 
-            raw_date = observation_sheet.cell_value(i,1)
-            converted_date = xlrd.xldate_as_tuple(raw_date, sensors_file.datemode)
-            observation.date = datetime.datetime(*converted_date)
+        raw_date = observation_sheet.cell_value(i,1)
+        converted_date = xlrd.xldate_as_tuple(raw_date, sensors_file.datemode)
+        observation.date = datetime.datetime(*converted_date)
 
-            if observation_sheet.cell_value(i,3) == '': 
-                observation.depth = None
-            else: 
-                observation.depth = observation_sheet.cell_value(i,3)
+        if observation_sheet.cell_value(i,3) == '': 
+            observation.depth = None
+        else: 
+            observation.depth = observation_sheet.cell_value(i,3)
 
-            if observation_sheet.cell_value(i,4) == '': 
-                observation.discharge = None
-            else: 
-                observation.discharge = observation_sheet.cell_value(i,4)
+        if observation_sheet.cell_value(i,4) == '': 
+            observation.discharge = None
+        else: 
+            observation.discharge = observation_sheet.cell_value(i,4)
 
-            observation.save()
-            print('Observation saved!')
+        observation.save()
+        print('Observation saved!')

@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.gis.geos import Polygon
 from ..models import e_Context, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextEventResult
 from raster.models import RasterLayer
-from sensors.models import e_Sensor, e_SensorObservation
+from sensors.models import Sensor
 from rest_framework import viewsets
 from django.core.serializers import serialize
 from ..serializers import ContextSerializer
@@ -63,7 +63,7 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     def test_func(self):
         return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
-class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView ):
+class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Context
     form_class = ContextDetailsForm
     context_object_name = 'context'
@@ -194,26 +194,23 @@ def ContextSensorListView(request, context_code):
     return render(request, 'context/e_ContextSensor_list.html', context )
 
 def get_context_sensors(context_code):
-    context_sensors = e_Sensor.objects.filter(isPublic=True, organization__is_active=True)
-    context_sensors = context_sensors | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization, organization__is_active=True)
+    context_sensors = Sensor.objects.filter(isPublic=True, organization__is_active=True)
+    context_sensors = context_sensors | Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization, organization__is_active=True)
     
     previous_context_sensors = set()
     for elem in e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=get_object_or_404(e_Context, pk=context_code)):
         previous_context_sensors.add(elem.sensor.pk)
     # Adds previously added sensors (from other organizations that are suspended) to the queryset
-    context_sensors = context_sensors | e_Sensor.objects.filter(pk__in=previous_context_sensors)
+    context_sensors = context_sensors | Sensor.objects.filter(pk__in=previous_context_sensors)
     return context_sensors
 
 def manage_context(request, context_code):
     web_host = os.environ['CONTEXT_API']
 
     context = {
-        # 'contexts': e_Context.objects.filter(user__username=request.user).order_by('Name'),
-        # 'sensors': e_Sensor.objects.filter(isPublic=True) | e_Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization),
         'sensors': get_context_sensors(context_code),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
-        # 'context': request.GET.get('context_code'),
     }
     if request.method == 'POST':
         if not request.user.is_authenticated: # if user is not authenticated

@@ -1,4 +1,9 @@
-{% extends "rivercureportal/base.html" %} {% block title %} Sensor confirm delete {% endblock %} {% load leaflet_tags %} {% load static %} {% block scripts %} {% leaflet_js plugins="ALL" %} {% leaflet_css plugins="ALL" %} {% endblock %} {% block content %}
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor confirm delete {% endblock %}
+{% load static %}
+
+{% block content %}
+
 <div class="content-section">
   <form method="POST">
     {% csrf_token %}

@@ -3,7 +3,7 @@ from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter
-from sensors.models import e_Sensor
+from sensors.models import Sensor
 import os
 from django.contrib import messages
 from django.urls import reverse
@@ -60,7 +60,7 @@ def view_events_results(request, event_id): #function to view the results of an 
     context = {
         'api': f'http://{web_host}/contexts/api/context/',
         'context': event.context,
-        'sensors': e_Sensor.objects.all(),
+        'sensors': Sensor.objects.all(),
         'event': event,
         'max_depth': event.context_event_results.max_depth.id,
         'max_level': event.context_event_results.max_level.id,

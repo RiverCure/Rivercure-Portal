@@ -15,19 +15,7 @@ from .forms import CreateOrganizationForm
 from datetime import datetime
 from django.http import HttpResponseRedirect
 from rivercureportal.views import is_admin
-
-def is_org_manager(obj):
-    try:
-        organization_id = obj.kwargs.get('pk')
-        return Membership.objects.filter(organization_id=organization_id, user=obj.request.user, permission='org_manager').exists()
-    except:
-        return False
-
-def is_org_manager_check(user, organization_id):
-    try:
-        return Membership.objects.filter(organization_id=organization_id, user=user, permission='org_manager').exists()
-    except:
-        return False
+from organization.authorization import *
 
 class OrganizationListView(LoginRequiredMixin, ListView):
     model = Organization
@@ -88,6 +76,7 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs) # get the default context data
         context['managers'] = Membership.objects.filter(organization=self.get_object(), permission='org_manager')
         context['isManager'] = is_org_manager(self)
+        context['isSensorManager'] = is_sensor_manager(self)
         return context
 
 class OrganizationUpdateView(UserPassesTestMixin, UpdateView):
@@ -115,7 +104,8 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
             # To read notifications, for both managers and non-managers
             notification = Notification.objects.filter(pk=notification_id)
             if notification.first():
-                notification.mark_as_read()
+                print(notification)
+                notification.first().mark_as_read()
 
         return super().setup(request, *args, **kwargs)
 
@@ -214,7 +204,7 @@ def organizationAccessRequestCancel(request, pk):
 
     notifications = Notification.objects.filter(verb=f"{user.username} requested to enter the organization {organization.name}")
     if notifications is not None:
-        notifications.mark_as_read()
+        notifications.first().mark_as_read()
 
     return redirect('organization-list') 
 

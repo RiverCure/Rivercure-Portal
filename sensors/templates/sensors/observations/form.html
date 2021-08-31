@@ -1,0 +1,26 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Observation edit/create {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="content-section">
+	<form method="POST">
+		{% csrf_token %}
+		<fieldset class="form-group">
+			<legend class="border-bottom mb-4">Create an Observation</legend>
+			{{ form|crispy }}
+		</fieldset>
+		<div class="form-group">
+			<button class="btn btn-outline-info" type="submit">Save</button>
+			{% if observation.id != null %}
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.code observation.id %}">Cancel</a>
+			{% else %}
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-list' %}">Cancel</a>
+			{% endif %}
+		</div>
+	</form>
+</div>
+
+{% endblock content %}

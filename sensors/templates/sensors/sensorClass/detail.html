@@ -1,0 +1,28 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor class '{{ sensorClass.name }}' detail {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<article class="media content-section">
+	<div class="media-body">
+    <div class="article-metadata">
+		<h1><a class="mr-2">{{ sensorClass.name }}</a></h1>
+    </div>
+    <p class="article-content"><b>Code:</b> {{ sensorClass.code }}</p>
+    <p class="article-content"><b>Name:</b> {{ sensorClass.name }}</p>
+    <p class="article-content"><b>State:</b> {{ sensorClass.state }}</p>
+    <p class="article-content"><b>Vendor:</b> {% if sensorClass.vendor %} {{ sensorClass.vendor }} {% else %} Not specified {% endif %}</p>
+    <p class="article-content"><b>Version:</b> {% if sensorClass.version %} {{ sensorClass.version }} {% else %} Not specified {% endif %}</p>
+    <p class="article-content"><b>Modality:</b> {{ sensorClass.modality }}</p>
+    <p class="article-content"><b>Kind:</b> {{ sensorClass.kind }}</p>
+    <p class="article-content"><b>Organization:</b> {{ sensorClass.organization }}</p>
+
+    <a type="button" class="btn btn-info" href="{% url 'sensor-class-update' sensorClass.pk %}">Edit</a>
+    <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-class-delete' sensorClass.pk %}">Delete</a>
+	<a class="btn btn-secondary mt-1 mb-1" href="{% url 'sensor-class-list' sensorClass.organization.pk %}" style="float:right">Back</a>
+	
+	</div>
+</article>
+
+{% endblock content %}
