@@ -41,7 +41,7 @@ if os.name == 'nt':
 SECRET_KEY = '^s&4uf&m0lgol2@%+-+7714k2t)wexo3j*b98dl3w_d-$z-e@b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', '')
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -116,11 +116,11 @@ WSGI_APPLICATION = 'rivercureproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('DATABASE_NAME', ''),
-        'USER': os.environ.get('DATABASE_USER', ''),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', ''),
-        'HOST': os.environ.get('DATABASE_HOST', ''),
-        'PORT': os.environ.get('DATABASE_PORT', ''),
+        'NAME': os.getenv('DATABASE_NAME', ''),
+        'USER': os.getenv('DATABASE_USER', ''),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
+        'HOST': os.getenv('DATABASE_HOST', ''),
+        'PORT': os.getenv('DATABASE_PORT', ''),
     }
 }
 
@@ -204,13 +204,13 @@ LOGIN_REDIRECT_URL = 'rivercure-home'
 LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
-EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
-if os.environ.get('DEBUG', '') == True:
+if os.getenv('DEBUG', 'False') == 'True':
     SESSION_COOKIE_AGE = 8000*60 #TIME FOR COOKIES TO EXPIRE 
     SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 else:

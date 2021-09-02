@@ -1,0 +1,76 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor Class property {% if property %}edit{% else %}create{% endif %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="content-section">
+	<form method="POST">
+		{% csrf_token %}
+		<fieldset class="form-group">
+			<legend class="border-bottom mb-4">
+                {% if property %} Edit Sensor Class '{{ property.sensorClass }}' property '{{ property.name }}'{% else %} Create a sensor class property for sensor class '{{ sensorClass }}'{% endif %}
+            </legend>
+			{{ form|crispy }}
+		</fieldset>
+		<div class="form-group">
+			<button class="btn btn-outline-info" type="submit">Save</button>
+			{% if property %}
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-class-property-detail' property.sensorClass.pk property.pk %}">Cancel</a>
+			{% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'sensor-class-property-list' sensorClass.pk %}">Cancel</a>
+			{% endif %}
+		</div>
+	</form>
+</div>
+
+{% comment %} This script tag hides fields based on the Type field. This is used to hide, for example
+the unit (m/L/Celcius, etc.) when a String Type is selected {% endcomment %}
+<script>
+function changeDisplay(option, fields) {
+    if(option == 'Number') {
+        fields.map((element) => element.style.display = 'block');
+    } else {
+        fields.map((element) => element.style.display = 'none');
+    }
+}
+
+function addAsteriskToOptional() {
+    let span = document.createElement("span");
+    span.classList.add('asteriskField');
+    span.innerHTML = '*';
+    let label = document.querySelector("#div_id_isOptional").children[1];
+    label.innerHTML = 'Optional';
+    label.append(span);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    /* Unrelated - Django forms doesn't allow to have for a Boolean field to be required - https://stackoverflow.com/questions/8542839/django-form-with-booleanfield-always-invalid-unless-checked
+    This is a workaround. We do isOptional => required = False, and here we inject the asterisk to mark the field as required */
+    addAsteriskToOptional();
+
+    const type_field_select = document.querySelector("#div_id_type").children[1].children[0]; // gets the <select> tag
+    const selectedOption = type_field_select.options[type_field_select.selectedIndex].text;
+
+    const fields = [
+        document.querySelector("#div_id_thresholdLowerCritical"),
+        document.querySelector("#div_id_thresholdLowerNoncritical"),
+        document.querySelector("#div_id_thresholdUpperCritical"),
+        document.querySelector("#div_id_thresholdUpperNoncritical"),
+        document.querySelector("#div_id_unit")
+    ];
+
+    // Initial - apply on first load
+    changeDisplay(selectedOption, fields);
+
+    // Handle change
+    const selectChange = function() {
+        const selectedOption = event.target.options[event.target.selectedIndex].text;
+        changeDisplay(selectedOption, fields);
+    };
+    type_field_select.addEventListener("change", selectChange.bind(event, fields));
+});
+</script>
+
+{% endblock content %}

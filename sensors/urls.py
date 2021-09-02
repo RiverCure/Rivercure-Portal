@@ -17,6 +17,7 @@ from .views import (
     SensorClassListView
 )
 from sensors.views.sensorClass import SensorClassCreateView, SensorClassDeleteView, SensorClassDetailView, SensorClassUpdateView
+from sensors.views.sensorClassProperty import SensorClassPropertyCreateView, SensorClassPropertyDeleteView, SensorClassPropertyDetailView, SensorClassPropertyListView, SensorClassPropertyUpdateView
 
 urlpatterns = [
     # Sensors
@@ -41,4 +42,10 @@ urlpatterns = [
     path('sensor-class/<str:sensorClassId>/detail', SensorClassDetailView.as_view(), name='sensor-class-detail'),
     path('sensor-class/<str:sensorClassId>/update', SensorClassUpdateView.as_view(), name='sensor-class-update'),
     path('sensor-class/<str:sensorClassId>/delete', SensorClassDeleteView.as_view(), name='sensor-class-delete'),
+    # SensorClass Property
+    path('sensor-class/<int:sensorClassId>/property/list', SensorClassPropertyListView.as_view(), name='sensor-class-property-list'),
+    path('sensor-class/<int:sensorClassId>/property/new', SensorClassPropertyCreateView.as_view(), name='sensor-class-property-create'),
+    path('sensor-class/<int:sensorClassId>/property/<int:sensorClassPropertyId>/detail', SensorClassPropertyDetailView.as_view(), name='sensor-class-property-detail'),
+    path('sensor-class/<str:sensorClassId>/property/<int:sensorClassPropertyId>/update', SensorClassPropertyUpdateView.as_view(), name='sensor-class-property-update'),
+    path('sensor-class/<str:sensorClassId>/property/<int:sensorClassPropertyId>/delete', SensorClassPropertyDeleteView.as_view(), name='sensor-class-property-delete'),
 ]

@@ -1,14 +1,12 @@
-.. Rivercure documentation master file, created by
-   sphinx-quickstart on Tue Aug 31 19:25:21 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Rivercure's documentation!
-=====================================
+Welcome to Rivercure Project's documentation!
+===============================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   
+   Installation <install>
+   How it works <how_it_works>
 
 
 

@@ -3,16 +3,13 @@ from .models import Sensor
 from leaflet.forms.widgets import LeafletWidget
 from organization.models import Membership, Organization
 from django.db.models import Q
-from sensors.models import SensorClass, SensorObservation
-
-
+from sensors.models import SensorClass, SensorClassProperty, SensorObservation, Unit
 
 class SensorFileForm(forms.Form):
     excel_file = forms.FileField()
 
 class SensorObservationsFileForm(forms.Form):
     excel_file = forms.FileField()
-
 
 class GeoSensorForm(forms.ModelForm):
     
@@ -62,3 +59,17 @@ class SensorClassForm(forms.ModelForm):
     class Meta:
         model = SensorClass
         fields = ['code', 'name', 'state', 'vendor', 'version', 'modality', 'kind']
+
+class SensorClassPropertyForm(forms.ModelForm):
+    code                      = forms.CharField()
+    name                      = forms.CharField()
+    isOptional                = forms.BooleanField(label='Optional', required=False) # it actually is required. See the template for explanation
+    thresholdLowerCritical    = forms.DecimalField(label='Threshold lower critical', required=False)
+    thresholdLowerNoncritical = forms.DecimalField(label='Threshold lower non-critical', required=False)
+    thresholdUpperCritical    = forms.DecimalField(label='Threshold upper critical', required=False)
+    thresholdUpperNoncritical = forms.DecimalField(label='Threshold upper non-critical', required=False)
+    unit                      = forms.ModelChoiceField(queryset=Unit.objects.all(), required=False)
+
+    class Meta:
+        model = SensorClassProperty
+        fields = ['code', 'name', 'type', 'isOptional', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit']

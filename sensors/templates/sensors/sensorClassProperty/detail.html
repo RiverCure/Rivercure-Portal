@@ -1,0 +1,32 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor class property '{{ property.name }}' detail {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<article class="media content-section">
+	<div class="media-body">
+    <div class="article-metadata">
+		<h1><a class="mr-2">{{ property.name }}</a></h1>
+    </div>
+    <p class="article-content"><b>Code:</b> {{ property.code }}</p>
+    <p class="article-content"><b>Name:</b> {{ property.name }}</p>
+    <p class="article-content"><b>Type:</b> {{ property.get_type_display }}</p>
+    <p class="article-content"><b>Optional:</b> {{ property.isOptional|yesno:"Yes,No" }}</p>
+    {% if property.type == 'number' %}
+        <p class="article-content"><b>Threshold Lower Critical:</b> {{ property.thresholdLowerCritical|default:"Not specified" }}</p>
+        <p class="article-content"><b>Threshold Lower Non-critical:</b> {{ property.thresholdLowerNoncritical|default:"Not specified" }}</p>
+        <p class="article-content"><b>Threshold Upper Critical:</b> {{ property.thresholdUpperCritical|default:"Not specified" }}</p>
+        <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ property.thresholdUpperNoncritical|default:"Not specified" }}</p>
+        <p class="article-content"><b>Unit:</b> {{ property.unit|default:"Not specified" }}</p>
+    {% endif %}
+    <p class="article-content"><b>Sensor Class:</b> {{ property.sensorClass }}</p>
+
+    <a class="btn btn-info" href="{% url 'sensor-class-property-update' property.sensorClass.pk property.pk %}">Edit</a>
+    <a class="btn btn-danger" href="{% url 'sensor-class-property-delete' property.sensorClass.pk property.pk %}">Delete</a>
+	<a class="btn btn-secondary" href="{% url 'sensor-class-property-list' property.sensorClass.pk %}" style="float:right">Back</a>
+	
+	</div>
+</article>
+
+{% endblock content %}

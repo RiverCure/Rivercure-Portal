@@ -6,6 +6,7 @@ from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check
 from organization.models import Organization
 from organization.authorization import is_org_or_sensor_manager
+from django.shortcuts import get_object_or_404
 
 class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = SensorClass
@@ -21,7 +22,7 @@ class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def test_func(self):
         user = self.request.user
-        organization = Organization.objects.get(pk=self.kwargs['organizationId'])
+        organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
         return is_org_or_sensor_manager(user, organization)
 
 class SensorClassCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -41,7 +42,7 @@ class SensorClassCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
 
     def test_func(self):
         user = self.request.user
-        organization = Organization.objects.get(pk=self.kwargs['organizationId'])
+        organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
         return is_org_or_sensor_manager(user, organization)
 
 class SensorClassDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

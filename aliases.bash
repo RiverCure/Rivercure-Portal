@@ -32,3 +32,7 @@ alias dumpdata=dumpDataFunc;
 alias startRabbitmq="brew services start rabbitmq";
 alias stopRabbitmq="brew services stop rabbitmq";
 alias startCelery="celery -A rivercureproject worker -l INFO";
+
+# Docs: start sphinx live server
+alias sphinxLive="sphinx-reload docs/";
+alias sphinxBuild="cd docs/ && make build";

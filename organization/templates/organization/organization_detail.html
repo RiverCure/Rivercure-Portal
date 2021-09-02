@@ -33,7 +33,7 @@
     {% endif %}
 
 	{% if isSensorManager or isManager %}
-		<a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-class-list' organization.pk %}">Manage sensor classes</a>
+		<a class="btn btn-success btn mt-1 mb-1" href="{% url 'sensor-class-list' organization.pk %}">Manage sensor classes</a>
     {% endif %}
     
     {% if request.user|has_group:"Admin" %}

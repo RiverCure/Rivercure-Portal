@@ -2,12 +2,12 @@ import os, xlrd, datetime
 from .models import Sensor, SensorObservation
 from django.contrib.gis.geos import Point
 from datetime import date, time
-from sensors.models import SensorKind
+from sensors.models import SensorCategory
 
 def create_default():
-    SensorKind.objects.create(name='Hydrometric Sensor')
-    SensorKind.objects.create(name='Weather Sensor')
-    SensorKind.objects.create(name='Social Network Scanner')
+    SensorCategory.objects.create(name='Hydrometric Sensor')
+    SensorCategory.objects.create(name='Weather Sensor')
+    SensorCategory.objects.create(name='Social Network Scanner')
 
 def run(load_sensors=True, load_observations=True):
     create_default()

@@ -14,7 +14,7 @@ SEVERITY_KIND = ( ('ok', 'Ok'), ('attention', 'Attention'), ('critical', 'Critic
 
 SENSOR_OBSERVATION_VALUE_TYPE = ( ('number', 'Number'), ('string', 'String'), ('image', 'Image') )
 
-class SensorKind(models.Model):
+class SensorCategory(models.Model):
     name = models.TextField(unique=True)
 
     def __str__(self):
@@ -24,10 +24,16 @@ class QuantityKind(models.Model):
     fullName     = models.TextField(unique=True) # E.g.: Length
     abbreviation = models.TextField() # E.g.: len
 
+    def __str__(self):
+        return self.fullName
+
 class Unit(models.Model):
     fullName     = models.TextField(unique=True) # E.g.: Meter
     abbreviation = models.TextField() # E.g.: m
     quantity     = models.ForeignKey(to=QuantityKind, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.fullName
 
 class SensorClass(models.Model):
     code         = models.TextField(unique=True)
@@ -36,7 +42,7 @@ class SensorClass(models.Model):
     vendor       = models.TextField(blank=True)
     version      = models.TextField(blank=True)
     modality     = models.TextField(choices=SENSOR_MODALITY_KIND)
-    kind         = models.ForeignKey(to=SensorKind, on_delete=models.CASCADE)
+    kind         = models.ForeignKey(to=SensorCategory, on_delete=models.CASCADE)
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,15 +59,18 @@ class Sensor(models.Model):
     sensorClass  = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 class SensorClassProperty(models.Model):
     code                      = models.TextField(unique=True)
     name                      = models.TextField()
     type                      = models.TextField(choices=SENSOR_OBSERVATION_VALUE_TYPE)
-    isOptional                = models.BooleanField()
-    thresholdLowerCritical    = models.DecimalField(max_digits=10, decimal_places=2)
-    thresholdLowerNoncritical = models.DecimalField(max_digits=10, decimal_places=2)
-    thresholdUpperCritical    = models.DecimalField(max_digits=10, decimal_places=2)
-    thresholdUpperNoncritical = models.DecimalField(max_digits=10, decimal_places=2)
+    isOptional                = models.BooleanField(default=False)
+    thresholdLowerCritical    = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    thresholdLowerNoncritical = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    thresholdUpperCritical    = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    thresholdUpperNoncritical = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     sensorClass               = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
     unit                      = models.ForeignKey(to=Unit, on_delete=models.SET_NULL, null=True)
 
