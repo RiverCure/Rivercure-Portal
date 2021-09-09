@@ -17,20 +17,32 @@ SENSOR_OBSERVATION_VALUE_TYPE = ( ('number', 'Number'), ('string', 'String'), ('
 class SensorCategory(models.Model):
     name = models.TextField(unique=True)
 
+    class Meta:
+        verbose_name = 'Sensor Category'
+        verbose_name_plural = 'Sensor Categories'
+
     def __str__(self):
         return self.name
 
 class QuantityKind(models.Model):
-    fullName     = models.TextField(unique=True) # E.g.: Length
+    fullName     = models.TextField(unique=True, verbose_name='Full name') # E.g.: Length
     abbreviation = models.TextField() # E.g.: len
+
+    class Meta:
+        verbose_name = 'Quantity Kind'
+        verbose_name_plural = 'Quantity Kinds'
 
     def __str__(self):
         return self.fullName
 
 class Unit(models.Model):
-    fullName     = models.TextField(unique=True) # E.g.: Meter
+    fullName     = models.TextField(unique=True, verbose_name='Full name') # E.g.: Meter
     abbreviation = models.TextField() # E.g.: m
     quantity     = models.ForeignKey(to=QuantityKind, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Unit'
+        verbose_name_plural = 'Units'
 
     def __str__(self):
         return self.fullName

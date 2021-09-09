@@ -53,6 +53,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'notifications',
+    'raster',
     'leaflet',
     'organization.apps.OrganizationConfig',
     'sensors.apps.SensorsConfig',
@@ -60,20 +62,18 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
     'crispy_forms',
-	'suit',
+    'suit',
     'rest_framework',
     'corsheaders',
-    'raster',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'django.contrib.gis',
+    'django.contrib.gis',
     'django_filters',
     'bootstrapform',
-    'notifications',
     'django_celery_results',
     'celery_progress'
 ]

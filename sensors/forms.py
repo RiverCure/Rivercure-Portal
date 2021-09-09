@@ -3,7 +3,7 @@ from .models import Sensor
 from leaflet.forms.widgets import LeafletWidget
 from organization.models import Membership, Organization
 from django.db.models import Q
-from sensors.models import SensorClass, SensorClassProperty, SensorObservation, SensorObservationValue, Unit
+from sensors.models import QuantityKind, SensorCategory, SensorClass, SensorClassProperty, SensorObservation, SensorObservationValue, Unit
 from django.core.exceptions import ValidationError
 from django.conf import settings
 import os
@@ -75,7 +75,7 @@ class SensorObservationForm(forms.ModelForm):
         for prop in self.fields['properties'].queryset:
             tag = f'value_of_{prop}'
             optionalProps += f'{prop.isOptional},'
-            
+
             if prop.type == 'number':
                 self.fields[tag] = forms.DecimalField(required=not prop.isOptional)
             elif prop.type == 'image':

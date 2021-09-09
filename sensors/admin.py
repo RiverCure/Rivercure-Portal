@@ -1,8 +1,14 @@
 from django.contrib import admin
-from leaflet.admin import LeafletGeoAdmin
-from .models import Sensor, SensorObservation
+from sensors.models import SensorCategory, QuantityKind, Unit
+from django.db import models
+from django.forms.widgets import TextInput
 
-admin.site.register(Sensor, LeafletGeoAdmin)
-admin.site.register(SensorObservation, LeafletGeoAdmin)
+# Just turns TextFields (which are converted into TextAreas), into TextInputs
+class MyModelAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': TextInput},
+    }
 
-
+admin.site.register(SensorCategory, MyModelAdmin)
+admin.site.register(QuantityKind, MyModelAdmin)
+admin.site.register(Unit, MyModelAdmin)
