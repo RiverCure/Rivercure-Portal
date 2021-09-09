@@ -38,7 +38,7 @@
 
             var sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
                 description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
-                timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};
+                timeZoneOffset: '{{ sensor.timeZoneOffset }}', local: '{{ sensor.local }}'};
 
             drawSensor(map, sensor);
         });
@@ -54,7 +54,7 @@
 
     drawSensor = (map, sensor) => {
         sensorIcon = L.divIcon({html: MyFunctions.sensorIcon(sensor.code, 'whitesmoke'), className: 'sensor', iconSize: [35, 35]});
-        sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.geom)[0], {icon: sensorIcon}).addTo(map);
+        sensorMarker = L.marker(MyFunctions.coordStringToArray(sensor.local)[0], {icon: sensorIcon}).addTo(map);
         sensorMarker.bindPopup(MyFunctions.sensorPopup(sensor));
         sensorMarker.bindTooltip('Sensor ' + sensor.code);
         map.setView(sensorMarker.getLatLng(), 12);
@@ -89,12 +89,12 @@
             <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-geo-update' sensor.pk %}" >Geo Edit</a>
             <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-delete' sensor.pk %}"  >Delete</a>
         {% endif %}
-            <a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observation-list' sensor.pk %}">Observations</a>
-            {% if request.META.HTTP_REFERER %}
-                <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-            {% else %}
-                <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back</a>
-            {% endif %}
+        <a class="btn btn-info btn mt-1 mb-1"  href="{% url 'sensor-observation-list' sensor.pk %}">Observations</a>
+        {% if request.META.HTTP_REFERER %}
+            <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+        {% else %}
+            <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'sensor-list' %}" >Back</a>
+        {% endif %}
     </div>
 </article>
 

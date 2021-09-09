@@ -12,10 +12,11 @@
 
     <script>
         function addAsteriskToOptional() {
+            let label = document.querySelector("#div_id_isPublic")?.children[1];
+            if(!label) return; // in case of GeoEdit, where this field doesnt exist
             let span = document.createElement("span");
             span.classList.add('asteriskField');
             span.innerHTML = '*';
-            let label = document.querySelector("#div_id_isPublic").children[1];
             label.innerHTML = 'Public';
             label.append(span);
         }
@@ -65,12 +66,12 @@
 
             const organization_select = document.querySelector('#id_organization');
             const sensorClass_select = document.querySelector('#id_sensorClass');
-            organization_select.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
-            sensorClass_select.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
+            organization_select?.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
+            sensorClass_select?.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
 
             // Map utils
             window.addEventListener("map:init", e => {
-                const map = e.detail.map;    
+                const map = e.detail.map;
                 MyFunctions.showMousePosition();
                 MyFunctions.mouseMove(map);
                 MyFunctions.mode = 'view';
@@ -91,8 +92,10 @@
 
                 var lat = document.querySelector('#id_lat');
                 var lng = document.querySelector('#id_lng');
+                let lat_initial = lat.value == '' ? 0 : lat.value;
+                let lng_initial = lng.value == '' ? 0 : lng.value;
 
-                var sensor = L.marker([0,0]).addTo(map);
+                var sensor = L.marker([lat_initial, lng_initial]).addTo(map);
                 var layer;
 
                 lat.addEventListener('keyup', e => {

@@ -65,10 +65,10 @@
 
 {% comment %} Buttons {% endcomment %}
 
-<div>
+<div class="w-100">
     <a class="btn btn-success" href="{% url 'sensor-class-property-create' view.kwargs.sensorClassId %}">Create property</a>
     {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float: right;">Back</a>
     {% else %}
         <a class="btn btn-secondary" href="{% url 'sensor-class-detail' view.kwargs.sensorClassId %}">Back</a>
     {% endif %}

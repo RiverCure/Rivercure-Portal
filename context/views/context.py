@@ -158,10 +158,6 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     context_object_name = 'context'
     template_name = 'context/e_Context_detail.html'
 
-    def test_func(self, *args , **kwargs):
-        context = self.get_object()
-        return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
-
     def get_context_data(self, **kwargs):
         user = self.request.user
         organization = self.get_object().organization
@@ -174,6 +170,10 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
 
         return context
+
+    def test_func(self, *args , **kwargs):
+        context = self.get_object()
+        return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
 
 @login_required
 def ContextSensorListView(request, context_code):

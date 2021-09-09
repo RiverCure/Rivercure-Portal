@@ -27,7 +27,7 @@
                 {% for property_value in observation.sensorobservationvalue_set.all %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ property_value.property.name }}</td>
+                        <td><a href="{% url 'sensor-class-property-detail' observation.sensor.sensorClass.pk property_value.property.pk %}">{{ property_value.property.name }}</a></td>
                         <td>{{ property_value.property.get_type_display }}</td>
                         <td>{{ property_value.value }}</td>
                     </tr>

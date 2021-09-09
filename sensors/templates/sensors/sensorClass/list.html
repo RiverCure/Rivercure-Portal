@@ -26,7 +26,7 @@
 			<th scope="col">Name</th>
 			<th scope="col">State</th>
 			<th scope="col">Modality</th>
-			<th scope="col">Kind</th>
+			<th scope="col">Category</th>
 		</tr>
 		{% for class in sensorClass %}
 		<tr>
@@ -35,10 +35,10 @@
 					<div style="height: 100%; width: 100%">{{ class.code }}</div>
 				</a>
 			</td>
-			<td>{{class.name}}</td>
-			<td>{{class.get_state_display}}</td>
-			<td>{{class.get_modality_display}}</td>
-			<td>{{class.kind}}</td>
+			<td>{{ class.name }}</td>
+			<td>{{ class.get_state_display }}</td>
+			<td>{{ class.get_modality_display }}</td>
+			<td>{{ class.category }}</td>
         </tr>
 
         {% empty %}
@@ -70,7 +70,7 @@
 <div>
     <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'sensor-class-create' view.kwargs.organizationId %}">Create sensor class</a>
     {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}">Back</a>
     {% else %}
         <a class="btn btn-secondary" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back</a>
     {% endif %}

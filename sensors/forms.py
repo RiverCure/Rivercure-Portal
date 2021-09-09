@@ -18,32 +18,23 @@ class GeoSensorForm(forms.ModelForm):
     name = forms.CharField(disabled=True)
     lat = forms.FloatField()
     lng = forms.FloatField()
+
+    def __init__(self, *args, **kwargs):
+        super(GeoSensorForm, self).__init__(*args, **kwargs)
+        self.initial['lng'] = self.instance.local.x
+        self.initial['lat'] = self.instance.local.y
     
     class Meta:
         model = Sensor
         fields = ['name', 'lat', 'lng']
         
 class SensorForm(forms.ModelForm):
-    # These fields are not the ones in the form - they are some who needed a bit customization
     code        = forms.CharField()
     name        = forms.CharField()
     description = forms.CharField(widget=forms.Textarea, required=False)
     isPublic    = forms.BooleanField(label='Public', required=False)
     lat         = forms.FloatField(label='Latitude')
     lng         = forms.FloatField(label='Longitude')
-
-    def clean(self):
-        super().clean()
-        form_data = self.cleaned_data
-        if form_data['sensorClass'].organization != form_data['organization']:
-            self._errors['sensorClass'] = ['Sensor class\'s organization must match organization field'] 
-            self._errors['organization'] = ['Organization must match the organization of sensor class\'s field'] 
-        return form_data
-
-    class Meta:
-        model = Sensor
-        # These are the fields in the form, appearing by this order
-        fields = ['code', 'name', 'organization', 'isPublic', 'description', 'sensorClass']
 
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('user_id')
@@ -54,6 +45,26 @@ class SensorForm(forms.ModelForm):
         # Only allow to choose sensor classes where the user is member of that organization
         self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization__in=self.fields['organization'].queryset)
         self.fields['sensorClass'].label = 'Sensor class'
+
+        if self.instance.pk and self.instance.local: # the user is editing
+            self.initial['lng'] = self.instance.local.x
+            self.initial['lat'] = self.instance.local.y
+
+    def clean(self):
+        super().clean()
+        form_data = self.cleaned_data
+        if form_data['sensorClass'].organization != form_data['organization']:
+            self._errors['sensorClass'] = ['Sensor class\'s organization must match organization field'] 
+            self._errors['organization'] = ['Organization must match the organization of sensor class\'s field']
+
+        if not SensorClassProperty.objects.filter(sensorClass=form_data['sensorClass']).exists():
+            raise ValidationError('The selected sensor class does\'t yet have any property, thus a sensor with that sensor class cannot be created')
+
+        return form_data
+
+    class Meta:
+        model = Sensor
+        fields = ['code', 'name', 'organization', 'isPublic', 'description', 'sensorClass']
 
 # Enables to have property - (type) labels in the properties choice field
 class CustomModelMultipleChoiceField(forms.ModelMultipleChoiceField):

@@ -80,9 +80,9 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse('sensor-list')
     
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
-        obj.save()
+        sensor = form.save(commit=False)
+        sensor.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        sensor.save()
         return super().form_valid(form)
 
     def test_func(self):
@@ -100,9 +100,9 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return kwargs
     
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
-        obj.save()
+        sensor = form.save(commit=False)
+        sensor.local = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        sensor.save()
         return super().form_valid(form)
 
     def get_success_url(self):

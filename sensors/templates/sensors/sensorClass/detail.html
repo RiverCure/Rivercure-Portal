@@ -15,7 +15,7 @@
     <p class="article-content"><b>Vendor:</b> {{ sensorClass.vendor|default:"Not specified" }}</p>
     <p class="article-content"><b>Version:</b> {{ sensorClass.version|default:"Not specified" }}</p>
     <p class="article-content"><b>Modality:</b> {{ sensorClass.modality }}</p>
-    <p class="article-content"><b>Kind:</b> {{ sensorClass.kind }}</p>
+    <p class="article-content"><b>Category:</b> {{ sensorClass.category }}</p>
     <p class="article-content"><b>Organization:</b> {{ sensorClass.organization }}</p>
 
     <a class="btn btn-info" href="{% url 'sensor-class-property-list' sensorClass.pk %}">Property list</a>
