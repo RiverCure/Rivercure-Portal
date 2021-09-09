@@ -1,22 +1,51 @@
-{% extends "rivercureportal/base.html" %} {% block title %} Observation detail {% endblock %} {% load leaflet_tags %} {% load static %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
+{% extends "rivercureportal/base.html" %}
+{% block title %} Observation detail {% endblock %}
+{% load static %}
+
+{% block content %}
 
 <article class="media content-section">
-  <div class="media-body">
-    <div class="article-metadata">
-      <h1><a class="mr-2">{{ object.sensor}} - observation {{ object.id }}</a></h1>
-    </div>
-    <p class="article-content">Sensor Type: {{observation.sensor.type}}</p>
-    <p class="article-content">Date: {{observation.date}}</p>
-    <p class="article-content">Time: {{observation.time}}</p>
-    <p class="article-content">Depth: {{observation.depth}}</p>
-    <p class="article-content">Discharge: {{observation.discharge}}</p>
+    <div class="media-body">
+        <div class="article-metadata">
+            <h1>{{ observation.sensor }} - observation {{ observation.id }}</h1>
+        </div>
+        <p class="article-content"><b>Date:</b> {{ observation.date }}</p>
+        <p class="article-content"><b>Time:</b> {{ observation.time }}</p>
+        <p class="article-content"><b>Severity:</b> {{ observation.get_severity_display }}</p>
+        <p class="article-content"><b>Properties and values:</b></p>
+        <div class="table-responsive">
+        <table class="table table-striped table-hover mb-4">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Property</th>
+                <th scope="col">Type</th>
+                <th scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for property_value in observation.sensorobservationvalue_set.all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ property_value.property.name }}</td>
+                        <td>{{ property_value.property.get_type_display }}</td>
+                        <td>{{ property_value.value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
 
-    {% if hasPerm %}
-    <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.code observation.id %}">Edit</a>
-    <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.code observation.id %}">Delete</a>
-    {% endif %}
-    <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'sensor-observation-list' observation.sensor.code %}">Back</a>
-  </div>
+        {% if hasPerm %}
+            <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.pk observation.pk %}">Edit</a>
+            <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.pk observation.pk %}">Delete</a>
+        {% endif %}
+        {% if request.META.HTTP_REFERER %}
+            <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+        {% else %}
+            <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'sensor-observation-list' observation.sensor.pk %}">Back</a>
+        {% endif %}
+    </div>
 </article>
 
 {% endblock content %}

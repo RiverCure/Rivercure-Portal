@@ -9,11 +9,13 @@ from organization.authorization import is_org_or_sensor_manager
 from django.shortcuts import get_object_or_404
 
 class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = SensorClass
     context_object_name = 'sensorClass'
     template_name = 'sensors/sensorClass/list.html'
     paginate_by = 15
     ordering = ['code']
+
+    def get_queryset(self):
+        return SensorClass.objects.filter(organization=self.kwargs['organizationId'])
 
     def get_context_data(self, **kwargs):
         context = super(SensorClassListView, self).get_context_data(**kwargs) # get the default context data

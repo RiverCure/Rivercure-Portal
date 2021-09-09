@@ -1,18 +1,29 @@
-{% extends "rivercureportal/base.html" %} {% block title %} Profile {% endblock %} {% load crispy_forms_tags %} {% load auth_extras %} {% block content %}
+{% extends "rivercureportal/base.html" %}
+{% block title %} Profile {% endblock %}
+{% load crispy_forms_tags %}
+{% load auth_extras %}
+
+{% block content %}
+
 <div class="content-section">
-  <div class="media">
-    <img class="rounded-circle account-img" src="{{ u.profile.image.url }}" />
-    <div class="media-body">
-      <div class="col-sm-6 col-md-8">
-        <h5>{% if u.profile.first_name %} {{u.profile.first_name}} {% endif %} {% if u.profile.last_name %} {{u.profile.last_name}} {% endif %}</h5>
-        <h4><b>Username: </b>{{u.username}}</h4>
-        <b>E-mail:</b>{{u.email}}<br />
-        <div><b>Role:</b> {% if u|has_group:"Admin" %}Admin{% elif u|has_group:"Manager" %}Manager{% else %}Visitor{% endif %}</div>
-      </div>
+    <div class="media">
+        <img class="rounded-circle account-img" src="{{ u.profile.image.url }}" />
+        <div class="media-body">
+            <div class="col-sm-6 col-md-8">
+                <h5>{% if u.profile.first_name %} {{u.profile.first_name}} {% endif %} {% if u.profile.last_name %} {{u.profile.last_name}} {% endif %}</h5>
+                <h4><b>Username: </b>{{u.username}}</h4>
+                <b>E-mail:</b>{{u.email}}<br />
+            <div>
+                <b>Role:</b> {% if u|has_group:"Admin" %}Admin{% elif u|has_group:"Manager" %}Manager{% else %}Visitor{% endif %}</div>
+            </div>
+        </div>
     </div>
-  </div>
-  <a href="{% url 'profile-update' u.pk %}" type="button" class="btn btn-primary">Edit role</a>
-  <a href="{% url 'users' %}" type="button" class="btn btn-secondary float-right">Back</a>
+    <a href="{% url 'profile-update' u.pk %}" type="button" class="btn btn-primary">Edit role</a>
+    {% if request.META.HTTP_REFERER %}
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+    {% else %}
+        <a href="{% url 'users' %}" type="button" class="btn btn-secondary float-right">Back</a>
+    {% endif %}
 </div>
 
 {% endblock content %}

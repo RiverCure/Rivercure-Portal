@@ -91,72 +91,61 @@
                     sensors.push(sensor)
                 '{% endfor %}'
                 return sensors;
-            } 
-               
+            }
         });
     </script>
 {% endblock %}
 
 {% block content %}
-    <h1>{{ context.Name }} context</h1>
-    <h2>Edit</h2>
-    {% comment %} <h1><small>Edit your context here</small></h1> {% endcomment %}
 
-    {% comment %} <div class="container">
-        <label for="context-to-change">Choose a context:</label>
-        <select name="context-to-change" id="context-to-change" class="browser-default custom-select">
-            <option value="">-----</option>
-            {% for context_definition in contexts%}
-                <option value="{{ context_definition.code }}">{{ context_definition.Name }}</option>
-            {% endfor %}
-        </select>
-    </div> {% endcomment %}
+<h1>{{ context.Name }} context</h1>
+<h2>Edit</h2>
 
-    <div id="form-data" class="content-section container" style="display: none; margin-bottom:50px;">
-        <form method='POST'  action="{% url 'context_manage' context.code %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form|crispy }}
-            {% comment %} <div id="load-status" class="alert alert-danger" role="alert">
-                Context not ready for submission!!! Draw it on the map below!
-            </div> {% endcomment %}
-            <div class="row">
-                <div class="col-md-9">
-                    <div id="map-container" class="container">
-                        {% leaflet_map "my_map" %}
-                    </div>
-                </div>
-                <div id="polygon-tree-id" class="col-md-3">
-                    <div id="domain-tree-id" class="container"></div>
-                    <div id="refinement-tree-id" class="container"></div>
-                    <div id="alignment-tree-id" class="container"></div>
-                    <div id="boundaryline-tree-id" class="container"></div>
+<div id="form-data" class="content-section container" style="display: none; margin-bottom:50px;">
+    <form method='POST'  action="{% url 'context_manage' context.code %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="row">
+            <div class="col-md-9">
+                <div id="map-container" class="container">
+                    {% leaflet_map "my_map" %}
                 </div>
             </div>
-            <div class="container" id="context-options">
-                <div id="polygon-type-div" class="container" style="display: flex">
-                    <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
-                        <option value="none" selected disabled>Select the polygon to define</option>
-                        <option value="Domain">Domain</option>
-                        <option value="Boundary">Boundary</option>
-                        <option value="Alignment">Alignment</option>
-                        <option value="Refinement">Refinement</option>
-                    </select>
-                </div>
-                <div class="container" style="display: flex">
-                    <button type="button" id='load-btn' class="btn btn-outline-danger">Validate Context</button>
-                </div>
-                {% comment %} <div id='load-context-result' style='display: none'></div> {% endcomment %}
-                <div id="load-context-result" class="alert alert-danger" role="alert">
-                    Context not ready for submission!!! Draw it on the map above!
-                </div>
+            <div id="polygon-tree-id" class="col-md-3">
+                <div id="domain-tree-id" class="container"></div>
+                <div id="refinement-tree-id" class="container"></div>
+                <div id="alignment-tree-id" class="container"></div>
+                <div id="boundaryline-tree-id" class="container"></div>
             </div>
-            <div class="form-group">
-                <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Validate Context before submitting</button>
-                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
-            </div>
-        </form>
-        <div class="border-top pt-3">
         </div>
+        <div class="container" id="context-options">
+            <div id="polygon-type-div" class="container" style="display: flex">
+                <select name="polygon-type" id="polygon-type" class="browser-default custom-select">
+                    <option value="none" selected disabled>Select the polygon to define</option>
+                    <option value="Domain">Domain</option>
+                    <option value="Boundary">Boundary</option>
+                    <option value="Alignment">Alignment</option>
+                    <option value="Refinement">Refinement</option>
+                </select>
+            </div>
+            <div class="container" style="display: flex">
+                <button type="button" id='load-btn' class="btn btn-outline-danger">Validate Context</button>
+            </div>
+            <div id="load-context-result" class="alert alert-danger" role="alert">
+                Context not ready for submission!!! Draw it on the map above!
+            </div>
+        </div>
+        <div class="form-group">
+            <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Validate Context before submitting</button>
+            {% if request.META.HTTP_REFERER %}
+                <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+            {% else %}
+                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
+            {% endif %}
+        </div>
+    </form>
+    <div class="border-top pt-3">
     </div>
+</div>
 
 {% endblock %}

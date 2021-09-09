@@ -15,7 +15,7 @@
     </p>
     
     {% if organization.type %}
-    <p class="article-content mt-4"><b>Type: </b>{{ organization.get_type_display }}</p>
+        <p class="article-content mt-4"><b>Type: </b>{{ organization.get_type_display }}</p>
     {% endif %}
 
     <p class="article-content mt-4"><b>State: </b>{{ organization.is_active|yesno:"Active,Suspended" }}</p>
@@ -52,7 +52,11 @@
     {% elif request.user|has_group:"Admin" and not organization.is_active %}
 		<a class="btn btn-success btn mt-1 mb-1" href="{% url 'organization-reactivate' organization.pk %}">Reactivate</a>
     {% endif %}
-    <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'organization-list' %}">Back to Organizations List</a>
+    {% if request.META.HTTP_REFERER %}
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+    {% else %}
+        <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'organization-list' %}">Back</a>
+    {% endif %}
 
 </div>
 </article>

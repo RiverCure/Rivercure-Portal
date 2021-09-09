@@ -140,7 +140,11 @@
                 <a class="btn btn-warning mt-1 mb-1" href="{% url 'mesh-progress' context.code %}">Progress</a>
             {% endif %}
                 
-            <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-list' %}" style="float:right">Back</a>
+            {% if request.META.HTTP_REFERER %}
+                <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+            {% else %}
+                <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-list' %}" style="float:right">Back</a>
+            {% endif %}
         </div>
         
     </article>

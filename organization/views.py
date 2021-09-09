@@ -100,7 +100,7 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
 
     def setup(self, request, *args, **kwargs):
         notification_id = request.GET.get('notification')
-        if request.GET.get('notification') is not None:
+        if notification_id is not None:
             # To read notifications, for both managers and non-managers
             notification = Notification.objects.filter(pk=notification_id)
             if notification.first():

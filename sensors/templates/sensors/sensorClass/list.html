@@ -69,7 +69,11 @@
 
 <div>
     <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'sensor-class-create' view.kwargs.organizationId %}">Create sensor class</a>
-    <a class="btn btn-secondary" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back</a>
+    {% if request.META.HTTP_REFERER %}
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+    {% else %}
+        <a class="btn btn-secondary" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back</a>
+    {% endif %}
 </div>
 
 {% endblock content %}

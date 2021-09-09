@@ -2,11 +2,11 @@ from django.contrib.auth.models import Group
 
 # Creates the two groups
 def run():
-    aU_Admin_group = Group(name='Admin')
-    aU_Admin_group.save()
+    admin_group = Group(name='Admin')
+    admin_group.save()
 
-    aU_Manager_group = Group(name='Manager')
-    aU_Manager_group.save()
+    manager_group = Group(name='Manager')
+    manager_group.save()
 
-    aU_Manager_group = Group(name='Visitor')
-    aU_Manager_group.save()
+    visitor_group = Group(name='Visitor')
+    visitor_group.save()

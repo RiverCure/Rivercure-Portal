@@ -9,9 +9,8 @@ from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
 
 class SensorListView(LoginRequiredMixin, ListView):
-    model = Sensor
     context_object_name = 'sensor'
-    template_name = 'sensors/sensor_list.html'
+    template_name = 'sensors/sensors/list.html'
     paginate_by = 15
     ordering = ['code']
 
@@ -36,7 +35,7 @@ class SensorListView(LoginRequiredMixin, ListView):
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Sensor
     context_object_name = 'sensor'
-    template_name = 'sensors/sensor_detail.html'
+    template_name = 'sensors/sensors/detail.html'
 
     def test_func(self):
         # We only want the sensors that are either public or are private and this user is in the organization
@@ -48,10 +47,11 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context["form"] = SensorObservationsFileForm()
         context["hasPerm"] = sensor_edit_permission_check(self.request.user, self.get_object())
         return context
-    
+
 class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Sensor
     form_class = SensorForm
+    template_name = 'sensors/sensors/form.html'
 
     def get_success_url(self):
         return reverse('sensor-list')
@@ -69,12 +69,12 @@ class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         obj.save()
         return super().form_valid(form)
-            
 
 class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor
     form_class = GeoSensorForm
     object_name = 'sensor'
+    template_name = 'sensors/sensors/form.html'
 
     def get_success_url(self):
         return reverse('sensor-list')
@@ -91,6 +91,8 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor
     form_class = SensorForm
+    object_name = 'sensor'
+    template_name = 'sensors/sensors/form.html'
 
     def get_form_kwargs(self):
         kwargs = super(SensorUpdateView, self).get_form_kwargs()
@@ -111,8 +113,8 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Sensor
-    context_object_name = 'Sensor'
-    template_name = 'sensors/sensor_confirm_delete.html'
+    context_object_name = 'sensor'
+    template_name = 'sensors/sensors/confirm_delete.html'
     
     def get_success_url(self):
         return reverse('sensor-list')

@@ -1,0 +1,136 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Sensor list {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load auth_extras %}
+
+{% block content %}
+
+<style>
+    th {
+        cursor: pointer;
+    }
+
+    th:hover {
+        background: #eee;
+    }
+
+    body {
+        margin-bottom: 50px;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+
+<h1>Sensors</h1>
+
+<div class="row">
+    <div class="col-md-9">
+    <table class="table table-hover">
+        <tr>
+        <th scope="col">Organization</th>
+        <th scope="col">Code</th>
+        <th scope="col">Name</th>
+        <th scope="col">Sensor Class</th>
+        <th scope="col">Observations</th>
+        </tr>
+        {% for sensor in object_list %}
+            <tr>
+            <td>{{ sensor.organization }} ({{ sensor.isPublic|yesno:"Public,Private" }})</td>
+            <td>
+                <a href="{% url 'sensor-detail' sensor.pk %}">
+                <div style="height: 100%; width: 100%">{{ sensor.code }}</div>
+                </a>
+            </td>
+            <td>{{ sensor.name }}</td>
+            <td>
+                <a href="{% url 'sensor-class-detail' sensor.sensorClass.pk %}">
+                <div style="height: 100%; width: 100%">{{ sensor.sensorClass.name }}</div>
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'sensor-observation-list' sensor.pk %}"><img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" /></a>
+            </td>
+            </tr>
+            {% empty %}
+            <td><h2 class="text-secondary font-italic no-context-data">No available sensors!</h2></td>
+        {% endfor %}
+    </table>
+
+    <div class="pagination mb-5">
+        <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+        </span>
+    </div>
+    </div>
+
+    <div class="filter-section col-md-2">
+    <h5>Filter</h5>
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-info">Filter</button>
+    </form>
+    </div>
+
+    <div id="observationsUploadDiv" class="container" style="display: none">
+    <h2>Upload sensors (observations are optional here)</h2>
+    <div id="form-data" class="content-section">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-upload' %}">
+        {% csrf_token %} {{ form|crispy }}
+        <div class="form-group">
+            <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
+            <button id="submit-btn" class="btn btn-secondary btn mt-1 mb-1" style="float: right" onclick="showUploadDiv('none')">Close</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <div>
+    {% if hasPerm %}
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
+    {% endif %}
+    </div>
+
+<script>
+const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+console.log(document.querySelector('table'));
+
+document.querySelectorAll('th').forEach((th) =>
+    th.addEventListener('click', () => {
+    const table = th.closest('table');
+    console.log('listen');
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
+        .forEach((tr) => table.appendChild(tr));
+    })
+);
+
+console.log('hello');
+
+showUploadDiv = (state) => {
+    document.querySelector('#observationsUploadDiv').style.display = state;
+
+    if (state == 'block') {
+    setTimeout(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+    }, 500);
+    }
+};
+</script>
+
+{% endblock content %}
+</div>

@@ -42,11 +42,11 @@ class SensorClass(models.Model):
     vendor       = models.TextField(blank=True)
     version      = models.TextField(blank=True)
     modality     = models.TextField(choices=SENSOR_MODALITY_KIND)
-    kind         = models.ForeignKey(to=SensorCategory, on_delete=models.CASCADE)
+    category     = models.ForeignKey(to=SensorCategory, on_delete=models.CASCADE)
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return f'{self.organization} - {self.name}'
 
 class Sensor(models.Model):
     code         = models.TextField(unique=True)
@@ -54,7 +54,7 @@ class Sensor(models.Model):
     description  = models.TextField()
     state        = models.TextField(choices=SENSOR_STATE)
     # visibility   = models.TextField(choices=SENSOR_VISIBILITY_KIND) -> not needed (yet). Replaced by isPublic
-    isPublic     = models.BooleanField(default=True)
+    isPublic     = models.BooleanField(default=False)
     local        = models.PointField(null=True) # being null=True allows 0..1 relationship
     sensorClass  = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
@@ -79,9 +79,13 @@ class SensorClassProperty(models.Model):
 
 class SensorObservation(models.Model):
     # dateTime would be better, but preivously it used dateTime and it has many dependencies to change. Perhaps change in the future?
-    date     = models.DateField(default=date.today)
-    time     = models.TimeField()
-    value    = models.TextField()
-    severity = models.TextField(choices=SEVERITY_KIND)
-    property = models.ForeignKey(to=SensorClassProperty, on_delete=models.CASCADE)
-    sensor   = models.ForeignKey(to=Sensor, on_delete=models.CASCADE)
+    date       = models.DateField(default=date.today)
+    time       = models.TimeField()
+    severity   = models.TextField(choices=SEVERITY_KIND)
+    properties = models.ManyToManyField(to=SensorClassProperty, through='SensorObservationValue')
+    sensor     = models.ForeignKey(to=Sensor, on_delete=models.CASCADE)
+
+class SensorObservationValue(models.Model):
+    property    = models.ForeignKey(SensorClassProperty, on_delete=models.CASCADE)
+    observation = models.ForeignKey(SensorObservation, on_delete=models.CASCADE)
+    value       = models.TextField()

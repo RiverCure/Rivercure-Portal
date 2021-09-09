@@ -28,7 +28,7 @@
 {% block content %}
 
 <h1>
-    <a href="{% url 'sensor-detail' sensor.code %}"> {{ sensor }}</a>-
+    <a href="{% url 'sensor-detail' sensor.pk %}"> {{ sensor }}</a>-
     Observations
 </h1>
 
@@ -39,24 +39,18 @@
                 <tr>
                     <th scope="col">Date</th>
                     <th scope="col">Time</th>
-                    <th scope="col">Depth</th>
-                    <th scope="col">Discharge</th>
+                    <th scope="col">Severity</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for observation in obs %}
+                {% for observation in observations %}
                 <tr>
                     <td>{{ observation.date }}</td>
                     <td>{{ observation.time }}</td>
-                    <td>{{ observation.depth }}</td>
-                    <td>{{ observation.discharge }}</td>
+                    <td>{{ observation.get_severity_display }}</td>
                     <td>
-                        <a
-                            class="mr-2"
-                            href="{% url 'sensor-observation-detail' sensor.code observation.id %}"
-                            >Details</a
-                        >
+                        <a class="mr-2" href="{% url 'sensor-observation-detail' sensor.pk observation.id %}">Details</a>
                     </td>
                 </tr>
                 {% empty %}
@@ -72,27 +66,17 @@
         <div class="pagination mb-5">
             <span class="step-links">
                 {% if page_obj.has_previous %}
-                <a href="?sensor={{ sensor.code }}&page=1">&laquo; First</a>
-                <a
-                    href="?sensor={{ sensor.code }}&page={{ page_obj.previous_page_number }}"
-                    >Previous</a
-                >
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
                 {% endif %}
 
                 <span class="current">
-                    Page {{ page_obj.number }} of {{
-                    page_obj.paginator.num_pages }}.
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                 </span>
 
                 {% if page_obj.has_next %}
-                <a
-                    href="?sensor={{ sensor.code }}&page={{ page_obj.next_page_number }}"
-                    >Next</a
-                >
-                <a
-                    href="?sensor={{ sensor.code }}&page={{ page_obj.paginator.num_pages }}"
-                    >Last &raquo;</a
-                >
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
@@ -108,41 +92,21 @@
 
     <div>
         {% if hasPerm %}
-        <a
-            type="button"
-            class="btn btn-info ml-0 mt-3"
-            href="{% url 'sensor-observation-create' sensor.code %}"
-            >Add Sensor Observation</a
-        >
-        <a
-            type="button"
-            class="btn btn-info ml-0 mt-3"
-            href="#"
-            onclick="showUploadDiv('block')"
-            >Upload Observations</a
-        >
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.pk %}">Add Sensor Observation</a>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Observations</a>
         {% endif %}
     </div>
 
     <div id="observationsUploadDiv" class="container" style="display: none">
         <h2>Upload observations (Excel)</h2>
         <div id="form-data" class="content-section">
-            <form
-                method="POST"
-                enctype="multipart/form-data"
-                action="{% url 'sensor-observations-upload' sensor.code %}"
-            >
+            <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-observations-upload' sensor.pk %}">
                 {% csrf_token %} {{ form|crispy }}
                 <div class="form-group">
                     <button id="submit-btn" class="btn btn-info" type="submit">
                         Upload
                     </button>
-                    <button
-                        id="submit-btn"
-                        class="btn btn-secondary btn"
-                        style="float: right"
-                        onclick="showUploadDiv('none')"
-                    >
+                    <button id="submit-btn" class="btn btn-secondary btn" style="float: right" onclick="showUploadDiv('none')">
                         Close
                     </button>
                 </div>

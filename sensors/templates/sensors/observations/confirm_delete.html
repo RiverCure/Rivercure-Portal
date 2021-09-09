@@ -1,16 +1,21 @@
-{% extends "rivercureportal/base.html" %} {% block title %} Confirm delete observation {% endblock %} {% load leaflet_tags %} {% load static %} {% block scripts %} {% leaflet_js plugins="ALL" %} {% leaflet_css plugins="ALL" %} {% endblock %} {% block content %}
+{% extends "rivercureportal/base.html" %}
+{% block title %} Confirm delete observation {% endblock %}
+{% load static %}
+
+{% block content %}
+
 <div class="content-section">
-  <form method="POST">
-    {% csrf_token %}
-    <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Delete this observation of {{observation.sensor}}? {{observation.id}}</legend>
-      <h2>Are you sure you want to delete the observation {{observation.Name}}?</h2>
-    </fieldset>
-    <div class="form-group">
-      <button class="btn btn-outline-danger" type="submit">Yes, delete</button>
-      <a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.code observation.id %}">Cancel</a>
-    </div>
-  </form>
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Delete this observation of {{ observation.sensor }}?</legend>
+            <h2>Are you sure you want to delete the observation of {{ observation.sensor }} from {{ observation.date }} at {{ observation.time }}?</h2>
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-danger" type="submit">Yes, delete</button>
+            <a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.pk observation.pk %}">Cancel</a>
+        </div>
+    </form>
 </div>
 
 {% endblock content %}

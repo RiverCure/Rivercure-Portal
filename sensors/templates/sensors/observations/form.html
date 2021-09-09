@@ -1,26 +1,67 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Observation edit/create {% endblock %}
+{% block title %} Observation {% if observation %}edit{% else %}create{% endif %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
 
 <div class="content-section">
-	<form method="POST">
+	<form method="POST" id="observation-form" enctype="multipart/form-data">
 		{% csrf_token %}
 		<fieldset class="form-group">
-			<legend class="border-bottom mb-4">Create an Observation</legend>
+			<legend class="border-bottom mb-4">{% if observation %}Edit{% else %}Create{% endif %} an Observation for sensor '{{ sensor.name }}'</legend>
 			{{ form|crispy }}
 		</fieldset>
 		<div class="form-group">
 			<button class="btn btn-outline-info" type="submit">Save</button>
-			{% if observation.id != null %}
-				<a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.code observation.id %}">Cancel</a>
+			{% if observation %}
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-observation-detail' observation.sensor.pk observation.pk %}">Cancel</a>
 			{% else %}
-				<a class="btn btn-outline-secondary" href="{% url 'sensor-list' %}">Cancel</a>
+				<a class="btn btn-outline-secondary" href="{% url 'sensor-observation-list' view.kwargs.sensorId %}">Cancel</a>
 			{% endif %}
 		</div>
 	</form>
 </div>
+
+<script>
+// This is necessary. If fields are disabled, they are not sent to the server, thus django doesnt get them
+document.querySelector('#observation-form').addEventListener('submit', e => {
+    document.querySelectorAll('input[type=checkbox]').forEach(el => el.disabled = false);
+});
+
+// Below code hides/shows inputs based on checkbox being checked/unchecked
+const optionalVals = document.querySelectorAll('[optionalvalues]')[0].getAttribute('optionalvalues').split(',').map(el => el == 'True' ? true : false);
+const properties_divs = document.querySelector('#div_id_properties').children[1].children;
+var properties = [];
+
+// Get checkbox and label elements
+Array.prototype.map.call(properties_divs, el => properties.push({
+        'checkbox': el.children[0], 
+        'label': el.children[1]
+}));
+// Get corresponding input elements, getting the property name from the label
+properties.map((el, index) => {
+    // Get input
+    const input_id = `id_value_of_${el.label.innerText.split('-')[0]}`;
+    el['input'] = document.getElementById(input_id);
+    el['input_div'] = el['input'].parentElement.parentElement; // gets the div that has the input and the label
+
+    // Check checkbox where the property is not optional and, if so, also block any change on that checkbox
+    if(optionalVals[index] == false) {
+        el['checkbox'].checked = true;
+        el['checkbox'].disabled = true;
+    }
+    
+
+    // Hide inputs where the checkbox is unchecked
+    el['checkbox'].checked == false ? el['input_div'].style.display = 'none' : el['input_div'].style.display = 'block';
+
+    // Listen to checkbox changes and display/hide corresponding input
+    el['checkbox'].addEventListener('change', e => {
+        if(e.target.checked) el['input_div'].style.display = 'block';
+        else el['input_div'].style.display = 'none';
+    });
+});
+</script>
 
 {% endblock content %}

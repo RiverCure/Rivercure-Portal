@@ -20,11 +20,15 @@
         <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ property.thresholdUpperNoncritical|default:"Not specified" }}</p>
         <p class="article-content"><b>Unit:</b> {{ property.unit|default:"Not specified" }}</p>
     {% endif %}
-    <p class="article-content"><b>Sensor Class:</b> {{ property.sensorClass }}</p>
+    <p class="article-content"><b>Sensor Class:</b> {{ property.sensorClass.name }}</p>
 
     <a class="btn btn-info" href="{% url 'sensor-class-property-update' property.sensorClass.pk property.pk %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'sensor-class-property-delete' property.sensorClass.pk property.pk %}">Delete</a>
-	<a class="btn btn-secondary" href="{% url 'sensor-class-property-list' property.sensorClass.pk %}" style="float:right">Back</a>
+    {% if request.META.HTTP_REFERER %}
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+    {% else %}
+        <a class="btn btn-secondary" href="{% url 'sensor-class-property-list' property.sensorClass.pk %}" style="float:right">Back</a>
+    {% endif %}
 	
 	</div>
 </article>

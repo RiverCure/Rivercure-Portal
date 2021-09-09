@@ -13,7 +13,7 @@
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener("map:init", e => {
                 const map = e.detail.map;   
                 map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
@@ -31,8 +31,8 @@
 				hydrofeature.addTo(map)
 				
 				map.setView(hydrofeature.getCenter(), 12);
-          	})
-    	})
+            })
+        })
 	</script>
 	<style>
 		.leaflet-control-scale{
@@ -44,8 +44,8 @@
 			cursor: pointer;
 		}
 		.django-leaflet-raw-textarea {
-        	width:100%; 
-    	}
+            width:100%; 
+        }
 		#mouse-latlng {
 			border: 2px solid #777;
 			border-top-color: rgb(119, 119, 119);
@@ -67,30 +67,26 @@
 {% block content %}
 
 <article class="media content-section">
-  <div class="media-body">
+    <div class="media-body">
     <div class="article-metadata">
-      <h1>{{ object.Name }}</h1>
+        <h1>{{ object.Name }}</h1>
     </div>
     <p class="article-content"><b>Type:</b> {{ object.type }}</p> 
 
     <div id="map-container" class="container">
-      {% leaflet_map "my_map" %}
+        {% leaflet_map "my_map" %}
     </div>
-
 
     {% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}
     <a class="btn btn-secondary mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
 	<a class="btn btn-danger mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
 	{% endif %}
-	<a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'hydrofeature-list' %}" >Back</a>
-    
-  
-  </div>
+    {% if request.META.HTTP_REFERER %}
+        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
+    {% else %}
+        <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'hydrofeature-list' %}" >Back</a>
+    {% endif %}
+    </div>
 </article>
 
-
 {% endblock content %}
-
-
-
-
