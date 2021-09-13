@@ -36,6 +36,7 @@ from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
+from organization.authorization import belongs_to_organization
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     model = e_Context

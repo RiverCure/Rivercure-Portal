@@ -47,7 +47,7 @@
                 {% for observation in observations %}
                 <tr>
                     <td>{{ observation.date }}</td>
-                    <td>{{ observation.time }}</td>
+                    <td>{{ observation.time|time:"H:i" }}</td>
                     <td>{{ observation.get_severity_display }}</td>
                     <td>
                         <a class="mr-2" href="{% url 'sensor-observation-detail' sensor.pk observation.id %}">Details</a>
@@ -93,11 +93,12 @@
     <div>
         {% if hasPerm %}
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.pk %}">Add Sensor Observation</a>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observations-excel-download' sensor.pk %}">Download observations Excel</a>
         <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Observations</a>
         {% endif %}
     </div>
 
-    <div id="observationsUploadDiv" class="container" style="display: none">
+    <div id="observationsUploadDiv" class="container" style="display: none; margin-top: 2vh;">
         <h2>Upload observations (Excel)</h2>
         <div id="form-data" class="content-section">
             <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-observations-upload' sensor.pk %}">

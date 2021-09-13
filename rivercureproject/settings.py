@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
     'crispy_forms',
-    'suit',
+    # 'suit',
     'rest_framework',
     'corsheaders',
     'django.contrib.admin',
@@ -112,6 +112,7 @@ WSGI_APPLICATION = 'rivercureproject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 DATABASES = {
     'default': {

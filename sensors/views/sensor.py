@@ -9,14 +9,14 @@ from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
 
 class SensorListView(LoginRequiredMixin, ListView):
-    context_object_name = 'sensor'
+    context_object_name = 'sensors'
     template_name = 'sensors/sensors/list.html'
-    paginate_by = 15
+    paginate_by = 10
     ordering = ['code']
 
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization
-        queryset = (Sensor.objects.filter(isPublic=True) | Sensor.objects.filter(isPublic=False, organization__membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))).distinct()
+        queryset = (Sensor.objects.filter(isPublic=True) | Sensor.objects.filter(isPublic=False, sensorClass__organization__membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))).distinct()
         filter = SensorFilter(self.request.GET, queryset.order_by('code'))
         return filter.qs
 

@@ -16,9 +16,6 @@ urlpatterns = [
     path('<int:sensorId>/observation/<int:observationId>', views.SensorObservationDetailView.as_view(), name='sensor-observation-detail'),
     path('<int:sensorId>/observation/<int:observationId>/update/', views.SensorObservationUpdateView.as_view(), name='sensor-observation-update'),
     path('<int:sensorId>/observation/<int:observationId>/delete/', views.SensorObservationDeleteView.as_view(), name='sensor-observation-delete'),
-    # Upload
-    path('<str:pk>/observation/upload/', views.sensor_observations_upload, name='sensor-observations-upload'),
-    path('upload/', views.sensor_upload, name='sensor-upload'),
     # SensorClass
     path('sensor-class/<int:organizationId>', views.SensorClassListView.as_view(), name='sensor-class-list'),
     path('sensor-class/<int:organizationId>/new', views.SensorClassCreateView.as_view(), name='sensor-class-create'),
@@ -31,4 +28,10 @@ urlpatterns = [
     path('sensor-class/<int:sensorClassId>/property/<int:sensorClassPropertyId>/detail', views.SensorClassPropertyDetailView.as_view(), name='sensor-class-property-detail'),
     path('sensor-class/<str:sensorClassId>/property/<int:sensorClassPropertyId>/update', views.SensorClassPropertyUpdateView.as_view(), name='sensor-class-property-update'),
     path('sensor-class/<str:sensorClassId>/property/<int:sensorClassPropertyId>/delete', views.SensorClassPropertyDeleteView.as_view(), name='sensor-class-property-delete'),
+    # Upload
+    path('upload/', views.sensor_upload, name='sensor-upload'),
+    path('<int:sensorId>/observation/upload/', views.sensor_observations_upload, name='sensor-observations-upload'),
+    # Download
+    path('download/', views.sensor_excel_download, name='sensor-excel-download'),
+    path('<int:sensorId>/observation/download/', views.sensor_observations_excel_download, name='sensor-observations-excel-download')
 ]

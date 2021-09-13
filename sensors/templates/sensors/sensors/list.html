@@ -35,7 +35,7 @@
         <th scope="col">Sensor Class</th>
         <th scope="col">Observations</th>
         </tr>
-        {% for sensor in object_list %}
+        {% for sensor in sensors %}
             <tr>
             <td>{{ sensor.organization }} ({{ sensor.isPublic|yesno:"Public,Private" }})</td>
             <td>
@@ -76,15 +76,15 @@
     </div>
 
     <div class="filter-section col-md-2">
-    <h5>Filter</h5>
-    <form method="get">
-        {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-info">Filter</button>
-    </form>
+        <h5>Filter</h5>
+        <form method="get">
+            {{ filter.form |crispy }}
+            <button type="submit" class="btn btn-info">Filter</button>
+        </form>
     </div>
 
     <div id="observationsUploadDiv" class="container" style="display: none">
-    <h2>Upload sensors (observations are optional here)</h2>
+    <h2>Upload sensors</h2>
     <div id="form-data" class="content-section">
         <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-upload' %}">
         {% csrf_token %} {{ form|crispy }}
@@ -99,6 +99,7 @@
     <div>
     {% if hasPerm %}
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-excel-download' %}">Download sensors Excel</a>
         <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
     {% endif %}
     </div>
@@ -107,19 +108,15 @@
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
 const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
-console.log(document.querySelector('table'));
 
 document.querySelectorAll('th').forEach((th) =>
     th.addEventListener('click', () => {
     const table = th.closest('table');
-    console.log('listen');
     Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
         .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
         .forEach((tr) => table.appendChild(tr));
     })
 );
-
-console.log('hello');
 
 showUploadDiv = (state) => {
     document.querySelector('#observationsUploadDiv').style.display = state;

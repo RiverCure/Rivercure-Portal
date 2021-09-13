@@ -82,6 +82,7 @@
         <p class="article-content"><b>Visibility:</b> {{ sensor.isPublic|yesno:"Public,Private" }}</p> 
         <p class="article-content"><b>Code:</b> {{ sensor.code }}</p> 
         <p class="article-content"><b>Description:</b> {{ sensor.description|default:"Not specified" }}</p> 
+        <p class="article-content"><b>State:</b> {{ sensor.get_state_display }}</p>
         <p class="article-content"><b>Sensor class:</b> <a href="{% url 'sensor-class-detail' sensor.sensorClass.pk %}">{{ sensor.sensorClass.name }}</a></p> 
 
         {% if hasPerm %} 

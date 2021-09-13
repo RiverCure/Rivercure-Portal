@@ -7,10 +7,10 @@
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata">
-            <h1>{{ observation.sensor }} - observation {{ observation.id }}</h1>
+            <h1>{{ observation.sensor }} - observation {{ observation.date|date:"d-M-Y" }}:{{ observation.time|time:"H:i" }}</h1>
         </div>
         <p class="article-content"><b>Date:</b> {{ observation.date }}</p>
-        <p class="article-content"><b>Time:</b> {{ observation.time }}</p>
+        <p class="article-content"><b>Time:</b> {{ observation.time|time:"H:i" }}</p>
         <p class="article-content"><b>Severity:</b> {{ observation.get_severity_display }}</p>
         <p class="article-content"><b>Properties and values:</b></p>
         <div class="table-responsive">

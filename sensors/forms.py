@@ -41,9 +41,9 @@ class SensorForm(forms.ModelForm):
         super(SensorForm, self).__init__(*args, **kwargs)
         # Only allow to choose organizations where the user is org_manager, org_sensorManager or org_contextManager of the organization
         memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_sensorManager') | Q(permission='org_contextManager'))
-        self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
+        organizations = Organization.objects.filter(membership__in=memberships)
         # Only allow to choose sensor classes where the user is member of that organization
-        self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization__in=self.fields['organization'].queryset)
+        self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization__in=organizations)
         self.fields['sensorClass'].label = 'Sensor class'
 
         if self.instance.pk and self.instance.local: # the user is editing
@@ -53,9 +53,6 @@ class SensorForm(forms.ModelForm):
     def clean(self):
         super().clean()
         form_data = self.cleaned_data
-        if form_data['sensorClass'].organization != form_data['organization']:
-            self._errors['sensorClass'] = ['Sensor class\'s organization must match organization field'] 
-            self._errors['organization'] = ['Organization must match the organization of sensor class\'s field']
 
         if not SensorClassProperty.objects.filter(sensorClass=form_data['sensorClass']).exists():
             raise ValidationError('The selected sensor class does\'t yet have any property, thus a sensor with that sensor class cannot be created')
@@ -64,7 +61,7 @@ class SensorForm(forms.ModelForm):
 
     class Meta:
         model = Sensor
-        fields = ['code', 'name', 'organization', 'isPublic', 'description', 'sensorClass']
+        fields = ['code', 'name', 'isPublic', 'description', 'sensorClass']
 
 # Enables to have property - (type) labels in the properties choice field
 class CustomModelMultipleChoiceField(forms.ModelMultipleChoiceField):

@@ -20,54 +20,11 @@
             label.innerHTML = 'Public';
             label.append(span);
         }
-        /* This function is triggered when a option is change in both the organization and the sensorClass select
-        - If the Organization is changed, then on the sensorClass only the sensors classes of that organization are selectable
-        - If the sensorClass is changed, then on the Organization only that sensorClass's organization is selectable (and is selected automatically) */
-        function organizationSensorclassChangeHandler(organization_select, sensorClass_select, e) {
-            const selectedOption = e.target.options[e.target.selectedIndex].text;
-            if(e.target.id === 'id_organization') {
-                if(selectedOption !== '---------') {
-                    for(let i = 1; i < sensorClass_select.options.length; i++) {
-                        if(sensorClass_select.options[i].text.includes(selectedOption)) {
-                            sensorClass_select.options[i].disabled = false;
-                        } else {
-                            sensorClass_select.options[i].disabled = true;
-                        }
-                    }
-                } else {
-                    for(let i = 0; i < sensorClass_select.options.length; i++) {
-                        sensorClass_select.options[i].disabled = false;
-                    }
-                }
-            } else { // e.target.id == 'id_sensorClass'
-                if(selectedOption !== '---------') {
-                    var organizationIndex;
-                    for(let i = 1; i < organization_select.options.length; i++) {
-                        if(selectedOption.includes(organization_select.options[i].text)) {
-                            organizationIndex = i;
-                            organization_select.options[i].disabled = false;
-                        } else {
-                            organization_select.options[i].disabled = true;
-                        }
-                    }
-                    organization_select.selectedIndex = organizationIndex; // set the Organization to that sensorClass's organization
-                } else {
-                    for(let i = 0; i < organization_select.options.length; i++) {
-                        organization_select.options[i].disabled = false;
-                    }
-                }
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             /* Unrelated - Django forms doesn't allow to have for a Boolean field to be required - https://stackoverflow.com/questions/8542839/django-form-with-booleanfield-always-invalid-unless-checked
             This is a workaround. We do isOptional => required = False, and here we inject the asterisk to mark the field as required */
             addAsteriskToOptional();
-
-            const organization_select = document.querySelector('#id_organization');
-            const sensorClass_select = document.querySelector('#id_sensorClass');
-            organization_select?.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
-            sensorClass_select?.addEventListener('change', organizationSensorclassChangeHandler.bind(null, organization_select, sensorClass_select));
 
             // Map utils
             window.addEventListener("map:init", e => {

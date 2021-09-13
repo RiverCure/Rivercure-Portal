@@ -67,9 +67,12 @@ class Sensor(models.Model):
     state        = models.TextField(choices=SENSOR_STATE)
     # visibility   = models.TextField(choices=SENSOR_VISIBILITY_KIND) -> not needed (yet). Replaced by isPublic
     isPublic     = models.BooleanField(default=False)
-    local        = models.PointField(null=True) # being null=True allows 0..1 relationship
+    local        = models.PointField()
     sensorClass  = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
-    organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
+
+    @property
+    def organization(self):
+        return self.sensorClass.organization
 
     def __str__(self):
         return self.name
@@ -96,6 +99,9 @@ class SensorObservation(models.Model):
     severity   = models.TextField(choices=SEVERITY_KIND)
     properties = models.ManyToManyField(to=SensorClassProperty, through='SensorObservationValue')
     sensor     = models.ForeignKey(to=Sensor, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('date', 'time', 'sensor')
 
 class SensorObservationValue(models.Model):
     property    = models.ForeignKey(SensorClassProperty, on_delete=models.CASCADE)

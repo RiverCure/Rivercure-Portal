@@ -10,8 +10,7 @@ class SensorFilter(django_filters.FilterSet):
     
     class Meta:
         model = Sensor
-        fields = ['code', 'organization']
-        # fields = ['type', 'code', 'modalityType', 'organization']
+        fields = ['code']
     
 class ObservationFilter(django_filters.FilterSet):
 

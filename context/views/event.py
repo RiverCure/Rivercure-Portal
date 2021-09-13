@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from .prepare_files import *
 from context.tasks import simulate_task
 from notifications.signals import notify
+from organization.authorization import belongs_to_organization
 
 def ContextEventListView(request, context_code):
     context = get_object_or_404(e_Context, pk=context_code)
