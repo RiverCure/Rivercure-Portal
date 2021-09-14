@@ -1,0 +1,25 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Organization {% if organization %}edit{% else %}create{% endif %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ view.name }}</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Save</button>
+            {% if organization %}
+                <a class="btn btn-outline-secondary" href="{% url 'organization-detail' view.kwargs.organizationId %}">Cancel</a>
+            {% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'organization-list' %}">Cancel</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

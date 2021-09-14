@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from .models import Organization
 from .models import Organization, Membership
 from django.urls import reverse, reverse_lazy
@@ -14,12 +14,12 @@ from django.contrib.auth.views import redirect_to_login
 from .forms import CreateOrganizationForm
 from datetime import datetime
 from django.http import HttpResponseRedirect
-from rivercureportal.views import is_admin
+from rivercureportal.authorization import is_platform_admin
 from organization.authorization import *
 
 class OrganizationListView(LoginRequiredMixin, ListView):
     model = Organization
-    template_name = 'organization/organization_list.html'
+    template_name = 'organization/list.html'
     context_object_name = 'organizations'
     paginate_by = 10
     ordering = ['-id'] # newer first
@@ -40,7 +40,7 @@ class OrganizationListView(LoginRequiredMixin, ListView):
 class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     name = 'New organization'
     model = Organization
-    template_name = 'organization/organization_form.html'
+    template_name = 'organization/form.html'
     form_class = CreateOrganizationForm
     success_url = reverse_lazy('organization-list')
 
@@ -70,30 +70,36 @@ class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
 class OrganizationDetailView(LoginRequiredMixin, DetailView):
     model = Organization
     context_object_name = 'organization'
-    template_name = 'organization/organization_detail.html'
+    template_name = 'organization/detail.html'
+    pk_url_kwarg = 'organizationId'
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
+        organization = self.get_object()
+
         context = super(OrganizationDetailView, self).get_context_data(**kwargs) # get the default context data
-        context['managers'] = Membership.objects.filter(organization=self.get_object(), permission='org_manager')
-        context['isManager'] = is_org_manager(self)
-        context['isSensorManager'] = is_sensor_manager(self)
+        context['managers'] = Membership.objects.filter(organization=organization, permission='org_manager')
+        context['isManager'] = is_org_manager(user, organization)
+        context['isSensorManager'] = is_sensor_manager(user, organization)
         return context
 
 class OrganizationUpdateView(UserPassesTestMixin, UpdateView):
     name = 'Edit organization'
     model = Organization
     context_object_name = 'organization'
+    template_name = 'organization/form.html'
     fields = ['name', 'type', 'country', 'city']
+    pk_url_kwarg = 'organizationId'
 
     def get_success_url(self):
         return reverse_lazy('organization-detail', args=(self.get_object().id,))
 
     def test_func(self):
-        return is_org_manager(self) and self.get_object().is_active
+        return is_org_manager(self.request.user, self.get_object()) and self.get_object().is_active
 
 class OrganizationManageView(UserPassesTestMixin, ListView):
     model = User
-    template_name = 'organization/organization_manage.html'
+    template_name = 'organization/manage.html'
     context_object_name = 'users'
     paginate_by = 10
     ordering = ['-id'] # newer first
@@ -110,13 +116,13 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def test_func(self):
-        return is_org_manager(self)
+        return is_org_manager(self.request.user, self.kwargs.get('organizationId'))
 
     def get_context_data(self, **kwargs):
+        organization_id = self.kwargs.get('organizationId')
+        organization = get_object_or_404(Organization, pk=organization_id)
+
         context = super(OrganizationManageView, self).get_context_data(**kwargs) # get the default context data
-        
-        organization_id = self.kwargs.get('pk')
-        organization = Organization.objects.get(pk=organization_id)
         context['organization'] = organization
         context['members'] = Membership.objects.filter(organization=organization)
 
@@ -133,9 +139,10 @@ class OrganizationManageView(UserPassesTestMixin, ListView):
 class MemberRoleUpdateView(UserPassesTestMixin, UpdateView):
     name = 'Edit role'
     model = Membership
-    context_object_name = 'organization'
-    template_name = 'organization/organization_role_form.html'
+    context_object_name = 'membership'
+    template_name = 'organization/role_form.html'
     fields = ['permission']
+    pk_url_kwarg = 'membershipId'
 
     def get_success_url(self):
         user = self.get_object().user
@@ -154,48 +161,48 @@ class MemberRoleUpdateView(UserPassesTestMixin, UpdateView):
     def test_func(self):
         organization = self.get_object().organization
         cond1 = self.request.user in User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager'))
-        cond2 = Membership.objects.filter(organization=organization, permission='org_manager').count() == 1 and self.get_object().permission == 'org_manager' and is_admin(self.request.user)
+        cond2 = Membership.objects.filter(organization=organization, permission='org_manager').count() == 1 and self.get_object().permission == 'org_manager' and is_platform_admin(self.request.user)
         return (cond1 or cond2) and organization.is_active
 
 class OrganizationManageManagersView(UserPassesTestMixin, ListView):
     model = User
-    template_name = 'organization/organization_manage_managers.html'
+    template_name = 'organization/manage_managers.html'
     context_object_name = 'users'
     paginate_by = 10
     ordering = ['-id'] # newer first
 
     def test_func(self):
-        return is_admin(self.request.user)
+        return is_platform_admin(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationManageManagersView, self).get_context_data(**kwargs) # get the default context data
         
-        organization_id = self.kwargs.get('pk')
-        organization = Organization.objects.get(pk=organization_id)
+        organization_id = self.kwargs.get('organizationId')
+        organization = get_object_or_404(Organization, pk=organization_id)
         context['organization'] = organization
         context['managers'] = Membership.objects.filter(organization=organization, permission='org_manager')
 
         return context
 
 @login_required
-def organizationAccessRequest(request, pk):
+def organizationAccessRequest(request, organizationId):
 
-    organization = get_object_or_404(Organization, pk=pk)
+    organization = get_object_or_404(Organization, pk=organizationId)
     user = request.user
     
     if (not Membership.objects.filter(user=user, organization=organization).exists()) and organization.is_active == True:
         accessRequest = Membership(organization=organization, user=user)
         accessRequest.save()
 
-        managers = User.objects.filter(membership__in=Membership.objects.filter(organization_id=pk, permission='org_manager'))
+        managers = User.objects.filter(membership__in=Membership.objects.filter(organization_id=organizationId, permission='org_manager'))
         notify.send(sender=user, recipient=managers, action_object=organization, verb=f"{user.username} requested to enter the organization {organization.name}")
 
     return redirect('organization-list')
 
 @login_required
-def organizationAccessRequestCancel(request, pk):
+def organizationAccessRequestCancel(request, organizationId):
 
-    organization = get_object_or_404(Organization, pk=pk)
+    organization = get_object_or_404(Organization, pk=organizationId)
     user = request.user
     # Make sure an user doesn't request to two organizations at the same time
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
@@ -210,12 +217,12 @@ def organizationAccessRequestCancel(request, pk):
 
 
 @login_required
-def organizationAccessRequestDeny(request, pk1, pk2):
-    if not is_org_manager_check(request.user, pk1):
+def organizationAccessRequestDeny(request, organizationId, userId):
+    if not is_org_manager_check(request.user, organizationId):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = get_object_or_404(Organization, pk=pk1)
-    user = get_object_or_404(User, pk=pk2) # requester
+    organization = get_object_or_404(Organization, pk=organizationId)
+    user = get_object_or_404(User, pk=userId) # requester
     membership_user = get_object_or_404(Membership, user=user, organization=organization)
 
     if membership_user and organization.is_active == True:
@@ -227,15 +234,15 @@ def organizationAccessRequestDeny(request, pk1, pk2):
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been denied access to organization {organization.name}")
 
-    return redirect('organization-manage', pk1)
+    return redirect('organization-manage', organizationId)
 
 @login_required
-def organizationAccessRemove(request, pk1, pk2):
-    if not is_org_manager_check(request.user, pk1) and not is_admin(request.user):
+def organizationAccessRemove(request, organizationId, userId):
+    if not is_org_manager_check(request.user, organizationId) and not is_platform_admin(request.user):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = get_object_or_404(Organization, pk=pk1)
-    user = get_object_or_404(User, pk=pk2)
+    organization = get_object_or_404(Organization, pk=organizationId)
+    user = get_object_or_404(User, pk=userId)
     # Make sure an user doesn't request to two organizations at the same time
     membership_user = get_object_or_404(Membership, user=user, organization=organization)
 
@@ -251,15 +258,15 @@ def organizationAccessRemove(request, pk1, pk2):
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} access to organization {organization.name} has been removed")
 
-    return redirect('organization-manage', pk1)
+    return redirect('organization-manage', organizationId)
 
 @login_required
-def organizationAccessAllow(request, pk1, pk2):
-    if not is_org_manager_check(request.user, pk1):
+def organizationAccessAllow(request, organizationId, userId):
+    if not is_org_manager_check(request.user, organizationId):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
-    organization = get_object_or_404(Organization, pk=pk1)
-    user = get_object_or_404(User, pk=pk2)
+    organization = get_object_or_404(Organization, pk=organizationId)
+    user = get_object_or_404(User, pk=userId)
     
     membership_user = Membership.objects.filter(user=user, organization=organization).first()
     if membership_user and organization.is_active == True:
@@ -276,13 +283,11 @@ def organizationAccessAllow(request, pk1, pk2):
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
         notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been granted access to organization {organization.name}")
 
-    return redirect('organization-manage', pk1)
+    return redirect('organization-manage', organizationId)
 
 @login_required
+@user_passes_test(is_platform_admin)
 def organizationReactivate(request, organization_id):
-    if not is_admin(request.user):
-        return HttpResponseRedirect(reverse('rivercure-home'))
-
     organization = get_object_or_404(Organization, pk=organization_id)
     organization.is_active = True
     organization.save()
@@ -294,10 +299,8 @@ def organizationReactivate(request, organization_id):
     return redirect('organization-list')
 
 @login_required
+@user_passes_test(is_platform_admin)
 def organizationSuspend(request, organization_id):
-    if not is_admin(request.user):
-        return HttpResponseRedirect(reverse('rivercure-home'))
-
     organization = get_object_or_404(Organization, pk=organization_id)
     organization.is_active = False
     organization.save()

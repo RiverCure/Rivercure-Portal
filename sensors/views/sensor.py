@@ -23,30 +23,28 @@ class SensorListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
 
-        context["hasPerm"] = sensor_general_create_permission_check(self.request.user)
-        context["form"] = SensorFileForm()
+        context['hasPerm'] = sensor_general_create_permission_check(self.request.user)
+        context['form'] = SensorFileForm()
         queryset = self.get_queryset()
         filter = SensorFilter(self.request.GET, queryset)
-        context["filter"] = filter
+        context['filter'] = filter
 
         return context
-
 
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Sensor
     context_object_name = 'sensor'
     template_name = 'sensors/sensors/detail.html'
 
-    def test_func(self):
-        # We only want the sensors that are either public or are private and this user is in the organization
-        sensor = self.get_object()
-        return sensor.isPublic or sensor_view_permission_check(self.request.user, sensor)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = SensorObservationsFileForm()
-        context["hasPerm"] = sensor_edit_permission_check(self.request.user, self.get_object())
+        context['form'] = SensorObservationsFileForm()
+        context['hasPerm'] = sensor_edit_permission_check(self.request.user, self.get_object())
         return context
+    
+    def test_func(self):
+        sensor = self.get_object()
+        return sensor.isPublic or sensor_view_permission_check(self.request.user, sensor)
 
 class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Sensor
@@ -61,14 +59,15 @@ class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         kwargs.update({'user_id': self.request.user.id})
         return kwargs
 
-    def test_func(self):
-        return sensor_general_create_permission_check(self.request.user)
 
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         obj.save()
         return super().form_valid(form)
+
+    def test_func(self):
+        return sensor_general_create_permission_check(self.request.user)
 
 class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor

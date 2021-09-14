@@ -6,9 +6,7 @@ from .models import Profile, User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import Group
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from rivercureportal.views import is_admin
-
-
+from rivercureportal.views import is_platform_admin
 
 def register(request):
     if request.method =='POST':
@@ -56,4 +54,4 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'users/user_form.html'
 
     def test_func(self):
-        return is_admin(self.request.user)
+        return is_platform_admin(self.request.user)

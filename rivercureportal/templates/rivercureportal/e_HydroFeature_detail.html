@@ -78,14 +78,10 @@
     </div>
 
     {% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}
-    <a class="btn btn-secondary mt-1 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
-	<a class="btn btn-danger mt-1 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
+    <a class="btn btn-secondary mt-4 mb-1" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
+	<a class="btn btn-danger mt-4 mb-1" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
 	{% endif %}
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-    {% else %}
-        <a class="btn btn-secondary btn  mt-1 mb-1" style="float:right" href="{% url 'hydrofeature-list' %}" >Back</a>
-    {% endif %}
+    <a class="btn btn-secondary btn  mt-4 mb-1" style="float:right" href="{% url 'hydrofeature-list' %}">Back to hydrofeature list</a>
     </div>
 </article>
 

@@ -7,17 +7,15 @@ def belongs_to_organization(user, organization):
     except:
         return False
 
-def is_org_manager(obj):
+def is_org_manager(user: User, organization: Organization) -> bool:
     try:
-        organization_id = obj.kwargs.get('pk')
-        return Membership.objects.filter(organization_id=organization_id, user=obj.request.user, permission='org_manager').exists()
+        return Membership.objects.filter(organization=organization, user=user, permission='org_manager').exists()
     except:
         return False
 
-def is_sensor_manager(obj):
+def is_sensor_manager(user: User, organization: Organization) -> bool:
     try:
-        organization_id = obj.kwargs.get('pk')
-        return Membership.objects.filter(organization_id=organization_id, user=obj.request.user, permission='org_sensorManager').exists()
+        return Membership.objects.filter(organization=organization, user=user, permission='org_sensorManager').exists()
     except:
         return False
 
@@ -27,7 +25,7 @@ def is_org_manager_check(user, organization_id):
     except:
         return False
 
-def is_org_or_sensor_manager(user: User, organization: Organization) -> bool:
+def is_org_manager_or_sensor_manager(user: User, organization: Organization) -> bool:
     try:
         return Membership.objects.filter(organization_id=organization.id, user=user, permission='org_manager').exists() or Membership.objects.filter(organization_id=organization.id, user=user, permission='org_sensorManager').exists()
     except:

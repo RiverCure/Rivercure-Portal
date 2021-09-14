@@ -67,13 +67,11 @@
 
 {% comment %} Buttons {% endcomment %}
 
-<div>
-    <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'sensor-class-create' view.kwargs.organizationId %}">Create sensor class</a>
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}">Back</a>
-    {% else %}
-        <a class="btn btn-secondary" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back</a>
+<div class="w-100">
+    {% if hasPerm %}
+        <a class="btn btn-primary btn mt-1 mb-1" href="{% url 'sensor-class-create' view.kwargs.organizationId %}">Create sensor class</a>
     {% endif %}
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back to organization detail</a>
 </div>
 
 {% endblock content %}

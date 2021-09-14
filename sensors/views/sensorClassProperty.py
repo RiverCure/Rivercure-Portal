@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from sensors.models import SensorClass, SensorClassProperty
 from sensors.forms import SensorClassPropertyForm
 from django.urls import reverse
-from organization.authorization import is_org_or_sensor_manager
+from organization.authorization import is_org_manager_or_sensor_manager, belongs_to_organization
 from django.shortcuts import get_object_or_404
 
 class SensorClassPropertyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -23,7 +23,7 @@ class SensorClassPropertyListView(LoginRequiredMixin, UserPassesTestMixin, ListV
     def test_func(self):
         user = self.request.user
         organization = get_object_or_404(SensorClass, pk=self.kwargs['sensorClassId']).organization
-        return is_org_or_sensor_manager(user, organization)
+        return belongs_to_organization(user, organization)
 
 class SensorClassPropertyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = SensorClassProperty
@@ -48,7 +48,7 @@ class SensorClassPropertyCreateView(LoginRequiredMixin, UserPassesTestMixin, Cre
     def test_func(self):
         user = self.request.user
         organization = get_object_or_404(SensorClass, pk=self.kwargs['sensorClassId']).organization
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(user, organization)
 
 class SensorClassPropertyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = SensorClassProperty
@@ -59,7 +59,7 @@ class SensorClassPropertyDetailView(LoginRequiredMixin, UserPassesTestMixin, Det
     def test_func(self):
         user = self.request.user
         organization = self.get_object().sensorClass.organization
-        return is_org_or_sensor_manager(user, organization)
+        return belongs_to_organization(user, organization)
 
 class SensorClassPropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = SensorClassProperty
@@ -74,7 +74,7 @@ class SensorClassPropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, Upd
     def test_func(self):
         user = self.request.user
         organization = self.get_object().sensorClass.organization
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(user, organization)
 
 class SensorClassPropertyDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = SensorClassProperty
@@ -88,4 +88,4 @@ class SensorClassPropertyDeleteView(LoginRequiredMixin, UserPassesTestMixin, Del
     def test_func(self):
         user = self.request.user
         organization = self.get_object().sensorClass.organization
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(user, organization)

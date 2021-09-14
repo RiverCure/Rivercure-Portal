@@ -15,18 +15,7 @@ from django_filters.views import FilterView
 from notifications.models import Notification
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-
-def is_admin(user):
-    try:
-        return user.groups.filter(name='Admin').exists()
-    except:
-        return False
-
-def is_admin_or_manager(user):
-    try:
-        return user.groups.filter(name='Admin').exists() or user.groups.filter(name='Manager').exists()
-    except:
-        return False
+from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
@@ -34,11 +23,11 @@ class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = 'rivercureportal/userprofile.html'
 
     def test_func(self):
-        return is_admin(self.request.user) or self.request.user == self.get_object()
+        return is_platform_admin(self.request.user) or self.request.user == self.get_object()
 
-@user_passes_test(is_admin)
+@user_passes_test(is_platform_admin)
 def users(request):
-    if not is_admin(request.user):
+    if not is_platform_admin(request.user):
         return HttpResponse('Unauthorized', status=401)
 
     user_list = User.objects.all()
@@ -71,11 +60,18 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
     template_name = 'rivercureportal/e_HydroFeature_list.html'
-    paginate_by = 12
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = e_HydroFeature.objects.all()
+        filter = HydroFeatureFilter(self.request.GET, queryset.order_by('Name'))
+        return filter.qs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['filter'] = HydroFeatureFilter(self.request.GET, queryset=e_HydroFeature.objects.all())
+        queryset = self.get_queryset()
+        filter = HydroFeatureFilter(self.request.GET, queryset)
+        context["filter"] = filter
         return context
 
 class HydroFeatureForm(forms.ModelForm):
@@ -91,15 +87,16 @@ class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView)
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        return is_admin_or_manager(self.request.user)
+        return is_platform_admin_or_manager(self.request.user)
 
 class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_HydroFeature
+    context_object_name = 'hydrofeature'
     form_class = HydroFeatureForm
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        return is_admin_or_manager(self.request.user)
+        return is_platform_admin_or_manager(self.request.user)
 
 
 class HydroFeatureDetailView(DetailView):
@@ -114,7 +111,7 @@ class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
-        return is_admin_or_manager(self.request.user)
+        return is_platform_admin_or_manager(self.request.user)
 
 @login_required
 def clearNotifications(request):
@@ -152,4 +149,4 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('profile-detail', args=(self.get_object().pk,))
 
     def test_func(self):
-        return is_admin(self)
+        return is_platform_admin(self)

@@ -1,0 +1,75 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Organization manage {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    th {
+        cursor: pointer;
+    }
+
+    th:hover {
+        background: #eee;
+    }
+</style>
+
+<h1>Organization '{{organization.name}}' managers</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+            </tr>
+            {% for manager in managers %}
+                <tr>
+                    <td>{{ manager.user.username }}</td>
+                    <td>{{ manager.user.email }}</td>
+                    <td>Manager
+                        {% if organization.is_active and managers.count > 1 %}
+                            <!-- Remove access -->
+                            <a class="pl-2" href="{% url 'organization-access-remove' organizationId=organization.id userId=manager.user.id %}">
+                                <span class="label label-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ff0000" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" /></svg>
+                                </span>
+                            </a>
+                            <!-- Update role -->
+                            <a class="pl-2" href="{% url 'organization-member-role-update' membershipId=manager.id %}">
+                                <span class="label label-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#008000" class="bi bi-pencil" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" /></svg>
+                                </span>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% empty %}
+                <td><h2 class="text-secondary font-italic no-context-data">There are no users in this organization</h2></td>
+            {% endfor %}
+        </table>
+
+        <div class="pagination mb-5">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+                <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
+
+<div class="w-100">
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'organization-detail' view.kwargs.organizationId %}">Back to organization detail</a>
+</div>
+
+{% endblock content %}
+</div>

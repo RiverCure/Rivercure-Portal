@@ -1,85 +1,86 @@
-{% extends "rivercureportal/base.html" %} {% block title %} List hydrofeatures {% endblock %} {% load crispy_forms_tags %} {% load static %} {% load auth_extras %} {% block content %}
+{% extends "rivercureportal/base.html" %}
+{% block title %} List hydrofeatures {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load auth_extras %}
+
+{% block content %}
 
 <style>
-  th {
-    cursor: pointer;
-  }
+    th {
+        cursor: pointer;
+    }
 
-  th:hover {
-    background: #eee;
-  }
+    th:hover {
+        background: #eee;
+    }
 </style>
 
 <h1>Hydrofeatures</h1>
 
 <div class="row">
-  <div class="col-md-8">
-    <table name="table" id="table" class="table">
-      <tr>
-        <th id="sd" class="tr_class" scope="col">Name</th>
-        <th id="sd" class="tr_class" scope="col">Type</th>
-      </tr>
-      {% for hydro in filter.qs %}
-      <tr>
-        <td>
-          <a href="{% url 'hydrofeature-detail' hydro.id %}"><div style="height: 100%; width: 100%">{{ hydro.Name }}</div></a>
-        </td>
-        <td>{{ hydro.type }}</td>
-      </tr>
-      {% empty %}
-      <td><h2 class="text-secondary font-italic no-context-data">No available hydrofeatures!</h2></td>
-      {% endfor %}
-    </table>
+    <div class="col-md-8">
+        <table name="table" id="table" class="table">
+            <tr>
+                <th id="sd" class="tr_class" scope="col">Name</th>
+                <th id="sd" class="tr_class" scope="col">Type</th>
+            </tr>
+            {% for hydro in hydrofeatures %}
+            <tr>
+                <td>
+                    <a href="{% url 'hydrofeature-detail' hydro.id %}"><div style="height: 100%; width: 100%">{{ hydro.Name }}</div></a>
+                </td>
+                <td>{{ hydro.type }}</td>
+            </tr>
+            {% empty %}
+            <td><h2 class="text-secondary font-italic no-context-data">No available hydrofeatures!</h2></td>
+            {% endfor %}
+        </table>
+
     <div class="pagination mb-5">
-      <span class="step-links">
+        <span class="step-links">
         {% if page_obj.has_previous %}
-        <a href="?page=1">&laquo; first</a>
-        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current"> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. </span>
 
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
-      </span>
+        </span>
     </div>
-  </div>
+</div>
 
-  <div class="filter-section col-md-3">
-    <h5>Filter</h5>
-    <form method="get">
-      {{ filter.form |crispy }}
-      <button type="submit" class="btn btn-info">Filter</button>
-    </form>
-  </div>
+    <div class="filter-section col-md-3">
+        <h5>Filter</h5>
+        <form method="get">
+            {{ filter.form |crispy }}
+            <button type="submit" class="btn btn-info">Filter</button>
+        </form>
+    </div>
 
-  <div>
+<div>
     {% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}
     <a type="button" class="btn btn-info ml-0 mt-0 mb-5" href="{% url 'hydrofeature-create' %}">Add Hydrofeature</a>
     {% endif %}
-  </div>
+</div>
 
-  <script>
-    console.log('sort');
+<script>
     const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
     const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
-    console.log(document.querySelector('table'));
-
     document.querySelectorAll('th').forEach((th) =>
-      th.addEventListener('click', () => {
+        th.addEventListener('click', () => {
         const table = th.closest('table');
-        console.log('listen');
         Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-          .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
-          .forEach((tr) => table.appendChild(tr));
-      })
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), (this.asc = !this.asc)))
+            .forEach((tr) => table.appendChild(tr));
+        })
     );
+</script>
 
-    console.log('hello');
-  </script>
-
-  {% endblock content %}
+{% endblock content %}
 </div>

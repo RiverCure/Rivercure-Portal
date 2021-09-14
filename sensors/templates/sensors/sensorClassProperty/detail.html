@@ -24,11 +24,7 @@
 
     <a class="btn btn-info" href="{% url 'sensor-class-property-update' property.sensorClass.pk property.pk %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'sensor-class-property-delete' property.sensorClass.pk property.pk %}">Delete</a>
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-    {% else %}
-        <a class="btn btn-secondary" href="{% url 'sensor-class-property-list' property.sensorClass.pk %}" style="float:right">Back</a>
-    {% endif %}
+    <a class="btn btn-secondary" href="{% url 'sensor-class-property-list' property.sensorClass.pk %}" style="float:right">Back to sensor class property list</a>
 	
 	</div>
 </article>

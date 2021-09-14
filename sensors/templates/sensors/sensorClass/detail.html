@@ -21,11 +21,13 @@
     <a class="btn btn-info" href="{% url 'sensor-class-property-list' sensorClass.pk %}">Property list</a>
     <a class="btn btn-info" href="{% url 'sensor-class-update' sensorClass.pk %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'sensor-class-delete' sensorClass.pk %}">Delete</a>
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-	{% else %}
-        <a class="btn btn-secondary" href="{% url 'sensor-class-list' sensorClass.organization.pk %}" style="float:right">Back</a>
+    {% comment %} A user can come to sensor class detail from sensor detail {% endcomment %}
+    {% if 'from' in request.GET and request.GET.from == 'sensor-detail' and 'sensorId' in request.GET %}
+        <a class="btn btn-secondary" href="{% url 'sensor-detail' request.GET.sensorId %}" style="float:right">Back to sensor detail</a>
+    {% else %}
+        <a class="btn btn-secondary" href="{% url 'sensor-class-list' sensorClass.organization.pk %}" style="float:right">Back to sensor class list</a>
     {% endif %}
+    
 	</div>
 </article>
 

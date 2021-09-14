@@ -37,8 +37,7 @@ class SensorObservationListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
         return context
 
     def test_func(self):
-        # We only want the sensors that are either public or are private and this user is the responsible user
-        return sensor_general_create_permission_check(self.request.user)
+        return sensor_view_permission_check(self.request.user, self.sensor)
 
 class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = SensorObservationForm
@@ -83,7 +82,6 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         return super().form_valid(form)
 
     def test_func(self):
-        # We only want the sensors that are either public or are private and this user is the responsible user
         return sensor_general_create_permission_check(self.request.user)
 
 class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -98,7 +96,6 @@ class SensorObservationDetailView(LoginRequiredMixin, UserPassesTestMixin, Detai
         return context
 
     def test_func(self):
-        # We only want the sensors that are either public or are private and this user is the responsible user
         return sensor_view_permission_check(self.request.user, self.get_object().sensor)
 
 class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -127,7 +124,6 @@ class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
         return context
 
     def test_func(self):
-        # We only want the sensors that are either public or are private and this user is the responsible user
         return sensor_edit_permission_check(self.request.user, self.get_object().sensor)
 
 class SensorObservationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -140,5 +136,4 @@ class SensorObservationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
         return reverse('sensor-observation-list',args=(self.object.sensor.pk,))
     
     def test_func(self):
-        # We only want the sensors that are either public or are private and this user is the responsible user
         return sensor_edit_permission_check(self.request.user, self.get_object().sensor)

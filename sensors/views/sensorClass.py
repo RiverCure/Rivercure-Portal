@@ -5,7 +5,7 @@ from sensors.models import SensorClass, SensorObservation
 from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check
 from organization.models import Organization
-from organization.authorization import is_org_or_sensor_manager
+from organization.authorization import belongs_to_organization, is_org_manager_or_sensor_manager
 from django.shortcuts import get_object_or_404
 
 class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -14,18 +14,21 @@ class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     paginate_by = 15
     ordering = ['code']
 
+    def setup(self, request, *args, **kwargs):
+        self.organization =  get_object_or_404(Organization, pk=kwargs['organizationId'])
+        return super().setup(request, *args, **kwargs)
+
     def get_queryset(self):
-        return SensorClass.objects.filter(organization=self.kwargs['organizationId'])
+        return SensorClass.objects.filter(organization=self.organization)
 
     def get_context_data(self, **kwargs):
         context = super(SensorClassListView, self).get_context_data(**kwargs) # get the default context data
-        context['organization'] = Organization.objects.get(pk=self.kwargs['organizationId'])
+        context['organization'] = self.organization
+        context['hasPerm'] = is_org_manager_or_sensor_manager(self.request.user, context['organization'])
         return context
 
     def test_func(self):
-        user = self.request.user
-        organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
-        return is_org_or_sensor_manager(user, organization)
+        return belongs_to_organization(self.request.user, self.organization)
 
 class SensorClassCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = SensorClass
@@ -45,7 +48,7 @@ class SensorClassCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
     def test_func(self):
         user = self.request.user
         organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(user, organization)
 
 class SensorClassDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = SensorClass
@@ -54,9 +57,7 @@ class SensorClassDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
     pk_url_kwarg = 'sensorClassId'
 
     def test_func(self):
-        user = self.request.user
-        organization = self.get_object().organization
-        return is_org_or_sensor_manager(user, organization)
+        return belongs_to_organization(self.request.user, self.get_object().organization)
 
 class SensorClassUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = SensorClass
@@ -69,9 +70,7 @@ class SensorClassUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return reverse('sensor-class-detail', args=(self.kwargs['sensorClassId'],))
 
     def test_func(self):
-        user = self.request.user
-        organization = self.get_object().organization
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(self.request.user, self.get_object().organization)
 
 
 class SensorClassDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -84,6 +83,4 @@ class SensorClassDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView)
         return reverse('sensor-class-list', args=(self.get_object().organization.id,))
 
     def test_func(self):
-        user = self.request.user
-        organization = self.get_object().organization
-        return is_org_or_sensor_manager(user, organization)
+        return is_org_manager_or_sensor_manager(self.request.user, self.get_object().organization)

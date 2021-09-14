@@ -40,11 +40,7 @@
             <a class="btn btn-secondary btn mt-1 mb-1" href="{% url 'sensor-observation-update' observation.sensor.pk observation.pk %}">Edit</a>
             <a class="btn btn-danger btn mt-1 mb-1" href="{% url 'sensor-observation-delete' observation.sensor.pk observation.pk %}">Delete</a>
         {% endif %}
-        {% if request.META.HTTP_REFERER %}
-            <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-        {% else %}
-            <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'sensor-observation-list' observation.sensor.pk %}">Back</a>
-        {% endif %}
+        <a class="btn btn-secondary btn mt-1 mb-1" style="float: right" href="{% url 'sensor-observation-list' observation.sensor.pk %}">Back to observation list</a>
     </div>
 </article>
 
