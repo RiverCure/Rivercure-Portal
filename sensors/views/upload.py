@@ -95,9 +95,13 @@ def handle_uploaded_observations_file(file, sensor):
                 try:
                     return float(value)
                 except:
-                    raise Exception(f'[{position}] Please introduce a valid number')
+                    if not prop.isOptional:
+                        raise Exception(f'[{position}] Please introduce a valid number')
             else:
-                return '' if value == None else value
+                if value == None and not prop.isOptional:
+                    raise Exception(f'[{position}] This field is mandatory')
+                else:
+                    return '' if value == None else value
 
     def save_observation(data):
         try:
@@ -107,7 +111,7 @@ def handle_uploaded_observations_file(file, sensor):
                     # Update
                     obs.update(severity=data[2])
                     for idx, value in enumerate(data[3:]): # sensor property (variable) fields
-                        if value != '':
+                        if value != '' and value != None:
                             obs_v = SensorObservationValue.objects.filter(property=properties[idx], observation=obs[0])
                             if obs_v.exists():
                                 obs_v.update(value=value)
@@ -116,7 +120,7 @@ def handle_uploaded_observations_file(file, sensor):
                 else:
                     obs = SensorObservation.objects.create(date=data[0], time=data[1], sensor=sensor, severity=data[2])
                     for idx, value in enumerate(data[3:]): # sensor property (variable) fields
-                        if value != '':
+                        if value != '' and value != None:
                             SensorObservationValue.objects.create(property=properties[idx], observation=obs, value=value)
         
         except Exception as error:

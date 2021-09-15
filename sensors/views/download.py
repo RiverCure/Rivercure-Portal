@@ -60,11 +60,9 @@ def sensor_excel_download(request):
     def sensors():
         # Same query as in sensor-list
         ws = wb.create_sheet('Sensors')
-        sensors = (Sensor.objects.filter(isPublic=True) | Sensor.objects.filter(isPublic=False, sensorClass__organization__membership__in=Membership.objects.filter(user=request.user, access_granted=True))).distinct()
-        sensors_sensorClass_list = list(sensors.values('sensorClass'))
+        sensorClasses = SensorClass.objects.filter(state='active', organization__membership__in=Membership.objects.filter(user=request.user, access_granted=True))
         sensorClassCodes = list()
-        for _sensorClass in sensors_sensorClass_list:
-            sensorClass = get_object_or_404(SensorClass, pk=_sensorClass['sensorClass'])
+        for sensorClass in sensorClasses:
             sensorClassCodes.append(sensorClass.code)
 
         # Colors
@@ -85,7 +83,6 @@ def sensor_excel_download(request):
 
         states = Sensor._meta.get_field('state').choices
         states_full_name = [ state[1] for state in states ]
-        print(states_full_name)
         state_v = DataValidation(type="list", formula1=f'"{",".join(states_full_name)}"', allow_blank=False)
         state_v.error =f'Please select one of the options ({", ".join(states_full_name)})'
         state_v.errorTitle = validator_title
