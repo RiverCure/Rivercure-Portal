@@ -4,7 +4,7 @@ from django.contrib.gis.forms import fields
 from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
 from leaflet.forms.widgets import LeafletWidget
-from organization.models import Membership
+from organization.models import Organization, Membership
 from django.db.models import Q
 
 class ContextDetailsForm(forms.ModelForm):
@@ -13,6 +13,18 @@ class ContextDetailsForm(forms.ModelForm):
     class Meta:
         model = e_Context
         fields = ['Name','hydroFeature','isPublic']
+
+class ContextInitialForm(forms.ModelForm):
+    class Meta:
+        model = e_Context
+        fields = ['code','Name', 'hydroFeature', 'organization', 'isPublic',]
+
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id')
+        super(ContextInitialForm, self).__init__(*args, **kwargs)
+        # We only want to allow to choose options where the user is org_manager or org_contextManager of the organization
+        memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager'))
+        self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
 
 class ContextForm(forms.Form):
     code = forms.CharField(widget=forms.HiddenInput())

@@ -93,7 +93,7 @@
     <div class="w-100">
         {% if hasPerm %}
             <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observation-create' sensor.pk %}">Add Sensor Observation</a>
-            <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observations-excel-download' sensor.pk %}">Download observations Excel</a>
+            <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-observations-excel-download' sensor.pk %}">Download observations Excel template</a>
             <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Observations</a>
         {% endif %}
         <a type="button" class="btn btn-secondary mt-3" href="{% url 'sensor-detail' view.kwargs.sensorId %}" style="float:right">Back to sensor detail</a>

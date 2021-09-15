@@ -21,7 +21,6 @@
                 const map = e.detail.map;    
                 map.doubleClickZoom.disable(); //disable double click zoom
 
-                //document.querySelector('#load-btn').disabled = true; //disable the save context button until the context is completed
                 //visual tools
                 //function to draw mouse position on the map
                 MyFunctions.showMousePosition();
@@ -34,7 +33,7 @@
                     e.target._container.style.cursor = 'pointer';
                 });
                 //end of visual tools
-                //Put the sensors on the map                
+                //Put the sensors on the map
                 MyFunctions.drawSensors(map, loadSensors());
                 MyFunctions.setDomainMarkers(map);
                 //Polygon drawing controls
@@ -62,17 +61,6 @@
                 document.querySelector("#polygon-type").addEventListener("change", e => {MyFunctions.polygonTypeChange(e, drawControl);});
                 // load button action
                 document.querySelector("#load-btn").addEventListener('click', MyFunctions.sendContext);
-                // Function to call the api for the context data when user selects a context
-                // document.querySelector('#context-to-change').addEventListener('change', e => {
-                //    if(document.querySelector('#context-to-change').value !== "") {
-                //        MyFunctions.clearMap();
-                //        document.querySelector('#submit-btn').disabled = true;
-                //        document.querySelector('#submit-btn').setAttribute("class", "btn btn-outline-danger");
-                //        document.querySelector('#submit-btn').innerHTML = 'Stage Context before submitting'
-                //        MyFunctions.getContext('{{ api }}' + document.querySelector('#context-to-change').value, map);
-                //        map.invalidateSize(true);
-                //    }
-                // });
                 //load a context if the user comes from the context list page
                 '{% if context is not None %}'
                     MyFunctions.clearMap();
@@ -85,9 +73,16 @@
             loadSensors = () => {
                 var sensors = [], sensor;
                 '{% for sensor in sensors %}'
-                    sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
-                    description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
-                    timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}', organization_active: '{{ sensor.organization.is_active }}'};
+                    sensor = {
+                        code: '{{ sensor.code }}', 
+                        name: '{{ sensor.name }}', 
+                        modality: '{{ sensor.sensorClass.get_modality_display }}',
+                        category: '{{ sensor.sensorClass.category }}',
+                        organization: '{{ sensor.organization }}',
+                        sensorClass: '{{ sensor.sensorClass.name }}',
+                        geom: '{{ sensor.local }}',
+                        can_add_to_context: '{{ sensor.can_add_to_context }}'
+                    };
                     sensors.push(sensor)
                 '{% endfor %}'
                 return sensors;

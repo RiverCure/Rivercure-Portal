@@ -71,39 +71,27 @@ var MyFunctions = {
       `</td>
                 </tr>
                 <tr>
-                    <th scope="row">ModalityType</th>
+                    <th scope="row">Modality</th>
                     <td>` +
-      sensor.modalityType +
+      sensor.modality +
       `</td>
                 </tr>
                 <tr>
-                    <th scope="row">Type</th>
+                    <th scope="row">Category</th>
                     <td>` +
-      sensor.type +
+      sensor.category +
       `</td>
                 </tr>
                 <tr>
-                    <th scope="row">Description</th>
+                    <th scope="row">Organization</th>
                     <td>` +
-      sensor.description +
+      sensor.organization +
       `</td>
                 </tr>
                 <tr>
-                    <th scope="row">Version</th>
+                    <th scope="row">Sensor Class</th>
                     <td>` +
-      sensor.version +
-      `</td>
-                </tr>
-                <tr>
-                    <th scope="row">Time Zone</th>
-                    <td>` +
-      sensor.timeZoneAbbreviation +
-      `</td>
-                </tr>
-                <tr>
-                    <th scope="row">Time Zone offset</th>
-                    <td>` +
-      sensor.timeZoneOffset +
+      sensor.sensorClass +
       `</td>
                 </tr>
             </table>
@@ -471,7 +459,7 @@ var MyFunctions = {
         sensor.code +
         `</td>
                     <td>` +
-        sensor.type +
+        sensor.modality +
         `</td>
                     <td><span class='close'>x</span></td>
                 </tr>`
@@ -615,17 +603,17 @@ var MyFunctions = {
         //add the option for the available sensors for adding
         var option;
         for (sensor of MyFunctions.sensors) {
+          console.log(sensor)
           if (
             !addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
             L.latLng(e.target.getLatLng()).distanceTo(
               L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])
             ) <= MyFunctions.sensorDistance &&
-            // Only active organization's sensors are selectable
-            sensor.organization_active == 'True'
+            sensor.can_add_to_context == 'True'
           ) {
             option = document.createElement('option');
             option.value = sensor.code;
-            option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+            option.innerHTML = sensor.code.concat(' '.concat(sensor.modality));
             document.querySelector('#sensor-association').appendChild(option);
           }
         }
@@ -1550,15 +1538,7 @@ var MyFunctions = {
         addOptions += option.outerHTML;
       }
 
-      //console.log('Sensors ' + id)
-      //console.log(MyFunctions.getNearbySensors(addedSensors, MyFunctions.domainMarkers.getLayer(id)))
-      //console.log(addOptions)
       return addOptions;
-
-      // option = document.createElement('option');
-      // option.value = sensor.code;
-      // option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
-      // document.querySelector('#sensor-association').appendChild(option);
     };
 
     return (
@@ -1632,7 +1612,7 @@ var MyFunctions = {
       ) {
         option = document.createElement('option');
         option.value = sensor.code;
-        option.innerHTML = sensor.code.concat(' '.concat(sensor.type));
+        option.innerHTML = sensor.code.concat(' '.concat(sensor.modality));
         nearbySensors.push(option);
       }
     }

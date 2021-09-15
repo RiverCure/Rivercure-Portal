@@ -56,9 +56,16 @@
             loadSensors = () => {
                 var sensors = [], sensor;
                 '{% for sensor in sensors %}'
-                    sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
-                    description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
-                    timeZoneOffset: '{{ sensor.timeZoneOffset }}', geom: '{{ sensor.geom }}'};
+                    sensor = {
+                        code: '{{ sensor.code }}', 
+                        name: '{{ sensor.name }}', 
+                        modality: '{{ sensor.sensorClass.get_modality_display }}',
+                        category: '{{ sensor.sensorClass.category }}',
+                        organization: '{{ sensor.organization }}',
+                        sensorClass: '{{ sensor.sensorClass.name }}',
+                        geom: '{{ sensor.local }}',
+                        can_add_to_context: '{{ sensor.can_add_to_context }}'
+                    };
                     sensors.push(sensor)
                 '{% endfor %}'
                 return sensors;

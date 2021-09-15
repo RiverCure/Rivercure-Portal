@@ -1,4 +1,5 @@
 from sensors.forms import SensorFileForm, SensorObservationsFileForm
+from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObservation, SensorObservationValue
@@ -10,7 +11,6 @@ from openpyxl import load_workbook
 from organization.authorization import belongs_to_organization
 from ..authorization import sensor_edit_permission_check
 import string
-from django.db import transaction
 
 ''' Validate user identity
 Security is not a priority. If it was, we would need to check if the user that is uploading is the user that downloaded the file

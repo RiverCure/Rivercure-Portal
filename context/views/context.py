@@ -28,7 +28,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse_lazy
-from context.forms import ContextDetailsForm
+from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
 from ..tasks import preprocess_task
 from notifications.signals import notify
@@ -38,10 +38,95 @@ from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
 
-class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
+class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = e_Context
+    form_class = ContextDetailsForm
+    context_object_name = 'context'
+    template_name = 'context/context/form.html'
+    pk_url_kwarg = 'contextCode'
+    
+    def get_success_url(self):
+        return reverse('context-detail',args=(self.object.code,))
+
+    def test_func(self):
+        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
+
+class ContextListView(LoginRequiredMixin, ListView):
+    model = e_Context
+    template_name = 'context/context/list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))
+        context_list = e_Context.objects.filter(organization__in=organizations)
+        context['filter'] = ContextFilter(self.request.GET, queryset=context_list, organizations=organizations)
+        context['permission_to_add'] = context_general_create_permission_check(self.request.user)
+        return context
+
+class OtherContextListView(LoginRequiredMixin, ListView):
+    model = e_Context
+    template_name = 'context/context/otherContext_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Exclude (the contexts) with organizations the user is in
+        context['context_list'] = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=self.request.user)).exclude(isPublic=False)
+        context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'], organizations=Organization.objects.exclude(members=self.request.user))
+        return context
+
+class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = e_Context
+    form_class = ContextInitialForm
+    context_object_name = 'context'
+    template_name = 'context/context/form.html'
+    success_url = reverse_lazy('context-list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ContextCreateView, self).get_form_kwargs()
+        kwargs.update({'user_id': self.request.user.id})
+        return kwargs
+
+    def form_valid(self, form):
+        currentTime = datetime.datetime.now()
+        organization = form.save(commit=False)
+        # Add metadata to organization
+        organization.creator = self.request.user
+        organization.create_date = currentTime
+        organization.save()
+
+        return super().form_valid(form)
+
+    def test_func(self):
+        return context_general_create_permission_check(self.request.user)
+
+class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Context
     context_object_name = 'context'
-    template_name = 'context/e_context_confirm_delete.html'
+    template_name = 'context/context/detail.html'
+    pk_url_kwarg = 'contextCode'
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        organization = self.get_object().organization
+
+        web_host = os.environ['CONTEXT_API']
+        context = super().get_context_data(**kwargs)
+        context['api'] = f'http://{web_host}/contexts/api/context/'
+        context['sensors'] = get_context_sensors(self.get_object().pk)
+        context['form'] = UploadContextForm()
+        context['canEdit'] = context_organization_edit_permission_check(user, organization)
+
+        return context
+
+    def test_func(self, *args , **kwargs):
+        context = self.get_object()
+        return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
+
+class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = e_Context
+    context_object_name = 'context'
+    pk_url_kwarg = 'contextCode'
+    template_name = 'context/context/confirm_delete.html'
     success_url = reverse_lazy('context-list')
 
     def delete(self, *args, **kwargs):
@@ -64,139 +149,32 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
     def test_func(self):
         return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
 
-class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = e_Context
-    form_class = ContextDetailsForm
-    context_object_name = 'context'
+class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = e_ContextSensor
+    template_name = 'context/context/contextSensor_list.html'
+
+    def setup(self, request, *args, **kwargs):
+        self.context = get_object_or_404(e_Context, code=kwargs['contextCode'])
+        return super().setup(request, *args, **kwargs)
+
+    def get_queryset(self):
+        context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=self.context.code).distinct('sensor')
+        filter = ContextSensorFilter(self.request.GET, queryset=context_sensor_list)
+        return filter.qs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        context['current_view'] = 'edit'
+        context = super(ContextSensorListView, self).get_context_data(**kwargs)
+        filter = ContextSensorFilter(self.request.GET, self.get_queryset())
+        context['context'] = self.context
+        context['filter'] = filter
         return context
     
-    def get_success_url(self):
-        return reverse('context-detail',args=(self.object.code,))
-
     def test_func(self):
-        return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
-
-@login_required
-def ContextListView(request):
-    
-    organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=request.user, access_granted=True))
-    context_list = e_Context.objects.filter(organization__in=organizations)
-
-    context_filter = ContextFilter(request.GET, queryset=context_list, organizations=organizations)
-
-    # Needs to have permission to add in, at least, one organization. The choice list in add form is then filtered to the ones he is actually capable of adding
-    permission_to_add = context_general_create_permission_check(request.user)
-
-    context = {
-        'permission_to_add': permission_to_add,
-        'filter' : context_filter
-    }
-
-    return render(request, 'context/e_Context_list.html', context)
-
-@login_required
-def OtherContextListView(request):
-    # Exclude (the contexts) with organizations the user is in
-    other_context_list = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=request.user)).exclude(isPublic=False)
-    other_context_filter = ContextFilter(request.GET, queryset=other_context_list, organizations=Organization.objects.exclude(members=request.user))
-
-    context = {
-        'context_list': other_context_list,
-        'filter': other_context_filter
-    }
-    return render(request, 'context/e_OtherContext_list.html', context)
-
-
-class ContextInitialForm(forms.ModelForm):
-    class Meta:
-        model = e_Context
-        fields = ['code','Name', 'hydroFeature', 'organization', 'isPublic',]
-
-    def __init__(self, *args, **kwargs):
-        user_id = kwargs.pop('user_id')
-        super(ContextInitialForm, self).__init__(*args, **kwargs)
-        # We only want to allow to choose options where the user is org_manager or org_contextManager of the organization
-        memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager'))
-        self.fields['organization'].queryset = Organization.objects.filter(membership__in=memberships)
-    
-
-class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = e_Context
-    form_class = ContextInitialForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['current_view'] = 'create'
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super(ContextCreateView, self).get_form_kwargs()
-        kwargs.update({'user_id': self.request.user.id})
-        return kwargs
-
-    def form_valid(self, form):
-        currentTime = datetime.datetime.now()
-        organization = form.save(commit=False)
-        # Add metadata to organization
-        organization.creator = self.request.user
-        organization.create_date = currentTime
-        organization.save()
-
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse('context-list')
-
-    def test_func(self):
-        return context_general_create_permission_check(self.request.user)
-
-class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    model = e_Context
-    context_object_name = 'context'
-    template_name = 'context/e_Context_detail.html'
-
-    def get_context_data(self, **kwargs):
-        user = self.request.user
-        organization = self.get_object().organization
-
-        web_host = os.environ['CONTEXT_API']
-        context = super().get_context_data(**kwargs)
-        context['api'] = f'http://{web_host}/contexts/api/context/'
-        context['sensors'] = get_context_sensors(self.get_object().pk)
-        context['form'] = UploadContextForm()
-        context['canEdit'] = context_organization_edit_permission_check(user, organization)
-
-        return context
-
-    def test_func(self, *args , **kwargs):
-        context = self.get_object()
-        return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
-
-@login_required
-def ContextSensorListView(request, context_code):
-    context = get_object_or_404(e_Context, code=context_code)
-    
-    if not( context.isPublic or belongs_to_organization(request.user, context.organization)):
-        return HttpResponseRedirect(reverse('context-detail', kwargs={'pk': context.code}))
-    
-    context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=context.code).distinct('sensor')
-
-    context_sensor_filter = ContextSensorFilter(request.GET, queryset=context_sensor_list)
-    
-    context= {
-        'filter' :  context_sensor_filter,
-        'context': context
-    }
-
-    return render(request, 'context/e_ContextSensor_list.html', context )
+        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
 
 def get_context_sensors(context_code):
-    context_sensors = Sensor.objects.filter(isPublic=True, organization__is_active=True)
-    context_sensors = context_sensors | Sensor.objects.filter(organization=e_Context.objects.get(pk=context_code).organization, organization__is_active=True)
+    context_sensors = Sensor.objects.filter(isPublic=True, sensorClass__organization__is_active=True)
+    context_sensors = context_sensors | Sensor.objects.filter(sensorClass__organization=e_Context.objects.get(pk=context_code).organization, sensorClass__organization__is_active=True)
     
     previous_context_sensors = set()
     for elem in e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=get_object_or_404(e_Context, pk=context_code)):
@@ -205,17 +183,16 @@ def get_context_sensors(context_code):
     context_sensors = context_sensors | Sensor.objects.filter(pk__in=previous_context_sensors)
     return context_sensors
 
-def manage_context(request, context_code):
+@login_required
+def manage_context(request, contextCode):
     web_host = os.environ['CONTEXT_API']
 
     context = {
-        'sensors': get_context_sensors(context_code),
+        'sensors': get_context_sensors(contextCode),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
     }
     if request.method == 'POST':
-        if not request.user.is_authenticated: # if user is not authenticated
-            return render(request, 'context/context.html', context)
         
         form = ContextForm(request.POST, request.FILES)
         if form.is_valid():
@@ -234,7 +211,7 @@ def manage_context(request, context_code):
 
                 messages.success(request,f'Context updated with success!') 
                 
-                return HttpResponseRedirect(reverse('context-detail', kwargs={'pk': e_context.code}))
+                return HttpResponseRedirect(reverse('context-detail', kwargs={'contextCode': e_context.code}))
             except Exception as e:
                 print(f'Error saving context: {e}')
                 messages.warning(request,f'Context update failed')
@@ -242,9 +219,9 @@ def manage_context(request, context_code):
         else:
             messages.warning(request,f'Context info is not complete') 
     else:
-        context['context'] = e_Context.objects.get(code=context_code)
+        context['context'] = e_Context.objects.get(code=contextCode)
 
-    return render(request, 'context/context.html', context)
+    return render(request, 'context/context/manage.html', context)
 
 class ContextViewSet(viewsets.ModelViewSet):
     queryset = e_Context.objects.all()
@@ -296,8 +273,8 @@ def download_context(request, context_code): #function that allows the download 
         return redirect(request.META['HTTP_REFERER'])
 
 @login_required
-def request_pre_processing(request, context_code):
-    context = get_object_or_404(e_Context, code=context_code)
+def request_pre_processing(request, contextCode):
+    context = get_object_or_404(e_Context, code=contextCode)
     if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
         
@@ -306,7 +283,7 @@ def request_pre_processing(request, context_code):
 
     try:
         r = requests.get(simulator_address) # ping HiSTAV to check if it's online
-        result = preprocess_task.delay(url, context_code)
+        result = preprocess_task.delay(url, contextCode)
         # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False # Assume there is no mesh generated
         context.task_id = result.task_id
@@ -319,7 +296,7 @@ def request_pre_processing(request, context_code):
     # if 'HTTP_REFERER' in request.META:
     #     return redirect(request.META['HTTP_REFERER'])
     # else:
-    return redirect('context-detail', pk=context_code)
+    return redirect('context-detail', contextCode=contextCode)
 
 @login_required
 def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
@@ -340,9 +317,6 @@ def download_preprocessing_results(request, context_code): # function to redirec
     response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
 
     return response
-
-    # messages.warning(self.request, 'Mesh download failed') 
-    # return redirect(reverse('context-detail', kwargs={'pk': context_code}))
 
 # Return last line of output
 def get_last_line(status:str):

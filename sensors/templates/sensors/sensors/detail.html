@@ -35,10 +35,16 @@
                 e.target._container.style.cursor = 'pointer';
             });
 
-
-            var sensor = {code: '{{ sensor.code }}', name: '{{ sensor.Name }}', modalityType: '{{ sensor.modalityType }}', type: '{{ sensor.modalityType }}',
-                description: '{{ sensor.description }}', version: '{{ sensor.version }}', timeZoneAbbreviation: '{{ sensor.timeZoneAbbreviation }}',
-                timeZoneOffset: '{{ sensor.timeZoneOffset }}', local: '{{ sensor.local }}'};
+            var sensor = {
+                    code: '{{ sensor.code }}', 
+                    name: '{{ sensor.name }}', 
+                    modality: '{{ sensor.sensorClass.get_modality_display }}',
+                    category: '{{ sensor.sensorClass.category }}',
+                    organization: '{{ sensor.organization }}',
+                    sensorClass: '{{ sensor.sensorClass.name }}',
+                    local: '{{ sensor.local }}',
+                    can_add_to_context: '{{ sensor.can_add_to_context }}'
+                };
 
             drawSensor(map, sensor);
         });

@@ -74,6 +74,12 @@ class Sensor(models.Model):
     def organization(self):
         return self.sensorClass.organization
 
+    # Property used to decide if the sensor should appear in the map in context detail, manage, etc.
+    # This is passed to the Js via a property on the passed sensor (search for sensor = {)
+    @property
+    def can_add_to_context(self):
+        return self.sensorClass.state == 'active' and self.sensorClass.organization.is_active
+
     def __str__(self):
         return self.name
 

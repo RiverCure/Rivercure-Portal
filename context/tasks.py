@@ -108,5 +108,4 @@ def simulate_task(self, url, context_code, event_id, writing_perio, max_update_p
         return 'OK'
     except Exception as e:
         print(f'Exception:{e}')
-        print(e.with_traceback())
         return f'Exception:{e}'

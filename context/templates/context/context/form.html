@@ -1,0 +1,31 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Context {% if context %}edit{% else %}create{% endif %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load static %}
+{% block scripts %}
+{% leaflet_js plugins="ALL" %}
+{% leaflet_css plugins="ALL" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Context {% if context %}edit{% else %}create{% endif %}</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Save</button>
+            {% if context %}
+                <a class="btn btn-outline-secondary" href="{% url 'context-detail' context.pk %}">Cancel</a>
+            {% else %}
+                <a class="btn btn-outline-secondary" href="{% url 'context-list' %}">Cancel</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
