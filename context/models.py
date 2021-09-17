@@ -115,7 +115,7 @@ class  e_ContextBoundaryPoint(models.Model):
 class e_ContextSensor(models.Model):
 
 	boundary_point = models.ForeignKey('e_ContextBoundaryPoint', on_delete=models.CASCADE, null=True, related_name='sensor_boundary_point')
-	sensor = models.ForeignKey(to=Sensor, on_delete=models.CASCADE, null=True, blank=False, related_name='context_sensor' )
+	sensor = models.ForeignKey(to=Sensor, on_delete=models.CASCADE, related_name='context_sensor' )
 	description = models.TextField()
 	
 	associateDatetime = models.DateTimeField(default=timezone.now)
