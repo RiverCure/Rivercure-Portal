@@ -110,26 +110,26 @@
             {% leaflet_map "my_map" %}
         </div>
         {% if canEdit %}
-        <a class="btn btn-info mt-1 mb-1" href="{% url 'context-update' context.code %}">Edit</a>
-        <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')">Geo Edit</button>  
-        <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
+            <a class="btn btn-info mt-1 mb-1" href="{% url 'context-update' context.code %}">Edit</a>
+            <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')">Geo Edit</button>  
+            <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
         {% endif %}
-        <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' context.code %}">Events</a>  
-        <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' context.code %}">Sensors</a>
+            <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' context.code %}">Events</a>  
+            <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' context.code %}">Sensors</a>
         {% if canEdit %}
-        <a class="btn btn-danger mt-1 mb-1" href="{% url 'context-delete' context.code %}">Delete</a>  
+            <a class="btn btn-danger mt-1 mb-1" href="{% url 'context-delete' context.code %}">Delete</a>  
         {% endif %}
-        <div class="m-2 d-inline"></div>
+        <div class="m-2"></div>
         {% if context.hasMesh %}
             {% if canEdit %}
-            <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Regenerate Mesh</a> 
+                <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Regenerate Mesh</a> 
             {% endif %}
             <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results' %}" target='_blank'>View Mesh</a> 
             <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results-download' context.code %}" target='_blank'>Download Mesh</a> 
         {% else %}
             {% if canEdit %}
                 {% if context.task_id %}
-                <a class="btn btn-secondary mt-1 mb-1" href="{% url 'mesh-regenerate-confirm' context.code %}">Regenerate Mesh</a>
+                    <a class="btn btn-secondary mt-1 mb-1" href="{% url 'mesh-regenerate-confirm' context.code %}">Regenerate Mesh</a>
                 {% else %}
                     <a class="btn btn-success mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Generate Mesh</a>
                 {% endif %}
@@ -139,9 +139,8 @@
             <a class="btn btn-warning mt-1 mb-1" href="{% url 'mesh-progress' context.code %}">Progress</a>
         {% endif %}
             
-        <a class="btn btn-secondary mt-4" href="{% url 'context-list' %}" style="float:right">Back to context list</a>
+        <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">Back to context list</a>
     </div>
-    
 </article>
 
 <div id="geometriesUploadDiv" class="container" style="display: none">
