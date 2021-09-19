@@ -53,13 +53,19 @@ class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class ContextListView(LoginRequiredMixin, ListView):
     model = e_Context
+    context_object_name = 'contexts'
     template_name = 'context/context/list.html'
+    paginate_by = 1
+
+    def get_queryset(self):
+        organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))
+        context_list = e_Context.objects.filter(organization__in=organizations)
+        self.filter = ContextFilter(self.request.GET, queryset=context_list, organizations=organizations)
+        return self.filter.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))
-        context_list = e_Context.objects.filter(organization__in=organizations)
-        context['filter'] = ContextFilter(self.request.GET, queryset=context_list, organizations=organizations)
+        context['filter'] = self.filter
         context['permission_to_add'] = context_general_create_permission_check(self.request.user)
         return context
 
