@@ -55,7 +55,7 @@ class ContextListView(LoginRequiredMixin, ListView):
     model = e_Context
     context_object_name = 'contexts'
     template_name = 'context/context/list.html'
-    paginate_by = 15
+    paginate_by = 10
 
     def get_queryset(self):
         organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))
