@@ -84,7 +84,7 @@
     </div>
 
     <div id="observationsUploadDiv" class="container" style="display: none">
-    <h2>Upload sensors</h2>
+    <h2>Upload sensor(s)</h2>
     <div id="form-data" class="content-section">
         <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-upload' %}">
         {% csrf_token %} {{ form|crispy }}
@@ -100,7 +100,7 @@
     {% if hasPerm %}
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-excel-download' %}">Download sensors Excel template</a>
-        <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor</a>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor(s)</a>
     {% endif %}
     </div>
 
