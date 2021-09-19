@@ -1,0 +1,15 @@
+SET PYTHONPATH=c:\Data\Websites\RiverCurePortal
+SET DJANGO_SETTINGS_MODULE=rivercureproject.settings
+SET DATABASE_URL=
+SET DATABASE_HOST=localhost
+SET DATABASE_PORT=5432
+SET DATABASE_USER=rivercure
+SET DATABASE_PASSWORD=rivercure
+SET DATABASE_NAME=rivercure_portal
+SET CONTEXT_API=rivercure.inesc-id.pt:8080
+SET SIMULATOR_ADDRESS=http://192.168.139.2:4004/
+SET DEBUG=False
+SET EMAIL_HOST=smtp.gmail.com
+SET EMAIL_PORT=587
+SET EMAIL_HOST_USER=rivercureportal@gmail.com
+SET EMAIL_HOST_PASSWORD=rivercureportal.2020
