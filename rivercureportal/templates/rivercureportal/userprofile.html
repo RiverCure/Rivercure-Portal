@@ -19,11 +19,7 @@
         </div>
     </div>
     <a href="{% url 'profile-update' u.pk %}" type="button" class="btn btn-primary">Edit role</a>
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-    {% else %}
-        <a href="{% url 'users' %}" type="button" class="btn btn-secondary float-right">Back</a>
-    {% endif %}
+    <a class="btn btn-secondary" href="{% url 'users' %}" style="float:right">Back to users list</a>
 </div>
 
 {% endblock content %}

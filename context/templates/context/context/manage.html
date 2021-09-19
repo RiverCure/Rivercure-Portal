@@ -132,11 +132,7 @@
         </div>
         <div class="form-group">
             <button id="submit-btn" class="btn btn-outline-danger" type="submit" disabled>Validate Context before submitting</button>
-            {% if request.META.HTTP_REFERER %}
-                <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-            {% else %}
-                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back</a>
-            {% endif %}
+            <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float:right">Back to context detail</a>
         </div>
     </form>
     <div class="border-top pt-3">

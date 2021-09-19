@@ -187,7 +187,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse('context-event-list',args=(self.get_object().context.code, ))
+        return reverse('event-list',args=(self.get_object().context.code, ))
 
     def test_func(self):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)

@@ -16,11 +16,7 @@
             <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
             <a class="btn btn-dark" href="{% url 'context-detail' context.code %}">Upload & define manually</a>
             <a class="btn btn-info" href="{% url 'context_manage' context.code %}">Define manually</a>
-            {% if request.META.HTTP_REFERER %}
-                <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-            {% else %}
-                <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float: right">Back</a>
-            {% endif %}
+            <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}" style="float: right">Back to context detail</a>
         </div>
     </form>
 </div>

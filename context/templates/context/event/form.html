@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Save</button>
             {% if event.context.code != null %}
-                <a class="btn btn-outline-secondary" href="{% url 'context-event-list' event.context.code %}">Cancel</a>
+                <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.pk %}">Cancel</a>
             {% else %}
                 <a class="btn btn-outline-secondary" href="{% url 'context-event-list' context.code %}">Cancel</a>
             {% endif %}

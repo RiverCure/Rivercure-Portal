@@ -114,7 +114,7 @@
         <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')">Geo Edit</button>  
         <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
         {% endif %}
-        <a class="btn btn-info mt-1 mb-1" href="{% url 'context-event-list' context.code %}">Events</a>  
+        <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' context.code %}">Events</a>  
         <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' context.code %}">Sensors</a>
         {% if canEdit %}
         <a class="btn btn-danger mt-1 mb-1" href="{% url 'context-delete' context.code %}">Delete</a>  

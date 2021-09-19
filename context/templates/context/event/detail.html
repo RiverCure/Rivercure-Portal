@@ -34,11 +34,7 @@
             <a class="btn btn-info btn mt-1 mb-1" href="{% url 'view-simulation-results' event.id %}">View Results</a>
         {% endif %}
 
-        {% if request.META.HTTP_REFERER %}
-            <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-        {% else %}
-            <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'context-event-list' event.context.code %}" >Back</a>
-        {% endif %}
+        <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'event-list' event.context.code %}" >Back to event list</a>
 </article>
 
 {% endblock content %}

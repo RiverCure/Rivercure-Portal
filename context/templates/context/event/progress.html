@@ -140,11 +140,7 @@
 </table>
 
 <div>
-    {% if request.META.HTTP_REFERER %}
-        <a class="btn btn-secondary" href="{{request.META.HTTP_REFERER|escape}}" style="float:right">Back</a>
-    {% else %}
-        <a class="btn btn-secondary" href="{% url 'event-detail' event.context.code event.id %}" style="float:right">Back</a>
-    {% endif %}
+    <a class="btn btn-secondary" href="{% url 'event-detail' event.context.code event.id %}" style="float:right">Back to event detail</a>
 </div>
 
 
