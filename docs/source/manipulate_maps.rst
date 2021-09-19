@@ -9,7 +9,5 @@ This function controls the popup when you click in a boundary to associate it wi
 of sensors already associated with that boundary and a select to add another.
 This you may want to do here:
 
-- **Change the condition that controls whether a sensor can be associated with a boundary or not** - This can be done by going to the for loop that iterates over
-the sensors at the end of the function, and add a condition there
-
+- **Change the condition that controls whether a sensor can be associated with a boundary or not** - This can be done by going to the for loop that iterates over the sensors at the end of the function, and add a condition there
 - **Change the string of the selectable item** - Where it says *option.innerHTML*, just add there

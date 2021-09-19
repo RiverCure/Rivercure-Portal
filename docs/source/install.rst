@@ -75,7 +75,6 @@ And that's it for the database!
 
 Downloading the RCP to your computer
 ------------------------------------
-
 Now we're going to install the RCP on our local machine.
 For that, please have Github installed and access to the Github repository.
 
@@ -90,9 +89,8 @@ The only thing we have to do is clone the project.
 
 Hurray! Now you are a Rivercure developer 😃
 
-Installing the RCP
-------------------
-
+Setting up the virtual environment
+----------------------------------
 Firstly, let's check our Python version.
 
 .. code-block:: console
@@ -107,3 +105,92 @@ If you are prompted a 2.x.x version, try:
 
 Use the way were you are prompted a 3.x.x version.
 In this tutorial, we'll use **python3** syntax for readability.
+
+Now, create the virtual environment. 
+This is useful to keep the dependencies from different projects separated.
+
+.. code-block:: console
+
+    $ python3 -m venv venv
+
+A folder named **venv** should have been created.
+
+Now, enter the virtual environment.
+
+.. code-block:: console
+
+    $ . ./venv/bin/activate
+
+You should see your terminal somewhat similar to this:
+
+.. code-block:: console
+
+    (venv) $
+
+It indicates that the virtual environment is active, thus everything
+you install using pip from now on will be project-specific.
+
+Installing the dependencies
+---------------------------
+Now that we have the virtual enviornment, let's install the project's dependencies.
+
+.. code-block:: console
+
+    (venv) $ pip install -r requirements.txt
+
+A list of packages should be automatically downloaded and installed.
+
+Setting up the RCP
+------------------
+In order to setup the RCP, we have to first make the database migrations.
+This process creates the necessary tables for the project.
+
+Before that, we will setup some aliases to make our job easier.
+
+.. code-block:: console
+
+    (venv) $ . ./aliases.bash
+
+Note: this aliases were made for MacOS system, so not all systems may be compatible.
+To see the alias equivelent, just open the **aliases.bash** file and there will be the corresponding commands.
+
+Now, we do:
+
+.. code-block:: console
+
+    (venv) $ makemigrations context
+    ...
+    (venv) $ makemigrations organization
+    ...
+    (venv) $ makemigrations rivercureportal
+    ...
+    (venv) $ makemigrations sensors
+    ...
+    (venv) $ makemigrations users
+
+This will create the migrations files (present under each app's migration folder).
+
+Finally, we do:
+
+.. code-block:: console
+
+    (venv) $ migrate
+
+This will create all the necessary tables in the database.
+
+Running the RCP
+---------------
+To run the project, type:
+
+.. code-block:: console
+
+    (venv) $ runserver
+
+This will expose the project in a local port, usually 8000.
+Go to your favorite browser, and on the address bar type `<http://localhost:8000>`__
+
+
+Next steps
+----------
+Now that you have the project running on your local machine, there are some extra things you want to setup on the platform before you start developing.
+Head to the :doc:`configure` section to see more.
