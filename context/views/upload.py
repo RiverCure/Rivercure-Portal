@@ -18,7 +18,7 @@ from django.views.generic.edit import FormView
 
 class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     http_method_names = ['post']
-    template_name = 'context/context_upload.html'
+    template_name = 'context/context/upload.html'
     form_class = UploadContextForm
 
     def test_func(self):

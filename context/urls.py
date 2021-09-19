@@ -44,7 +44,7 @@ urlpatterns = [
     path('<str:contextCode>/sensors/', ContextSensorListView.as_view(), name='context-sensor-list'),
     path('<str:pk>/events/<int:event_id>', EventDetailView.as_view(), name='event-detail'),
     path('<str:pk>/events/<int:event_id>/run/', runsimulationview, name='event-run'),
-    path('<str:context_code>/events/', ContextEventListView, name='context-event-list'),
+    path('<str:contextCode>/events/', ContextEventListView.as_view(), name='context-event-list'),
     path('<str:pk>/events/new/', EventCreateView.as_view(), name='event-create'),
     path('<str:pk>/event/<int:event_id>/update/', EventUpdateView.as_view(), name='event-update'),
     # Event progress

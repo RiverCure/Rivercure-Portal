@@ -9,96 +9,84 @@
 <h1>RiverCure Users</h1>
 
 <style>
-  .row {
-    margin-bottom: 40px;
-  }
-  
-  th {
-    cursor: pointer;
-  }
+    .row {
+        margin-bottom: 40px;
+    }
 
-  th:hover{
-    background: #eee;
-  }
+    th {
+        cursor: pointer;
+    }
+
+    th:hover{
+        background: #eee;
+    }
 
 </style>
 
 <div class="row">
+    <div class="col-md-8">
+        <table class="table table-hover ">
+            <tr>
+                <th class="tr_class" scope="col">Username</th>
+                <th class="tr_class" scope="col">Name</th>
+                <th class="tr_class" scope="col">Email</th>
+                <th class="tr_class" scope="col">Role</th>
+            </tr>
+            {% for list_user in filter.qs %}
+            <tr>
+                <td class="tr_class">
+                    <img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>
+                    <a href="{% url 'profile-detail' list_user.pk %}">{{list_user.username}}</a>
+                </td>  
+                <td>
+                    <div>
+                        {% if list_user.profile.first_name %}
+                        {{ list_user.profile.first_name }} 
+                        {% endif %}
+                        {% if list_user.profile.last_name %}
+                        {{ list_user.profile.last_name }}
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="tr_class">
+                    <div>{{ list_user.email }}</div>
+                </td>
+                <td>
+                    <div>{% if list_user|has_group:"Admin" %}Admin{% elif list_user|has_group:"Manager" %}Manager{% else %}Visitor{% endif %}</div>
+                </td>
+            </tr>
+            {% empty %}
+            <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
+            {% endfor %}
+        </table>
+    </div>
 
-<div class="col-md-8">
-<table class="table table-hover ">
-  <tr>
-    <th class="tr_class" scope="col">Username</th>
-    <th class="tr_class" scope="col">Name</th>
-    <th class="tr_class" scope="col">Email</th>
-    <th class="tr_class" scope="col">Role</th>
-  </tr>
-  {% for list_user in filter.qs %}
-  <tr>
-    
-    <td class="tr_class">
-        <img src="{{ user.profile.image.url }}"  width="30" height="30" ></img>
-        <a href="{% url 'profile-detail' list_user.pk %}">{{list_user.username}}</a>
-    </td>  
+    <div class="filter-section col-md-3">
+        <h5>Filter</h5> 
+        <form method="get" >
+            {{ filter.form |crispy }}
+            <button type="submit" class="btn btn-info">Filter</button>
+        </form>
+    </div>
 
-    <td>
-      <div>
-        {% if list_user.profile.first_name %}
-        {{ list_user.profile.first_name }} 
-        {% endif %}
-        {% if list_user.profile.last_name %}
-        {{ list_user.profile.last_name }}
-        {% endif %}
-      </div>
-    </td>
-
-    <td class="tr_class">
-      <div>{{ list_user.email }}</div>
-  </td>  
-  <td>
-    <div>{% if list_user|has_group:"Admin" %}Admin{% elif list_user|has_group:"Manager" %}Manager{% else %}Visitor{% endif %}</div>
-  </td>
-  </tr>
-  {% empty %}
-  <td><h2 class="text-secondary font-italic no-context-data">No users! :(</h2></td>
-  {% endfor %}
-</table>
+    <div>
+        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'admin:auth_user_changelist' %}" >Manage Users</a>
+    </div>
 </div>
 
-<div class="filter-section col-md-3">
-  <h5>Filter</h5> 
-  <form method="get" >
-    {{ filter.form |crispy }}
-    <button type="submit" class="btn btn-info">Filter</button>
-  </form>
-  
-</div>
-
-<div>
-  <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'admin:auth_user_changelist' %}" >Manage Users</a>
-</div>
-
-</div>
 <script>
-  
-  console.log("sort");
-  const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-  const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
-  console.log(document.querySelector('table'));
 
-    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    console.log("listen");
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
+document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+const table = th.closest('table');
+Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+    .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+    .forEach(tr => table.appendChild(tr) );
 })));
- 
-
-  console.log("hello");
 </script>
 
 {% endblock %}

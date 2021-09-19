@@ -54,13 +54,13 @@
     </div>
 </div>
 
-    <div class="filter-section col-md-3">
-        <h5>Filter</h5>
-        <form method="get">
-            {{ filter.form |crispy }}
-            <button type="submit" class="btn btn-info">Filter</button>
-        </form>
-    </div>
+<div class="filter-section col-md-3">
+    <h5>Filter</h5>
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-info">Filter</button>
+    </form>
+</div>
 
 <div>
     {% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}

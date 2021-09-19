@@ -386,7 +386,7 @@ def mesh_progress(request, context_code):
         'context': e_context
     }
     
-    return render(request, 'context/mesh_progress.html', context)
+    return render(request, 'context/context/mesh_progress.html', context)
 
 @login_required
 def regenerate_mesh_confirm(request, context_code):
@@ -398,7 +398,7 @@ def regenerate_mesh_confirm(request, context_code):
         'context': e_context
     }
     
-    return render(request, 'context/regenerate_mesh_confirm.html', context)
+    return render(request, 'context/context/regenerate_mesh_confirm.html', context)
 
 def inform_mesh_status(request, context_code): # Function to inform if mesh is generated
     context = e_Context.objects.get(code=context_code)

@@ -22,30 +22,36 @@ from context.tasks import simulate_task
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 
-def ContextEventListView(request, context_code):
-    context = get_object_or_404(e_Context, pk=context_code)
+class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    context_object_name = 'events'
+    template_name = 'context/event/list.html'
+    paginate_by = 15
 
-    if not (context.isPublic or belongs_to_organization(request.user, context.organization)):
-        return HttpResponse('Unauthorized', status=401)
+    def setup(self, request, *args, **kwargs):
+        self.context = get_object_or_404(e_Context, pk=kwargs['contextCode'])
+        self.queryset = e_ContextEvent.objects.filter(context=self.context).order_by('id')
+        return super().setup(request, *args, **kwargs)
 
-    qs = e_ContextEvent.objects.filter(context=context)
-    
-    event_filter = EventFilter(request.GET, queryset=qs)
-    events_list = event_filter.qs
-    
-    context = {
-        'events': events_list,
-        'filter': event_filter,
-        'context': e_Context.objects.get(code=context_code),
-        'hasPerm': context_organization_event_permission_check(request.user, context.organization)
-    }
-    return render(request, 'context/e_Event_list.html', context)
+    def get_queryset(self):
+        self.filter = EventFilter(self.request.GET, queryset=self.queryset)
+        return self.filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super(ContextEventListView, self).get_context_data(**kwargs)
+        context['hasPerm'] = context_organization_event_permission_check(self.request.user, self.context.organization)
+        context['context'] = self.context
+        context['filter'] = self.filter
+
+        return context
+
+    def test_func(self):
+        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
 
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = e_ContextEvent
     context_object_name = 'event'
     pk_url_kwarg = 'event_id'
-    template_name = 'context/e_Event_detail.html'
+    template_name = 'context/event/detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
@@ -69,7 +75,7 @@ def view_events_results(request, event_id): #function to view the results of an 
         'max_vel': event.context_event_results.max_vel.id
     }
 
-    return render(request, 'context/event_results.html', context)
+    return render(request, 'context/event/results.html', context)
 
 
 # TODO: check for permissions
@@ -138,7 +144,7 @@ def handle_simulation_results(request, event_id): #function to handle simulation
 
 class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
     model = e_ContextEvent
-    template_name = 'context/e_Event_create.html'
+    template_name = 'context/event/form.html'
     form_class = EventForm
     context_object_name = 'event'
 
@@ -170,7 +176,7 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
 
 class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
-    template_name = 'context/e_Event_create.html'
+    template_name = 'context/event/form.html'
     form_class = EventForm
     pk_url_kwarg = 'event_id'
     context_object_name = 'event'
@@ -210,29 +216,6 @@ def runsimulationview(request, pk, event_id):
     
     print("RUN SIMULATION")
     return HttpResponseRedirect(reverse('event-detail', args=(pk, event.id,)))
-
-# # TODO: This is to be putted in a task
-# def request_simulation(context, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time): # function to request a simulation for a certain context
-#     url = os.environ['SIMULATOR_ADDRESS'] + 'simulate/'
-
-#     payload = {'context_name': context.Name,
-#                 'event_id': event_id}
-
-#     #prepare files
-
-#     frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
-#     time_file = prepare_time_file(init_date, end_date, init_time, end_time)
-#     boundary_file = prepare_boundaries_file(context)
-
-#     files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
-
-#     files.append(('frequency', frequency_file))
-#     files.append(('time', time_file))
-#     files.append(('boundaries', boundary_file))
-
-#     r = requests.post(url, files=files, params=payload)
-
-#     return r
 
 # Return last line of output
 def get_last_line(status:str):
@@ -310,17 +293,15 @@ def event_progress(request, event_id):
         'event': event
     }
     
-    return render(request, 'context/event_progress.html', event)
+    return render(request, 'context/event/progress.html', event)
 
 @login_required
 def regenerate_event_confirm(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-    # if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
-    #     return HttpResponse('Unauthorized', status=401)
 
     event = {
         'event': event
     }
     
-    return render(request, 'context/regenerate_event_confirm.html', event)
+    return render(request, 'context/event/regenerate_event_confirm.html', event)
 
