@@ -147,6 +147,8 @@ class e_HydroFeature(models.Model):
 
 	class Meta:
 		ordering = ['Name']
+		verbose_name = 'Hydrofeature'
+		verbose_name_plural = 'Hydrofeatures'
 
 	def __str__(self):
 		return self.Name
