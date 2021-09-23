@@ -79,7 +79,7 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     
     def form_valid(self, form):
         sensor = form.save(commit=False)
-        sensor.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        sensor.local = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         sensor.save()
         return super().form_valid(form)
 
