@@ -59,10 +59,9 @@ class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         kwargs.update({'user_id': self.request.user.id})
         return kwargs
 
-
     def form_valid(self, form):
         obj = form.save(commit=False)
-        obj.geom = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        obj.local = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
         obj.save()
         return super().form_valid(form)
 
