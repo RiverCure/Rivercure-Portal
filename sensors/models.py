@@ -48,7 +48,7 @@ class Unit(models.Model):
         return self.fullName
 
 class SensorClass(models.Model):
-    code         = models.TextField()
+    code         = models.TextField(unique=True)
     name         = models.TextField()
     state        = models.TextField(choices=SENSOR_CLASS_STATE)
     vendor       = models.TextField(blank=True)
@@ -84,7 +84,7 @@ class Sensor(models.Model):
         return self.name
 
 class SensorClassProperty(models.Model):
-    code                      = models.TextField()
+    code                      = models.TextField(unique=True)
     name                      = models.TextField()
     type                      = models.TextField(choices=SENSOR_OBSERVATION_VALUE_TYPE)
     isOptional                = models.BooleanField(default=False)

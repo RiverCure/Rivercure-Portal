@@ -121,24 +121,6 @@ class SensorClassForm(forms.ModelForm):
     vendor  = forms.CharField(required=False)
     version = forms.CharField(required=False)
 
-    def __init__(self,*args,**kwargs):
-        self.organization = kwargs.pop('organization')
-        self.sensorClass = kwargs.pop('sensorClass')
-        super(SensorClassForm,self).__init__(*args,**kwargs)
-
-    def clean(self):
-        super(SensorClassForm, self).clean()
-
-        # Two sensorClasses of the same organization can't have the same code
-        sensorClass = SensorClass.objects.filter(code=self.cleaned_data['code'], organization=self.organization)
-        if sensorClass.exists() and self.sensorClass == None:
-            self.add_error('code', 'A sensor class with that code already exists within the organization')
-        
-        if sensorClass.exists() and self.sensorClass != None and self.sensorClass != sensorClass[0]:
-            self.add_error('code', 'A sensor class with that code already exists within the organization')
-        
-        return self.cleaned_data
-
     class Meta:
         model = SensorClass
         fields = ['code', 'name', 'state', 'vendor', 'version', 'modality', 'category']
@@ -152,24 +134,6 @@ class SensorClassPropertyForm(forms.ModelForm):
     thresholdUpperCritical    = forms.DecimalField(label='Threshold upper critical', required=False)
     thresholdUpperNoncritical = forms.DecimalField(label='Threshold upper non-critical', required=False)
     unit                      = forms.ModelChoiceField(queryset=Unit.objects.all(), required=False)
-
-    def __init__(self,*args,**kwargs):
-        self.sensorClass = kwargs.pop('sensorClass')
-        self.property = kwargs.pop('property')
-        super(SensorClassPropertyForm,self).__init__(*args,**kwargs)
-
-    def clean(self):
-        super(SensorClassPropertyForm, self).clean()
-
-        # Two sensorClasses of the same organization can't have the same code
-        sensorClassProperty = SensorClassProperty.objects.filter(code=self.cleaned_data['code'], sensorClass=self.sensorClass)
-        if sensorClassProperty.exists() and self.property == None:
-            self.add_error('code', 'A sensor class property with that code already exists in this sensor class')
-        
-        if sensorClassProperty.exists() and self.property != None and self.property != sensorClassProperty[0]:
-            self.add_error('code', 'A sensor class property with that code already exists in this sensor class')
-        
-        return self.cleaned_data
 
     class Meta:
         model = SensorClassProperty

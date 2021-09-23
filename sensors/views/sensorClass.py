@@ -39,21 +39,16 @@ class SensorClassCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
     def get_success_url(self):
         return reverse('sensor-class-list', args=(self.kwargs['organizationId'],))
 
-    def get_form_kwargs(self):
-        kwargs = super(SensorClassCreateView, self).get_form_kwargs()
-        kwargs.update({'organization': self.organization, 'sensorClass': None})
-        return kwargs
-
     def form_valid(self, form):
         sensorClass = form.save(commit=False)
-        sensorClass.organization = self.organization
+        sensorClass.organization = Organization.objects.get(pk=self.kwargs['organizationId'])
         sensorClass.save()
         return super().form_valid(form)
 
     def test_func(self):
         user = self.request.user
-        self.organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
-        return is_org_manager_or_sensor_manager(user, self.organization)
+        organization = get_object_or_404(Organization, pk=self.kwargs['organizationId'])
+        return is_org_manager_or_sensor_manager(user, organization)
 
 class SensorClassDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = SensorClass
@@ -73,11 +68,6 @@ class SensorClassUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
 
     def get_success_url(self):
         return reverse('sensor-class-detail', args=(self.kwargs['sensorClassId'],))
-
-    def get_form_kwargs(self):
-        kwargs = super(SensorClassUpdateView, self).get_form_kwargs()
-        kwargs.update({'organization': self.get_object().organization, 'sensorClass': self.get_object()})
-        return kwargs
 
     def test_func(self):
         return is_org_manager_or_sensor_manager(self.request.user, self.get_object().organization)

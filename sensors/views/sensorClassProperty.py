@@ -34,26 +34,21 @@ class SensorClassPropertyCreateView(LoginRequiredMixin, UserPassesTestMixin, Cre
     def get_success_url(self):
         return reverse('sensor-class-property-list', args=(self.kwargs['sensorClassId'],))
 
-    def get_form_kwargs(self):
-        kwargs = super(SensorClassPropertyCreateView, self).get_form_kwargs()
-        kwargs.update({'sensorClass': self.sensorClass, 'property': None})
-        return kwargs
-
     def get_context_data(self, **kwargs):
         context = super(SensorClassPropertyCreateView, self).get_context_data(**kwargs) # get the default context data
-        context['sensorClass'] = self.sensorClass
+        context['sensorClass'] = SensorClass.objects.get(pk=self.kwargs['sensorClassId'])
         return context
 
     def form_valid(self, form):
         SensorClassProperty = form.save(commit=False)
-        SensorClassProperty.sensorClass = self.sensorClass
+        SensorClassProperty.sensorClass = SensorClass.objects.get(pk=self.kwargs['sensorClassId'])
         SensorClassProperty.save()
         return super().form_valid(form)
 
     def test_func(self):
         user = self.request.user
-        self.sensorClass = get_object_or_404(SensorClass, pk=self.kwargs['sensorClassId'])
-        return is_org_manager_or_sensor_manager(user, self.sensorClass.organization)
+        organization = get_object_or_404(SensorClass, pk=self.kwargs['sensorClassId']).organization
+        return is_org_manager_or_sensor_manager(user, organization)
 
 class SensorClassPropertyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = SensorClassProperty
@@ -75,11 +70,6 @@ class SensorClassPropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, Upd
 
     def get_success_url(self):
         return reverse('sensor-class-property-detail', args=(self.kwargs['sensorClassId'], self.kwargs['sensorClassPropertyId']))
-
-    def get_form_kwargs(self):
-        kwargs = super(SensorClassPropertyUpdateView, self).get_form_kwargs()
-        kwargs.update({'sensorClass': self.get_object().sensorClass, 'property': self.get_object()})
-        return kwargs
 
     def test_func(self):
         user = self.request.user
