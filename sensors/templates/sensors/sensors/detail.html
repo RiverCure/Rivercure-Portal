@@ -36,15 +36,16 @@
             });
 
             var sensor = {
-                    code: '{{ sensor.code }}', 
-                    name: '{{ sensor.name }}', 
-                    modality: '{{ sensor.sensorClass.get_modality_display }}',
-                    category: '{{ sensor.sensorClass.category }}',
-                    organization: '{{ sensor.organization }}',
-                    sensorClass: '{{ sensor.sensorClass.name }}',
-                    local: '{{ sensor.local }}',
-                    can_add_to_context: '{{ sensor.can_add_to_context }}'
-                };
+                id: '{{ sensor.id }}',
+                code: '{{ sensor.code }}', 
+                name: '{{ sensor.name }}', 
+                modality: '{{ sensor.sensorClass.get_modality_display }}',
+                category: '{{ sensor.sensorClass.category }}',
+                organization: '{{ sensor.organization }}',
+                sensorClass: '{{ sensor.sensorClass.name }}',
+                local: '{{ sensor.local }}',
+                can_add_to_context: '{{ sensor.can_add_to_context }}'
+            };
 
             drawSensor(map, sensor);
         });

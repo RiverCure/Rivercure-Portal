@@ -407,8 +407,7 @@ var MyFunctions = {
   },
   //function to create domain marker popup, used to associate a sensor
   sensorAssociationPopup: (id, associatedSensors, newSensor) => {
-    //('hydrometricSensor','HydrometricSensor'),  ('weatherSensor','WeatherSensor'),  ('socialNetworkScanner','SocialNetworkScanner'),  ('humanSensor','HumanSensor')
-    //('physicalFixed ','PhysicalFixed '),  ('physicalMobile','PhysicalMobile'),  ('digitalSocialNetworkScanner','DigitalSocialNetworkScanner'),  ('digitalHumanUpload','DigitalHumanUpload')
+
     getAssociatedSensors = () => {
       if (associatedSensors === null) return '';
 
@@ -424,7 +423,7 @@ var MyFunctions = {
       if (newSensor === null) return '';
 
       var sensor = MyFunctions.sensors.find((value) => {
-        return value.code == newSensor;
+        return value.id == newSensor;
       });
 
       if (sensor === undefined) {
@@ -603,7 +602,6 @@ var MyFunctions = {
         //add the option for the available sensors for adding
         var option;
         for (sensor of MyFunctions.sensors) {
-          console.log(sensor)
           if (
             !addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
             L.latLng(e.target.getLatLng()).distanceTo(
@@ -1033,13 +1031,10 @@ var MyFunctions = {
     xmlHttp.send(null);
     response = JSON.parse(xmlHttp.responseText);
 
-    //console.log(response);
-
     //show the form
     if (MyFunctions.mode == 'edit') {
       document.querySelector('#form-data').style.display = 'block';
-      document.querySelector('#polygon-tree-id').style.height =
-        '' + document.querySelector('#map-container').offsetHeight + 'px';
+      document.querySelector('#polygon-tree-id').style.height = '' + document.querySelector('#map-container').offsetHeight + 'px';
       MyFunctions.fillForm(response);
     }
 
@@ -1142,19 +1137,6 @@ var MyFunctions = {
         MyFunctions.defineBoundary(boundary, element.type, element.dataType);
       });
     }
-    // if(MyFunctions.mode == 'edit' && response.context_contour_lines !== null) {
-    //     let coordinates = [];
-    //     lines = response.context_contour_lines.geom.slice(response.context_contour_lines.geom.indexOf('(') + 1, response.context_contour_lines.geom.lastIndexOf(')'))
-    //     lines = lines.split('),')
-    //     for(line of lines) {
-    //         line = line.slice(1).split(',');
-    //         for(coord of line) {
-    //             coordinates.push([Number(coord.trim().split(' ')[1]), Number(coord.trim().split(' ')[0])]);
-    //         }
-    //         L.polyline(coordinates).addTo(map)
-    //         coordinates = []
-    //     }
-    // }
   },
   //function to define polygons on all necessary layers
   definePolygon: (layer, type, CL) => {

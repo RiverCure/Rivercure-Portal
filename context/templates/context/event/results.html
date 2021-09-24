@@ -58,6 +58,7 @@
                 var sensors = [], sensor;
                 '{% for sensor in sensors %}'
                     sensor = {
+                        id: '{{ sensor.id }}',
                         code: '{{ sensor.code }}', 
                         name: '{{ sensor.name }}', 
                         modality: '{{ sensor.sensorClass.get_modality_display }}',

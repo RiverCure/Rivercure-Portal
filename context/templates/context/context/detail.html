@@ -48,7 +48,6 @@
             MyFunctions.polygonsInit(map); //init the polygon storing system
             MyFunctions.boundariesInit(map); //init the boundaries variables
 
-
             MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
         });
 
@@ -56,7 +55,8 @@
             var sensors = [], sensor;
             '{% for sensor in sensors %}'
                 sensor = {
-                    code: '{{ sensor.code }}', 
+                    id: '{{ sensor.id }}',
+                    code: '{{ sensor.code }}',
                     name: '{{ sensor.name }}', 
                     modality: '{{ sensor.sensorClass.get_modality_display }}',
                     category: '{{ sensor.sensorClass.category }}',
