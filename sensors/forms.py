@@ -61,7 +61,7 @@ class SensorForm(forms.ModelForm):
 
     class Meta:
         model = Sensor
-        fields = ['code', 'name', 'isPublic', 'description', 'sensorClass']
+        fields = ['code', 'name', 'isPublic', 'state', 'description', 'sensorClass']
 
 # Enables to have property - (type) labels in the properties choice field
 class CustomModelMultipleChoiceField(forms.ModelMultipleChoiceField):

@@ -1,20 +1,5 @@
 from django.urls import path, include
-from .views import (
-    OrganizationListView,
-    OrganizationCreateView,
-    OrganizationDetailView,
-    OrganizationUpdateView,
-    OrganizationManageView,
-    OrganizationManageManagersView,
-    MemberRoleUpdateView,
-    organizationAccessRequest,
-    organizationAccessRequestCancel,
-    organizationAccessRequestDeny,
-    organizationAccessRemove,
-    organizationAccessAllow,
-    organizationReactivate,
-    organizationSuspend
-)
+from .views import *
 
 urlpatterns = [
     path('', OrganizationListView.as_view(), name='organization-list'),
@@ -29,6 +14,7 @@ urlpatterns = [
     path('<int:organizationId>/manage/<int:userId>/deny/', organizationAccessRequestDeny, name='organization-access-request-deny'),
     path('<int:organizationId>/manage/<int:userId>/remove/', organizationAccessRemove, name='organization-access-remove'),
     path('<int:organizationId>/manage/<int:userId>/allow/', organizationAccessAllow, name='organization-access-allow'),
-    path('<int:organization_id>/reactivate/', organizationReactivate, name='organization-reactivate'),
-    path('<int:organization_id>/suspend/', organizationSuspend, name='organization-suspend'),
+    path('<int:organizationId>/reactivate/', organizationReactivate, name='organization-reactivate'),
+    path('<int:organizationId>/suspend/', organizationSuspend, name='organization-suspend'),
+    path('<int:organizationId>/set-current', organizationSetCurrent, name='organization-set-current')
 ]

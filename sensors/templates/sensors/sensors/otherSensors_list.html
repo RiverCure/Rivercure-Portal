@@ -1,5 +1,5 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Sensor list {% endblock %}
+{% block title %} Other sensors list {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load auth_extras %}
@@ -23,7 +23,8 @@
     }
 </style>
 
-<h1>Sensors of organization {{ request.session.organizationName }}</h1>
+<h1>Other sensors</h1>
+<h5 class="font-weight-light">Here are other organization's public sensors</h5>
 
 <div class="row">
     <div class="col-md-9">
@@ -42,11 +43,7 @@
                     </a>
                 </td>
                 <td>{{ sensor.name }}</td>
-                <td>
-                    <a href="{% url 'sensor-class-detail' sensor.sensorClass.pk %}">
-                    <div style="height: 100%; width: 100%">{{ sensor.sensorClass.name }}</div>
-                    </a>
-                </td>
+                <td>{{ sensor.sensorClass.name }}</td>
                 <td>
                     <a href="{% url 'sensor-observation-list' sensor.pk %}"><img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" /></a>
                 </td>
@@ -81,27 +78,7 @@
         </form>
     </div>
 
-    <div id="observationsUploadDiv" class="container" style="display: none">
-    <h2>Upload sensor(s)</h2>
-    <div id="form-data" class="content-section">
-        <form method="POST" enctype="multipart/form-data" action="{% url 'sensor-upload' %}">
-        {% csrf_token %} {{ form|crispy }}
-        <div class="form-group">
-            <button id="submit-btn" class="btn btn-info" type="submit">Upload</button>
-            <button id="submit-btn" class="btn btn-secondary btn mt-1 mb-1" style="float: right" onclick="showUploadDiv('none')">Close</button>
-        </div>
-        </form>
-    </div>
-    </div>
-
-    <div>
-    {% if hasPerm %}
-        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
-        <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-excel-download' %}">Download sensors Excel template</a>
-        <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor(s)</a>
-        <a type="button" class="btn btn-secondary mt-3" href="{% url 'other-sensors-list' %}">Other sensors</a>
-    {% endif %}
-    </div>
+    <a type="button" class="btn btn-secondary mt-3" href="{% url 'sensor-list' %}">Sensors of organization {{ request.session.organizationName }}</a>
 
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
@@ -116,17 +93,6 @@ document.querySelectorAll('th').forEach((th) =>
         .forEach((tr) => table.appendChild(tr));
     })
 );
-
-showUploadDiv = (state) => {
-    document.querySelector('#observationsUploadDiv').style.display = state;
-
-    if (state == 'block') {
-    setTimeout(() => {
-        window.scrollTo(0, document.body.scrollHeight);
-    }, 500);
-    }
-};
 </script>
 
 {% endblock content %}
-</div>

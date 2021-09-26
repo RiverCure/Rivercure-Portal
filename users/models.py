@@ -4,10 +4,11 @@ from PIL import Image
 from organization.models import Organization
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=20, null=True)
-    last_name = models.CharField(max_length=20, null=True)
-    image = models.ImageField(default='default.jpg', upload_to="profile_pics")
+    user                = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name          = models.CharField(max_length=20, null=True)
+    last_name           = models.CharField(max_length=20, null=True)
+    image               = models.ImageField(default='default.jpg', upload_to="profile_pics")
+    defaultOrganization = models.OneToOneField(Organization, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.user.username} profile'

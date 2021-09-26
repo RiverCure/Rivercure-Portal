@@ -25,10 +25,9 @@
                 <th scope="col">Name</th>
                 <th scope="col">Type</th>
                 <th scope="col">Creation date</th>
-                <!-- <th scope="col">Country</th>
-                <th scope="col">City</th> -->
                 <th scope="col">Role</th>
                 <th scope="col">State</th>
+                <th scope="col">Current</th>
             </tr>
             {% for organization in organizations %}
             <tr>
@@ -66,6 +65,11 @@
                 </td>
                 <td>
                     {{ organization.is_active|yesno:"Active,Suspended" }}
+                </td>
+                <td>
+                    {% if request.session.organizationName == organization.name %}
+                        X
+                    {% endif %}
                 </td>
             </tr>
 

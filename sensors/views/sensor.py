@@ -1,12 +1,14 @@
 from sensors.models import Sensor
 from sensors.filters import SensorFilter
-from organization.models import Membership
+from organization.models import Organization, Membership
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.gis.geos import Point
 from sensors.forms import GeoSensorForm, SensorFileForm, SensorForm, SensorObservationsFileForm
 from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
+from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
 
 class SensorListView(LoginRequiredMixin, ListView):
     context_object_name = 'sensors'
@@ -14,9 +16,21 @@ class SensorListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     ordering = ['code']
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            if request.session['organizationName'] is not None:
+                return super(SensorListView, self).dispatch(request, *args, **kwargs)
+            else:
+                raise Exception
+        except:
+            messages.warning(request, 'Please first choose an organization')
+            return redirect('organization-list')
+
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization
-        queryset = (Sensor.objects.filter(isPublic=True) | Sensor.objects.filter(isPublic=False, sensorClass__organization__membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))).distinct()
+        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        # queryset = (Sensor.objects.filter(isPublic=True) | Sensor.objects.filter(isPublic=False, sensorClass__organization__membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))).distinct()
+        queryset = Sensor.objects.filter(state='active', sensorClass__organization=organization)
         filter = SensorFilter(self.request.GET, queryset.order_by('code'))
         return filter.qs
 
@@ -28,8 +42,37 @@ class SensorListView(LoginRequiredMixin, ListView):
         queryset = self.get_queryset()
         filter = SensorFilter(self.request.GET, queryset)
         context['filter'] = filter
-
         return context
+
+class OtherSensorListView(LoginRequiredMixin, ListView):
+    context_object_name = 'sensors'
+    template_name = 'sensors/sensors/otherSensors_list.html'
+    paginate_by = 10
+    ordering = ['code']
+
+    def get_queryset(self):
+        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        queryset = Sensor.objects.exclude(sensorClass__organization=organization).exclude(isPublic=False)
+        filter = SensorFilter(self.request.GET, queryset.order_by('code'))
+        return filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        filter = SensorFilter(self.request.GET, queryset)
+        context['filter'] = filter
+        return context
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(ListView, self).get_context_data(**kwargs)
+
+    #     context['hasPerm'] = sensor_general_create_permission_check(self.request.user)
+    #     context['form'] = SensorFileForm()
+    #     queryset = self.get_queryset()
+    #     filter = SensorFilter(self.request.GET, queryset)
+    #     context['filter'] = filter
+
+    #     return context
 
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Sensor

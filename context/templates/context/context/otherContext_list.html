@@ -61,7 +61,7 @@
     </div>
 </div>
 
-<a class="btn btn-info ml-0 mt-3" href="{% url 'context-list'  %}">My Contexts</a>
+<a class="btn btn-info ml-0 mt-3" href="{% url 'context-list'  %}">Contexts of organization {{ request.session.organizationName }}</a>
 
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;

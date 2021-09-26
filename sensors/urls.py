@@ -5,6 +5,7 @@ from sensors import views
 urlpatterns = [
     # Sensors
     path('', views.SensorListView.as_view(), name='sensor-list'),
+    path('others/', views.OtherSensorListView.as_view(), name='other-sensors-list'),
     path('new/', views.SensorCreateView.as_view(), name='sensor-create'),
     path('<str:pk>', views.SensorDetailView.as_view(), name='sensor-detail'),
     path('<str:pk>/update/', views.SensorUpdateView.as_view(), name='sensor-update'),

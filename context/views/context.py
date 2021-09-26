@@ -57,10 +57,20 @@ class ContextListView(LoginRequiredMixin, ListView):
     template_name = 'context/context/list.html'
     paginate_by = 10
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            if request.session['organizationName'] is not None:
+                return super(ContextListView, self).dispatch(request, *args, **kwargs)
+            else:
+                raise Exception
+        except:
+            messages.warning(request, 'Please first choose an organization')
+            return redirect('organization-list')
+
     def get_queryset(self):
-        organizations = Organization.objects.filter(membership__in=Membership.objects.filter(user=self.request.user, access_granted=True))
-        context_list = e_Context.objects.filter(organization__in=organizations)
-        self.filter = ContextFilter(self.request.GET, queryset=context_list, organizations=organizations)
+        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        context_list = e_Context.objects.filter(organization=organization)
+        self.filter = ContextFilter(self.request.GET, queryset=context_list)
         return self.filter.qs
 
     def get_context_data(self, **kwargs):
@@ -75,9 +85,9 @@ class OtherContextListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Exclude (the contexts) with organizations the user is in
-        context['context_list'] = e_Context.objects.exclude(organization__in=Organization.objects.filter(members=self.request.user)).exclude(isPublic=False)
-        context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'], organizations=Organization.objects.exclude(members=self.request.user))
+        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
+        context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
 class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

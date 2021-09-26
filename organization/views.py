@@ -13,9 +13,18 @@ from notifications.models import Notification
 from django.contrib.auth.views import redirect_to_login
 from .forms import CreateOrganizationForm
 from datetime import datetime
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from rivercureportal.authorization import is_platform_admin
 from organization.authorization import *
+from django.contrib.auth.signals import user_logged_in
+from django.contrib import messages
+
+# Adds the default organization to the session, so that it is available in every view
+def user_log_in_handler(sender, user, request, **kwargs):
+    organization = Profile.objects.get(user=user).defaultOrganization
+    request.session['organizationName'] = organization.name if organization else None
+
+user_logged_in.connect(user_log_in_handler)
 
 class OrganizationListView(LoginRequiredMixin, ListView):
     model = Organization
@@ -79,6 +88,7 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
 
         context = super(OrganizationDetailView, self).get_context_data(**kwargs) # get the default context data
         context['managers'] = Membership.objects.filter(organization=organization, permission='org_manager')
+        context['belongsToOrganization'] = belongs_to_organization(user, organization)
         context['isManager'] = is_org_manager(user, organization)
         context['isSensorManager'] = is_sensor_manager(user, organization)
         return context
@@ -287,8 +297,8 @@ def organizationAccessAllow(request, organizationId, userId):
 
 @login_required
 @user_passes_test(is_platform_admin)
-def organizationReactivate(request, organization_id):
-    organization = get_object_or_404(Organization, pk=organization_id)
+def organizationReactivate(request, organizationId):
+    organization = get_object_or_404(Organization, pk=organizationId)
     organization.is_active = True
     organization.save()
 
@@ -300,8 +310,8 @@ def organizationReactivate(request, organization_id):
 
 @login_required
 @user_passes_test(is_platform_admin)
-def organizationSuspend(request, organization_id):
-    organization = get_object_or_404(Organization, pk=organization_id)
+def organizationSuspend(request, organizationId):
+    organization = get_object_or_404(Organization, pk=organizationId)
     organization.is_active = False
     organization.save()
 
@@ -310,3 +320,11 @@ def organizationSuspend(request, organization_id):
     notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.name} has been suspended by {request.user}")
 
     return redirect('organization-list')
+
+@login_required
+def organizationSetCurrent(request, organizationId):
+    organization = get_object_or_404(Organization, pk=organizationId)
+    request.session['organizationName'] = organization.name
+
+    messages.success(request, f'You made organization {organization.name} your current organization')
+    return redirect('organization-detail', organization.pk)
