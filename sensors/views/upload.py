@@ -3,10 +3,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObservation, SensorObservationValue
-from datetime import datetime, time
 from django.contrib.gis.geos.point import Point
-from django.db import IntegrityError
-from organization.models import Organization
 from openpyxl import load_workbook
 from organization.authorization import belongs_to_organization
 from ..authorization import sensor_edit_permission_check

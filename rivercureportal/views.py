@@ -4,14 +4,12 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from leaflet.forms.widgets import LeafletWidget
 from django.contrib.auth.models import Group
 from django import forms
-from users.models import User, Profile
+from users.models import User
 from context.models import e_Context
 from .models import e_HydroFeature
 from sensors.models import Sensor
 from .filters import UserFilter, HydroFeatureFilter
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse, reverse_lazy
-from django_filters.views import FilterView
 from notifications.models import Notification
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test

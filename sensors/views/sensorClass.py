@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from sensors.forms import SensorClassForm
-from sensors.models import SensorClass, SensorObservation
+from sensors.models import SensorClass
 from django.urls import reverse
-from sensors.authorization import sensor_general_create_permission_check
 from organization.models import Organization
 from organization.authorization import belongs_to_organization, is_org_manager_or_sensor_manager
 from django.shortcuts import get_object_or_404

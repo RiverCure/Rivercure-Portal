@@ -37,13 +37,12 @@ class SensorForm(forms.ModelForm):
     lng         = forms.FloatField(label='Longitude')
 
     def __init__(self, *args, **kwargs):
-        user_id = kwargs.pop('user_id')
+        organization_name = kwargs.pop('organizationName')
         super(SensorForm, self).__init__(*args, **kwargs)
         # Only allow to choose organizations where the user is org_manager, org_sensorManager or org_contextManager of the organization
-        memberships = Membership.objects.filter(user_id=user_id, access_granted=True, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_sensorManager') | Q(permission='org_contextManager'))
-        organizations = Organization.objects.filter(membership__in=memberships)
+        organization = Organization.objects.get(name=organization_name)
         # Only allow to choose sensor classes where the user is member of that organization
-        self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization__in=organizations)
+        self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization=organization)
         self.fields['sensorClass'].label = 'Sensor class'
 
         if self.instance.pk and self.instance.local: # the user is editing

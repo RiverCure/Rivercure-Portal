@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObservation
 from organization.models import Membership
 from openpyxl import Workbook
@@ -10,7 +10,6 @@ import string
 from openpyxl.styles import PatternFill, Font
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.comments import Comment
-from openpyxl.styles.named_styles import NamedStyle
 
 LAST_INDEX = 1048576
 

@@ -14,7 +14,7 @@ from rivercureproject import settings
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from context.forms import EventForm
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .prepare_files import *

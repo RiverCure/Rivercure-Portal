@@ -1,12 +1,10 @@
-from sensors.models import Sensor, SensorClassProperty, SensorObservation, SensorObservationValue
+from sensors.models import Sensor, SensorObservation, SensorObservationValue
 from sensors.forms import SensorObservationForm, SensorObservationsFileForm
 from django.urls import reverse
-from django.http import HttpResponse
 from sensors.filters import ObservationFilter
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile

@@ -58,7 +58,7 @@ class SensorClass(models.Model):
     organization = models.ForeignKey(to=Organization, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.organization} - {self.name}'
+        return self.name
 
 class Sensor(models.Model):
     code         = models.TextField(unique=True)

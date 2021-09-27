@@ -4,7 +4,7 @@ from .authorization import *
 from django.db import transaction
 from context.models import e_Context, e_ContextAlignment, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextRefinement, e_ContextSensor
 from organization.models import Organization
-from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point, fromfile
+from django.contrib.gis.geos import MultiPolygon, Polygon, LineString, Point
 import json
 from raster.models import RasterLayer
 from django.urls import reverse

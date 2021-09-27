@@ -1,32 +1,20 @@
-import json, os, geojson, tempfile, datetime, requests
+import os, geojson, datetime, requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.db import transaction, connection
-from django.utils import timezone
-from ..forms import ContextForm, UploadContextForm, EventForm
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic.edit import FormView
+from django.db import transaction
+from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
-from django.contrib.gis.geos import Polygon
-from ..models import e_Context, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextRefinement, e_ContextAlignment, e_ContextEvent, e_ContextSensor, e_ContextEventResult
-from raster.models import RasterLayer
+from ..models import e_Context, e_ContextSensor
 from sensors.models import Sensor
 from rest_framework import viewsets
-from django.core.serializers import serialize
 from ..serializers import ContextSerializer
-from django.contrib.gis.geos import MultiLineString, MultiPolygon, Polygon, LineString, GEOSGeometry, Point, fromfile
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import EventFilter, ContextFilter, ContextSensorFilter
-from django.contrib.gis.gdal import SpatialReference, CoordTransform, GDALRaster
-from io import BytesIO, StringIO
+from ..filters import ContextFilter, ContextSensorFilter
+from io import BytesIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django import forms
-from pprint import pprint
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization

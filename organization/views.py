@@ -1,19 +1,18 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from .models import Organization
 from .models import Organization, Membership
 from django.urls import reverse, reverse_lazy
 from users.models import Profile
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db import connection
 from notifications.signals import notify
 from django.contrib.auth.models import User
 from notifications.models import Notification
 from django.contrib.auth.views import redirect_to_login
 from .forms import CreateOrganizationForm
 from datetime import datetime
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from rivercureportal.authorization import is_platform_admin
 from organization.authorization import *
 from django.contrib.auth.signals import user_logged_in
