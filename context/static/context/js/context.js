@@ -117,7 +117,7 @@ var MyFunctions = {
       }).addTo(MyFunctions.sensorsLayer);
       sensorMarker.bindPopup(MyFunctions.sensorPopup(sensor));
       sensorMarker.bindTooltip('Sensor ' + sensor.code);
-      MyFunctions.contextSensors[sensor.code] = sensorMarker;
+      MyFunctions.contextSensors[sensor.id] = sensorMarker;
     }
     MyFunctions.sensorsLayer.addTo(map);
     map.layerscontrol.addOverlay(MyFunctions.sensorsLayer, 'Sensors');
@@ -407,6 +407,7 @@ var MyFunctions = {
   },
   //function to create domain marker popup, used to associate a sensor
   sensorAssociationPopup: (id, associatedSensors, newSensor) => {
+    console.log('yaks')
 
     getAssociatedSensors = () => {
       if (associatedSensors === null) return '';
@@ -416,15 +417,18 @@ var MyFunctions = {
         associatedSensors.indexOf('<tbody>') + '<tbody>'.length + 1,
         associatedSensors.indexOf('</tbody>')
       );
+      console.log('result:', result)
       return result;
     };
 
     associateNewSensors = () => {
+      console.log('newSensor', newSensor)
       if (newSensor === null) return '';
 
       var sensor = MyFunctions.sensors.find((value) => {
         return value.id == newSensor;
       });
+      console.log('sensor:', sensor)
 
       if (sensor === undefined) {
         return '';
@@ -440,11 +444,12 @@ var MyFunctions = {
       }
 
       //change popup color to associated (crimson)
-      MyFunctions.contextSensors[sensor.code].options.icon.options.html = MyFunctions.sensorIcon(
+      console.log(sensor.id)
+      MyFunctions.contextSensors[sensor.id].options.icon.options.html = MyFunctions.sensorIcon(
         sensor.code,
         'crimson'
       );
-      MyFunctions.contextSensors[sensor.code].refreshIconOptions();
+      MyFunctions.contextSensors[sensor.id].refreshIconOptions();
 
       return (
         `
@@ -552,13 +557,16 @@ var MyFunctions = {
           popup.openPopup();
         });
         document.querySelector('#popup-btn-all').addEventListener('click', () => {
+          console.log('heyy')
           // add the sensor to all the point of the boundary line
+          console.log(document.querySelector('#sensor-association').value)
           if (document.querySelector('#sensor-association').value == 'null') return;
 
           for (key in MyFunctions.boundaryDomainMarkers) {
             // find the boundary line that contains the point
             if (MyFunctions.boundaryDomainMarkers[key].includes(e.target)) {
               for (point of MyFunctions.boundaryDomainMarkers[key]) {
+                console.log(e.popup.getContent())
                 point
                   .getPopup()
                   .setContent(
@@ -603,14 +611,14 @@ var MyFunctions = {
         var option;
         for (sensor of MyFunctions.sensors) {
           if (
-            !addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
+            !addedSensors.includes(sensor.id) && //verify if the sensor is already added and is close enough
             L.latLng(e.target.getLatLng()).distanceTo(
               L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])
             ) <= MyFunctions.sensorDistance &&
             sensor.can_add_to_context == 'True'
           ) {
             option = document.createElement('option');
-            option.value = sensor.code;
+            option.value = sensor.id;
             option.innerHTML = sensor.code.concat(' '.concat(sensor.modality));
             document.querySelector('#sensor-association').appendChild(option);
           }
@@ -1587,14 +1595,14 @@ var MyFunctions = {
     let nearbySensors = [];
     for (sensor of MyFunctions.sensors) {
       if (
-        !addedSensors.includes(sensor.code) && //verify if the sensor is already added and is close enough
+        !addedSensors.includes(sensor.id) && //verify if the sensor is already added and is close enough
         L.latLng(domainPoint.getLatLng()).distanceTo(
           L.latLng(MyFunctions.coordStringToArray(sensor.geom)[0])
         ) <= MyFunctions.sensorDistance
       ) {
         option = document.createElement('option');
-        option.value = sensor.code;
-        option.innerHTML = sensor.code.concat(' '.concat(sensor.modality));
+        option.value = sensor.id;
+        option.innerHTML = sensor.id.concat(' '.concat(sensor.modality));
         nearbySensors.push(option);
       }
     }
