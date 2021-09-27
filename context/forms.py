@@ -44,7 +44,6 @@ class UploadContextForm(forms.Form):
     friction_coefficient_file = forms.FileField(required=False)
 
 class EventForm(forms.ModelForm):
-
     context_code = forms.CharField(widget=forms.HiddenInput())
     class Meta:
         model = e_ContextEvent

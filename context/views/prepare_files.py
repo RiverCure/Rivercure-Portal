@@ -1,6 +1,6 @@
 import datetime
 from context.models import e_ContextBoundaryLine, e_ContextSensor
-from sensors.models import SensorObservation
+from sensors.models import SensorClass, SensorObservation, SensorClassProperty, SensorObservationValue
 from raster.models import RasterLayer
 from django.db import connection
 import geojson
@@ -38,23 +38,23 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
 
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
     context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
-    for point in context_points: 
+    for point in context_points:
+        sensor_class = SensorClass.objects.get(id=point.sensor.sensorClass.id)
+        sensor_class_properties = SensorClassProperty.objects.filter(sensorClass=sensor_class)
         sensor_obs = SensorObservation.objects.filter(sensor=point.sensor)
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
         file_data = ''
         instant = 0
         
+        print('sensor_obs_valid: ', sensor_obs_valid)
         for obs in sensor_obs_valid:
-            if sensor_obs_valid.first().depth is not None:
-                line = f'{instant}\t{obs.depth}\r\n' #must be changed according to value
-            elif sensor_obs_valid.first().discharge is not None:
-                line = f'{instant}\t{obs.discharge}\r\n' #must be changed according to value
-            elif sensor_obs_valid.first().volume is not None:
-                line = f'{instant}\t{obs.volume}\r\n' #must be changed according to value
-            elif sensor_obs_valid.first().velocity is not None:
-                line = f'{instant}\t{obs.velocity}\r\n' #must be changed according to value
-            elif sensor_obs_valid.first().elevation is not None:
-                line = f'{instant}\t{obs.elevation}\r\n' #must be changed according to value
+            print('obs: ', obs)
+            for prop in sensor_class_properties:
+                print('prop: ', prop)
+                obs_value = SensorObservationValue.objects.filter(property=prop, observation=obs)
+                if obs_value.exists() and obs_value.value != None:
+                    line = f'{instant}\t{obs_value.value}\r\n'
+                    print(line)
 
             file_data += line
             instant += 60
