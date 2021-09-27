@@ -46,15 +46,11 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
         file_data = ''
         instant = 0
         
-        print('sensor_obs_valid: ', sensor_obs_valid)
         for obs in sensor_obs_valid:
-            print('obs: ', obs)
             for prop in sensor_class_properties:
-                print('prop: ', prop)
                 obs_value = SensorObservationValue.objects.filter(property=prop, observation=obs)
                 if obs_value.exists() and obs_value[0].value != None:
                     line = f'{instant}\t{obs_value[0].value}\r\n'
-                    print(line)
 
             file_data += line
             instant += 60

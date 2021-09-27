@@ -109,7 +109,13 @@ class SensorObservation(models.Model):
     class Meta:
         unique_together = ('date', 'time', 'sensor')
 
+    def __str__(self):
+        return f'{self.sensor.name} - {self.date}:{self.time}'
+
 class SensorObservationValue(models.Model):
     property    = models.ForeignKey(SensorClassProperty, on_delete=models.CASCADE)
     observation = models.ForeignKey(SensorObservation, on_delete=models.CASCADE)
     value       = models.TextField()
+
+    def __str__(self):
+        return f'{self.observation} - {self.property.name} ({self.value})'
