@@ -55,8 +55,8 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
             file_data += line
             instant += 60
 
-        file_name = f'sensor_{point.sensor.code}.bnd'
-        files[file_name] = ( (f'sensor_{point.sensor.code}.bnd', file_data) )
+        file_name = f'sensor_{point.sensor.id}.bnd'
+        files[file_name] = ( (f'sensor_{point.sensor.id}.bnd', file_data) )
         
     return files
 
