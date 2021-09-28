@@ -1,5 +1,4 @@
 from celery import shared_task
-import datetime
 import requests
 import geojson
 from .models import e_ContextDTMFile, e_ContextFrictionCoeff
@@ -84,26 +83,34 @@ def simulate_task(self, url, context_code, event_id, writing_perio, max_update_p
         print("time OK")
         boundary_file = prepare_boundaries_file(context)
         print("boundary OK")
-        files = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
+        files_sensors = prepare_gauge_file(context, init_date, end_date, init_time, end_time)
         print("gauge OK")
 
-        files.append(('frequency', frequency_file))
-        files.append(('time', time_file))
-        files.append(('boundaries', boundary_file))
-        print("append OK")
+        # files.append(('frequency', frequency_file))
+        # files.append(('time', time_file))
+        # files.append(('boundaries', boundary_file))
+        # print("append OK")
+
+        files = {
+            'frequency': ('frequency', frequency_file),
+            'time': ('time', time_file),
+            'boundaries': ('boundaries', boundary_file),
+        }
+        files = {**files, **files_sensors}
+        print(files)
 
         # Send file
         encoder = MultipartEncoder(files)
+        
         progress_recorder = ProgressRecorder(self)
         files_len = encoder.len
 
         def my_callback(monitor):
-            # print(monitor.bytes_read)
             progress_recorder.set_progress(monitor.bytes_read, files_len)
 
         payload = {'context_name': context.Name, 'event_id': event_id}
         monitor = MultipartEncoderMonitor(encoder, my_callback)
-        r = requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
+        requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
     
         return 'OK'
     except Exception as e:

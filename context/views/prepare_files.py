@@ -34,7 +34,7 @@ def prepare_time_file(init_date, end_date, init_time, end_time): #prepare time f
     return time_file
 
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
-    files = []
+    files = {}
 
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
     context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
@@ -55,7 +55,8 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
             file_data += line
             instant += 60
 
-        files.append((f'sensor_{point.sensor.code}.bnd', file_data))
+        file_name = f'sensor_{point.sensor.code}.bnd'
+        files[file_name] = ( (f'sensor_{point.sensor.code}.bnd', file_data) )
         
     return files
 
