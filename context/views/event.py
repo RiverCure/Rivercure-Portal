@@ -109,6 +109,7 @@ def handle_simulation_results(request, event_id): #function to handle simulation
     sim_url = os.environ['SIMULATOR_ADDRESS']
 
     event = e_ContextEvent.objects.get(pk=event_id)
+    event.hasSimulation = True
     context_name = event.context.Name
     url = f'{sim_url}/simulation/results/?event_id={event_id}&context_name={context_name}'
 
