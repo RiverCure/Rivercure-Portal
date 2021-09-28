@@ -1,6 +1,32 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Context event detail {% endblock %}
 
+{% block scripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        requestEvent = async () => {
+            const request = new XMLHttpRequest();
+            const url = "{% url 'event-status-request' event.id %}";
+            request.open("GET", url);
+            setTimeout (() => {
+                request.send();
+                request.onreadystatechange = e => {
+                    if(request.status == 200)
+                        location.reload(true);
+                }
+                requestEvent(request);
+            }, 5000);
+        }
+
+        if("{{ event.hasSimulation }}" == "False") { //check if mesh exists
+            requestEvent();
+        }
+    });
+</script>
+
+{% endblock %}
+
 {% block content %}
 
 <article class="media content-section">
@@ -27,6 +53,10 @@
             {% else %}
                 <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code object.id %}">Run Simulation</a>
             {% endif %}
+        {% endif %}
+
+        {% if event.hasSimulation %}
+            Simulation completed successfully
         {% endif %}
 
         {% if event.context_event_results != '' %}
