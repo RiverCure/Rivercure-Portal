@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+        {% comment %} <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" /> {% endcomment %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'rivercureportal/main.css' %}" />
         <link rel="RCP icon" href="{% static 'rivercureportal/icons/logo.ico' %}" type="image/x-icon" />
@@ -36,14 +36,17 @@
                     <div class="collapse navbar-collapse" id="navbarToggle">
                         <div class="navbar-nav mr-auto">
                             {% if user.is_authenticated %}
-                                <div class="nav-item">
-                                    <a href="{% url 'context-list' %}" class="nav-link">Contexts</a>
-                                </div>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Managment
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
+                                        <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                    </div>
+                                </li>
                                 <div class="nav-item">
                                     <a href="{% url 'hydrofeature-list' %}" class="nav-link">Hydrofeatures</a>
-                                </div>
-                                <div class="nav-item">
-                                    <a href="{% url 'sensor-list' %}" class="nav-link">Sensors</a>
                                 </div>
                                 <div class="nav-item">
                                     <a href="{% url 'organization-list' %}" class="nav-link">Organizations</a>
