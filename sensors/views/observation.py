@@ -10,6 +10,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 import os
+import imghdr
 
 class SensorObservationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'observations'
@@ -69,13 +70,13 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         # Save SensorObservationValue depending on the prop type
         for prop in form.cleaned_data['properties']:
             tag = f'value_of_{prop.name}'
-            if prop.type == 'image':
-                extension = form.cleaned_data[tag].content_type.split("/",1)[1]
+            if prop.type == 'image' and form.cleaned_data[tag] is not None:
+                extension = imghdr.what(form.cleaned_data[tag])
                 path = default_storage.save(f'observation_files/Sensor-{observation.id}_Property-{prop.id}.{extension}', ContentFile(form.cleaned_data[tag].read()))
-                tmp_file = os.path.join(settings.MEDIA_ROOT, path)
                 SensorObservationValue.objects.create(property=prop, observation=observation, value=path)
             else:
-                SensorObservationValue.objects.create(property=prop, observation=observation, value=form.cleaned_data[tag])
+                if form.cleaned_data[tag] is not None:
+                    SensorObservationValue.objects.create(property=prop, observation=observation, value=form.cleaned_data[tag])
 
         return super().form_valid(form)
 

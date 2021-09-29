@@ -9,6 +9,7 @@ from organization.authorization import belongs_to_organization
 from ..authorization import sensor_edit_permission_check
 import string
 
+# TODO: validate dependant of properties
 ''' Validate user identity
 Security is not a priority. If it was, we would need to check if the user that is uploading is the user that downloaded the file
 Some ideas to solve this:

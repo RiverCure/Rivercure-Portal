@@ -20,7 +20,10 @@
         <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ property.thresholdUpperNoncritical|default:"Not specified" }}</p>
         <p class="article-content"><b>Unit:</b> {{ property.unit|default:"Not specified" }}</p>
     {% endif %}
-    <p class="article-content"><b>Sensor Class:</b> {{ property.sensorClass.name }}</p>
+    {% if property.dependantOf %}
+        <p class="article-content"><b>Dependant of:</b> <a href="{% url 'sensor-class-property-detail' property.sensorClass.pk property.dependantOf.pk %}">{{ property.dependantOf }}</a></p>
+    {% endif %}
+    <p class="article-content"><b>Sensor Class:</b> <a href="{% url 'sensor-class-detail' property.sensorClass.pk %}">{{ property.sensorClass.name }}</a></p>
 
     <a class="btn btn-info" href="{% url 'sensor-class-property-update' property.sensorClass.pk property.pk %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'sensor-class-property-delete' property.sensorClass.pk property.pk %}">Delete</a>

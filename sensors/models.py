@@ -94,6 +94,7 @@ class SensorClassProperty(models.Model):
     thresholdUpperNoncritical = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     sensorClass               = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
     unit                      = models.ForeignKey(to=Unit, on_delete=models.SET_NULL, null=True)
+    dependantOf               = models.ForeignKey(verbose_name='Dependant of', to='self', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name

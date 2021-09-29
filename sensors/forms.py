@@ -107,7 +107,13 @@ class SensorObservationForm(forms.ModelForm):
             tag = f'value_of_{prop.name}'
             if self.cleaned_data[tag] == '' and (not prop.isOptional):
                 self.add_error(tag, 'Mandatory fields must be filled')
-        
+            
+            dependant_prop = self.fields['properties'].queryset.filter(name=prop.dependantOf)
+            if prop.dependantOf is not None and dependant_prop.exists():
+                dependant_tag = f'value_of_{prop.dependantOf}'
+                if self.cleaned_data[dependant_tag] == '':
+                    self.add_error(tag, f'This property is dependant on another ({dependant_prop[0].name}), so that property must be filled')
+
         return self.cleaned_data
     
     class Meta:
@@ -156,6 +162,7 @@ class SensorClassPropertyForm(forms.ModelForm):
         self.sensorClass = kwargs.pop('sensorClass')
         self.property = kwargs.pop('property')
         super(SensorClassPropertyForm,self).__init__(*args,**kwargs)
+        self.fields['dependantOf'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensorClass)
 
     def clean(self):
         super(SensorClassPropertyForm, self).clean()
@@ -172,4 +179,4 @@ class SensorClassPropertyForm(forms.ModelForm):
 
     class Meta:
         model = SensorClassProperty
-        fields = ['code', 'name', 'type', 'isOptional', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit']
+        fields = ['code', 'name', 'type', 'isOptional', 'dependantOf', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit']

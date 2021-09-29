@@ -16,15 +16,15 @@ class SensorListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     ordering = ['code']
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     try:
-    #         if request.session['organizationName'] is not None:
-    #             return super(SensorListView, self).dispatch(request, *args, **kwargs)
-    #         else:
-    #             raise Exception
-    #     except:
-    #         messages.warning(request, 'Please first choose an organization')
-    #         return redirect('organization-list')
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            if request.session['organizationName'] is not None:
+                return super(SensorListView, self).dispatch(request, *args, **kwargs)
+            else:
+                raise Exception
+        except:
+            messages.warning(request, 'Please first choose an organization')
+            return redirect('organization-list')
 
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization
@@ -128,7 +128,7 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(SensorUpdateView, self).get_form_kwargs()
-        kwargs.update({'user_id': self.request.user.id})
+        kwargs.update({'organizationName': self.request.session['organizationName']})
         return kwargs
     
     def form_valid(self, form):
