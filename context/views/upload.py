@@ -261,7 +261,6 @@ def handle_refinement(f, context): #handle the loading of refinement from a geoj
         refinement.save()
 
 def handle_boundaries(f, context): #handle the loading of boundaries from a geojson
-    # boundary_points = json.load(f_points)['features']
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
     boundary_features = json.load(f)
@@ -279,8 +278,8 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
             print('Boundary geojson doesn\'t contain a MultiLineString\nTrying simple LineString')
             boundary.geom = LineString(feature['geometry']['coordinates'], srid=srid)
 
-        boundary.dataType = feature['properties']['Type']
-        # boundary.type = feature['properties']['dataType']
+        boundary.type = feature['properties']['Type']
+        boundary.dataType = feature['properties']['Data type']
         boundary.save()
         # Save the points on the boundary line
         for point in boundary.geom.coords:
@@ -288,8 +287,3 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
             boundary_point.contextBoundaryLine = boundary
             boundary_point.geom = Point(point, srid=srid)
             boundary_point.save()
-            # if(boundary.geom.intersects(Point(point['geometry']['coordinates'], srid=srid))):
-                # boundary_point = e_ContextBoundaryPoint()
-                # boundary_point.contextBoundaryLine = boundary
-                # boundary_point.geom = Point(point['geometry']['coordinates'], srid=srid)
-                # boundary_point.save()

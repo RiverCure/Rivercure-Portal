@@ -178,15 +178,28 @@ var MyFunctions = {
         case 'Input':
           return `<option id='popup-current-type' value="Input" selected>Input</option>
                             <option value="Output">Output</option>
-                            <option value="InputOutput">Input Output</option>`;
+                            <option value="Critical">Critical</option>
+                            <option value="Transmissive">Transmissive</option>`;
         case 'Output':
           return `<option value="Input">Input</option>
                             <option id='popup-current-type' value="Output" selected>Output</option>
-                            <option value="InputOutput">Input Output</option>`;
-        default:
+                            <option value="Critical">Critical</option>
+                            <option value="Transmissive">Transmissive</option>`;
+        case 'Critical':
           return `<option value="Input">Input</option>
                             <option value="Output">Output</option>
-                            <option id='popup-current-type' value="InputOutput" selected>Input Output</option>`;
+                            <option id='popup-current-type' value="Critical" selected>Critical</option>
+                            <option value="Transmissive">Transmissive</option>`;
+        case 'Transmissive':
+          return `<option value="Input">Input</option>
+                            <option value="Output">Output</option>
+                            <option value="Critical">Critical</option>
+                            <option id='popup-current-type' value="Transmissive" selected>Transmissive</option>`;
+        default:
+          return `<option id='popup-current-type' value="Input" selected>Input</option>
+                            <option value="Output">Output</option>
+                            <option value="Critical">Critical</option>
+                            <option value="Transmissive">Transmissive</option>`;
       }
     };
 
@@ -407,7 +420,6 @@ var MyFunctions = {
   },
   //function to create domain marker popup, used to associate a sensor
   sensorAssociationPopup: (id, associatedSensors, newSensor) => {
-    console.log('yaks')
 
     getAssociatedSensors = () => {
       if (associatedSensors === null) return '';
@@ -417,18 +429,15 @@ var MyFunctions = {
         associatedSensors.indexOf('<tbody>') + '<tbody>'.length + 1,
         associatedSensors.indexOf('</tbody>')
       );
-      console.log('result:', result)
       return result;
     };
 
     associateNewSensors = () => {
-      console.log('newSensor', newSensor)
       if (newSensor === null) return '';
 
       var sensor = MyFunctions.sensors.find((value) => {
         return value.id == newSensor;
       });
-      console.log('sensor:', sensor)
 
       if (sensor === undefined) {
         return '';
@@ -444,7 +453,6 @@ var MyFunctions = {
       }
 
       //change popup color to associated (crimson)
-      console.log(sensor.id)
       MyFunctions.contextSensors[sensor.id].options.icon.options.html = MyFunctions.sensorIcon(
         sensor.code,
         'crimson'
@@ -557,16 +565,13 @@ var MyFunctions = {
           popup.openPopup();
         });
         document.querySelector('#popup-btn-all').addEventListener('click', () => {
-          console.log('heyy')
           // add the sensor to all the point of the boundary line
-          console.log(document.querySelector('#sensor-association').value)
           if (document.querySelector('#sensor-association').value == 'null') return;
 
           for (key in MyFunctions.boundaryDomainMarkers) {
             // find the boundary line that contains the point
             if (MyFunctions.boundaryDomainMarkers[key].includes(e.target)) {
               for (point of MyFunctions.boundaryDomainMarkers[key]) {
-                console.log(e.popup.getContent())
                 point
                   .getPopup()
                   .setContent(
@@ -1227,7 +1232,6 @@ var MyFunctions = {
       if (MyFunctions.createdPolygons[type].getLayers().length < 1) {
         missingPolygons += type + ' missing<br>';
         document.querySelector('#load-btn').setAttribute('class', 'btn btn-outline-warning');
-        // document.querySelector('#load-btn').disabled = true;
         MyFunctions.complete = false;
       }
     }
@@ -1240,7 +1244,6 @@ var MyFunctions = {
       document.querySelector('#load-context-result').innerHTML =
         'Context incomplete but ready for submission<br>' + missingPolygons;
     }
-    // document.querySelector('#load-btn').disabled = false;
   },
   //function to handle highlights
   handleHighlights: (layer, polygonLayer) => {
@@ -1462,9 +1465,12 @@ var MyFunctions = {
                             <option value="Output" ` +
       findSelected('Output', selectedType) +
       `>Output</option>
-                            <option value="InputOutput" ` +
-      findSelected('InputOutput', selectedType) +
-      `>Input Output</option>
+                            <option value="Critical" ` +
+      findSelected('Critical', selectedType) +
+      `>Critical</option>
+                            <option value="Transmissive" ` +
+      findSelected('Transmissive', selectedType) +
+      `>Transmissive</option>
                         </select>
                     </div>
                 </div>

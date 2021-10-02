@@ -15,7 +15,7 @@ EVENTSTATE_CHOICES = (  ('announced','Announced'),  ('occurring','Occurring'),  
 
 EVENTSUBKIND_CHOICES = ( ('Forecast', 'forecast'), ('Hindcast','hindcast'), ('Planning','planning'),)
 
-CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('InputOutput', 'inputOutput'), )
+CONTEXTBOUNDARY_CHOICES = ( ('Input', 'input'), ('Output', 'output'), ('Critical', 'critical'), ('Transmissive', 'transmissive'),)
 
 CONTEXTBOUNDARYLINEDATAKIND_CHOICES =  ( ('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
 

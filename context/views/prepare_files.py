@@ -73,8 +73,12 @@ def prepare_boundaries_file(context):
             result += '2\r\n'
         elif boundary.type.lower() == 'output':
             result += '3\r\n'
-        else:
+        elif boundary.type.lower() == 'critical':
             result += '4\r\n'
+        elif boundary.type.lower() == 'transmissive':
+            result += '5\r\n'
+        else:
+            result += '0\r\n'
 
         result += '0.0\r\n10.0\r\n\r\n'
 
