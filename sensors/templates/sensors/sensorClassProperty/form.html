@@ -28,7 +28,15 @@
 {% comment %} This script tag hides fields based on the Type field. This is used to hide, for example
 the unit (m/L/Celcius, etc.) when a String Type is selected {% endcomment %}
 <script>
-function changeDisplay(option, fields) {
+function changeDisplayDerivedBy(option, fields) {
+    if(option == true) {
+        fields.map((element) => element.style.display = 'block');
+    } else {
+        fields.map((element) => element.style.display = 'none');
+    }
+}
+
+function changeDisplayType(option, fields) {
     if(option == 'Number') {
         fields.map((element) => element.style.display = 'block');
     } else {
@@ -51,9 +59,12 @@ document.addEventListener("DOMContentLoaded", function() {
     addAsteriskToOptional();
 
     const type_field_select = document.querySelector("#div_id_type").children[1].children[0]; // gets the <select> tag
-    const selectedOption = type_field_select.options[type_field_select.selectedIndex].text;
+    const isDerived_field_checkbox = document.querySelector("#id_isDerived");
 
-    const fields = [
+    const selectedOptionType = type_field_select.options[type_field_select.selectedIndex].text;
+    const selectedOptionDerivedBy = isDerived_field_checkbox.checked;
+
+    const fieldsType = [
         document.querySelector("#div_id_thresholdLowerCritical"),
         document.querySelector("#div_id_thresholdLowerNoncritical"),
         document.querySelector("#div_id_thresholdUpperCritical"),
@@ -61,15 +72,28 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelector("#div_id_unit")
     ];
 
+    const fieldsDerivedBy = [
+        document.querySelector("#div_id_derivedBy"),
+        document.querySelector("#div_id_isImmediate"),
+        document.querySelector("#div_id_instruction")
+    ];
+
     // Initial - apply on first load
-    changeDisplay(selectedOption, fields);
+    changeDisplayType(selectedOptionType, fieldsType);
+    changeDisplayDerivedBy(selectedOptionDerivedBy, fieldsDerivedBy);
 
     // Handle change
     const selectChange = function() {
-        const selectedOption = event.target.options[event.target.selectedIndex].text;
-        changeDisplay(selectedOption, fields);
+        const selectedOptionType = event.target.options[event.target.selectedIndex].text;
+        changeDisplayType(selectedOptionType, fieldsType);
     };
-    type_field_select.addEventListener("change", selectChange.bind(event, fields));
+    type_field_select.addEventListener("change", selectChange.bind(event, fieldsType));
+
+    const derivedByChange = function() {
+        const selectedOptionDerivedBy = event.target.checked;
+        changeDisplayDerivedBy(selectedOptionDerivedBy, fieldsDerivedBy);
+    };
+    isDerived_field_checkbox.addEventListener("change", derivedByChange.bind(event, fieldsDerivedBy));
 });
 </script>
 

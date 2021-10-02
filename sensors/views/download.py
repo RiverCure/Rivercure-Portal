@@ -120,7 +120,7 @@ def sensor_excel_download(request):
 def sensor_observations_excel_download(request, sensorId):
     sensor = get_object_or_404(Sensor, pk=sensorId)
     sensorClass = sensor.sensorClass
-    properties = SensorClassProperty.objects.filter(sensorClass=sensorClass).order_by('name')
+    properties = SensorClassProperty.objects.filter(sensorClass=sensorClass).exclude(derivedBy__isnull=False).order_by('name')
 
     date = d.now()
     date_str = date.strftime('%Y-%m-%d_%H:%M:%S')

@@ -1,4 +1,5 @@
-from sensors.models import Sensor, SensorObservation, SensorObservationValue
+from django.db import connection
+from sensors.models import Sensor, SensorClassProperty, SensorObservation, SensorObservationValue
 from sensors.forms import SensorObservationForm, SensorObservationsFileForm
 from django.urls import reverse
 from sensors.filters import ObservationFilter
@@ -70,13 +71,35 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         # Save SensorObservationValue depending on the prop type
         for prop in form.cleaned_data['properties']:
             tag = f'value_of_{prop.name}'
-            if prop.type == 'image' and form.cleaned_data[tag] is not None:
-                extension = imghdr.what(form.cleaned_data[tag])
-                path = default_storage.save(f'observation_files/Sensor-{observation.id}_Property-{prop.id}.{extension}', ContentFile(form.cleaned_data[tag].read()))
+            propValue = form.cleaned_data[tag]                
+
+            if prop.type == 'image' and propValue is not None:
+                extension = imghdr.what(propValue)
+                path = default_storage.save(f'observation_files/Sensor-{observation.id}_Property-{prop.id}.{extension}', ContentFile(propValue.read()))
                 SensorObservationValue.objects.create(property=prop, observation=observation, value=path)
-            else:
-                if form.cleaned_data[tag] is not None:
-                    SensorObservationValue.objects.create(property=prop, observation=observation, value=form.cleaned_data[tag])
+            elif propValue is not None: # any other type
+                    SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
+
+        
+        derivedProps = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass, derivedBy__isnull=False, isImmediate=True)
+        print('Derived Props:', derivedProps)
+        for prop in derivedProps: # TODO: WHY NOT SAVING??
+            # Calculate here
+            derivedPropValue = form.cleaned_data[f'value_of_{prop.derivedBy.name}']
+            instruction = prop.instruction
+            locals = {'otherValue': derivedPropValue}
+            exec(instruction, {}, locals)
+            propValue = locals['newValue']
+            print('Prop value',propValue)
+            if propValue is not None:
+                # with connection.cursor() as cursor:
+                #     cursor.execute("INSERT INTO sensors_sensorobservationvalue (property_id, observation_id, value) VALUES (%s, %s, %s)", [prop.id, observation.id, propValue])
+                obs = SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
+                print('Observation created:', obs)
+                print('Observation created pk:', obs.id)
+        
+        print('Finish!')
+
 
         return super().form_valid(form)
 

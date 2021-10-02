@@ -26,6 +26,7 @@
 			<th scope="col">Name</th>
 			<th scope="col">Type</th>
 			<th scope="col">Optional</th>
+			<th scope="col">Derived</th>
 		</tr>
 		{% for property in properties %}
 		<tr>
@@ -37,6 +38,7 @@
 			<td>{{ property.name }}</td>
 			<td>{{ property.get_type_display }}</td>
 			<td>{{ property.isOptional|yesno:"Yes,No" }}</td>
+			<td>{{ property.derivedBy|yesno:"Yes,No" }}</td>
         </tr>
 
         {% empty %}

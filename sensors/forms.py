@@ -75,8 +75,8 @@ class SensorObservationForm(forms.ModelForm):
         # Extract the sensor received from the View (SensorObservationCreateView or SensorObservationUpdateView)
         self.sensor = kwargs.pop('sensor')
         super(SensorObservationForm, self).__init__(*args, **kwargs)
-        # Get the sensor class properties of that sensor's sensor class
-        self.fields['properties'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass)
+        # Get the sensor class properties of that sensor's sensor class, except the derived ones (which are calculated, not inserted)
+        self.fields['properties'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass).exclude(derivedBy__isnull=False)
 
         optionalProps = ''
         for prop in self.fields['properties'].queryset:
@@ -107,12 +107,6 @@ class SensorObservationForm(forms.ModelForm):
             tag = f'value_of_{prop.name}'
             if self.cleaned_data[tag] == '' and (not prop.isOptional):
                 self.add_error(tag, 'Mandatory fields must be filled')
-            
-            dependant_prop = self.fields['properties'].queryset.filter(name=prop.dependantOf)
-            if prop.dependantOf is not None and dependant_prop.exists():
-                dependant_tag = f'value_of_{prop.dependantOf}'
-                if self.cleaned_data[dependant_tag] == '':
-                    self.add_error(tag, f'This property is dependant on another ({dependant_prop[0].name}), so that property must be filled')
 
         return self.cleaned_data
     
@@ -152,17 +146,23 @@ class SensorClassPropertyForm(forms.ModelForm):
     code                      = forms.CharField()
     name                      = forms.CharField()
     isOptional                = forms.BooleanField(label='Optional', required=False) # it actually is required. See the template for explanation
+    # Type = Number fields
     thresholdLowerCritical    = forms.DecimalField(label='Threshold lower critical', required=False)
     thresholdLowerNoncritical = forms.DecimalField(label='Threshold lower non-critical', required=False)
     thresholdUpperCritical    = forms.DecimalField(label='Threshold upper critical', required=False)
     thresholdUpperNoncritical = forms.DecimalField(label='Threshold upper non-critical', required=False)
     unit                      = forms.ModelChoiceField(queryset=Unit.objects.all(), required=False)
+    # DerivedBy fields
+    isDerived                 = forms.BooleanField(label='Is derived by another property', required=False) # checkbox that shows/hides derivedBy fields
+    isImmediate               = forms.BooleanField(label='Is immediate', help_text='If checked, then its value is calculated when an observation with the property this is derived is inserted', required=False)
+    instruction               = forms.CharField(help_text='Introduce a Python script with a maximum of 100 characters. Consider that the other property\'s value is exposed in the variable `otherValue`. Expose the intended value as `newValue` variable.', widget=forms.Textarea(attrs={'rows': 4}), max_length=100, required=False)
 
     def __init__(self,*args,**kwargs):
         self.sensorClass = kwargs.pop('sensorClass')
         self.property = kwargs.pop('property')
         super(SensorClassPropertyForm,self).__init__(*args,**kwargs)
-        self.fields['dependantOf'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensorClass)
+        self.fields['derivedBy'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensorClass)
+        self.fields['isDerived'].initial = True if self.property != None and self.property.derivedBy != None else False
 
     def clean(self):
         super(SensorClassPropertyForm, self).clean()
@@ -179,4 +179,4 @@ class SensorClassPropertyForm(forms.ModelForm):
 
     class Meta:
         model = SensorClassProperty
-        fields = ['code', 'name', 'type', 'isOptional', 'dependantOf', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit']
+        fields = ['code', 'name', 'type', 'isOptional', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit', 'isDerived', 'derivedBy', 'isImmediate', 'instruction']

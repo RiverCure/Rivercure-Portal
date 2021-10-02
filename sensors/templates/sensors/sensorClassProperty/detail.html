@@ -9,6 +9,7 @@
     <div class="article-metadata">
 		<h1><a class="mr-2">{{ property.name }}</a></h1>
     </div>
+    <p class="article-content"><b>Sensor class:</b> <a href="{% url 'sensor-class-detail' property.sensorClass.pk %}">{{ property.sensorClass.name }}</a></p>
     <p class="article-content"><b>Code:</b> {{ property.code }}</p>
     <p class="article-content"><b>Name:</b> {{ property.name }}</p>
     <p class="article-content"><b>Type:</b> {{ property.get_type_display }}</p>
@@ -20,10 +21,11 @@
         <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ property.thresholdUpperNoncritical|default:"Not specified" }}</p>
         <p class="article-content"><b>Unit:</b> {{ property.unit|default:"Not specified" }}</p>
     {% endif %}
-    {% if property.dependantOf %}
-        <p class="article-content"><b>Dependant of:</b> <a href="{% url 'sensor-class-property-detail' property.sensorClass.pk property.dependantOf.pk %}">{{ property.dependantOf }}</a></p>
+    {% if property.derivedBy %}
+        <p class="article-content"><b>Derived by:</b> <a href="{% url 'sensor-class-property-detail' property.sensorClass.pk property.derivedBy.pk %}">{{ property.derivedBy }}</a></p>
+        <p class="article-content"><b>Is immediate:</b> {{ property.isImmediate|yesno:"Yes,No" }}</p>
+        <p class="article-content"><b>Instruction (Python):</b> {{ property.instruction|default:"Not specified" }}</p>
     {% endif %}
-    <p class="article-content"><b>Sensor Class:</b> <a href="{% url 'sensor-class-detail' property.sensorClass.pk %}">{{ property.sensorClass.name }}</a></p>
 
     <a class="btn btn-info" href="{% url 'sensor-class-property-update' property.sensorClass.pk property.pk %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'sensor-class-property-delete' property.sensorClass.pk property.pk %}">Delete</a>
