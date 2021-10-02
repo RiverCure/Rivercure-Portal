@@ -77,7 +77,7 @@ def prepare_boundaries_file(context):
             result += '4\r\n'
         elif boundary.type.lower() == 'transmissive':
             result += '5\r\n'
-        else:
+        else: # this only happens if an error occurs
             result += '0\r\n'
 
         result += '0.0\r\n10.0\r\n\r\n'
