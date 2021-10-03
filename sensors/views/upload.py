@@ -6,6 +6,7 @@ from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObser
 from django.contrib.gis.geos.point import Point
 from openpyxl import load_workbook
 from organization.authorization import belongs_to_organization
+from sensors.views.observation import calculate_computed_prop
 from ..authorization import sensor_edit_permission_check
 import string
 
@@ -61,7 +62,8 @@ def sensor_upload(request):
 def handle_uploaded_observations_file(file, sensor):
     wb = load_workbook(file)
     ws = wb['Observations']
-    properties = SensorClassProperty.objects.filter(sensorClass=sensor.sensorClass).order_by('name')
+    properties = SensorClassProperty.objects.filter(sensorClass=sensor.sensorClass).exclude(derivedBy__isnull=False).order_by('name')
+    derivedProps = SensorClassProperty.objects.filter(sensorClass=sensor.sensorClass, derivedBy__isnull=False, isImmediate=True)
     cols = 3 + properties.count() # the 3 are the mandatory, fixed, ones
     max_column = list(string.ascii_uppercase)[cols - 1]
     severity_choices = SensorObservation._meta.get_field('severity').choices
@@ -101,6 +103,25 @@ def handle_uploaded_observations_file(file, sensor):
                 else:
                     return '' if value == None else value
 
+    def insert_or_update_derived_props(obs):
+        # Handle derived props
+        for prop in derivedProps:
+            thisPropValue = SensorObservationValue.objects.filter(observation=obs, property=prop)
+            dependantPropValue = SensorObservationValue.objects.filter(observation=obs, property=prop.derivedBy)
+
+            if dependantPropValue.exists():
+                dependantPropValue = dependantPropValue[0]
+            else:
+                continue
+
+            calculatedPropValue = calculate_computed_prop(dependantPropValue.value, prop.instruction)
+            if thisPropValue.exists(): # update
+                if calculatedPropValue is not None:
+                    thisPropValue.update(value=calculatedPropValue)
+            elif not thisPropValue.exists(): # create
+                if calculatedPropValue is not None:
+                    SensorObservationValue.objects.create(observation=obs, property=prop, value=calculatedPropValue)
+
     def save_observation(data):
         try:
             with transaction.atomic():
@@ -115,11 +136,14 @@ def handle_uploaded_observations_file(file, sensor):
                                 obs_v.update(value=value)
                             else:
                                 SensorObservationValue.objects.create(property=properties[idx], observation=obs[0], value=value)
+                    insert_or_update_derived_props(obs[0])
                 else:
                     obs = SensorObservation.objects.create(date=data[0], time=data[1], sensor=sensor, severity=data[2])
                     for idx, value in enumerate(data[3:]): # sensor property (variable) fields
                         if value != '' and value != None:
                             SensorObservationValue.objects.create(property=properties[idx], observation=obs, value=value)
+                    # Here handle derived props
+                    insert_or_update_derived_props(obs)
         
         except Exception as error:
             print(error)

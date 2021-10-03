@@ -106,10 +106,10 @@ def sensor_excel_download(request):
         ws['G1'].fill = redFill
         
         # Optional/mandatory indicators
-        ws['J2'].fill = redFill
-        ws['K2'] = 'Required field'
-        ws['J3'].fill = yellowFill
-        ws['K3'] = 'Optional field'
+        ws['H1'].fill = redFill
+        ws['I1'] = 'Required field'
+        ws['K1'].fill = yellowFill
+        ws['L1'] = 'Optional field'
 
         increase_column_width(ws)
     
@@ -190,10 +190,10 @@ def sensor_observations_excel_download(request, sensorId):
         
         # Optional/mandatory indicators
         offset = 3
-        ws[f'{alphabet[last_idx + offset]}2'].fill = redFill
-        ws[f'{alphabet[last_idx + offset + 1]}2'] = 'Required field'
-        ws[f'{alphabet[last_idx + offset]}3'].fill = yellowFill
-        ws[f'{alphabet[last_idx + offset + 1]}3'] = 'Optional field'
+        ws[f'{alphabet[last_idx + offset]}1'].fill = redFill
+        ws[f'{alphabet[last_idx + offset + 1]}1'] = 'Required field'
+        ws[f'{alphabet[last_idx + offset + 2]}1'].fill = yellowFill
+        ws[f'{alphabet[last_idx + offset + 2 + 1]}1'] = 'Optional field'
 
         increase_column_width(ws)
 

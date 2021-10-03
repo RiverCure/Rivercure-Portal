@@ -99,6 +99,9 @@ class SensorObservationForm(forms.ModelForm):
     def clean(self):
         super(SensorObservationForm, self).clean()
 
+        if SensorObservation.objects.filter(date=self.cleaned_data['date'], time=self.cleaned_data['time'], sensor=self.sensor).exists():
+            raise ValidationError('There is already an observation with that date and time for that sensor')
+
         for prop in self.fields['properties'].queryset:
             if prop.sensorClass != self.sensor.sensorClass:
                 raise ValidationError('Sensor\'s sensor class must match properties sensor class')
@@ -112,7 +115,7 @@ class SensorObservationForm(forms.ModelForm):
     
     class Meta:
         model = SensorObservation
-        fields = ['date', 'time', 'severity', 'properties']
+        fields = ['date', 'time', 'severity']
 
 class SensorClassForm(forms.ModelForm):
     code    = forms.CharField()

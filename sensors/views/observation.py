@@ -39,6 +39,13 @@ class SensorObservationListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
     def test_func(self):
         return sensor_view_permission_check(self.request.user, self.sensor)
 
+def calculate_computed_prop(derivedPropValue, instruction):
+    globals = {'__builtins__': None} # prevents use of other methods
+    locals = {'otherValue': derivedPropValue}
+    exec(instruction, globals, locals)
+    propValue = locals['newValue'] # extract the computed value
+    return propValue
+
 class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = SensorObservationForm
     model = SensorObservation
@@ -81,25 +88,12 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
                     SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
 
         
+        # Derived properties
         derivedProps = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass, derivedBy__isnull=False, isImmediate=True)
-        print('Derived Props:', derivedProps)
-        for prop in derivedProps: # TODO: WHY NOT SAVING??
-            # Calculate here
-            derivedPropValue = form.cleaned_data[f'value_of_{prop.derivedBy.name}']
-            instruction = prop.instruction
-            locals = {'otherValue': derivedPropValue}
-            exec(instruction, {}, locals)
-            propValue = locals['newValue']
-            print('Prop value',propValue)
+        for prop in derivedProps:
+            propValue = calculate_computed_prop(form.cleaned_data[f'value_of_{prop.derivedBy.name}'], prop.instruction)
             if propValue is not None:
-                # with connection.cursor() as cursor:
-                #     cursor.execute("INSERT INTO sensors_sensorobservationvalue (property_id, observation_id, value) VALUES (%s, %s, %s)", [prop.id, observation.id, propValue])
-                obs = SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
-                print('Observation created:', obs)
-                print('Observation created pk:', obs.id)
-        
-        print('Finish!')
-
+                SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
 
         return super().form_valid(form)
 
