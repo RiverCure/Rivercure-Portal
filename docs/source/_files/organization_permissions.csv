@@ -1,0 +1,6 @@
+,Users of the organization,Organization's information,Contexts,Events, Sensors
+Manager,CRUD,RU,CRUD,CRUD,CRUD
+ContextManager,\-,R,CRUD,CRUD,CRUD
+EventManager,\-,R,R,CRUD,R
+SensorManager,\-,R,R,R,CRUD
+Member,\-,R,R,R,R

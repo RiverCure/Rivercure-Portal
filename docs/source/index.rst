@@ -8,10 +8,10 @@ Welcome to Rivercure Project's documentation!
    Installation <install>
    How it works <how_it_works>
    Configure and create initial sample data <configure>
-   Deploy <deploy>
    Core concepts <core_concepts>
    Authorization <authorization>
    Manipulating maps <manipulate_maps>
+   Deploy <deploy>
 
 
 

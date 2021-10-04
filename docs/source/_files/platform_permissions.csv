@@ -1,0 +1,4 @@
+,Users,Hydrofeatures,Backoffice,Organizations
+Admin,R,CRUD,YES,CSA
+Manager,\-,CRUD,NO,R
+Visitor,\-,R,NO,R
