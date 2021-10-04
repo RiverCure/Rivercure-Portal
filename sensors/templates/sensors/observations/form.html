@@ -51,8 +51,12 @@ properties.map((el, index) => {
         el['checkbox'].checked = true;
         el['checkbox'].disabled = true;
     }
-    
 
+    // If it's an edit, check checkboxes where a value was previously filled
+    if(el['input'].value != '') {
+        el['checkbox'].checked = true;
+    }
+    
     // Hide inputs where the checkbox is unchecked
     el['checkbox'].checked == false ? el['input_div'].style.display = 'none' : el['input_div'].style.display = 'block';
 

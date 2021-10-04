@@ -46,6 +46,36 @@ def calculate_computed_prop(derivedPropValue, instruction):
     propValue = locals['newValue'] # extract the computed value
     return propValue
 
+def save_observation_value(sensor, observation, form):
+    # Save SensorObservationValue depending on the prop type
+    for prop in form.cleaned_data['properties']:
+        tag = f'value_of_{prop.name}'
+        propValue = form.cleaned_data[tag]                
+
+        if prop.type == 'image' and propValue is not None:
+            extension = imghdr.what(propValue)
+            path = default_storage.save(f'observation_files/Sensor-{observation.id}_Property-{prop.id}.{extension}', ContentFile(propValue.read()))
+            if SensorObservationValue.objects.filter(property=prop, observation=observation).exists():
+                SensorObservationValue.objects.filter(property=prop, observation=observation).update(value=path)
+            else:
+                SensorObservationValue.objects.create(property=prop, observation=observation, value=path)
+        elif propValue is not None: # any other type
+            if SensorObservationValue.objects.filter(property=prop, observation=observation).exists():
+                SensorObservationValue.objects.filter(property=prop, observation=observation).update(value=propValue)
+            else:
+                SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
+
+    
+    # Derived properties
+    derivedProps = SensorClassProperty.objects.filter(sensorClass=sensor.sensorClass, derivedBy__isnull=False, isImmediate=True)
+    for prop in derivedProps:
+        propValue = calculate_computed_prop(form.cleaned_data[f'value_of_{prop.derivedBy.name}'], prop.instruction)
+        if propValue is not None:
+            if SensorObservationValue.objects.filter(property=prop, observation=observation).exists():
+                SensorObservationValue.objects.filter(property=prop, observation=observation).update(value=propValue)
+            else:
+                SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
+
 class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = SensorObservationForm
     model = SensorObservation
@@ -75,25 +105,7 @@ class SensorObservationCreateView(LoginRequiredMixin, UserPassesTestMixin, Creat
         observation.sensor = self.sensor
         observation.save()
 
-        # Save SensorObservationValue depending on the prop type
-        for prop in form.cleaned_data['properties']:
-            tag = f'value_of_{prop.name}'
-            propValue = form.cleaned_data[tag]                
-
-            if prop.type == 'image' and propValue is not None:
-                extension = imghdr.what(propValue)
-                path = default_storage.save(f'observation_files/Sensor-{observation.id}_Property-{prop.id}.{extension}', ContentFile(propValue.read()))
-                SensorObservationValue.objects.create(property=prop, observation=observation, value=path)
-            elif propValue is not None: # any other type
-                    SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
-
-        
-        # Derived properties
-        derivedProps = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass, derivedBy__isnull=False, isImmediate=True)
-        for prop in derivedProps:
-            propValue = calculate_computed_prop(form.cleaned_data[f'value_of_{prop.derivedBy.name}'], prop.instruction)
-            if propValue is not None:
-                SensorObservationValue.objects.create(property=prop, observation=observation, value=propValue)
+        save_observation_value(self.sensor, observation, form)
 
         return super().form_valid(form)
 
@@ -138,6 +150,15 @@ class SensorObservationUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
         context = super(SensorObservationUpdateView, self).get_context_data(**kwargs)
         context['sensor'] = self.sensor
         return context
+
+    def form_valid(self, form):
+        observation = form.save(commit=False)
+        observation.sensor = self.sensor
+        observation.save()
+
+        save_observation_value(self.sensor, observation, form)
+
+        return super().form_valid(form)
 
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object().sensor)
