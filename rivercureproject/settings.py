@@ -101,6 +101,7 @@ DATABASES = {
         'HOST': os.getenv('DATABASE_HOST', ''),
         'PORT': os.getenv('DATABASE_PORT', ''),
         'TEST': {
+            'NAME': 'rcp_test_db',
             'TEMPLATE': os.getenv('DATABASE_NAME', '')
         },
     }
