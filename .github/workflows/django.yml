@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         services:
             postgres:
-                image: postgres:12
+                image: postgis/postgis:12-2.5
                 env:
                     POSTGRES_DB: rcp_db
                     POSTGRES_USER: postgres
@@ -30,7 +30,6 @@ jobs:
             - name: Prepare database and install geo dependencies
               run: |
                   sudo apt-get install libpq-dev
-                  sudo apt install postgis postgresql-postgis
                   sudo apt-get install gdal-bin
             - name: Install Dependencies
               run: |
