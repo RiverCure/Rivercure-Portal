@@ -45,7 +45,9 @@ jobs:
               run: |
                   python manage.py migrate
             - name: Collect static
-              run: python manage.py collectstatic
+              run: |
+                  mkdir static
+                  python manage.py collectstatic
               env:
                   DATABASE_NAME: rcp_db
                   DATABASE_USER: postgres
