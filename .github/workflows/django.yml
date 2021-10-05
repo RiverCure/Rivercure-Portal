@@ -39,6 +39,8 @@ jobs:
                   DATABASE_NAME: rcp_db
                   DATABASE_USER: postgres
                   DATABASE_PASSWORD: postgres
+                  DATABASE_HOST: localhost
+                  DATABASE_PORT: 5432
               run: |
                   python manage.py migrate
             - name: Run Tests
