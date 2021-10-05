@@ -43,6 +43,11 @@ jobs:
                   DATABASE_HOST: localhost
                   DATABASE_PORT: 5432
               run: |
+                  python manage.py makemigrations context
+                  python manage.py makemigrations organization
+                  python manage.py makemigrations rivercureportal
+                  python manage.py makemigrations sensors
+                  python manage.py makemigrations users
                   python manage.py migrate
             - name: Collect static
               run: |
