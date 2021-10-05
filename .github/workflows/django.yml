@@ -27,11 +27,13 @@ jobs:
               uses: actions/setup-python@v2
               with:
                   python-version: 3.7
-            - name: psycopg2 prerequisites
-              run: sudo apt-get install libpq-dev
+            - name: Prepare database and install geo dependencies
+              run: |
+                  sudo apt-get install libpq-dev
+                  sudo apt install postgis postgresql-postgis
+                  sudo apt-get install gdal-bin
             - name: Install Dependencies
               run: |
-                  sudo apt-get install gdal-bin
                   python -m pip install --upgrade pip
                   pip install -r requirements/prod.txt
             - name: Run Migrations
