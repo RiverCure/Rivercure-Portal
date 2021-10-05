@@ -100,10 +100,13 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_PASSWORD', ''),
         'HOST': os.getenv('DATABASE_HOST', ''),
         'PORT': os.getenv('DATABASE_PORT', ''),
+        'TEST': {
+            'TEMPLATE': os.getenv('DATABASE_NAME', '')
+        },
     }
 }
 
-
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

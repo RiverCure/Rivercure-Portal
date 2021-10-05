@@ -36,3 +36,6 @@ alias startCelery="celery -A rivercureproject worker -l INFO";
 # Docs: start sphinx live server
 alias sphinxLive="sphinx-reload docs/";
 alias sphinxBuild="cd docs/ && make build";
+
+# Test all keeping db
+alias test="python manage.py test --keepdb";
