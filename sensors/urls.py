@@ -13,7 +13,7 @@ urlpatterns = [
     path('<str:pk>/delete/', views.SensorDeleteView.as_view(), name='sensor-delete'),
     # Observations
     path('<int:sensorId>/observation/new/' , views.SensorObservationCreateView.as_view(), name='sensor-observation-create'),
-    path('<int:sensorId>/observations/' , views.SensorObservationListView.as_view(), name='sensor-observation-list'),
+    path('<int:sensorId>/observations/', views.SensorObservationListView.as_view(), name='sensor-observation-list'),
     path('<int:sensorId>/observation/<int:observationId>', views.SensorObservationDetailView.as_view(), name='sensor-observation-detail'),
     path('<int:sensorId>/observation/<int:observationId>/update/', views.SensorObservationUpdateView.as_view(), name='sensor-observation-update'),
     path('<int:sensorId>/observation/<int:observationId>/delete/', views.SensorObservationDeleteView.as_view(), name='sensor-observation-delete'),

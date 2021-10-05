@@ -18,7 +18,7 @@ class SensorClassListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
-        return SensorClass.objects.filter(organization=self.organization)
+        return SensorClass.objects.filter(organization=self.organization).order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super(SensorClassListView, self).get_context_data(**kwargs) # get the default context data

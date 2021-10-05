@@ -18,7 +18,7 @@ class SensorClassPropertyListView(LoginRequiredMixin, UserPassesTestMixin, ListV
         return context
 
     def get_queryset(self):
-        return SensorClassProperty.objects.filter(sensorClass=self.kwargs['sensorClassId'])
+        return SensorClassProperty.objects.filter(sensorClass=self.kwargs['sensorClassId']).order_by('name')
 
     def test_func(self):
         user = self.request.user
