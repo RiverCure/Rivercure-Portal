@@ -278,8 +278,8 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
             print('Boundary geojson doesn\'t contain a MultiLineString\nTrying simple LineString')
             boundary.geom = LineString(feature['geometry']['coordinates'], srid=srid)
 
-        boundary.type = feature['properties']['Type']
-        boundary.dataType = feature['properties']['Data type']
+        boundary.type = feature['properties']['Type'] if 'Type' in feature['properties'] else ''
+        boundary.dataType = feature['properties']['Data type'] if 'Data type' in feature['properties'] else ''
         boundary.save()
         # Save the points on the boundary line
         for point in boundary.geom.coords:
