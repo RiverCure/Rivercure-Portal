@@ -38,23 +38,17 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
 
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
     context_points = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=context).distinct('sensor')
-    print('Context_points: ', context_points)
     for point in context_points:
         sensor_class = SensorClass.objects.get(id=point.sensor.sensorClass.id)
         sensor_class_properties = SensorClassProperty.objects.filter(sensorClass=sensor_class)
-        print('Sensor class properties:', sensor_class_properties)
         sensor_obs = SensorObservation.objects.filter(sensor=point.sensor)
-        print('sensor_obs', sensor_obs)
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
-        print('sensor_obs_valid', sensor_obs_valid)
         file_data = ''
         instant = 0
         
         for obs in sensor_obs_valid:
-            print('Obs:', obs)
             for prop in sensor_class_properties:
                 obs_value = SensorObservationValue.objects.filter(property=prop, observation=obs)
-                print(obs_value)
                 if obs_value.exists() and obs_value[0].value != None:
                     line = f'{instant}\t{obs_value[0].value}\r\n'
 
