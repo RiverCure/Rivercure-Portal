@@ -29,8 +29,8 @@ def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update
 def prepare_time_file(init_date, end_date, init_time, end_time): #prepare time file
     init_time = datetime.datetime.combine(datetime.date.today(), init_time)
     end_time = datetime.datetime.combine(datetime.date.today(), end_time)
-    duration = (end_date - init_date).seconds + (end_time - init_time).seconds
-    time_file = f'0\r\n{duration}'
+    duration = (end_date - init_date).total_seconds() + (end_time - init_time).seconds
+    time_file = f'0\r\n{int(duration)}'
     return time_file
 
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
