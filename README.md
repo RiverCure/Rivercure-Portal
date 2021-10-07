@@ -14,4 +14,4 @@ Welcome to RiverCure's web app repository.
 > by making an efficient and systematic use of curated crowdsourced and
 > authoritative data through assimilation and calibration.
 
-To see the docs, head to `docs/` and type `make build`. A set of HTML pages should be built. Open `build/html/index.html ` in your favourite browser to start reading.
+To see the docs, head to `docs/` and type `make build`. A set of HTML pages should be built. Open `build/html/index.html` in your favourite browser to start reading.
