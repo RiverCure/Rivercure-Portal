@@ -32,18 +32,18 @@
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata">
-            <h1>{{event.Name}}</h1>
+            <h1>{{ event.Name }}</h1>
         </div>
         <p class="article-content"><b>Context: </b>{{ event.context }}</p>
         <p class="article-content"><b>Type: </b>{{ event.type }}</p> 
         <p class="article-content"><b>SubType: </b>{{ event.subtype }}</p> 
-        <p class="article-content"><b>Start: </b>{{ event.startDate }} - {{event.startTime}}</p> 
-        <p class="article-content"><b>End: </b>{{ event.endDate }} - {{event.endTime}}</p>
-        <p class="article-content"><b>Description: </b>{{ event.description}}</p>
-        <p class="article-content"><b>Return Period: </b>{{ event.returnPeriod}}</p>
-        <p class="article-content"><b>WarmUp: </b>{{ event.warmUp}}</p>
-        <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{ event.WritingPeriodicityUnit }}</p>
-        <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{ event.UpdateMaximumValueUnit }}</p>
+        <p class="article-content"><b>Start: </b>{{ event.startDate }} - {{ event.startTime|time:"H:i" }}</p> 
+        <p class="article-content"><b>End: </b>{{ event.endDate }} - {{ event.endTime|time:"H:i" }}</p>
+        <p class="article-content"><b>Description: </b>{{ event.description }}</p>
+        <p class="article-content"><b>Return Period: </b>{{ event.returnPeriod }}</p>
+        <p class="article-content"><b>WarmUp: </b>{{ event.warmUp|yesno:"Yes,No" }}</p>
+        <p class="article-content"><b>Writing Periodicity: </b>{{ event.WritingPeriodicity }} {{ event.WritingPeriodicityUnit|default:"" }}</p>
+        <p class="article-content"><b>Update Maximum Value: </b>{{ event.UpdateMaximumValue }} {{ event.UpdateMaximumValueUnit|default:"" }}</p>
 
         {% if hasPerm %}
         <a type="button" class="btn btn-info" href="{% url 'event-update' event.context.code object.id %}">Edit</a>

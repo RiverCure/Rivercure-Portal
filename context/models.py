@@ -155,7 +155,7 @@ class e_ContextEvent(models.Model):
 	startTime   = models.TimeField(verbose_name='Start time')
 	endDate     = models.DateField(verbose_name='End date', default=date.today)
 	endTime     = models.TimeField(verbose_name='End time')
-	description = models.TextField()
+	description = models.TextField(null=True, blank=True)
 	
 	#Attributes for "Flood Simulation" event, with HiSTAV
 	returnPeriod           = models.IntegerField(verbose_name='Return period', default=1)

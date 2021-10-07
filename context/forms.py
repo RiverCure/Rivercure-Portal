@@ -55,3 +55,14 @@ class EventForm(forms.ModelForm):
             'endTime': forms.TextInput(attrs={'placeholder': 'hh:mm:ss'}),
             'description': forms.Textarea(attrs={'placeholder': 'Enter description here'}),
         }
+    
+    def clean(self):
+        super(EventForm, self).clean()
+
+        if self.cleaned_data['startDate'] > self.cleaned_data['endDate']:
+            self.add_error('startDate', 'Start date must be before or equal to end date')
+        elif self.cleaned_data['startDate'] == self.cleaned_data['endDate']:
+            if self.cleaned_data['startTime'] > self.cleaned_data['endTime']:
+                self.add_error('startTime', 'Start time must be before or equal to end time')
+
+        return self.cleaned_data
