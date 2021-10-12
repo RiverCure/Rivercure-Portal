@@ -233,8 +233,8 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
 
 @login_required
-def download_context(request, context_code): #function that allows the download of an context
-    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=context_code).organization): #verify that the user is logged in
+def download_context(request, contextCode): #function that allows the download of an context
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=contextCode).organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 
     message = None  #Message to send to user in case of failure
@@ -243,16 +243,16 @@ def download_context(request, context_code): #function that allows the download 
     #Need to check if context code exists
     try:
         #------------------ Domain --------------------------------
-        domain_file = prepare_domain(context_code)
+        domain_file = prepare_domain(contextCode)
         context_name = domain_file['name']
         #------------------ Alignment --------------------------------
-        alignment_file = prepare_alignment(context_code, context_name)
+        alignment_file = prepare_alignment(contextCode, context_name)
         #------------------ Refinement --------------------------------  
-        refinement_file = prepare_refinement(context_code, context_name)
+        refinement_file = prepare_refinement(contextCode, context_name)
         #------------------ Boundary --------------------------------
-        boundary_file = prepare_boundaries(context_code, context_name)
+        boundary_file = prepare_boundaries(contextCode, context_name)
         #------------------ Boundary Points --------------------------------
-        boundary_point_file = prepare_boundary_points(context_code, context_name)
+        boundary_point_file = prepare_boundary_points(contextCode, context_name)
         #endof json preparation
 
         mem_file = BytesIO() #memory where the zip file will be created
@@ -308,8 +308,8 @@ def preprocessing_results(request): # function to redirect the user to the parav
     return redirect(paraviewweb_visualizer_url)
 
 @login_required
-def download_preprocessing_results(request, context_code): # function to redirect the user to the paraviewweb visualizer
-    context = get_object_or_404(e_Context, code=context_code)
+def download_preprocessing_results(request, contextCode): # function to redirect the user to the paraviewweb visualizer
+    context = get_object_or_404(e_Context, code=contextCode)
     if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
         return HttpResponse('Unauthorized', status=401)
 

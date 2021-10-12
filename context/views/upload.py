@@ -22,7 +22,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     form_class = UploadContextForm
 
     def test_func(self):
-        return context_organization_edit_permission_check(self.request.user, get_object_or_404(e_Context, pk=self.kwargs['pk']).organization)
+        return context_organization_edit_permission_check(self.request.user, get_object_or_404(e_Context, pk=self.kwargs['contextCode']).organization)
 
     def form_valid(self, form):
         message = ''
@@ -89,15 +89,15 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
     def get_success_url(self):
         action = self.request.GET.get('value')
         if action == "finished":
-            return reverse('context-detail', args=[self.kwargs['pk']])
+            return reverse('context-detail', args=[self.kwargs['contextCode']])
         elif action == "continue":
-            return reverse('context_manage', args=[self.kwargs['pk']])
+            return reverse('context_manage', args=[self.kwargs['contextCode']])
         else:
-            return reverse('context-detail', args=[self.kwargs['pk']])
+            return reverse('context-detail', args=[self.kwargs['contextCode']])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context'] = e_Context.objects.get(code=self.kwargs['pk'])
+        context['context'] = e_Context.objects.get(code=self.kwargs['contextCode'])
         return context
 
 #aux functions for manage_context()
