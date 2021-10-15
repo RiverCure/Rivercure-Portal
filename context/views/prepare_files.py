@@ -8,14 +8,14 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 
 def prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit): # prepare output.cnt file for simulation
     # transform periodicity
-    if(writing_unit == 'hour'):
+    if writing_unit == 'hour':
         writing_perio *= 60 * 60
-    elif(writing_unit == 'minute'):
+    elif writing_unit == 'minute':
         writing_perio *= 60
 
-    if(update_unit == 'hour'):
+    if update_unit == 'hour':
         max_update_perio *= 60 * 60
-    elif(update_unit == 'minute'):
+    elif update_unit == 'minute':
         max_update_perio *= 60
     
     writing_freq = 1/writing_perio
@@ -33,7 +33,15 @@ def prepare_time_file(init_date, end_date, init_time, end_time): #prepare time f
     time_file = f'0\r\n{int(duration)}'
     return time_file
 
-def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
+def calculate_instant_increment(writing_perio, writing_unit):
+    if writing_unit == 'hour':
+        return writing_perio * 60 * 60
+    elif writing_unit == 'minute':
+        return writing_perio * 60
+    elif writing_unit == 'second':
+        return writing_perio
+
+def prepare_gauge_file(context, init_date, end_date, init_time, end_time, writing_perio, writing_unit):
     files = {}
 
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
@@ -45,6 +53,7 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
         sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
         file_data = ''
         instant = 0
+        instant_increment = calculate_instant_increment(writing_perio, writing_unit)
         
         for obs in sensor_obs_valid:
             for prop in sensor_class_properties:
@@ -53,7 +62,7 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
                     line = f'{instant}\t{obs_value[0].value}\r\n'
 
             file_data += line
-            instant += 60
+            instant += instant_increment
 
         file_name = f'sensor_{point.sensor.id}.bnd'
         files[file_name] = ( (f'sensor_{point.sensor.id}.bnd', file_data) )
