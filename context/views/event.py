@@ -91,9 +91,13 @@ def download_simulation_results(request, event_id): #function to download simula
 
     context_name = context_event.context.Name
 
-    payload = {'context_name': context_name, 'event_id': event_id}
-    request = requests.get(f'{url}simulation/results/', params=payload, stream=True)
+    payload = { 'context_name': context_name, 'event_id': event_id }
+    histav_response = requests.get(f'{url}simulation/results/', params=payload, stream=True)
+    if histav_response.status_code == 404:
+        messages.error(request, "File doesn\'t exist in HiSTAV")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('event-detail', args=[context_event.context.code, event_id])))
 
+    # If files are too big, use:
     # mem_file = BytesIO()
     # with ZipFile(mem_file, 'w') as destination:
     #     for chunk in request.iter_content(chunk_size=1024):
@@ -101,10 +105,11 @@ def download_simulation_results(request, event_id): #function to download simula
 
             
     print(f'Simulation results requested for context {context_name} event {event_id}')
-    response = FileResponse(BytesIO(request.content))
-    response['Content-Disposition'] = f'attachment; filename="{context_name}_{event_id}_simulation_results.zip"'
+    response = FileResponse(BytesIO(histav_response.content))
+    response['Content-Disposition'] = f'attachment; filename="{context_name}_{event_id}_simulation_results.vtk"'
     return response
 
+# Note: Not needed right now, since only the VTK file is returned as simulation result
 def handle_simulation_results(request, event_id): #function to handle simulation results
     sim_url = os.environ['SIMULATOR_ADDRESS']
 
@@ -273,7 +278,7 @@ def event_status_progress(request, event_id):
     
 
 def event_status_change(request, event_id): # Function to mark event has generated
-    event = e_ContextEvent.objects.get(event_id)
+    event = e_ContextEvent.objects.get(pk=event_id)
     if request.GET.get('status'):
         event.hasSimulation = True
         event.task_id = None # task finished

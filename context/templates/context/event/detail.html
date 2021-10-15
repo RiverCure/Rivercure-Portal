@@ -48,13 +48,14 @@
         {% if hasPerm %}
         <a type="button" class="btn btn-info" href="{% url 'event-update' event.context.code object.id %}">Edit</a>
             {% if event.hasSimulation %}
-                <button type="button" class="btn btn-dark" disabled>Simulation completed successfully</button>
+                <a type="button" class="btn btn-primary" href="{% url 'simulation-results-download' event.id %}">Download results</a>
+                <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code event.id %}">Run Simulation</a>
             {% else %}
                 {% if event.task_id %}
-                    <a class="btn btn-secondary mt-1 mb-1" href="{% url 'event-regenerate-confirm' object.id %}">Re-run Simulation</a>
-                    <a class="btn btn-warning mt-1 mb-1" href="{% url 'event-progress' object.id %}">Progress</a>
+                    <a class="btn btn-secondary mt-1 mb-1" href="{% url 'event-regenerate-confirm' event.id %}">Re-run Simulation</a>
+                    <a class="btn btn-warning mt-1 mb-1" href="{% url 'event-progress' event.id %}">Progress</a>
                 {% else %}
-                    <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code object.id %}">Run Simulation</a>
+                    <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code event.id %}">Run Simulation</a>
                 {% endif %}
             {% endif %}
         {% endif %}
