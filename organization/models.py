@@ -7,11 +7,11 @@ City_Choices = ( ('abrantes', 'Abrantes'), ('agualva-cacém', 'Agualva-Cacém'),
 Permissions = (('org_manager', 'Manager'), ('org_contextManager', 'Context Manager'), ('org_eventManager', 'Event Manager'), ('org_sensorManager', 'Sensor Manager'), ('org_member', 'Member'))
 
 class Organization(models.Model):
-    code        = models.TextField(unique=True, null=True)
-    name        = models.TextField(null=True)
-    type        = models.CharField(max_length=50, choices=OrganizationKind_Choices)
-    country     = models.CharField(max_length=80, choices=Country_Choices)
-    city        = models.CharField(max_length=80, choices=City_Choices)
+    code        = models.TextField(unique=True)
+    name        = models.TextField()
+    type        = models.TextField(choices=OrganizationKind_Choices, null=True, blank=True)
+    country     = models.TextField(choices=Country_Choices, null=True, blank=True)
+    city        = models.TextField(choices=City_Choices, null=True, blank=True)
     members     = models.ManyToManyField(User, through='Membership')
     created_by  = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user')
     create_date = models.DateTimeField()

@@ -10,3 +10,11 @@ class CreateOrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
         fields = ['code', 'name']
+
+class UpdateOrganizationForm(forms.ModelForm):
+    code    = forms.CharField(help_text='The code must be a no-whitespace string that identifies uniquely the organization (e.g.: APA)')
+    name    = forms.CharField(help_text='The name should be the organization\'s full name (e.g.: Agência Portuguesa do Ambiente)')
+    
+    class Meta:
+        model = Organization
+        fields = ['code', 'name', 'type', 'country', 'city']

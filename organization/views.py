@@ -10,7 +10,7 @@ from notifications.signals import notify
 from django.contrib.auth.models import User
 from notifications.models import Notification
 from django.contrib.auth.views import redirect_to_login
-from .forms import CreateOrganizationForm
+from .forms import CreateOrganizationForm, UpdateOrganizationForm
 from datetime import datetime
 from django.http import HttpResponseRedirect
 from rivercureportal.authorization import is_platform_admin
@@ -92,12 +92,13 @@ class OrganizationDetailView(LoginRequiredMixin, DetailView):
         context['isSensorManager'] = is_sensor_manager(user, organization)
         return context
 
+
 class OrganizationUpdateView(UserPassesTestMixin, UpdateView):
     name = 'Edit organization'
     model = Organization
     context_object_name = 'organization'
     template_name = 'organization/form.html'
-    fields = ['name', 'type', 'country', 'city']
+    form_class = UpdateOrganizationForm
     pk_url_kwarg = 'organizationId'
 
     def get_success_url(self):
