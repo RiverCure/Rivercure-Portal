@@ -53,7 +53,7 @@ class OtherSensorListView(LoginRequiredMixin, ListView):
     ordering = ['code']
 
     def get_queryset(self):
-        organization = get_object_or_404(Organization, name=self.request.session['organizationCode'])
+        organization = get_object_or_404(Organization, code=self.request.session['organizationCode'])
         queryset = Sensor.objects.exclude(sensorClass__organization=organization).exclude(isPublic=False)
         filter = OtherSensorFilter(self.request.GET, queryset.order_by('code'))
         return filter.qs
