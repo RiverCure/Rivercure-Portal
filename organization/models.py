@@ -7,7 +7,8 @@ City_Choices = ( ('abrantes', 'Abrantes'), ('agualva-cacém', 'Agualva-Cacém'),
 Permissions = (('org_manager', 'Manager'), ('org_contextManager', 'Context Manager'), ('org_eventManager', 'Event Manager'), ('org_sensorManager', 'Sensor Manager'), ('org_member', 'Member'))
 
 class Organization(models.Model):
-    name        = models.CharField(max_length=50, null=True, unique=True)
+    code        = models.TextField(unique=True, null=True)
+    name        = models.TextField(null=True)
     type        = models.CharField(max_length=50, choices=OrganizationKind_Choices)
     country     = models.CharField(max_length=80, choices=Country_Choices)
     city        = models.CharField(max_length=80, choices=City_Choices)
@@ -15,6 +16,9 @@ class Organization(models.Model):
     created_by  = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user')
     create_date = models.DateTimeField()
     is_active   = models.BooleanField(default=True)
+
+    def clean(self):
+        self.code = self.code.replace(" ", "")
 
     def __str__(self):
         return self.name

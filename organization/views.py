@@ -21,7 +21,7 @@ from django.contrib import messages
 # Adds the default organization to the session, so that it is available in every view
 def user_log_in_handler(sender, user, request, **kwargs):
     organization = Profile.objects.get(user=user).defaultOrganization
-    request.session['organizationName'] = organization.name if organization else None
+    request.session['organizationCode'] = organization.code if organization else None
 
 user_logged_in.connect(user_log_in_handler)
 
@@ -67,7 +67,7 @@ class OrganizationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         membership.save()
 
         # Notify new manager
-        notify.send(sender=organization, recipient=manager, action_object=organization, verb=f"You have been assigned management of the new organization {organization.name} by {self.request.user}")
+        notify.send(sender=organization, recipient=manager, action_object=organization, verb=f"You have been assigned management of the new organization {organization.code} by {self.request.user}")
 
         return super().form_valid(form)
 
@@ -161,9 +161,9 @@ class MemberRoleUpdateView(UserPassesTestMixin, UpdateView):
         
         # Notify other managers
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=self.request.user.id)
-        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} role on organization {organization.name} has been changed to {newRole} by {self.request.user}")
+        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} role on organization {organization.code} has been changed to {newRole} by {self.request.user}")
         # Notify user
-        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your role on organization {organization.name} has been changed to {newRole} by {self.request.user}")
+        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your role on organization {organization.code} has been changed to {newRole} by {self.request.user}")
 
         return reverse('organization-manage', args=(self.get_object().organization.id,))
 
@@ -204,7 +204,7 @@ def organizationAccessRequest(request, organizationId):
         accessRequest.save()
 
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization_id=organizationId, permission='org_manager'))
-        notify.send(sender=user, recipient=managers, action_object=organization, verb=f"{user.username} requested to enter the organization {organization.name}")
+        notify.send(sender=user, recipient=managers, action_object=organization, verb=f"{user.username} requested to enter the organization {organization.code}")
 
     return redirect('organization-list')
 
@@ -218,7 +218,7 @@ def organizationAccessRequestCancel(request, organizationId):
     if membership_user and organization.is_active == True:
         membership_user.delete()
 
-    notifications = Notification.objects.filter(verb=f"{user.username} requested to enter the organization {organization.name}")
+    notifications = Notification.objects.filter(verb=f"{user.username} requested to enter the organization {organization.code}")
     if notifications is not None:
         notifications.first().mark_as_read()
 
@@ -238,10 +238,10 @@ def organizationAccessRequestDeny(request, organizationId, userId):
         membership_user.delete()
     
         # Notify the user
-        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been denied access to organization {organization.name}")
+        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been denied access to organization {organization.code}")
         # Notify all managers of the organization
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
-        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been denied access to organization {organization.name}")
+        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been denied access to organization {organization.code}")
 
     return redirect('organization-manage', organizationId)
 
@@ -262,10 +262,10 @@ def organizationAccessRemove(request, organizationId, userId):
     if membership_user and organization.is_active == True:
         membership_user.delete()
 
-        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your access to organization {organization.name} has been removed")
+        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"Your access to organization {organization.code} has been removed")
         # Notify all managers of the organization
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
-        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} access to organization {organization.name} has been removed")
+        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} access to organization {organization.code} has been removed")
 
     return redirect('organization-manage', organizationId)
 
@@ -287,10 +287,10 @@ def organizationAccessAllow(request, organizationId, userId):
         membership_user.save()
 
         # Notify the user
-        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been granted access to organization {organization.name}")
+        notify.send(sender=organization, recipient=user, action_object=organization, verb=f"You have been granted access to organization {organization.code}")
         # Notify all managers of the organization
         managers = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, permission='org_manager')).exclude(pk=request.user.id)
-        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been granted access to organization {organization.name}")
+        notify.send(sender=organization, recipient=managers, action_object=organization, verb=f"User {user} has been granted access to organization {organization.code}")
 
     return redirect('organization-manage', organizationId)
 
@@ -303,7 +303,7 @@ def organizationReactivate(request, organizationId):
 
     # Notify all members of the organization
     members = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, access_granted=True)).exclude(pk=request.user.id)
-    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.name} has been reactivated by {request.user}")
+    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.code} has been reactivated by {request.user}")
 
     return redirect('organization-list')
 
@@ -316,16 +316,16 @@ def organizationSuspend(request, organizationId):
 
     # Notify all members of the organization
     members = User.objects.filter(membership__in=Membership.objects.filter(organization=organization, access_granted=True)).exclude(pk=request.user.id)
-    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.name} has been suspended by {request.user}")
+    notify.send(sender=organization, recipient=members, action_object=organization, verb=f"Your organization {organization.code} has been suspended by {request.user}")
 
     return redirect('organization-list')
 
 @login_required
 def organizationSetCurrent(request, organizationId):
     organization = get_object_or_404(Organization, pk=organizationId)
-    request.session['organizationName'] = organization.name
+    request.session['organizationCode'] = organization.code
     request.user.profile.defaultOrganization = organization
     request.user.profile.save()
 
-    messages.success(request, f'You made organization {organization.name} your current organization')
+    messages.success(request, f'You made organization {organization.code} your current organization')
     return redirect('organization-detail', organization.pk)

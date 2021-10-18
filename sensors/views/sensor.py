@@ -18,7 +18,7 @@ class SensorListView(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            if request.session['organizationName'] is not None:
+            if request.session['organizationCode'] is not None:
                 return super(SensorListView, self).dispatch(request, *args, **kwargs)
             else:
                 raise Exception
@@ -28,21 +28,21 @@ class SensorListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization
-        organizationName = self.request.session['organizationName']
-        organization = get_object_or_404(Organization, name=organizationName)
+        organizationCode = self.request.session['organizationCode']
+        organization = get_object_or_404(Organization, code=organizationCode)
 
         queryset = Sensor.objects.filter(state='active', sensorClass__organization=organization)
-        filter = SensorFilter(self.request.GET, queryset.order_by('code'), organizationName=organizationName)
+        filter = SensorFilter(self.request.GET, queryset.order_by('code'), organizationCode=organizationCode)
         return filter.qs
 
     def get_context_data(self, **kwargs):
         context = super(ListView, self).get_context_data(**kwargs)
-        organizationName = self.request.session['organizationName']
+        organizationCode = self.request.session['organizationCode']
 
         context['hasPerm'] = sensor_general_create_permission_check(self.request.user)
         context['form'] = SensorFileForm()
         queryset = self.get_queryset()
-        filter = SensorFilter(self.request.GET, queryset, organizationName=organizationName)
+        filter = SensorFilter(self.request.GET, queryset, organizationCode=organizationCode)
         context['filter'] = filter
         return context
 
@@ -53,7 +53,7 @@ class OtherSensorListView(LoginRequiredMixin, ListView):
     ordering = ['code']
 
     def get_queryset(self):
-        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        organization = get_object_or_404(Organization, name=self.request.session['organizationCode'])
         queryset = Sensor.objects.exclude(sensorClass__organization=organization).exclude(isPublic=False)
         filter = OtherSensorFilter(self.request.GET, queryset.order_by('code'))
         return filter.qs
@@ -90,7 +90,7 @@ class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(SensorCreateView, self).get_form_kwargs()
-        kwargs.update({'organizationName': self.request.session['organizationName']})
+        kwargs.update({'organizationCode': self.request.session['organizationCode']})
         return kwargs
 
     def form_valid(self, form):
@@ -128,7 +128,7 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(SensorUpdateView, self).get_form_kwargs()
-        kwargs.update({'organizationName': self.request.session['organizationName']})
+        kwargs.update({'organizationCode': self.request.session['organizationCode']})
         return kwargs
     
     def form_valid(self, form):

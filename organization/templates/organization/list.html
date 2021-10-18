@@ -22,7 +22,7 @@
 	<div class="col-md-12">
         <table class="table table-hover">
             <tr>
-                <th scope="col">Name</th>
+                <th scope="col">Code</th>
                 <th scope="col">Type</th>
                 <th scope="col">Creation date</th>
                 <th scope="col">Role</th>
@@ -32,7 +32,7 @@
             {% for organization in organizations %}
             <tr>
                 <td>
-                    <a href="{% url 'organization-detail' organization.pk %}">{{ organization.name }}</a>
+                    <a href="{% url 'organization-detail' organization.pk %}">{{ organization.code }}</a>
                 </td>
                 <td>{% if organization.type %}{{ organization.get_type_display }}{% else %}-----{% endif %}</td>
                 <td>{% if organization.create_date %}{{ organization.create_date }}{% else %}-----{% endif %}</td>
@@ -67,7 +67,7 @@
                     {{ organization.is_active|yesno:"Active,Suspended" }}
                 </td>
                 <td>
-                    {% if request.session.organizationName == organization.name %}
+                    {% if request.session.organizationCode == organization.code %}
                         X
                     {% endif %}
                 </td>

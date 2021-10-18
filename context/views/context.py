@@ -47,7 +47,7 @@ class ContextListView(LoginRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            if request.session['organizationName'] is not None:
+            if request.session['organizationCode'] is not None:
                 return super(ContextListView, self).dispatch(request, *args, **kwargs)
             else:
                 raise Exception
@@ -56,7 +56,7 @@ class ContextListView(LoginRequiredMixin, ListView):
             return redirect('organization-list')
 
     def get_queryset(self):
-        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        organization = get_object_or_404(Organization, name=self.request.session['organizationCode'])
         context_list = e_Context.objects.filter(organization=organization)
         self.filter = ContextFilter(self.request.GET, queryset=context_list)
         return self.filter.qs
@@ -73,7 +73,7 @@ class OtherContextListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        organization = get_object_or_404(Organization, name=self.request.session['organizationName'])
+        organization = get_object_or_404(Organization, name=self.request.session['organizationCode'])
         context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context

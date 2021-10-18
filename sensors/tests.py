@@ -18,7 +18,7 @@ class TestEndpoints(TestCase):
         # Set session
         session = self.client.session
         session.update({
-            'organizationName': self.organization.name
+            'organizationCode': self.organization.code
         })
         session.save()
         Membership.objects.create(user=self.user, organization=self.organization, access_granted=True, permission='org_manager')

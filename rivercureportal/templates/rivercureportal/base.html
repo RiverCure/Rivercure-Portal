@@ -110,7 +110,7 @@
                             {% endif %}
                             {% if user.is_authenticated %}
                                 <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ user.username }} {%if request.session.organizationName %} ({{ request.session.organizationName }}) {% endif %}</a>
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ user.username }} {%if request.session.organizationCode %} ({{ request.session.organizationCode }}) {% endif %}</a>
                                     <div class="dropdown-menu">
                                         <a href="{% url 'profile' %}" class="dropdown-item">Edit My Profile</a>
                                         <a href="{% url 'organization-list' %}" class="dropdown-item">Set Current Organization</a>

@@ -13,15 +13,13 @@
                 <a class="btn btn-success m-2" href="{% url 'organization-set-current' organization.pk %}">Make current organization</a>
             {% endif %}
         </div>
-        <p class="article-content">
-            <b>Managers: </b>{% for manager in managers %}{{manager.user}}{% if not forloop.last %}, {% endif %}{% endfor %}
-        </p>
-        
-        <p class="article-content mt-4"><b>Type: </b>{{ organization.get_type_display|default:"Not specified" }}</p>
-        <p class="article-content mt-4"><b>State: </b>{{ organization.is_active|yesno:"Active,Suspended" }}</p>
-        <p class="article-content mt-4"><b>Create date: </b>{{ organization.create_date }}</p>
-        <p class="article-content mt-4"><b>Country: </b>{{ organization.get_country_display|default:"Not specified" }}</p>
-        <p class="article-content mt-4"><b>City: </b>{{ organization.get_city_display|default:"Not specified" }}</p>
+        <p class="article-content mt-4"><b>Code: </b>{{ organization.code }}</p>
+        <p class="article-content"><b>Managers: </b>{% for manager in managers %}{{manager.user}}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+        <p class="article-content"><b>Type: </b>{{ organization.get_type_display|default:"Not specified" }}</p>
+        <p class="article-content"><b>State: </b>{{ organization.is_active|yesno:"Active,Suspended" }}</p>
+        <p class="article-content"><b>Create date: </b>{{ organization.create_date }}</p>
+        <p class="article-content"><b>Country: </b>{{ organization.get_country_display|default:"Not specified" }}</p>
+        <p class="article-content"><b>City: </b>{{ organization.get_city_display|default:"Not specified" }}</p>
 
         {% if isSensorManager or isManager %}
             <a class="btn btn-success mt-1 mb-1" href="{% url 'sensor-class-list' organization.pk %}">Manage sensor classes</a>
