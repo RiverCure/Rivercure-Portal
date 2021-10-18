@@ -8,7 +8,7 @@ class Profile(models.Model):
     first_name          = models.CharField(max_length=20, null=True)
     last_name           = models.CharField(max_length=20, null=True)
     image               = models.ImageField(default='default.jpg', upload_to="profile_pics")
-    defaultOrganization = models.OneToOneField(Organization, null=True, on_delete=models.SET_NULL)
+    defaultOrganization = models.ForeignKey(Organization, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.user.username} profile'

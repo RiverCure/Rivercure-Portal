@@ -19,6 +19,7 @@
 </style>
 
 <h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> Events</h1>
+
 <div class="filter-section">
     <h5>Filter</h5>
     <form method="get">
@@ -30,7 +31,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-12 table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -64,6 +65,7 @@
         {% if hasPerm %}
             <a type="button" class="btn btn-info" href="{% url 'event-create' context.code %}">Add Event</a>
         {% endif %}
+        <a class="btn btn-secondary" style="float:right;" href="{% url 'context-detail' view.kwargs.contextCode %}">Back to context</a>
     </div>
 </div>
 

@@ -324,6 +324,8 @@ def organizationSuspend(request, organizationId):
 def organizationSetCurrent(request, organizationId):
     organization = get_object_or_404(Organization, pk=organizationId)
     request.session['organizationName'] = organization.name
+    request.user.profile.defaultOrganization = organization
+    request.user.profile.save()
 
     messages.success(request, f'You made organization {organization.name} your current organization')
     return redirect('organization-detail', organization.pk)

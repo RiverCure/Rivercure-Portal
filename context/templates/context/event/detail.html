@@ -32,7 +32,7 @@
 <article class="media content-section">
     <div class="media-body">
         <div class="article-metadata">
-            <h1>{{ event.Name }}</h1>
+            <h1><a href="{% url 'context-detail' event.context.code %}"> {{ event.context.Name }}</a> event '{{ event.Name }}'</h1>
         </div>
         <p class="article-content"><b>Context: </b>{{ event.context }}</p>
         <p class="article-content"><b>Type: </b>{{ event.type }}</p> 
