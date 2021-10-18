@@ -37,10 +37,10 @@ class SensorForm(forms.ModelForm):
     lng         = forms.FloatField(label='Longitude')
 
     def __init__(self, *args, **kwargs):
-        organization_name = kwargs.pop('organizationCode')
+        organization_code = kwargs.pop('organizationCode')
         super(SensorForm, self).__init__(*args, **kwargs)
         # Only allow to choose organizations where the user is org_manager, org_sensorManager or org_contextManager of the organization
-        organization = Organization.objects.get(name=organization_name)
+        organization = Organization.objects.get(code=organization_code)
         # Only allow to choose sensor classes where the user is member of that organization
         self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization=organization)
         self.fields['sensorClass'].label = 'Sensor class'

@@ -19,9 +19,9 @@ def is_sensor_manager(user: User, organization: Organization) -> bool:
     except:
         return False
 
-def is_org_manager_check(user, organization_id):
+def is_org_manager_check(user, organizationCode):
     try:
-        return Membership.objects.filter(organization_id=organization_id, user=user, permission='org_manager').exists()
+        return Membership.objects.filter(organization__code=organizationCode, user=user, permission='org_manager').exists()
     except:
         return False
 

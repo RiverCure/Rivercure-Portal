@@ -21,7 +21,7 @@ class Organization(models.Model):
         self.code = self.code.replace(" ", "")
 
     def __str__(self):
-        return self.name
+        return self.code
 
 
 class Membership(models.Model):
