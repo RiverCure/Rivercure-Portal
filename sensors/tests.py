@@ -14,12 +14,10 @@ class TestEndpoints(TestCase):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
-        self.organization = Organization.objects.create(name='testOrganizationo', type='waterAuthority', create_date=datetime.now(tz=timezone.utc), is_active=True)
+        self.organization = Organization.objects.create(code='testOrg', name='test Organization', type='waterAuthority', create_date=datetime.now(tz=timezone.utc), is_active=True)
         # Set session
         session = self.client.session
-        session.update({
-            'organizationCode': self.organization.code
-        })
+        session.update({ 'organizationCode': self.organization.code })
         session.save()
         Membership.objects.create(user=self.user, organization=self.organization, access_granted=True, permission='org_manager')
 
@@ -28,6 +26,7 @@ class TestEndpoints(TestCase):
         self.prop = SensorClassProperty.objects.create(code='propTest', name='prop test', type='number', isOptional=False, sensorClass=self.sensorClass)
         self.sensor = Sensor.objects.create(code='sensorCoura', name='sensorCoura', state='active', isPublic=True, local=Point(5, 23), sensorClass=self.sensorClass)
 
+    @override_settings(DEBUG=True)
     def test_sensor_views(self):
         sensorId = self.sensor.pk
 
