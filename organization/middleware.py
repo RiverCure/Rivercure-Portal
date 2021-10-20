@@ -10,7 +10,7 @@ class CheckOrganizationInSession:
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-        if request.user.is_authenticated:
+        if request.user.is_authenticated: # Authentication is handled by another middleware
             if request.path.startswith('/contexts/') or request.path.startswith('/sensors/'):
                 # This is an exception for HiSTAV to be able to communicate
                 if not resolve(request.path_info).url_name == 'mesh-status-change':

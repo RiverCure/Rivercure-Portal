@@ -1,7 +1,7 @@
 from celery import shared_task
 import requests
 import geojson
-from .models import e_ContextDTMFile, e_ContextFrictionCoeff
+from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
 from context.models import e_Context
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
@@ -68,25 +68,24 @@ def preprocess_task(self, url, organizationCode, contextCode):
 
 
 @shared_task(bind=True)
-def simulate_task(self, url, context_code, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
+def simulate_task(self, url, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
     from .views import prepare_frequency_file, prepare_time_file, prepare_boundaries_file, prepare_gauge_file
-    context = e_Context.objects.get(code=context_code)
+    event = e_ContextEvent.objects.get(id=event_id)
 
     # Prepare files
     try:
         print("preparing files...")
         frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
-        time_file = prepare_time_file(init_date, end_date, init_time, end_time)
-        boundary_file = prepare_boundaries_file(context)
-        files_sensors = prepare_gauge_file(context, init_date, end_date, init_time, end_time, writing_perio, writing_unit)
+        time_file      = prepare_time_file(init_date, end_date, init_time, end_time)
+        boundary_file  = prepare_boundaries_file(event.context)
+        files_sensors  = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time, writing_perio, writing_unit)
 
         files = {
             'frequency': ('frequency', frequency_file),
             'time': ('time', time_file),
             'boundaries': ('boundaries', boundary_file),
         }
-        files = {**files, **files_sensors}
-        print(files.keys())
+        files = {**files, **files_sensors} # puts together all in the same dictionary
 
         # Send file
         encoder = MultipartEncoder(files)
@@ -96,7 +95,12 @@ def simulate_task(self, url, context_code, event_id, writing_perio, max_update_p
         def my_callback(monitor):
             progress_recorder.set_progress(monitor.bytes_read, files_len)
 
-        payload = {'context_name': context.Name, 'event_id': event_id }
+        payload = {
+            'organizationCode': event.context.organization.code,
+            'contextCode': event.context.code,
+            'eventName': event.Name,
+            'eventId': event.id
+        }
         monitor = MultipartEncoderMonitor(encoder, my_callback)
         requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
     

@@ -66,6 +66,7 @@
                     // Wait 2s and redirect
                     await new Promise(r => setTimeout(() => location.href = redirect_url, 2000));
                 } else if(result.status == "Fail") {
+                    progress_histav.innerHTML = result.message;
                     const redirect_url = "{% url 'context-detail' context.code %}";
                     // Wait 20s and redirect
                     await new Promise(r => setTimeout(() => location.href = redirect_url, 20000));

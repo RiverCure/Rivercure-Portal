@@ -20,10 +20,10 @@ urlpatterns = [
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Mesh progress
     path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
-    path('mesh-status/<str:contextCode>/progress/', mesh_status_progress, name='mesh-status-progress'),
+    path('mesh-status/<str:contextCode>/progress', mesh_status_progress, name='mesh-status-progress'),
     path('mesh-status/<str:contextCode>/change', mesh_status_change, name='mesh-status-change'),
-    path('mesh-status/<str:contextCode>/regenerate-confirm/', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
-    path('mesh-status/<str:contextCode>/request/', inform_mesh_status, name='mesh-status-request'),
+    path('mesh-status/<str:contextCode>/regenerate-confirm', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
+    path('mesh-status/<str:contextCode>/request', inform_mesh_status, name='mesh-status-request'),
     # Event simulation
     path('simulation/results/<int:event_id>', view_events_results, name='view-simulation-results'),
     path('simulation/results/download/<int:event_id>', download_simulation_results, name='simulation-results-download'),
@@ -36,9 +36,9 @@ urlpatterns = [
     path('<str:pk>/events/new/', EventCreateView.as_view(), name='event-create'),
     path('<str:pk>/event/<int:event_id>/update/', EventUpdateView.as_view(), name='event-update'),
     # Event progress
-    path('event-status/progress/<str:event_id>', event_status_progress, name='event-status-progress'),
-    path('event-status/<str:event_id>', event_status_change, name='event-status-change'),
-    path('<str:event_id>/regenerate-event-confirm/', regenerate_event_confirm, name='event-regenerate-confirm'),
-    path('event-status/request/<str:event_id>', inform_event_status, name='event-status-request'),
-    path('<str:event_id>/event-progress/', event_progress, name='event-progress'),
+    path('event-status/<str:event_id>', event_progress, name='event-progress'),
+    path('event-status/<str:event_id>/progress', event_status_progress, name='event-status-progress'),
+    path('event-status/<str:event_id>/change', event_status_change, name='event-status-change'),
+    path('event-status/<str:event_id>/regenerate-confirm', regenerate_event_confirm, name='event-regenerate-confirm'),
+    path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
 ]

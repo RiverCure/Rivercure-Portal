@@ -210,7 +210,7 @@ def runsimulationview(request, pk, event_id):
     try:
         r = requests.get(simulator_address) # ping HiSTAV to check if it's online
         # Using pickle serializer to have the datetime objects not transformed to string : https://stackoverflow.com/questions/48811824/how-can-i-deserialize-a-datetime-string-in-celery/48812310
-        result = simulate_task.apply_async(args=[url, pk, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
+        result = simulate_task.apply_async(args=[url, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
         # # Combination hasSimulation = False + task_id = val means it's processing
         event.hasSimulation = False # Assume there is no simulation generated
         event.task_id = result.task_id
@@ -258,7 +258,11 @@ def event_status_progress(request, event_id):
     url = simulator_address + 'simulate-status/'
 
     try:
-        payload = {'event_id': event_id, 'context_name': event.context.Name}
+        payload = {
+            'organizationCode': event.context.organization,
+            'contextCode': event.context.code,
+            'eventName': event.Name
+        }
         response = requests.get(url, params=payload)
         if response.status_code != 200:
             return HttpResponse(status=400)
@@ -292,22 +296,9 @@ def event_status_change(request, event_id): # Function to mark event has generat
 @login_required
 def event_progress(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-    # if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
-    #     return HttpResponse('Unauthorized', status=401)
-
-    event = {
-        'event': event
-    }
-    
-    return render(request, 'context/event/progress.html', event)
+    return render(request, 'context/event/progress.html', { 'event': event })
 
 @login_required
 def regenerate_event_confirm(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-
-    event = {
-        'event': event
-    }
-    
-    return render(request, 'context/event/regenerate_event_confirm.html', event)
-
+    return render(request, 'context/event/regenerate_event_confirm.html', { 'event': event })
