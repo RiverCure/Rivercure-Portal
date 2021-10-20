@@ -197,6 +197,9 @@ def sensor_observations_excel_download(request, sensorId):
 
         increase_column_width(ws)
 
+    print('1')
     readme(wb.active, date_str, request.user)
+    print('2')
     observations()
+    print('3')
     return download_file(wb, f'RCP_observations_{sensor.name}_create_{request.user}_{date_str}.xlsx')
