@@ -40,13 +40,7 @@ def download_file(wb, file_name):
     if not os.path.exists(relative_path):
         os.makedirs(relative_path)
     full_path = os.path.join(relative_path, file_name)
-    print(full_path)
-    print('Hey1')
-    try:
-        wb.save(full_path)
-    except Exception as e:
-        print(e)
-    print('Hey2')
+    wb.save(full_path)
     if os.path.exists(full_path):
         with open(full_path, 'rb') as fh:
             response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
@@ -56,7 +50,7 @@ def download_file(wb, file_name):
 
 def sensor_excel_download(request):
     date = d.now()
-    date_str = date.strftime('%Y-%m-%d_%H:%M:%S')
+    date_str = date.strftime('%Y-%m-%d_%H-%M-%S')
 
     wb = Workbook()
     
@@ -127,7 +121,7 @@ def sensor_observations_excel_download(request, sensorId):
     properties = SensorClassProperty.objects.filter(sensorClass=sensorClass).exclude(derivedBy__isnull=False).order_by('name')
 
     date = d.now()
-    date_str = date.strftime('%Y-%m-%d_%H:%M:%S')
+    date_str = date.strftime('%Y-%m-%d_%H-%M-%S')
 
     wb = Workbook()
 
