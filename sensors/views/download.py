@@ -37,24 +37,21 @@ def increase_column_width(ws):
 # Download file
 def download_file(wb, file_name):
     relative_path = os.path.join(settings.MEDIA_ROOT, 'excels')
-    print('1')
     if not os.path.exists(relative_path):
         os.makedirs(relative_path)
-    print('2')
     full_path = os.path.join(relative_path, file_name)
-    print('3')
-    wb.save(full_path)
-    print('4')
+    print(full_path)
+    print('Hey1')
+    try:
+        wb.save(full_path)
+    except Exception as e:
+        print(e)
+    print('Hey2')
     if os.path.exists(full_path):
-        print('5')
         with open(full_path, 'rb') as fh:
-            print('6')
             response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-            print('7')
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(full_path)
-            print('8')
             return response
-    print('9')
     raise Http404
 
 def sensor_excel_download(request):
