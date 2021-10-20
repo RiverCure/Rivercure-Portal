@@ -7,24 +7,13 @@ from django.contrib.gis.geos import Point
 from sensors.forms import GeoSensorForm, SensorFileForm, SensorForm, SensorObservationsFileForm
 from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
-from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 
 class SensorListView(LoginRequiredMixin, ListView):
     context_object_name = 'sensors'
     template_name = 'sensors/sensors/list.html'
     paginate_by = 10
     ordering = ['code']
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            if request.session['organizationCode'] is not None:
-                return super(SensorListView, self).dispatch(request, *args, **kwargs)
-            else:
-                raise Exception
-        except:
-            messages.warning(request, 'Please first choose an organization')
-            return redirect('organization-list')
 
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization

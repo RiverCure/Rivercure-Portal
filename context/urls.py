@@ -1,18 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import (
-    ContextUpdateView,
-    ContextEventListView, 
-    manage_context, download_context, preprocessing_results, request_pre_processing, download_preprocessing_results,
-    ContextViewSet, 
-    UploadContext, 
-    EventCreateView, EventUpdateView, EventDetailView, 
-    ContextSensorListView, 
-    ContextListView, ContextDetailView, ContextCreateView, ContextDeleteView, OtherContextListView, 
-    mesh_status_change, download_simulation_results, handle_simulation_results, view_events_results, runsimulationview, inform_mesh_status
-) 
-from context.views import mesh_progress, mesh_status_progress, regenerate_mesh_confirm
-from context.views.event import event_progress, event_status_change, event_status_progress, inform_event_status, regenerate_event_confirm
+from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'context', ContextViewSet)
@@ -31,11 +19,11 @@ urlpatterns = [
     path('<str:contextCode>/preprocessing_results/download/', download_preprocessing_results, name='context-preprocessing-results-download'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Mesh progress
-    path('mesh-status/progress/<str:context_name>', mesh_status_progress, name='mesh-status-progress'),
-    path('mesh-status/<str:context_name>', mesh_status_change, name='mesh-status-change'),
-    path('<str:context_code>/regenerate-mesh-confirm/', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
-    path('mesh-status/request/<str:context_code>', inform_mesh_status, name='mesh-status-request'),
-    path('<str:context_code>/mesh-progress/', mesh_progress, name='mesh-progress'),
+    path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
+    path('mesh-status/<str:contextCode>/progress/', mesh_status_progress, name='mesh-status-progress'),
+    path('mesh-status/<str:contextCode>/change', mesh_status_change, name='mesh-status-change'),
+    path('mesh-status/<str:contextCode>/regenerate-confirm/', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
+    path('mesh-status/<str:contextCode>/request/', inform_mesh_status, name='mesh-status-request'),
     # Event simulation
     path('simulation/results/<int:event_id>', view_events_results, name='view-simulation-results'),
     path('simulation/results/download/<int:event_id>', download_simulation_results, name='simulation-results-download'),

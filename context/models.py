@@ -41,6 +41,9 @@ class e_Context(models.Model):
 	# Requester of a mesh generation request
 	requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='requester')
 
+	def clean(self):
+		self.code = self.code.replace(' ', '')
+
 	class Meta:
 		verbose_name = 'Context'
 		verbose_name_plural = 'Contexts'

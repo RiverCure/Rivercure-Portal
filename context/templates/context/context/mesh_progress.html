@@ -91,7 +91,7 @@
 
         requestMeshStatus = () => {
             const xhr = new XMLHttpRequest();
-            const url = "{% url 'mesh-status-progress' context.Name %}";
+            const url = "{% url 'mesh-status-progress' context.code %}";
             xhr.open('GET', url, true);
             xhr.responseType="json";
             xhr.onload =  (e) => {

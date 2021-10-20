@@ -1,7 +1,7 @@
 import os, geojson, datetime, requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
@@ -19,7 +19,6 @@ from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
 from ..tasks import preprocess_task
-from notifications.signals import notify
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
@@ -44,16 +43,6 @@ class ContextListView(LoginRequiredMixin, ListView):
     context_object_name = 'contexts'
     template_name = 'context/context/list.html'
     paginate_by = 10
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            if request.session['organizationCode'] is not None:
-                return super(ContextListView, self).dispatch(request, *args, **kwargs)
-            else:
-                raise Exception
-        except:
-            messages.warning(request, 'Please first choose an organization')
-            return redirect('organization-list')
 
     def get_queryset(self):
         organization = get_object_or_404(Organization, code=self.request.session['organizationCode'])
@@ -278,16 +267,18 @@ def download_context(request, contextCode): #function that allows the download o
 
 @login_required
 def request_pre_processing(request, contextCode):
-    context = get_object_or_404(e_Context, code=contextCode)
-    if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
+    organizationCode = request.session['organizationCode']
+    context = get_object_or_404(e_Context, organization__code=organizationCode, code=contextCode)
+    # Authorization
+    if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
         
     simulator_address = os.environ['SIMULATOR_ADDRESS']
     url = simulator_address + 'process/'
 
     try:
-        r = requests.get(simulator_address) # ping HiSTAV to check if it's online
-        result = preprocess_task.delay(url, contextCode)
+        requests.get(simulator_address) # ping HiSTAV to check if it's online
+        result = preprocess_task.delay(url, organizationCode, contextCode)
         # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False # Assume there is no mesh generated
         context.task_id = result.task_id
@@ -297,9 +288,6 @@ def request_pre_processing(request, contextCode):
     except: # HiSTAV not online
         messages.error(request, 'Couldn\'t connect to HiSTAV')
 
-    # if 'HTTP_REFERER' in request.META:
-    #     return redirect(request.META['HTTP_REFERER'])
-    # else:
     return redirect('context-detail', contextCode=contextCode)
 
 @login_required
@@ -321,92 +309,3 @@ def download_preprocessing_results(request, contextCode): # function to redirect
     response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
 
     return response
-
-# Return last line of output
-def get_last_line(status:str):
-    if status == "":
-        return ""
-    lines:list = status.splitlines()
-    if lines[-1] == "" or lines[-1].isspace():
-        return get_last_line("\n".join(lines[0:len(lines)-1]))
-    return lines[-1]
-
-# Enhance this
-def get_status(last_line:str):
-    if ("Permission denied" in last_line) or ("Fail" in last_line) or ("Error" in last_line):
-        return "Fail"
-    elif ("all files written in" in last_line) or ("--:--:--" in last_line):
-        return "Finished successfully"
-    else:
-        return "Processing"
-
-@login_required
-def mesh_status_progress(request, context_name):
-    context = get_object_or_404(e_Context, Name=context_name)
-    get_object_or_404(Membership, organization=context.organization, user=request.user)
-    simulator_address = os.environ['SIMULATOR_ADDRESS']
-    url = simulator_address + 'process-status/'
-
-    try:
-        payload = {'context_name': context_name}
-        response = requests.get(url, params=payload)
-        if response.status_code != 200:
-            return HttpResponse(status=400)
-        
-        body = response.content.decode("utf-8")
-        lastline = get_last_line(body)
-        status = get_status(lastline)
-
-        # Notification
-        if ("Fail" in status) or ("Finished successfully" in status):
-            notify.send(sender=context, recipient=context.requester, action_object=context.organization, verb=f"Context {context.Name} has finished its processing with status '{status}'")
-
-        return JsonResponse({'status' : status, 'message' : lastline, 'full_log' : body})
-    except: # HiSTAV not online
-        # 503 = service unavailable
-        return HttpResponse(status=503)
-    
-
-def mesh_status_change(request, context_name): # Function to mark mesh has generated
-    context = e_Context.objects.get(Name=context_name)
-    if request.GET.get('status'):
-        context.hasMesh = True
-        context.task_id = None # task finished
-    else:
-        context.hasMesh = False
-
-    context.save()
-
-    return HttpResponse(status=200)
-
-
-@login_required
-def mesh_progress(request, context_code):
-    e_context = get_object_or_404(e_Context, code=context_code)
-    if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
-        return HttpResponse('Unauthorized', status=401)
-
-    context = {
-        'context': e_context
-    }
-    
-    return render(request, 'context/context/mesh_progress.html', context)
-
-@login_required
-def regenerate_mesh_confirm(request, context_code):
-    e_context = get_object_or_404(e_Context, code=context_code)
-    if not context_organization_edit_permission_check(request.user, e_context.organization): #verify that the user is logged in
-        return HttpResponse('Unauthorized', status=401)
-
-    context = {
-        'context': e_context
-    }
-    
-    return render(request, 'context/context/regenerate_mesh_confirm.html', context)
-
-def inform_mesh_status(request, context_code): # Function to inform if mesh is generated
-    context = e_Context.objects.get(code=context_code)
-    if context.hasMesh:
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
