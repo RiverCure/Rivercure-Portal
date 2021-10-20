@@ -26,8 +26,7 @@
                 <th class="tr_class" scope="col">Organization</th>
                 <th class="tr_class" scope="col">Code</th>
                 <th class="tr_class" scope="col">Name</th>
-                <th class="tr_class" scope="col">Modality</th>
-                <th class="tr_class" scope="col">Category</th>
+                <th class="tr_class" scope="col">Sensor class</th>
                 <th class="tr_class" scope="col">Observations</th>
             </tr>
             {% for context_sensor in filter.qs %}
@@ -39,8 +38,7 @@
                     <div style="height: 100%; width: 100%">{{ context_sensor.sensor.name }}</div>
                 </a>
                 </td>
-                <td>{{ context_sensor.sensor.sensorClass.get_modality_display }}</td>
-                <td>{{ context_sensor.sensor.sensorClass.category }}</td>
+                <td><a href="{% url 'sensor-class-detail' context_sensor.sensor.sensorClass.pk %}">{{ context_sensor.sensor.sensorClass.name }}</a></td>
                 <td class="tr_class">
                     <a href="{% url 'sensor-observation-list' context_sensor.sensor.pk %}"> <img src="{% static 'sensors/sensor-images/data.png' %}" width="30" height="30" alt="observations" /></a>
                 </td>

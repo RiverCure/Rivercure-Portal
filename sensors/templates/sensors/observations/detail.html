@@ -29,7 +29,7 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td><a href="{% url 'sensor-class-property-detail' observation.sensor.sensorClass.pk property_value.property.pk %}">{{ property_value.property.name }}</a></td>
                         <td>{{ property_value.property.get_type_display }}</td>
-                        <td>{{ property_value.value }}</td>
+                        <td>{{ property_value.value }} {{ property_value.property.unit.abbreviation|default:"" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
