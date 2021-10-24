@@ -96,14 +96,14 @@
             <summary class="mb-2"><b>Thresholds</b></summary>
             {% for thresholds_value in sensor.sensorthresholdsvalues_set.all %}
                 <details class="mb-4">
-                    <summary class="mb-2"><b>Thresholds of property {{ thresholds_value.property }}</b></summary>
+                    <summary class="mb-2"><i>Thresholds of property {{ thresholds_value.property }}</i></summary>
                     <p class="article-content"><b>Threshold Lower Critical:</b> {{ thresholds_value.thresholdLowerCritical|default:"Not specified" }}</p>
                     <p class="article-content"><b>Threshold Lower Non-critical:</b> {{ thresholds_value.thresholdLowerNoncritical|default:"Not specified" }}</p>
                     <p class="article-content"><b>Threshold Upper Critical:</b> {{ thresholds_value.thresholdUpperCritical|default:"Not specified" }}</p>
                     <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ thresholds_value.thresholdUpperNoncritical|default:"Not specified" }}</p>
                 </details>
                 {% empty %}
-                <p class="article-content"><b>This sensor has no thresholds specified</p>
+                <p class="article-content"><i>This sensor has no thresholds specified</i></p>
             {% endfor %}
         </details>
 
