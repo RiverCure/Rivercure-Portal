@@ -33,19 +33,19 @@ class TestEndpoints(TestCase):
         response = self.client.get('/sensors/')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/sensors/others/')
+        response = self.client.get('/sensors/others')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/sensors/new/')
+        response = self.client.get('/sensors/new')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(f'/sensors/{sensorId}/update/')
+        response = self.client.get(f'/sensors/{sensorId}/update')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(f'/sensors/{sensorId}/geo-update/')
+        response = self.client.get(f'/sensors/{sensorId}/geo-update')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(f'/sensors/{sensorId}/delete/')
+        response = self.client.get(f'/sensors/{sensorId}/delete')
         self.assertEqual(response.status_code, 200)
 
     def test_sensor_class_views(self):
@@ -93,10 +93,10 @@ class TestEndpoints(TestCase):
         observation = SensorObservation.objects.create(date=now, time=now.time(), severity='ok', sensor=self.sensor)
         SensorObservationValue.objects.create(property=self.prop, observation=observation, value='abc')
 
-        response = self.client.get(f'/sensors/{sensorId}/observation/new/')
+        response = self.client.get(f'/sensors/{sensorId}/observation/new')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(f'/sensors/{sensorId}/observations/')
+        response = self.client.get(f'/sensors/{sensorId}/observations')
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(f'/sensors/{sensorId}/observation/{observation.pk}')
