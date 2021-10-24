@@ -192,7 +192,7 @@ class SensorThresholdForm(forms.ModelForm):
         # print(self.sensor)
         super(SensorThresholdForm, self).__init__(*args, **kwargs)
         # Get the sensor class properties of that sensor's sensor class, except the derived ones (which are calculated, not inserted) and images
-        self.fields['properties'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass).exclude(type='image').exclude(derivedBy__isnull=False)
+        self.fields['properties'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass).exclude(type='image').exclude(type='string').exclude(derivedBy__isnull=False)
 
         for prop in self.fields['properties'].queryset:
             tag_lower_critical = f'value_of_{prop}_threshold_lower_critical'
@@ -200,16 +200,10 @@ class SensorThresholdForm(forms.ModelForm):
             tag_lower_noncritical = f'value_of_{prop}_threshold_lower_noncritical'
             tag_upper_noncritical = f'value_of_{prop}_threshold_upper_noncritical'
 
-            if prop.type == 'number':
-                self.fields[tag_lower_critical] = forms.DecimalField(required=False)
-                self.fields[tag_upper_critical] = forms.DecimalField(required=False)
-                self.fields[tag_lower_noncritical] = forms.DecimalField(required=False)
-                self.fields[tag_upper_noncritical] = forms.DecimalField(required=False)
-            else: # string and others
-                self.fields[tag_lower_critical] = forms.CharField(required=False)
-                self.fields[tag_upper_critical] = forms.CharField(required=False)
-                self.fields[tag_lower_noncritical] = forms.CharField(required=False)
-                self.fields[tag_upper_noncritical] = forms.CharField(required=False)
+            self.fields[tag_lower_critical] = forms.DecimalField(required=False)
+            self.fields[tag_upper_critical] = forms.DecimalField(required=False)
+            self.fields[tag_lower_noncritical] = forms.DecimalField(required=False)
+            self.fields[tag_upper_noncritical] = forms.DecimalField(required=False)
 
             obj = SensorThresholdsValues.objects.filter(sensor=self.sensor, property=prop)
             if obj.exists():
