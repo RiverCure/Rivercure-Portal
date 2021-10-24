@@ -60,6 +60,22 @@ class SensorClass(models.Model):
     def __str__(self):
         return self.name
 
+class SensorClassProperty(models.Model):
+    code                      = models.TextField()
+    name                      = models.TextField()
+    type                      = models.TextField(choices=SENSOR_OBSERVATION_VALUE_TYPE)
+    isOptional                = models.BooleanField(default=False)
+    sensorClass               = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
+    unit                      = models.ForeignKey(to=Unit, on_delete=models.SET_NULL, null=True)
+
+    # derived properties
+    derivedBy                 = models.ForeignKey(verbose_name='Derived by', to='self', on_delete=models.CASCADE, null=True, blank=True)
+    isImmediate               = models.BooleanField(verbose_name='Is immediate', default=False)
+    instruction               = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class Sensor(models.Model):
     code         = models.TextField(unique=True)
     name         = models.TextField()
@@ -69,6 +85,7 @@ class Sensor(models.Model):
     isPublic     = models.BooleanField(default=False)
     local        = models.PointField()
     sensorClass  = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
+    thresholds   = models.ManyToManyField(to=SensorClassProperty, through='SensorThresholdsValues')
 
     @property
     def organization(self):
@@ -83,25 +100,19 @@ class Sensor(models.Model):
     def __str__(self):
         return self.name
 
-class SensorClassProperty(models.Model):
-    code                      = models.TextField()
-    name                      = models.TextField()
-    type                      = models.TextField(choices=SENSOR_OBSERVATION_VALUE_TYPE)
-    isOptional                = models.BooleanField(default=False)
+class SensorThresholdsValues(models.Model):
+    sensor                    = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    property                  = models.ForeignKey(SensorClassProperty, on_delete=models.CASCADE)
     thresholdLowerCritical    = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     thresholdLowerNoncritical = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     thresholdUpperCritical    = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     thresholdUpperNoncritical = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    sensorClass               = models.ForeignKey(to=SensorClass, on_delete=models.CASCADE)
-    unit                      = models.ForeignKey(to=Unit, on_delete=models.SET_NULL, null=True)
 
-    # derived properties
-    derivedBy                 = models.ForeignKey(verbose_name='Derived by', to='self', on_delete=models.CASCADE, null=True, blank=True)
-    isImmediate               = models.BooleanField(verbose_name='Is immediate', default=False)
-    instruction               = models.TextField(blank=True, null=True)
+    class Meta:
+        unique_together = ('sensor', 'property')
 
     def __str__(self):
-        return self.name
+        return f'{self.sensor.name} - {self.property.name}'
 
 class SensorObservation(models.Model):
     # dateTime would be better, but preivously it used dateTime and it has many dependencies to change. Perhaps change in the future?

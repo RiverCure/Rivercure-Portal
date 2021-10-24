@@ -1,5 +1,5 @@
 from django import forms
-from .models import Sensor
+from .models import Sensor, SensorThresholdsValues
 from leaflet.forms.widgets import LeafletWidget
 from organization.models import Membership, Organization
 from django.db.models import Q
@@ -42,8 +42,11 @@ class SensorForm(forms.ModelForm):
         # Only allow to choose organizations where the user is org_manager, org_sensorManager or org_contextManager of the organization
         organization = Organization.objects.get(code=organization_code)
         # Only allow to choose sensor classes where the user is member of that organization
-        self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization=organization)
-        self.fields['sensorClass'].label = 'Sensor class'
+        if not self.instance.pk:
+            self.fields['sensorClass'].queryset = SensorClass.objects.filter(organization=organization)
+            self.fields['sensorClass'].label = 'Sensor class'
+        else:
+            self.fields['sensorClass'].widget = forms.HiddenInput()
 
         if self.instance.pk and self.instance.local: # the user is editing
             self.initial['lng'] = self.instance.local.x
@@ -150,10 +153,6 @@ class SensorClassPropertyForm(forms.ModelForm):
     name                      = forms.CharField()
     isOptional                = forms.BooleanField(label='Optional', required=False) # it actually is required. See the template for explanation
     # Type = Number fields
-    thresholdLowerCritical    = forms.DecimalField(label='Threshold lower critical', required=False)
-    thresholdLowerNoncritical = forms.DecimalField(label='Threshold lower non-critical', required=False)
-    thresholdUpperCritical    = forms.DecimalField(label='Threshold upper critical', required=False)
-    thresholdUpperNoncritical = forms.DecimalField(label='Threshold upper non-critical', required=False)
     unit                      = forms.ModelChoiceField(queryset=Unit.objects.all(), required=False)
     # DerivedBy fields
     isDerived                 = forms.BooleanField(label='Is derived by another property', required=False) # checkbox that shows/hides derivedBy fields
@@ -182,4 +181,44 @@ class SensorClassPropertyForm(forms.ModelForm):
 
     class Meta:
         model = SensorClassProperty
-        fields = ['code', 'name', 'type', 'isOptional', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical', 'unit', 'isDerived', 'derivedBy', 'isImmediate', 'instruction']
+        fields = ['code', 'name', 'type', 'isOptional', 'unit', 'isDerived', 'derivedBy', 'isImmediate', 'instruction']
+
+class SensorThresholdForm(forms.ModelForm):
+    properties = CustomModelMultipleChoiceField(queryset=SensorClassProperty.objects.none(), widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        # Extract the sensor received from the View (SensorObservationCreateView or SensorObservationUpdateView)
+        self.sensor = kwargs.pop('sensor')
+        # print(self.sensor)
+        super(SensorThresholdForm, self).__init__(*args, **kwargs)
+        # Get the sensor class properties of that sensor's sensor class, except the derived ones (which are calculated, not inserted) and images
+        self.fields['properties'].queryset = SensorClassProperty.objects.filter(sensorClass=self.sensor.sensorClass).exclude(type='image').exclude(derivedBy__isnull=False)
+
+        for prop in self.fields['properties'].queryset:
+            tag_lower_critical = f'value_of_{prop}_threshold_lower_critical'
+            tag_upper_critical = f'value_of_{prop}_threshold_upper_critical'
+            tag_lower_noncritical = f'value_of_{prop}_threshold_lower_noncritical'
+            tag_upper_noncritical = f'value_of_{prop}_threshold_upper_noncritical'
+
+            if prop.type == 'number':
+                self.fields[tag_lower_critical] = forms.DecimalField(required=False)
+                self.fields[tag_upper_critical] = forms.DecimalField(required=False)
+                self.fields[tag_lower_noncritical] = forms.DecimalField(required=False)
+                self.fields[tag_upper_noncritical] = forms.DecimalField(required=False)
+            else: # string and others
+                self.fields[tag_lower_critical] = forms.CharField(required=False)
+                self.fields[tag_upper_critical] = forms.CharField(required=False)
+                self.fields[tag_lower_noncritical] = forms.CharField(required=False)
+                self.fields[tag_upper_noncritical] = forms.CharField(required=False)
+
+            obj = SensorThresholdsValues.objects.filter(sensor=self.sensor, property=prop)
+            if obj.exists():
+                obj = obj[0]
+                self.fields[tag_lower_critical].initial = obj.thresholdLowerCritical
+                self.fields[tag_upper_critical].initial = obj.thresholdUpperCritical
+                self.fields[tag_lower_noncritical].initial = obj.thresholdLowerNoncritical
+                self.fields[tag_upper_noncritical].initial = obj.thresholdUpperNoncritical
+
+    class Meta:
+        model = SensorThresholdsValues
+        exclude = ['sensor', 'property', 'thresholdLowerCritical', 'thresholdLowerNoncritical', 'thresholdUpperCritical', 'thresholdUpperNoncritical']

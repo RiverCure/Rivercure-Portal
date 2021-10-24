@@ -1,10 +1,10 @@
-from sensors.models import Sensor
+from sensors.models import Sensor, SensorThresholdsValues
 from sensors.filters import OtherSensorFilter, SensorFilter
 from organization.models import Organization
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.gis.geos import Point
-from sensors.forms import GeoSensorForm, SensorFileForm, SensorForm, SensorObservationsFileForm
+from sensors.forms import GeoSensorForm, SensorFileForm, SensorForm, SensorObservationsFileForm, SensorThresholdForm
 from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
 from django.shortcuts import get_object_or_404
@@ -127,7 +127,7 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('sensor-list')
+        return reverse('sensor-detail', args=(self.kwargs['pk'],))
 
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())
@@ -139,6 +139,40 @@ class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def get_success_url(self):
         return reverse('sensor-list')
+
+    def test_func(self):
+        return sensor_edit_permission_check(self.request.user, self.get_object())
+
+class SensorThresholdUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Sensor
+    form_class = SensorThresholdForm
+    object_name = 'sensor'
+    template_name = 'sensors/sensors/form-thresholds.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(SensorThresholdUpdateView, self).get_form_kwargs()
+        kwargs.update({'sensor': self.get_object()})
+        return kwargs
+    
+    def form_valid(self, form):
+        sensor = form.save()
+        for prop in form.cleaned_data["properties"]:
+            lower_critical = form.cleaned_data[f'value_of_{prop}_threshold_lower_critical']
+            upper_critical = form.cleaned_data[f'value_of_{prop}_threshold_upper_critical']
+            lower_noncritical = form.cleaned_data[f'value_of_{prop}_threshold_lower_noncritical']
+            upper_noncritical = form.cleaned_data[f'value_of_{prop}_threshold_upper_noncritical']
+
+            SensorThresholdsValues.objects.update_or_create(
+                sensor=sensor, property=prop,
+                thresholdLowerCritical=lower_critical,
+                thresholdUpperCritical=upper_critical,
+                thresholdLowerNoncritical=lower_noncritical,
+                thresholdUpperNoncritical=upper_noncritical)
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('sensor-detail', args=(self.kwargs['pk'],))
 
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())

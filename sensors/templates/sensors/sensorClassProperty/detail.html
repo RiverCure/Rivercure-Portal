@@ -15,10 +15,6 @@
     <p class="article-content"><b>Type:</b> {{ property.get_type_display }}</p>
     <p class="article-content"><b>Optional:</b> {{ property.isOptional|yesno:"Yes,No" }}</p>
     {% if property.type == 'number' %}
-        <p class="article-content"><b>Threshold Lower Critical:</b> {{ property.thresholdLowerCritical|default:"Not specified" }}</p>
-        <p class="article-content"><b>Threshold Lower Non-critical:</b> {{ property.thresholdLowerNoncritical|default:"Not specified" }}</p>
-        <p class="article-content"><b>Threshold Upper Critical:</b> {{ property.thresholdUpperCritical|default:"Not specified" }}</p>
-        <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ property.thresholdUpperNoncritical|default:"Not specified" }}</p>
         <p class="article-content"><b>Unit:</b> {{ property.unit|default:"Not specified" }}</p>
     {% endif %}
     {% if property.derivedBy %}

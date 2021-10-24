@@ -1,0 +1,83 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Update sensor {{ sensor.name }} thresholds {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="content-section">
+    <form method='POST'>
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                Update sensor <b>{{ sensor.name }}</b> thresholds
+            </legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Save</button>
+            <a class="btn btn-outline-secondary" href="{% url 'sensor-detail' sensor.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+
+function changeDisplayType(option, fields) {
+    if(option == 'Number') {
+        fields.map((element) => element.style.display = 'block');
+    } else {
+        fields.map((element) => element.style.display = 'none');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    const properties_checkboxes = document.querySelector("#div_id_properties").children[1].children; // gets the <select> tag
+
+    for(let i = 0; i < properties_checkboxes.length; i++) {
+        property_div = properties_checkboxes[i];
+        property_input = property_div.children[0];
+
+        property_name = property_div.children[1].textContent.trim().split('-')[0];
+
+        const fieldsThresholds = [
+        document.querySelector(`#div_id_value_of_${property_name}_threshold_lower_critical`),
+        document.querySelector(`#div_id_value_of_${property_name}_threshold_upper_critical`),
+        document.querySelector(`#div_id_value_of_${property_name}_threshold_lower_noncritical`),
+        document.querySelector(`#div_id_value_of_${property_name}_threshold_upper_noncritical`)
+        ];
+        
+        // Handle initial case initial
+        var hasValue = false;
+        for(let i = 0; i < fieldsThresholds.length; i++) {
+            if(fieldsThresholds[i].children[1].children[0].value) {
+                hasValue = true;
+                break;
+            }
+        }
+        if(hasValue) {
+            property_input.checked = true;
+        }
+
+        if(!property_input.checked) {
+            fieldsThresholds.forEach((el) => {
+                el.style.display = 'none';
+            });
+        }
+
+        // Handle change
+        const propertyChange = function() {
+            const isChecked = event.target.checked;
+            if(isChecked == true) {
+                fieldsThresholds.map((element) => element.style.display = 'block');
+            } else {
+                fieldsThresholds.map((element) => element.style.display = 'none');
+            }
+        };
+        property_input.addEventListener('change', propertyChange.bind(event, fieldsThresholds));
+    }
+});
+</script>
+
+{% endblock content %}
