@@ -102,6 +102,8 @@
                     <p class="article-content"><b>Threshold Upper Critical:</b> {{ thresholds_value.thresholdUpperCritical|default:"Not specified" }}</p>
                     <p class="article-content"><b>Threshold Upper Non-critical:</b> {{ thresholds_value.thresholdUpperNoncritical|default:"Not specified" }}</p>
                 </details>
+                {% empty %}
+                <p class="article-content"><b>This sensor has no thresholds specified</p>
             {% endfor %}
         </details>
 
