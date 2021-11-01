@@ -92,9 +92,13 @@ def download_simulation_results(request, event_id): #function to download simula
     context_name = context_event.context.Name
 
     payload = { 'context_name': context_name, 'event_id': event_id }
+    print(payload)
     histav_response = requests.get(f'{url}simulation/results/', params=payload, stream=True)
-    if histav_response.status_code == 404:
-        messages.error(request, "File doesn\'t exist in HiSTAV")
+    if histav_response.status_code != 200:
+        if histav_response.status_code == 404:
+            messages.error(request, "File doesn\'t exist in HiSTAV")
+        else:
+            messages.error(request, f"Bad request - status code {histav_response.status_code}")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('event-detail', args=[context_event.context.code, event_id])))
 
     # If files are too big, use:
