@@ -89,10 +89,7 @@ def download_simulation_results(request, event_id): #function to download simula
         messages.warning(request, 'Request unsuccesful')
         return HttpResponseRedirect(reverse('event-list'))
 
-    context_name = context_event.context.Name
-
-    payload = { 'context_name': context_name, 'event_id': event_id }
-    print(payload)
+    payload = { 'organizationCode': context_event.context.organization.code, 'contextCode': context_event.context.code }
     histav_response = requests.get(f'{url}simulation/results/', params=payload, stream=True)
     if histav_response.status_code != 200:
         if histav_response.status_code == 404:
