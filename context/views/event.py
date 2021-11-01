@@ -109,7 +109,7 @@ def download_simulation_results(request, event_id): #function to download simula
             
     print(f'Simulation results requested for context {contextCode} event {event_id}')
     response = FileResponse(BytesIO(histav_response.content))
-    response['Content-Disposition'] = f'attachment; filename="{contextCode}_{event_id}_simulation_results.vtk"'
+    response['Content-Disposition'] = f'attachment; filename="{contextCode}_{event_id}_simulation_results.zip"'
     return response
 
 # Note: Not needed right now, since only the VTK file is returned as simulation result
