@@ -50,7 +50,7 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time, writin
         sensor_class = SensorClass.objects.get(id=point.sensor.sensorClass.id)
         sensor_class_properties = SensorClassProperty.objects.filter(sensorClass=sensor_class)
         sensor_obs = SensorObservation.objects.filter(sensor=point.sensor)
-        sensor_obs_valid = sensor_obs.filter(date__gte=init_date).filter(date__lte=end_date).filter(time__gte=init_time).filter(time__lte=end_time)
+        sensor_obs_valid = sensor_obs.filter(date__gte=init_date, date__lte=end_date).exclude(date=init_date, time__lt=init_time).exclude(date=init_date, time__gt=end_time)
         file_data = ''
         instant = 0
         instant_increment = calculate_instant_increment(writing_perio, writing_unit)
