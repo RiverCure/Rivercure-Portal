@@ -38,8 +38,8 @@ def calculate_instant_increment(idx, sensor_obs):
         return 0
     else:
         # Cant just subtract times because if time[i] = 23:00 and time[i+1] = 00:00 (in another day), this would fail
-        datetime1 = datetime.datetime.combine(sensor_obs[idx].date, sensor_obs[idx].time)
-        datetime2 = datetime.datetime.combine(sensor_obs[idx - 1].date, sensor_obs[idx - 1].time)
+        datetime1 = datetime.datetime.combine(sensor_obs[idx - 1].date, sensor_obs[idx - 1].time)
+        datetime2 = datetime.datetime.combine(sensor_obs[idx].date, sensor_obs[idx].time)
         return (datetime2 - datetime1).total_seconds()
 
 def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
