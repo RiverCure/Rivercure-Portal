@@ -33,15 +33,16 @@ def prepare_time_file(init_date, end_date, init_time, end_time): #prepare time f
     time_file = f'0\r\n{int(duration)}'
     return time_file
 
-def calculate_instant_increment(writing_perio, writing_unit):
-    if writing_unit == 'hour':
-        return writing_perio * 60 * 60
-    elif writing_unit == 'minute':
-        return writing_perio * 60
-    elif writing_unit == 'second':
-        return writing_perio
+def calculate_instant_increment(idx, sensor_obs):
+    if idx == 0:
+        return 0
+    else:
+        # Cant just subtract times because if time[i] = 23:00 and time[i+1] = 00:00 (in another day), this would fail
+        datetime1 = datetime.combine(sensor_obs[idx].date, sensor_obs[idx].time)
+        datetime2 = datetime.combine(sensor_obs[idx - 1].date, sensor_obs[idx - 1].time)
+        return (datetime2 - datetime1).total_seconds()
 
-def prepare_gauge_file(context, init_date, end_date, init_time, end_time, writing_perio, writing_unit):
+def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
     files = {}
 
     # context_points = e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context)
@@ -50,19 +51,18 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time, writin
         sensor_class = SensorClass.objects.get(id=point.sensor.sensorClass.id)
         sensor_class_properties = SensorClassProperty.objects.filter(sensorClass=sensor_class)
         sensor_obs = SensorObservation.objects.filter(sensor=point.sensor)
-        sensor_obs_valid = sensor_obs.filter(date__gte=init_date, date__lte=end_date).exclude(date=init_date, time__lt=init_time).exclude(date=init_date, time__gt=end_time)
+        sensor_obs = sensor_obs.filter(date__gte=init_date, date__lte=end_date).exclude(date=init_date, time__lt=init_time).exclude(date=init_date, time__gt=end_time)
         file_data = ''
-        instant = 0
-        instant_increment = calculate_instant_increment(writing_perio, writing_unit)
+        instant = 0.0
         
-        for obs in sensor_obs_valid:
+        for idx, obs in enumerate(sensor_obs):
+            instant_increment = calculate_instant_increment(idx, sensor_obs)
             for prop in sensor_class_properties:
                 obs_value = SensorObservationValue.objects.filter(property=prop, observation=obs)
                 if obs_value.exists() and obs_value[0].value != None:
                     line = f'{instant}\t{obs_value[0].value}\r\n'
-
-            file_data += line
-            instant += instant_increment
+                    file_data += line
+                    instant += instant_increment
 
         file_name = f'sensor_{point.sensor.id}.bnd'
         files[file_name] = ( (f'sensor_{point.sensor.id}.bnd', file_data) )

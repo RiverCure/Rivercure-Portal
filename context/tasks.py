@@ -78,7 +78,7 @@ def simulate_task(self, url, event_id, writing_perio, max_update_perio, writing_
         frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
         time_file      = prepare_time_file(init_date, end_date, init_time, end_time)
         boundary_file  = prepare_boundaries_file(event.context)
-        files_sensors  = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time, writing_perio, writing_unit)
+        files_sensors  = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time)
 
         files = {
             'frequency': ('frequency', frequency_file),
