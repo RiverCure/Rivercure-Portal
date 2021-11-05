@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObservation
+from sensors.models import Sensor, SensorClass, SensorClassProperty, SensorObservation, SensorThresholdsValues
 from organization.models import Membership
 from openpyxl import Workbook
 from django.conf import settings
@@ -126,14 +126,17 @@ def sensor_observations_excel_download(request, sensorId):
     wb = Workbook()
 
     def prop_comment(prop):
+        thresholds = SensorThresholdsValues.objects.filter(sensor=sensor, property=prop)
         if prop.type == 'number':
             comment_str = 'This property is of type number, '
-            comment_str += '' if prop.thresholdLowerNoncritical is None else f'has threshold lower non-critical of {prop.thresholdLowerNoncritical}, '
-            comment_str += '' if prop.thresholdUpperNoncritical is None else f'threshold upper non-critical of {prop.thresholdUpperNoncritical}'
-            comment_str += '' if prop.thresholdLowerCritical is None else f'threshold lower critical of {prop.thresholdLowerCritical}'
-            comment_str += '' if prop.thresholdUpperCritical is None else f'threshold upper critical of {prop.thresholdUpperCritical}'
+            if thresholds.exists():
+                thresholds = thresholds[0]
+                comment_str += '' if thresholds.thresholdLowerNoncritical is None else f'has threshold lower non-critical of {thresholds.thresholdLowerNoncritical}, '
+                comment_str += '' if thresholds.thresholdUpperNoncritical is None else f'threshold upper non-critical of {thresholds.thresholdUpperNoncritical}'
+                comment_str += '' if thresholds.thresholdLowerCritical is None else f'threshold lower critical of {thresholds.thresholdLowerCritical}'
+                comment_str += '' if thresholds.thresholdUpperCritical is None else f'threshold upper critical of {thresholds.thresholdUpperCritical}'
             comment_str += 'and the unit is '
-            comment_str += 'not specified' if prop.unit is None else prop.unit
+            comment_str += 'not specified' if prop.unit is None else prop.unit.fullName
             return Comment(comment_str, 'Rivercure Portal')
         else:
             comment_str = f'This property is of type {prop.type}'
