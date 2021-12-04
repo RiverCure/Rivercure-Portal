@@ -25,6 +25,13 @@ The actions you will want to do are:
 
 - **Run celery**: Celery needs to be runing in order for the portal to function correctly. To run it, open a terminal, head to the project directory and type ``.\scripts\windows\run_celery.bat``.
 
+RiverCure shutted down
+----------------------
+If the RiverCure machine shutdowned for some reason, you will have to do some steps in order for RiverCure to work:
+1. Log in to the RiverCure user
+2. Go to **Services**, and check if the 'RiverCurePortal' and 'RiverCurePortal-Tasks' services are running. If not, start them, first the *RiverCurePortal* and then the *RiverCurePortal-Tasks*.
+3. Connect to the VPN. On the bottom left, there should be a OpenVPN instance running. If not, start it like a normal program. Then, connect to the VPN by opening it and clicking **connect**.
+
 HiSTAV
 ------
 HiSTAV is deployed in a Linux server. To access it, please ask an admin how to.
