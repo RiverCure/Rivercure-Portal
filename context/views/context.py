@@ -285,7 +285,8 @@ def request_pre_processing(request, contextCode):
         context.requester = request.user
         context.save()
         messages.success(request, 'Mesh generation request sent')
-    except: # HiSTAV not online
+    except Exception as ex: # HiSTAV not online
+        print(ex)
         messages.error(request, 'Couldn\'t connect to HiSTAV')
 
     return redirect('context-detail', contextCode=contextCode)
