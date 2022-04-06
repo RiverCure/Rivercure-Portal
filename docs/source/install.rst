@@ -12,6 +12,15 @@ The requirements for install the RCP are:
 - `Python <https://www.python.org>`__ 3.0 or above
 - Git CLI installed (optinally, you can use `Github Desktop <https://desktop.github.com>`__)
 - Access to the RCP Github repository. You can ask any developer for it
+- GDAL installed (latest version)
+
+
+Installing GDAL
+---------------
+GDAL is a library for reading and writing geospatial data.
+To install GDAL, follow the instructions on their documentation (`GDAL docs <https://gdal.org/download.html>`__).
+Note: if you're on MacOS, we recommend installing it through `Homebrew <https://formulae.brew.sh/formula/gdal#default>`__.
+
 
 Setting up the database
 -----------------------

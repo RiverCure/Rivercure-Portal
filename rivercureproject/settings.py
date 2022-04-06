@@ -17,7 +17,8 @@ if os.name == 'nt':
     os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 
-
+# GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+# GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '^s&4uf&m0lgol2@%+-+7714k2t)wexo3j*b98dl3w_d-$z-e@b'
 
