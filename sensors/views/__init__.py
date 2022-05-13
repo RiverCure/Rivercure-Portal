@@ -4,3 +4,4 @@ from .sensorClass import *
 from .sensorClassProperty import *
 from .upload import *
 from .download import *
+from .receiveMaestro import *
