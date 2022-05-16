@@ -42,7 +42,12 @@ def receive(request):
             url = image['preview_url']
             depth = image['result']
             datetime = image['datetime']
+            if not datetime or datetime == '':
+                continue
+            print(datetime)
+
             date, time = datetime.split()
+            date = date.replace(':', '-') # dates come in YYYY:MM:DD and we transform to YYYY-MM-DD
             # Check if exists
             exists = check_if_exits(sensor, date, time, depth, url)
             if not exists:
@@ -51,7 +56,8 @@ def receive(request):
                 SensorObservationValue.objects.create(property=url_property, observation=obs, value=url).save()
                 obs.save()
     
-    except:
+    except Exception as ex:
+        print(ex)
         return HttpResponseBadRequest()
 
     return HttpResponse(status=200)
