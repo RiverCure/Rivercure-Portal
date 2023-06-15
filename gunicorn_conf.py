@@ -1,0 +1,8 @@
+bind = '192.168.139.2:4004'
+wsgi_app = 'rivercureproject.wsgi'
+# Workers silent for more than this many seconds are killed and restarted.
+timeout = '1800'
+workers = 4
+accesslog = '/var/log/gunicorn/access_log_rivercure'
+acceslogformat = "%(h)s %(l)s %(u)s %(t)s %(r)s %(s)s %(b)s %(f)s %(a)s"
+errorlog = '/var/log/gunicorn/error_log_rivercure'
