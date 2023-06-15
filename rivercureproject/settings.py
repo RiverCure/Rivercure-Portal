@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'rivercure.inesc-id.pt'
-] # Must be changed to allow host in production
+]  # Must be changed to allow host in production
 
 # Application definition
 INSTALLED_APPS = [
@@ -144,27 +144,28 @@ USE_TZ = True
 
 # Leaftlet configurations
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (38.707616,-9.1365), #Lisbon coordinates
+    'DEFAULT_CENTER': (38.707616, -9.1365),  # Lisbon coordinates
     'DEFAULT_ZOOM': 6,
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 18,
     'RESET_VIEW': False,
     'TILES': [('Satellite', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
-                'id': 'satellite-streets-v11',
-                'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
-                'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
+        'id': 'satellite-streets-v11',
+        'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
+        'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
                                 &copy <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> 
                                 <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
-            }),
-            ('Contour Lines', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
-                'id': 'outdoors-v11',
-                'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
-                'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
+    }),
+        ('Contour Lines', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
+            'id': 'outdoors-v11',
+            'accessToken': 'pk.eyJ1Ijoiam9yZ2Vtc21hcnF1ZXMiLCJhIjoiY2tkMHM2cGE0MHExNTJ5bzdudzJkemo2aSJ9.-9GKsDPOItWz1CYx0aq0Iw',
+            'attribution': '''&copy <a href="https://www.mapbox.com/about/maps/">Mapbox</a> 
                                 &copy <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> 
                                 <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>'''
-            }),
-            ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
-            ('Blank', '', {}),
+        }),
+        ('OpenStreetMaps', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMaps</a> contributors'}),
+        ('Blank', '', {}),
     ]
 }
 
@@ -173,7 +174,7 @@ LEAFLET_CONFIG = {
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
@@ -181,7 +182,7 @@ STATICFILES_DIRS = [
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL='/media/'
+MEDIA_URL = '/media/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -196,15 +197,15 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 if os.getenv('DEBUG', 'False') == 'True':
-    SESSION_COOKIE_AGE = 8000*60 #TIME FOR COOKIES TO EXPIRE 
+    SESSION_COOKIE_AGE = 8000*60  # TIME FOR COOKIES TO EXPIRE
     SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 else:
-    SESSION_COOKIE_AGE = 8*60 #TIME FOR COOKIES TO EXPIRE 
+    SESSION_COOKIE_AGE = 8*60  # TIME FOR COOKIES TO EXPIRE
     SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 SESSION_SAVE_EVERY_REQUEST = True
 
-CORS_ORIGIN_ALLOW_ALL = True #This should be removed enventually
+CORS_ORIGIN_ALLOW_ALL = True  # This should be removed enventually
 
 # RASTER_USE_CELERY = True
 
@@ -214,6 +215,6 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/London'
 CELERY_RESULT_BACKEND = 'django-db'
 
-if os.name != 'nt':
-    GDAL_LIBRARY_PATH = '/opt/homebrew/Cellar/gdal/3.4.3_1/lib/libgdal.dylib'
-    GEOS_LIBRARY_PATH = '/opt/homebrew/Cellar/geos/3.10.2/lib/libgeos_c.1.16.0.dylib'
+# Uncomment if using Mac
+# GDAL_LIBRARY_PATH = '/opt/homebrew/Cellar/gdal/3.4.3_1/lib/libgdal.dylib'
+# GEOS_LIBRARY_PATH = '/opt/homebrew/Cellar/geos/3.10.2/lib/libgeos_c.1.16.0.dylib'
