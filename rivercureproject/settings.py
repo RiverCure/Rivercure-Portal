@@ -28,6 +28,7 @@ DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '192.168.139.2',
     'rivercure.inesc-id.pt'
 ]  # Must be changed to allow host in production
 
@@ -172,13 +173,9 @@ LEAFLET_CONFIG = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -215,6 +212,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/London'
 CELERY_RESULT_BACKEND = 'django-db'
 
-# Uncomment if using Mac
-# GDAL_LIBRARY_PATH = '/opt/homebrew/Cellar/gdal/3.4.3_1/lib/libgdal.dylib'
-# GEOS_LIBRARY_PATH = '/opt/homebrew/Cellar/geos/3.10.2/lib/libgeos_c.1.16.0.dylib'
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
