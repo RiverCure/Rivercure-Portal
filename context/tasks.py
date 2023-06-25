@@ -16,24 +16,24 @@ def preprocess_task(self, url, organizationCode, contextCode):
     from .views import prepare_domain, prepare_alignment, prepare_refinement, prepare_boundaries, prepare_boundary_points
     context = e_Context.objects.get(organization__code=organizationCode, code=contextCode)
     try:
-        #------------------ Domain --------------------------------
+        # ------------------ Domain --------------------------------
         domain_file = prepare_domain(context.code)
-        #------------------ Alignment --------------------------------
+        # ------------------ Alignment --------------------------------
         alignment_file = prepare_alignment(context.code, context.Name)
-        #------------------ Refinement --------------------------------  
+        # ------------------ Refinement --------------------------------
         refinement_file = prepare_refinement(context.code, context.Name)
-        #------------------ Boundary --------------------------------
+        # ------------------ Boundary --------------------------------
         boundary_file = prepare_boundaries(context.code, context.Name)
-        #------------------ Boundary Points --------------------------------
+        # ------------------ Boundary Points --------------------------------
         boundary_point_file = prepare_boundary_points(context.code, context.Name)
-        #endof json preparation
+        # endof json preparation
 
         files = {
             'domain.geojson': ('domain.geojson', geojson.dumps(domain_file)),
             'refinements.geojson': ('refinements.geojson', geojson.dumps(refinement_file)),
             'boundaries.geojson': ('boundaries.geojson', geojson.dumps(boundary_file)),
             'boundaries_points.geojson': ('boundaries_points.geojson', geojson.dumps(boundary_point_file)),
-        }  
+        }
         if alignment_file is not None:
             files['alignments.geojson'] = ('alignments.geojson', geojson.dumps(alignment_file))
 
@@ -57,7 +57,7 @@ def preprocess_task(self, url, organizationCode, contextCode):
         def my_callback(monitor):
             progress_recorder.set_progress(monitor.bytes_read, files_len)
 
-        payload = { 'organizationCode': organizationCode, 'contextCode': contextCode }
+        payload = {'organizationCode': organizationCode, 'contextCode': contextCode}
         monitor = MultipartEncoderMonitor(encoder, my_callback)
         requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
 
@@ -76,16 +76,16 @@ def simulate_task(self, url, event_id, writing_perio, max_update_perio, writing_
     try:
         print("preparing files...")
         frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
-        time_file      = prepare_time_file(init_date, end_date, init_time, end_time)
-        boundary_file  = prepare_boundaries_file(event.context)
-        files_sensors  = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time)
+        time_file = prepare_time_file(init_date, end_date, init_time, end_time)
+        boundary_file = prepare_boundaries_file(event.context)
+        files_sensors = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time)
 
         files = {
             'frequency': ('frequency', frequency_file),
             'time': ('time', time_file),
             'boundaries': ('boundaries', boundary_file),
         }
-        files = {**files, **files_sensors} # puts together all in the same dictionary
+        files = {**files, **files_sensors}  # puts together all in the same dictionary
 
         # Send file
         encoder = MultipartEncoder(files)
@@ -103,7 +103,7 @@ def simulate_task(self, url, event_id, writing_perio, max_update_perio, writing_
         }
         monitor = MultipartEncoderMonitor(encoder, my_callback)
         requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
-    
+
         return 'OK'
     except Exception as e:
         print(f'Exception:{e}')

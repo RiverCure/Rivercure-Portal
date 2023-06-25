@@ -1,4 +1,7 @@
-import os, geojson, datetime, requests
+import os
+import geojson
+import datetime
+import requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
@@ -25,18 +28,20 @@ from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
 
+
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Context
     form_class = ContextDetailsForm
     context_object_name = 'context'
     template_name = 'context/context/form.html'
     pk_url_kwarg = 'contextCode'
-    
+
     def get_success_url(self):
-        return reverse('context-detail',args=(self.object.code,))
+        return reverse('context-detail', args=(self.object.code,))
 
     def test_func(self):
         return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
+
 
 class ContextListView(LoginRequiredMixin, ListView):
     model = e_Context
@@ -56,6 +61,7 @@ class ContextListView(LoginRequiredMixin, ListView):
         context['permission_to_add'] = context_general_create_permission_check(self.request.user)
         return context
 
+
 class OtherContextListView(LoginRequiredMixin, ListView):
     model = e_Context
     template_name = 'context/context/otherContext_list.html'
@@ -66,6 +72,7 @@ class OtherContextListView(LoginRequiredMixin, ListView):
         context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
+
 
 class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Context
@@ -92,6 +99,7 @@ class ContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return context_general_create_permission_check(self.request.user)
 
+
 class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Context
     context_object_name = 'context'
@@ -111,9 +119,10 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         return context
 
-    def test_func(self, *args , **kwargs):
+    def test_func(self, *args, **kwargs):
         context = self.get_object()
         return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
+
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_Context
@@ -123,7 +132,7 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('context-list')
 
     def delete(self, *args, **kwargs):
-        context : e_Context = self.get_object()
+        context: e_Context = self.get_object()
         base_path = 'media/'
 
         # Delete DTM and frictionCoef files
@@ -134,13 +143,14 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             os.remove(f'{base_path}{context.Name}_frictionCoef.tif')
 
         for i in os.listdir(base_path):
-            if os.path.isfile(os.path.join(base_path,i)) and f'frictionCoef_{context.Name}' in i:
+            if os.path.isfile(os.path.join(base_path, i)) and f'frictionCoef_{context.Name}' in i:
                 os.remove(f'{base_path}{i}')
 
         return super(ContextDeleteView, self).delete(*args, **kwargs)
 
     def test_func(self):
         return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
+
 
 class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = e_ContextSensor
@@ -151,7 +161,8 @@ class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
-        context_sensor_list = e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context__code=self.context.code).distinct('sensor')
+        context_sensor_list = e_ContextSensor.objects.filter(
+            boundary_point__contextBoundaryLine__context__code=self.context.code).distinct('sensor')
         filter = ContextSensorFilter(self.request.GET, queryset=context_sensor_list)
         return filter.qs
 
@@ -161,20 +172,23 @@ class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['context'] = self.context
         context['filter'] = filter
         return context
-    
+
     def test_func(self):
         return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
 
+
 def get_context_sensors(context_code):
     context_sensors = Sensor.objects.filter(isPublic=True, sensorClass__organization__is_active=True)
-    context_sensors = context_sensors | Sensor.objects.filter(sensorClass__organization=e_Context.objects.get(pk=context_code).organization, sensorClass__organization__is_active=True)
-    
+    context_sensors = context_sensors | Sensor.objects.filter(sensorClass__organization=e_Context.objects.get(
+        pk=context_code).organization, sensorClass__organization__is_active=True)
+
     previous_context_sensors = set()
     for elem in e_ContextSensor.objects.filter(boundary_point__contextBoundaryLine__context=get_object_or_404(e_Context, pk=context_code)):
         previous_context_sensors.add(elem.sensor.pk)
     # Adds previously added sensors (from other organizations that are suspended) to the queryset
     context_sensors = context_sensors | Sensor.objects.filter(pk__in=previous_context_sensors)
     return context_sensors
+
 
 @login_required
 def manage_context(request, contextCode):
@@ -186,7 +200,7 @@ def manage_context(request, contextCode):
         'api': f'http://{web_host}/contexts/api/context/',
     }
     if request.method == 'POST':
-        
+
         form = ContextForm(request.POST, request.FILES)
         if form.is_valid():
             try:
@@ -202,50 +216,53 @@ def manage_context(request, contextCode):
                     # initialize and save boundaries & boundary points
                     boundaryline_creation(form, e_context)
 
-                messages.success(request,f'Context updated with success!') 
-                
+                messages.success(request, f'Context updated with success!')
+
                 return HttpResponseRedirect(reverse('context-detail', kwargs={'contextCode': e_context.code}))
             except Exception as e:
                 print(f'Error saving context: {e}')
-                messages.warning(request,f'Context update failed')
+                messages.warning(request, f'Context update failed')
 
         else:
-            messages.warning(request,f'Context info is not complete') 
+            messages.warning(request, f'Context info is not complete')
     else:
         context['context'] = e_Context.objects.get(code=contextCode)
 
     return render(request, 'context/context/manage.html', context)
+
 
 class ContextViewSet(viewsets.ModelViewSet):
     queryset = e_Context.objects.all()
     lookup_field = 'code'
     serializer_class = ContextSerializer
 
+
 @login_required
-def download_context(request, contextCode): #function that allows the download of an context
-    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=contextCode).organization): #verify that the user is logged in
+def download_context(request, contextCode):  # function that allows the download of an context
+    # verify that the user is logged in
+    if not context_organization_edit_permission_check(request.user, e_Context.objects.get(code=contextCode).organization):
         return HttpResponse('Unauthorized', status=401)
 
-    message = None  #Message to send to user in case of failure
-    #prepare geojson for download
+    message = None  # Message to send to user in case of failure
+    # prepare geojson for download
 
-    #Need to check if context code exists
+    # Need to check if context code exists
     try:
-        #------------------ Domain --------------------------------
+        # ------------------ Domain --------------------------------
         domain_file = prepare_domain(contextCode)
         context_name = domain_file['name']
-        #------------------ Alignment --------------------------------
+        # ------------------ Alignment --------------------------------
         alignment_file = prepare_alignment(contextCode, context_name)
-        #------------------ Refinement --------------------------------  
+        # ------------------ Refinement --------------------------------
         refinement_file = prepare_refinement(contextCode, context_name)
-        #------------------ Boundary --------------------------------
+        # ------------------ Boundary --------------------------------
         boundary_file = prepare_boundaries(contextCode, context_name)
-        #------------------ Boundary Points --------------------------------
+        # ------------------ Boundary Points --------------------------------
         boundary_point_file = prepare_boundary_points(contextCode, context_name)
-        #endof json preparation
+        # endof json preparation
 
-        mem_file = BytesIO() #memory where the zip file will be created
-        with ZipFile(mem_file, 'w') as zipFolder: #create a zipped folder to return to the user
+        mem_file = BytesIO()  # memory where the zip file will be created
+        with ZipFile(mem_file, 'w') as zipFolder:  # create a zipped folder to return to the user
             zipFolder.writestr(f'{context_name}_domain.geojson', geojson.dumps(domain_file))
             if alignment_file is not None:
                 zipFolder.writestr(f'{context_name}_alignments.geojson', geojson.dumps(alignment_file))
@@ -261,9 +278,10 @@ def download_context(request, contextCode): #function that allows the download o
         response['Content-Disposition'] = f'attachment; filename="{context_name}.zip"'
         return response
     except Exception as e:
-        messages.warning(request,f'Context not complete for download') 
+        messages.warning(request, f'Context not complete for download')
         print(f'Error downloading context: {e}')
         return redirect(request.META['HTTP_REFERER'])
+
 
 @login_required
 def request_pre_processing(request, contextCode):
@@ -272,34 +290,37 @@ def request_pre_processing(request, contextCode):
     # Authorization
     if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
-        
+
     simulator_address = os.environ['SIMULATOR_ADDRESS']
     url = simulator_address + 'process/'
 
     try:
-        requests.get(simulator_address) # ping HiSTAV to check if it's online
+        requests.get(simulator_address)  # ping HiSTAV to check if it's online
         result = preprocess_task.delay(url, organizationCode, contextCode)
         # Combination hasMesh = False + task_id = val means it's processing
-        context.hasMesh = False # Assume there is no mesh generated
+        context.hasMesh = False  # Assume there is no mesh generated
         context.task_id = result.task_id
         context.requester = request.user
         context.save()
         messages.success(request, 'Mesh generation request sent')
-    except Exception as ex: # HiSTAV not online
+    except Exception as ex:  # HiSTAV not online
         print(ex)
         messages.error(request, 'Couldn\'t connect to HiSTAV')
 
     return redirect('context-detail', contextCode=contextCode)
 
+
 @login_required
-def preprocessing_results(request): # function to redirect the user to the paraviewweb visualizer
+def preprocessing_results(request):  # function to redirect the user to the paraviewweb visualizer
     paraviewweb_visualizer_url = 'http://localhost:8090'
     return redirect(paraviewweb_visualizer_url)
 
+
 @login_required
-def download_preprocessing_results(request, contextCode): # function to redirect the user to the paraviewweb visualizer
+def download_preprocessing_results(request, contextCode):  # function to redirect the user to the paraviewweb visualizer
     context = get_object_or_404(e_Context, code=contextCode)
-    if not context_organization_edit_permission_check(request.user, context.organization): #verify that the user is logged in
+    # verify that the user is logged in
+    if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
 
     url = os.environ['SIMULATOR_ADDRESS']
