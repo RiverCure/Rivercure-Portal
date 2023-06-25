@@ -158,3 +158,5 @@ migrations/
 results/
 .DS_Store
 .prettierignore
+mnt/
+simulation/

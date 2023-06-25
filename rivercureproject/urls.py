@@ -21,7 +21,6 @@ from users import views as users_views
 from django.conf import settings
 from django.conf.urls.static import static
 import notifications.urls
-from django.conf.urls import url
 
 
 urlpatterns = [
@@ -46,7 +45,7 @@ urlpatterns = [
     path('context/raster/', include('raster.urls')),
     path('organization/', include('organization.urls')),
 
-    url('^inbox/notifications/',
+    re_path(r'^inbox/notifications/',
         include(notifications.urls, namespace='notifications')),
 
     # the endpoint is configurable
