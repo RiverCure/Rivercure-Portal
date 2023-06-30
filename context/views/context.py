@@ -299,7 +299,7 @@ def request_pre_processing(request, contextCode):
         return HttpResponse('Unauthorized', status=401)
 
     if check_celery():
-        task = preprocess_task(organizationCode, contextCode)
+        task = preprocess_task.delay(organizationCode, contextCode)
         # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False  # Assume there is no mesh generated
         context.task_id = task.task_id
