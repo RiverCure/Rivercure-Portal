@@ -27,6 +27,13 @@ from .prepare_files import *
 from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
+from rivercureproject.celery import app
+
+
+def check_celery():
+    '''Checks if there is any celery worker.'''
+    # https://docs.celeryq.dev/en/latest/userguide/workers.html#ping
+    return bool(app.control.ping(timeout=1))  # 1 sec timeout
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -291,21 +298,16 @@ def request_pre_processing(request, contextCode):
     if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
 
-    simulator_address = os.environ['SIMULATOR_ADDRESS']
-    url = simulator_address + 'process/'
-
-    try:
-        requests.get(simulator_address)  # ping HiSTAV to check if it's online
-        result = preprocess_task.delay(url, organizationCode, contextCode)
+    if check_celery():
+        task = preprocess_task(organizationCode, contextCode)
         # Combination hasMesh = False + task_id = val means it's processing
         context.hasMesh = False  # Assume there is no mesh generated
-        context.task_id = result.task_id
+        context.task_id = task.task_id
         context.requester = request.user
         context.save()
-        messages.success(request, 'Mesh generation request sent')
-    except Exception as ex:  # HiSTAV not online
-        print(ex)
-        messages.error(request, 'Couldn\'t connect to HiSTAV')
+        messages.success(request, 'Mesh generation started')
+    else:
+        messages.error(request, 'Background process offline: Contact admin.')
 
     return redirect('context-detail', contextCode=contextCode)
 

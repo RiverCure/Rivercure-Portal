@@ -160,3 +160,4 @@ results/
 .prettierignore
 mnt/
 simulation/
+logs/
