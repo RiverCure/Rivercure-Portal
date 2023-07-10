@@ -25,6 +25,10 @@
             if(request.status == 200) {
                 result = request.response;
 
+                if(full_log_histav.innerHTML == result.full_log) {
+                    return;
+                }
+
                 status_histav.innerHTML = result.status;
                 full_log_histav.innerHTML = result.full_log;
                 
