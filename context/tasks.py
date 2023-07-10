@@ -14,11 +14,11 @@ from django.conf import settings
 
 logger = get_task_logger(__name__)
 
-if settings.DEBUG:
-    FILES_BASE_PATH = os.path.join(settings.BASE_DIR, 'mnt', 'disks', 'RiverCurePortal')
-else:
+if settings.TEST_ENV:
     # /mnt/disks/RiverCurePortal
     FILES_BASE_PATH = os.path.join(os.sep, 'mnt', 'disks', 'RiverCurePortal')
+else:
+    FILES_BASE_PATH = os.path.join(settings.BASE_DIR, 'mnt', 'disks', 'RiverCurePortal')
 
 
 def get_context_folder_path(organization_code, context_code):

@@ -25,6 +25,9 @@ SECRET_KEY = '^s&4uf&m0lgol2@%+-+7714k2t)wexo3j*b98dl3w_d-$z-e@b'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
+# Checks if it is on test env
+TEST_ENV = (os.getenv('TEST_ENV', 'False') == 'True')
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
