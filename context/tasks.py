@@ -21,8 +21,8 @@ else:
     FILES_BASE_PATH = os.path.join(settings.BASE_DIR, 'mnt', 'disks', 'RiverCurePortal')
 
 
-def get_context_folder_path(organization_code, context_code):
-    return os.path.join(FILES_BASE_PATH, f'{organization_code}-{context_code}_simulation')
+def get_context_folder_path(tag):
+    return os.path.join(FILES_BASE_PATH, f'{tag}_simulation')
 
 
 def prepare_files(context):
@@ -66,15 +66,14 @@ def prepare_files(context):
 
 
 def run_pre_processor(context, files):
-    organizationCode = context.organization.code
-    contextCode = context.code
+    tag = context.tag
 
-    context_folder = get_context_folder_path(organizationCode, contextCode)
+    context_folder = get_context_folder_path(tag)
     destination_folder = os.path.join(context_folder, 'gis')
     print(f'Mesh generate request for context {context}')
     logger.info(f'Mesh generate request for context {context}')
 
-    log_path = os.path.join(settings.BASE_DIR, 'logs', context.tag)
+    log_path = os.path.join(settings.BASE_DIR, 'logs', tag)
     log_file = os.path.join(log_path, 'mesh_log.txt')
 
     # If organization's/context's log folder doesnt exist, create
