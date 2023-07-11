@@ -21,11 +21,10 @@
             request = e.target;
 
             var finished = false;
-            console.log(request)
             if(request.status == 200) {
                 result = request.response;
 
-                if(full_log_histav.innerHTML == result.full_log) {
+                if(progress_histav.innerHTML == result.message) {
                     return;
                 }
 
