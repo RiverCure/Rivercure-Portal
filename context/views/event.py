@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
+from context.views.context import check_celery
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter
@@ -21,6 +22,7 @@ from .prepare_files import *
 from context.tasks import simulate_task
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
+
 
 class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'events'
@@ -47,6 +49,7 @@ class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def test_func(self):
         return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
 
+
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = e_ContextEvent
     context_object_name = 'event'
@@ -54,16 +57,19 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     template_name = 'context/event/detail.html'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        context['hasPerm'] = context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
+        context = super().get_context_data(**kwargs)
+        context['hasPerm'] = context_organization_event_permission_check(
+            self.request.user, self.get_object().context.organization)
         return context
 
 # TODO: check for permissions
+
+
 @login_required
-def view_events_results(request, event_id): #function to view the results of an event simulation
+def view_events_results(request, event_id):  # function to view the results of an event simulation
     event = e_ContextEvent.objects.get(pk=event_id)
     web_host = os.environ['CONTEXT_API']
-    
+
     context = {
         'api': f'http://{web_host}/contexts/api/context/',
         'context': event.context,
@@ -80,7 +86,7 @@ def view_events_results(request, event_id): #function to view the results of an 
 
 # TODO: check for permissions
 @login_required
-def download_simulation_results(request, event_id): #function to download simulation results
+def download_simulation_results(request, event_id):  # function to download simulation results
     url = os.environ['SIMULATOR_ADDRESS']
 
     try:
@@ -91,7 +97,7 @@ def download_simulation_results(request, event_id): #function to download simula
 
     contextCode = context_event.context.code
 
-    payload = { 'organizationCode': context_event.context.organization.code, 'contextCode': contextCode }
+    payload = {'organizationCode': context_event.context.organization.code, 'contextCode': contextCode}
     histav_response = requests.get(f'{url}simulation/results/', params=payload, stream=True)
     if histav_response.status_code != 200:
         if histav_response.status_code == 404:
@@ -106,14 +112,15 @@ def download_simulation_results(request, event_id): #function to download simula
     #     for chunk in request.iter_content(chunk_size=1024):
     #             destination.write(chunk)
 
-            
     print(f'Simulation results requested for context {contextCode} event {event_id}')
     response = FileResponse(BytesIO(histav_response.content))
     response['Content-Disposition'] = f'attachment; filename="{contextCode}_{event_id}_simulation_results.zip"'
     return response
 
 # Note: Not needed right now, since only the VTK file is returned as simulation result
-def handle_simulation_results(request, event_id): #function to handle simulation results
+
+
+def handle_simulation_results(request, event_id):  # function to handle simulation results
     sim_url = os.environ['SIMULATOR_ADDRESS']
 
     event = e_ContextEvent.objects.get(pk=event_id)
@@ -151,17 +158,18 @@ def handle_simulation_results(request, event_id): #function to handle simulation
 
     return HttpResponse(status=200)
 
-class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+
+class EventCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_ContextEvent
     template_name = 'context/event/form.html'
     form_class = EventForm
     context_object_name = 'event'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
+        context = super().get_context_data(**kwargs)
         context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
         return context
-    
+
     def form_valid(self, form):
         context = e_Context.objects.get(code=form.cleaned_data['context_code'])
         writing_period = form.cleaned_data['WritingPeriodicity']
@@ -172,16 +180,17 @@ class EventCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
         end_date = form.cleaned_data['endDate']
         init_time = form.cleaned_data['startTime']
         end_time = form.cleaned_data['endTime']
-        
+
         obj = form.save(commit=False)
         obj.context = context
-        obj.save() 
+        obj.save()
 
-        return HttpResponseRedirect(reverse('event-detail',args=(context.code, obj.id,)))
+        return HttpResponseRedirect(reverse('event-detail', args=(context.code, obj.id,)))
 
     def test_func(self):
         organization = e_Context.objects.get(pk=self.kwargs['pk']).organization
         return context_organization_event_permission_check(self.request.user, organization)
+
 
 class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_ContextEvent
@@ -196,7 +205,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse('event-list',args=(self.get_object().context.code, ))
+        return reverse('event-list', args=(self.get_object().context.code, ))
 
     def test_func(self):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
@@ -207,36 +216,37 @@ def runsimulationview(request, pk, event_id):
     if not context_organization_event_permission_check(request.user, event.context.organization):
         return HttpResponseRedirect(reverse('event-detail', args=(pk, event_id, )))
 
-    simulator_address = os.environ['SIMULATOR_ADDRESS']
-    url = simulator_address + 'simulate/'
-
-    try:
-        r = requests.get(simulator_address) # ping HiSTAV to check if it's online
+    if check_celery():
         # Using pickle serializer to have the datetime objects not transformed to string : https://stackoverflow.com/questions/48811824/how-can-i-deserialize-a-datetime-string-in-celery/48812310
-        result = simulate_task.apply_async(args=[url, event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit, event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
+        result = simulate_task.apply_async(args=[event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit,
+                                           event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
         # # Combination hasSimulation = False + task_id = val means it's processing
-        event.hasSimulation = False # Assume there is no simulation generated
+        event.hasSimulation = False  # Assume there is no simulation generated
         event.task_id = result.task_id
         event.requester = request.user
         event.save()
         messages.success(request, 'Simulation run request sent')
-    except: # HiSTAV not online
-        messages.error(request, 'Couldn\'t connect to HiSTAV')
-    
+    else:  # HiSTAV not online
+        messages.error(request, 'Background process offline: Contact admin.')
+
     print("RUN SIMULATION")
     return HttpResponseRedirect(reverse('event-detail', args=(pk, event.id,)))
 
 # Return last line of output
-def get_last_line(status:str):
+
+
+def get_last_line(status: str):
     if status == "":
         return ""
-    lines:list = status.splitlines()
+    lines: list = status.splitlines()
     if lines[-1] == "" or lines[-1].isspace():
         return get_last_line("\n".join(lines[0:len(lines)-1]))
     return lines[-1]
 
 # Enhance this
-def get_status(last_line:str):
+
+
+def get_status(last_line: str):
     if ("Permission denied" in last_line) or ("Fail" in last_line) or ("Error" in last_line):
         return "Fail"
     elif ("all files written in" in last_line) or ("--:--:--" in last_line):
@@ -245,7 +255,9 @@ def get_status(last_line:str):
         return "Processing"
 
 # TODO: this checks if the simulation generation has finished when the user is in the event main page
-def inform_event_status(request, event_id): # Function to inform if event is generated
+
+
+def inform_event_status(request, event_id):  # Function to inform if event is generated
     event = e_ContextEvent.objects.get(id=event_id)
     if event.hasSimulation:
         return HttpResponse(status=200)
@@ -257,38 +269,31 @@ def inform_event_status(request, event_id): # Function to inform if event is gen
 def event_status_progress(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
     # get_object_or_404(Membership, organization=context.organization, user=request.user)
-    simulator_address = os.environ['SIMULATOR_ADDRESS']
-    url = simulator_address + 'simulate-status/'
 
-    try:
-        payload = {
-            'organizationCode': event.context.organization,
-            'contextCode': event.context.code,
-            'eventName': event.Name
-        }
-        response = requests.get(url, params=payload)
-        if response.status_code != 200:
-            return HttpResponse(status=400)
-        
-        body = response.content.decode("utf-8")
-        lastline = get_last_line(body)
-        status = get_status(lastline)
+    log_folder = os.path.join(settings.BASE_DIR, 'logs', event.context.tag)
+    log_file = os.path.join(log_folder, f'{event.Name}_simulation_log.txt')
+    if not os.path.isfile(log_file):
+        return HttpResponse(status=404)
 
-        # Notification
-        if ("Fail" in status) or ("Finished successfully" in status):
-            notify.send(sender=event, recipient=event.requester, action_object=event.context.organization, verb=f"Event {event.Name} has finished its simulation with status '{status}'")
+    msg = ""
+    with open(log_file, "r") as f_log:
+        msg = f_log.read()
+    lastline = get_last_line(msg)
+    status = get_status(lastline)
 
-        return JsonResponse({'status' : status, 'message' : lastline, 'full_log' : body})
-    except: # HiSTAV not online
-        # 503 = service unavailable
-        return HttpResponse(status=503)
-    
+    # Notification
+    if ("Fail" in status) or ("Finished successfully" in status):
+        notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
+                    verb=f"Event {event.Name} has finished its simulation with status '{status}'")
 
-def event_status_change(request, event_id): # Function to mark event has generated
+    return JsonResponse({'status': status, 'message': lastline, 'full_log': msg})
+
+
+def event_status_change(request, event_id):  # Function to mark event has generated
     event = e_ContextEvent.objects.get(pk=event_id)
     if request.GET.get('status'):
         event.hasSimulation = True
-        event.task_id = None # task finished
+        event.task_id = None  # task finished
     else:
         event.hasSimulation = False
 
@@ -296,12 +301,14 @@ def event_status_change(request, event_id): # Function to mark event has generat
 
     return HttpResponse(status=200)
 
+
 @login_required
 def event_progress(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-    return render(request, 'context/event/progress.html', { 'event': event })
+    return render(request, 'context/event/progress.html', {'event': event})
+
 
 @login_required
 def regenerate_event_confirm(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-    return render(request, 'context/event/regenerate_event_confirm.html', { 'event': event })
+    return render(request, 'context/event/regenerate_event_confirm.html', {'event': event})

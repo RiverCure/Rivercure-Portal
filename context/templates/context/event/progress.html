@@ -13,41 +13,9 @@
 
 <script>
     document.onreadystatechange = function () {
-        const progress_bar = document.getElementById('custom_progress');
-        const status_upload = document.getElementById('status_upload');
         const progress_histav = document.getElementById('progress_histav');
         const status_histav = document.getElementById('status_histav');
         const full_log_histav = document.getElementById('full_log_histav');
-
-        function customSuccess(resultElement, result) {
-            status_upload.innerHTML = "Finished successfully";
-            requestMeshStatus();
-            progress_histav.innerHTML = "HiSTAV requested. Please wait...";
-            status_histav.innerHTML = "Pending";
-        }
-
-        function customProgress(progressBarElement, progressBarMessageElement, progress) {
-            progress_bar.style.width = `${progress.percent}%`; // Update percentage
-            if(progress.percent != 100) status_upload.innerHTML = `Uploading (${progress.percent}%)`;
-            progress_bar.setAttribute("aria-valuenow", progress.percent); // Update aria-valuenow
-            if(progress.pending === false) progress_bar.classList.remove('progress-bar-animated'); // If it's not pending, don't animate
-        }
-
-        function customError(progressBarElement, progressBarMessageElement, excMessage, data) {
-            status_upload.innerHTML = `Error: ${excMessage}`;
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-        var progressUrl = "{% url 'celery_progress:task_status' event.task_id %}";
-        CeleryProgressBar.initProgressBar(progressUrl, {
-            onResult: () => {},
-            onSuccess: customSuccess,
-            onProgress: customProgress,
-            onTaskError: customError,
-            onNetworkError: customError,
-            onHttpError: customError,
-            onDataError: customError
-        })});
 
         async function receiveResponse(e) {
             request = e.target;
@@ -55,6 +23,10 @@
             var finished = false;
             if(request.status == 200) {
                 result = request.response;
+
+                if(progress_histav.innerHTML == result.message) {
+                    return;
+                }
 
                 status_histav.innerHTML = result.status;
                 full_log_histav.innerHTML = result.full_log;
@@ -89,7 +61,7 @@
             }
         }
 
-        requestMeshStatus = () => {
+        function requestMeshStatus {
             const xhr = new XMLHttpRequest();
             const url = "{% url 'event-status-progress' event.id %}";
             xhr.open('GET', url, true);
@@ -119,15 +91,6 @@
             <th style="width:20%" scope="col">#</th>
             <th style="width:60%" scope="col">Progress</th>
             <th style="width:20%" scope="col">Status</th>
-        </tr>
-        <tr>
-            <th class="text-nowrap" scope="row">Upload to HiSTAV</th>
-            <td>
-                <div class="progress">
-                    <div id="custom_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-                </div>
-            </td>
-            <td class="text-nowrap" id="status_upload">Uploading (0%)</td>
         </tr>
         <tr>
             <th class="text-nowrap" scope="row">HiSTAV simulation</th>

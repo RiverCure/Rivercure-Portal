@@ -25,7 +25,11 @@ def get_context_folder_path(tag):
     return os.path.join(FILES_BASE_PATH, f'{tag}_simulation')
 
 
-def prepare_files(context):
+def get_log_folder_path(tag):
+    return os.path.join(settings.BASE_DIR, 'logs', tag)
+
+
+def prepare_files_preprocessing(context):
     from .views import prepare_domain, prepare_alignment, prepare_refinement, prepare_boundaries, prepare_boundary_points
     # ------------------ Domain --------------------------------
     domain_file = prepare_domain(context.code)
@@ -73,7 +77,7 @@ def run_pre_processor(context, files):
     print(f'Mesh generate request for context {context}')
     logger.info(f'Mesh generate request for context {context}')
 
-    log_path = os.path.join(settings.BASE_DIR, 'logs', tag)
+    log_path = get_log_folder_path(tag)
     log_file = os.path.join(log_path, 'mesh_log.txt')
 
     # If organization's/context's log folder doesnt exist, create
@@ -97,18 +101,15 @@ def run_pre_processor(context, files):
                     file.write(files[key])
 
         log_f = open(log_file, 'w')
-        # subprocess.Popen(f'''(cd {destination_folder} && ./mesh && cd ../../.. \
-        #         && curl {requester_ip}/contexts/mesh-status/{contextCode}/change?organization={organizationCode}\&status=True &)''',
-        #         stdout=log_f, stderr=log_f, shell=True)
         subprocess.Popen(f'(cd {destination_folder} && ./mesh &)', stdout=log_f, stderr=log_f, shell=True)
 
     except Exception as e:
         print(f'Failed pre-processing!\nException{e}')
         import traceback
         traceback.print_exc()
-        return 'fail'
+        return False
 
-    return 'success'
+    return True
 
 
 @shared_task(bind=True)
@@ -116,7 +117,7 @@ def preprocess_task(self, organizationCode, contextCode):
     context = e_Context.objects.get(organization__code=organizationCode, code=contextCode)
 
     try:
-        files = prepare_files(context)
+        files = prepare_files_preprocessing(context)
         run_pre_processor(context, files)
         return 'OK'
     except Exception as e:
@@ -124,43 +125,77 @@ def preprocess_task(self, organizationCode, contextCode):
         return f'Exception:{e}'
 
 
+def prepare_files_simulation(event, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
+    from .views import prepare_frequency_file, prepare_time_file, prepare_boundaries_file, prepare_gauge_file
+    print("preparing files...")
+    frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
+    time_file = prepare_time_file(init_date, end_date, init_time, end_time)
+    boundary_file = prepare_boundaries_file(event.context)
+    files_sensors = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time)
+
+    files = {
+        'frequency': frequency_file,
+        'time': time_file,
+        'boundaries': boundary_file,
+    }
+    files = {**files, **files_sensors}  # puts together all in the same dictionary
+    return files
+
+
+def run_simulator(event, files):
+    tag = event.context.tag
+    # Remove whitespaces from event name
+    eventName = eventName.replace(' ', '_')
+
+    context_folder = get_context_folder_path(tag)
+    frequency_destination_folder = os.path.join(context_folder, 'output', 'output.cnt')
+    sensor_data_destination_folder = os.path.join(f'{context_folder}boundary', 'gauges')
+    time_destination_folder = os.path.join(f'{context_folder}control', 'time.cnt')
+    boundary_destination_folder = os.path.join(f'{context_folder}boundary', 'boundary.cnt')
+
+    log_path = get_log_folder_path(tag)
+    log_file = os.path.join(log_path, f'{eventName}_simulation_log.txt')
+    if os.path.exists(log_file):
+        os.remove(log_file)
+
+    # Creates folders if they dont exist
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+
+    for key in files:
+        if key == 'frequency':
+            shutil.copyfile(files[key].path, frequency_destination_folder)
+        if key == 'time':
+            shutil.copyfile(files[key].path, time_destination_folder)
+        if key == 'boundaries':
+            shutil.copyfile(files[key].path, boundary_destination_folder)
+        else:
+            shutil.copyfile(files[key].path, os.path.join(sensor_data_destination_folder, key))
+
+    # bnd are duplicated might be necessary to remove them
+    try:
+        log_f = open(log_file, 'w')
+        subprocess.Popen(f'(cd {context_folder} && ./solver2D &)', stdout=log_f, stderr=log_f, shell=True)
+    except Exception as e:
+        print(f'Failed simulation!\nException{e}')
+        import traceback
+        traceback.print_exc()
+        return False
+
+    return True
+
+
 @shared_task(bind=True)
-def simulate_task(self, url, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
+def simulate_task(self, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
     from .views import prepare_frequency_file, prepare_time_file, prepare_boundaries_file, prepare_gauge_file
     event = e_ContextEvent.objects.get(id=event_id)
 
     # Prepare files
     try:
-        print("preparing files...")
-        frequency_file = prepare_frequency_file(writing_perio, max_update_perio, writing_unit, update_unit)
-        time_file = prepare_time_file(init_date, end_date, init_time, end_time)
-        boundary_file = prepare_boundaries_file(event.context)
-        files_sensors = prepare_gauge_file(event.context, init_date, end_date, init_time, end_time)
+        files = prepare_files_simulation(event, writing_perio, max_update_perio,
+                                         writing_unit, update_unit, init_date, end_date, init_time, end_time)
 
-        files = {
-            'frequency': ('frequency', frequency_file),
-            'time': ('time', time_file),
-            'boundaries': ('boundaries', boundary_file),
-        }
-        files = {**files, **files_sensors}  # puts together all in the same dictionary
-
-        # Send file
-        encoder = MultipartEncoder(files)
-        progress_recorder = ProgressRecorder(self)
-        files_len = encoder.len
-
-        def my_callback(monitor):
-            progress_recorder.set_progress(monitor.bytes_read, files_len)
-
-        payload = {
-            'organizationCode': event.context.organization.code,
-            'contextCode': event.context.code,
-            'eventName': event.Name,
-            'eventId': event.id
-        }
-        monitor = MultipartEncoderMonitor(encoder, my_callback)
-        requests.post(url, data=monitor, params=payload,  headers={'Content-Type': monitor.content_type})
-
+        run_simulator(event, files)
         return 'OK'
     except Exception as e:
         print(f'Exception:{e}')
