@@ -61,7 +61,11 @@
             }
         }
 
-        function requestMeshStatus {
+        document.addEventListener("DOMContentLoaded", function () {
+            requestMeshStatus();
+        });
+
+        function requestMeshStatus() {
             const xhr = new XMLHttpRequest();
             const url = "{% url 'event-status-progress' event.id %}";
             xhr.open('GET', url, true);
