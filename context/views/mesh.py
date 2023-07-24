@@ -41,7 +41,7 @@ def get_status(last_line: str):
         "/bin/sh: ./mesh: cannot execute binary file"
     ]
     finish_substrings = [
-        "all files written in",
+        "All files written in",
         "--:--:--"
     ]
     if any(s in last_line for s in error_substrings):
