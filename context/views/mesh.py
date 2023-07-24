@@ -44,9 +44,9 @@ def get_status(last_line: str):
         "all files written in",
         "--:--:--"
     ]
-    if last_line in error_substrings:
+    if any(s in last_line for s in error_substrings):
         return "Fail"
-    elif last_line in finish_substrings:
+    elif any(s in last_line for s in finish_substrings):
         return "Finished successfully"
     else:
         return "Processing"
