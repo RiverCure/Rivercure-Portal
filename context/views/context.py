@@ -4,7 +4,7 @@ import datetime
 import requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect
+from django.http import FileResponse, HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.db import transaction
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
-from ..tasks import preprocess_task
+from ..tasks import get_context_folder_path, preprocess_task
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
@@ -319,17 +319,19 @@ def preprocessing_results(request):  # function to redirect the user to the para
 
 
 @login_required
-def download_preprocessing_results(request, contextCode):  # function to redirect the user to the paraviewweb visualizer
+def download_preprocessing_results(request, contextCode):
     context = get_object_or_404(e_Context, code=contextCode)
     # verify that the user is logged in
     if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
 
-    url = os.environ['SIMULATOR_ADDRESS']
-    payload = {'context_name': context.Name}
-    request = requests.get(f'{url}pre-processing/results/', params=payload, stream=True)
-    print(f'Pre-processing results requested for context {context.Name}')
-    response = FileResponse(BytesIO(request.content))
+    file_path = os.path.join(get_context_folder_path(context.tag), 'mesh', 'vtk', 'meshQuality.vtk')
+    if not os.path.exists(file_path):
+        return HttpResponseNotFound("VTK file not found")
+
+    with open(file_path, "rb") as fh:
+        buf = BytesIO(fh.read())
+    response = FileResponse(buf)
     response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
 
     return response

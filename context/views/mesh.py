@@ -8,8 +8,6 @@ from .authorization import context_organization_edit_permission_check
 from notifications.signals import notify
 from enum import Enum
 
-# Renders the page that shows the progress of the mesh generation
-
 
 class Status(Enum):
     FINISH = "Finished successfully"
@@ -19,6 +17,7 @@ class Status(Enum):
 
 @login_required
 def mesh_status(request, contextCode):
+    '''Renders the page that shows the progress of the mesh generation'''
     organizationCode = request.session['organizationCode']
     context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
     # Authorization
@@ -27,10 +26,9 @@ def mesh_status(request, contextCode):
 
     return render(request, 'context/context/mesh_progress.html', {'context': context})
 
-# Return last line of output
-
 
 def get_last_line(status: str):
+    '''Return last line of output'''
     if status == "":
         return ""
     lines: list = status.splitlines()
@@ -91,29 +89,10 @@ def mesh_status_progress(request, contextCode):
 
     return JsonResponse({'status': status.value, 'message': lastline, 'full_log': msg})
 
-# API endpoint called by HiSTAV to notify that mesh generation has finished
-# Expected to be called like: baseUrl/mesh-status/<str:contextCode>/change?organization=<str:organizationCode>&status=<status>
-
-
-def mesh_status_change(request, contextCode):
-    # since the request comes from HiSTAV, they have to send the organization as query param
-    organizationCode = request.GET.get('organization')
-    context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
-    if request.GET.get('status'):
-        context.hasMesh = True
-        context.task_id = None
-    else:
-        context.hasMesh = False
-
-    context.save()
-
-    return HttpResponse(status=200)
-
-# Renders the confirm regeneration of mesh page
-
 
 @login_required
 def regenerate_mesh_confirm(request, contextCode):
+    '''Renders the confirm regeneration of mesh page'''
     organizationCode = request.session['organizationCode']
     context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
     # Authorization
@@ -122,11 +101,10 @@ def regenerate_mesh_confirm(request, contextCode):
 
     return render(request, 'context/context/regenerate_mesh_confirm.html', {'context': context})
 
-# Called repeatedly by the frontend when in /context/<str:contextCode>/detail to check if the mesh has been generated
-
 
 @login_required
 def inform_mesh_status(request, contextCode):
+    '''Called repeatedly by the frontend when in /context/<str:contextCode>/detail to check if the mesh has been generated'''
     organizationCode = request.session['organizationCode']
     context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
     if context.hasMesh:

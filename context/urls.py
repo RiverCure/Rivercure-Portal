@@ -16,12 +16,12 @@ urlpatterns = [
     path('<str:contextCode>/upload/', UploadContext.as_view(), name='context_upload'),
     path('<str:contextCode>/download/', download_context, name='download_context'),
     path('<str:contextCode>/request_preprocessing/', request_pre_processing, name='context-preprocessing-request'),
-    path('<str:contextCode>/preprocessing_results/download/', download_preprocessing_results, name='context-preprocessing-results-download'),
+    path('<str:contextCode>/preprocessing_results/download/<str:context_code>',
+         download_preprocessing_results, name='context-preprocessing-results-download'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Mesh progress
     path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
     path('mesh-status/<str:contextCode>/progress', mesh_status_progress, name='mesh-status-progress'),
-    path('mesh-status/<str:contextCode>/change', mesh_status_change, name='mesh-status-change'),
     path('mesh-status/<str:contextCode>/regenerate-confirm', regenerate_mesh_confirm, name='mesh-regenerate-confirm'),
     path('mesh-status/<str:contextCode>/request', inform_mesh_status, name='mesh-status-request'),
     # Event simulation
