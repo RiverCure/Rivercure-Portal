@@ -78,14 +78,14 @@ def mesh_status_progress(request, contextCode):
     status = get_status(lastline)
 
     # Notification
-    if Status.FINISH in status:
+    if status == Status.FINISH:
         context.hasMesh = True
         context.task_id = None
         context.save()
 
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
                     verb=f"Processing of context {context.Name} has finished successfully")
-    elif Status.FAIL in status:
+    elif status == Status.FAIL:
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
                     verb=f"Processing of context {context.Name} has failed")
 
