@@ -1,5 +1,4 @@
 import os
-import requests
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -7,8 +6,15 @@ from context.models import e_Context as Context
 from organization.models import Membership
 from .authorization import context_organization_edit_permission_check
 from notifications.signals import notify
+from enum import Enum
 
 # Renders the page that shows the progress of the mesh generation
+
+
+class Status(Enum):
+    FINISH = "Finished successfully"
+    FAIL = "Fail"
+    PROCESSING = "Processing"
 
 
 @login_required
@@ -45,11 +51,11 @@ def get_status(last_line: str):
         "--:--:--"
     ]
     if any(s in last_line for s in error_substrings):
-        return "Fail"
+        return Status.FAIL
     elif any(s in last_line for s in finish_substrings):
-        return "Finished successfully"
+        return Status.FINISH
     else:
-        return "Processing"
+        return Status.PROCESSING
 
 
 @login_required
@@ -72,9 +78,16 @@ def mesh_status_progress(request, contextCode):
     status = get_status(lastline)
 
     # Notification
-    if ("Fail" in status) or ("Finished successfully" in status):
+    if Status.FINISH in status:
+        context.hasMesh = True
+        context.task_id = None
+        context.save()
+
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
-                    verb=f"Context {context.Name} has finished its processing with status '{status}'")
+                    verb=f"Processing of context {context.Name} has finished successfully")
+    elif Status.FAIL in status:
+        notify.send(sender=context, recipient=context.requester, action_object=context.organization,
+                    verb=f"Processing of context {context.Name} has failed")
 
     return JsonResponse({'status': status, 'message': lastline, 'full_log': msg})
 
