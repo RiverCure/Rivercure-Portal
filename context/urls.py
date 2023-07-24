@@ -16,7 +16,7 @@ urlpatterns = [
     path('<str:contextCode>/upload/', UploadContext.as_view(), name='context_upload'),
     path('<str:contextCode>/download/', download_context, name='download_context'),
     path('<str:contextCode>/request_preprocessing/', request_pre_processing, name='context-preprocessing-request'),
-    path('<str:contextCode>/preprocessing_results/download/<str:context_code>',
+    path('<str:contextCode>/preprocessing_results/download/',
          download_preprocessing_results, name='context-preprocessing-results-download'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Mesh progress
