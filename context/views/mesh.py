@@ -89,7 +89,7 @@ def mesh_status_progress(request, contextCode):
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
                     verb=f"Processing of context {context.Name} has failed")
 
-    return JsonResponse({'status': status, 'message': lastline, 'full_log': msg})
+    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': msg})
 
 # API endpoint called by HiSTAV to notify that mesh generation has finished
 # Expected to be called like: baseUrl/mesh-status/<str:contextCode>/change?organization=<str:organizationCode>&status=<status>
