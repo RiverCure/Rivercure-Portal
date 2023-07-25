@@ -25,6 +25,7 @@
                 result = request.response;
 
                 if(progress_histav.innerHTML == result.message) {
+                    requestMeshStatus();
                     return;
                 }
 
@@ -55,9 +56,7 @@
             }
 
             if(!finished) {
-                setTimeout(() => {
-                    requestMeshStatus();
-                }, 500);
+                requestMeshStatus();
             }
         }
 
@@ -66,15 +65,17 @@
         });
 
         function requestMeshStatus() {
-            const xhr = new XMLHttpRequest();
-            const url = "{% url 'event-status-progress' event.id %}";
-            xhr.open('GET', url, true);
-            xhr.responseType="json";
-            xhr.onload =  (e) => {
-                receiveResponse(e);
-            };
+            setTimeout(() => {
+                const xhr = new XMLHttpRequest();
+                const url = "{% url 'event-status-progress' event.id %}";
+                xhr.open('GET', url, true);
+                xhr.responseType="json";
+                xhr.onload =  (e) => {
+                    receiveResponse(e);
+                };
 
-            xhr.send(null);
+                xhr.send(null);
+            }, 500);
         }
     }
 </script>
