@@ -1,3 +1,4 @@
+import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import check_celery
@@ -20,7 +21,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .prepare_files import *
-from context.tasks import simulate_task
+from context.tasks import get_context_folder_path, simulate_task
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 
@@ -85,40 +86,32 @@ def view_events_results(request, event_id):  # function to view the results of a
     return render(request, 'context/event/results.html', context)
 
 
-# TODO: check for permissions
 @login_required
 def download_simulation_results(request, event_id):  # function to download simulation results
-    url = os.environ['SIMULATOR_ADDRESS']
+    event = get_object_or_404(e_ContextEvent, pk=event_id)
+    context = event.context
+    # verify that the user is logged in
+    if not context_organization_edit_permission_check(request.user, context.organization):
+        return HttpResponse('Unauthorized', status=401)
 
-    try:
-        context_event = e_ContextEvent.objects.get(pk=event_id)
-    except:
-        messages.warning(request, 'Request unsuccesful')
-        return HttpResponseRedirect(reverse('event-list'))
+    folder_path = os.path.join(get_context_folder_path(context.tag), 'output', 'maxima')
+    if not os.path.exists(folder_path) or len(os.listdir(folder_path)) == 0:
+        messages.error(request, "File doesn't exist")
 
-    contextCode = context_event.context.code
+    file_name = os.listdir(folder_path)[0]
+    filepath = os.path.join(folder_path, file_name)
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, 'w') as zip_file:
+        zip_info = zipfile.ZipInfo(file_name)
+        zip_info.compress_type = zipfile.ZIP_DEFLATED
+        with open(filepath, 'rb') as fd:
+            zip_file.writestr(zip_info, fd.read())
+    buf.seek(0)
 
-    payload = {'organizationCode': context_event.context.organization.code, 'contextCode': contextCode}
-    histav_response = requests.get(f'{url}simulation/results/', params=payload, stream=True)
-    if histav_response.status_code != 200:
-        if histav_response.status_code == 404:
-            messages.error(request, "File doesn\'t exist in HiSTAV")
-        else:
-            messages.error(request, f"Bad request - status code {histav_response.status_code}")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('event-detail', args=[contextCode, event_id])))
+    response = FileResponse(buf)
+    response['Content-Disposition'] = f'attachment; filename="{context.code}_{event.Name}_simulation_results.zip"'
 
-    # If files are too big, use:
-    # mem_file = BytesIO()
-    # with ZipFile(mem_file, 'w') as destination:
-    #     for chunk in request.iter_content(chunk_size=1024):
-    #             destination.write(chunk)
-
-    print(f'Simulation results requested for context {contextCode} event {event_id}')
-    response = FileResponse(BytesIO(histav_response.content))
-    response['Content-Disposition'] = f'attachment; filename="{contextCode}_{event_id}_simulation_results.zip"'
     return response
-
-# Note: Not needed right now, since only the VTK file is returned as simulation result
 
 
 def handle_simulation_results(request, event_id):  # function to handle simulation results
