@@ -239,12 +239,12 @@ def event_status_progress(request, event_id):
     if not os.path.isfile(log_file):
         return HttpResponse(status=404)
 
-    msg = ""
     with open(log_file, "r") as f_log:
-        msg = f_log.read()
-        tail_log = ''.join(tail(f_log, 50))
+        # Show last 50 lines
+        tail_list = tail(f_log, 50)
 
-    lastline = get_last_line(msg)
+    tail_log = ''.join(tail_list)
+    lastline = tail_list[-1]
     status = get_status(lastline)
 
     if status == Status.FINISH:
