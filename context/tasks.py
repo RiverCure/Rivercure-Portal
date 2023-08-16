@@ -147,7 +147,7 @@ def run_simulator(event, files):
     print("Starting simulation...")
     tag = event.context.tag
     # Remove whitespaces from event name
-    eventName = eventName.replace(' ', '_')
+    eventName = event.Name.replace(' ', '-')
 
     context_folder = get_context_folder_path(tag)
     frequency_destination_folder = os.path.join(context_folder, 'output', 'output.cnt')
