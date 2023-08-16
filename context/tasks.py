@@ -147,22 +147,12 @@ def run_simulator(event, files):
     print("Starting simulation...")
     tag = event.context.tag
     # Remove whitespaces from event name
-    eventName = event.Name.replace(' ', '-')
 
     context_folder = get_context_folder_path(tag)
     frequency_destination_folder = os.path.join(context_folder, 'output', 'output.cnt')
     sensor_data_destination_folder = os.path.join(context_folder, 'boundary', 'gauges')
     time_destination_folder = os.path.join(context_folder, 'control', 'time.cnt')
     boundary_destination_folder = os.path.join(context_folder, 'boundary', 'boundary.cnt')
-
-    log_path = get_log_folder_path(tag)
-    log_file = os.path.join(log_path, f'{eventName}_simulation_log.txt')
-    if os.path.exists(log_file):
-        os.remove(log_file)
-
-    # Creates folders if they dont exist
-    if not os.path.exists(log_path):
-        os.makedirs(log_path)
 
     for key in files:
         if key == 'frequency':
@@ -181,6 +171,7 @@ def run_simulator(event, files):
                 file.write(files[key])
 
     # bnd are duplicated might be necessary to remove them
+    log_file = get_log_file_path(event)
     try:
         log_f = open(log_file, 'w')
         subprocess.Popen(f'(cd {context_folder} && ./solver2D &)', stdout=log_f, stderr=log_f, shell=True)
@@ -193,9 +184,33 @@ def run_simulator(event, files):
     return True
 
 
+def get_log_file_path(event):
+    eventName = event.Name.replace(' ', '-')
+    tag = event.context.tag
+    log_path = get_log_folder_path(tag)
+    log_file = os.path.join(log_path, f'{eventName}_simulation_log.txt')
+    return log_file
+
+
 @shared_task(bind=True)
 def simulate_task(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
+
+    # This log file log was placed here instead of in run_simulator to write the "Preparing files line"
+    # and prevent that the first few seconds the UI presents an error
+    tag = event.context.tag
+    log_path = get_log_folder_path(tag)
+    log_file = get_log_file_path(event)
+
+    if os.path.exists(log_file):
+        os.remove(log_file)
+
+    # Creates folders if they dont exist
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+
+    with open(log_file, 'w') as f:
+        f.write('Preparing files...')
 
     # Prepare files
     try:

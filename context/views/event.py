@@ -240,7 +240,6 @@ def event_status_progress(request, event_id):
         return HttpResponse(status=404)
 
     with open(log_file, "r") as f_log:
-        # Show last 50 lines
         tail_list = tail(f_log, 50)
 
     tail_log = ''.join(tail_list)

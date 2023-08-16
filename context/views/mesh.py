@@ -27,16 +27,6 @@ def mesh_status(request, contextCode):
     return render(request, 'context/context/mesh_progress.html', {'context': context})
 
 
-def get_last_line(status: str):
-    '''Return last line of output'''
-    if status == "":
-        return ""
-    lines: list = status.splitlines()
-    if lines[-1] == "" or lines[-1].isspace():
-        return get_last_line("\n".join(lines[0:len(lines)-1]))
-    return lines[-1]
-
-
 def tail(f, lines=1, _buffer=4098):
     """Tail a file and get X lines from the end"""
     """Source: https://stackoverflow.com/a/13790289/9847548"""
@@ -98,10 +88,11 @@ def mesh_status_progress(request, contextCode):
     if not os.path.isfile(log_file):
         return HttpResponse(status=404)
 
-    msg = ""
     with open(log_file, "r") as f_log:
-        msg = f_log.read()
-    lastline = get_last_line(msg)
+        tail_list = tail(f_log, 50)
+
+    tail_log = ''.join(tail_list)
+    lastline = tail_list[-1]
     status = get_status(lastline)
 
     # Notification
@@ -116,7 +107,7 @@ def mesh_status_progress(request, contextCode):
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
                     verb=f"Processing of context {context.Name} has failed")
 
-    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': msg})
+    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': tail_log})
 
 
 @login_required
