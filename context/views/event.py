@@ -242,7 +242,7 @@ def event_status_progress(request, event_id):
     msg = ""
     with open(log_file, "r") as f_log:
         msg = f_log.read()
-        tail_log = tail(f_log)
+        tail_log = '\n'.join(tail(f_log, 50))
 
     lastline = get_last_line(msg)
     status = get_status(lastline)
