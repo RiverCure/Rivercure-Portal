@@ -151,9 +151,9 @@ def run_simulator(event, files):
 
     context_folder = get_context_folder_path(tag)
     frequency_destination_folder = os.path.join(context_folder, 'output', 'output.cnt')
-    sensor_data_destination_folder = os.path.join(f'{context_folder}boundary', 'gauges')
-    time_destination_folder = os.path.join(f'{context_folder}control', 'time.cnt')
-    boundary_destination_folder = os.path.join(f'{context_folder}boundary', 'boundary.cnt')
+    sensor_data_destination_folder = os.path.join(context_folder, 'boundary', 'gauges')
+    time_destination_folder = os.path.join(context_folder, 'control', 'time.cnt')
+    boundary_destination_folder = os.path.join(context_folder, 'boundary', 'boundary.cnt')
 
     log_path = get_log_folder_path(tag)
     log_file = os.path.join(log_path, f'{eventName}_simulation_log.txt')
