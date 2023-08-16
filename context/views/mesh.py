@@ -37,6 +37,34 @@ def get_last_line(status: str):
     return lines[-1]
 
 
+def tail(f, lines=1, _buffer=4098):
+    """Tail a file and get X lines from the end"""
+    """Source: https://stackoverflow.com/a/13790289/9847548"""
+    # place holder for the lines found
+    lines_found = []
+
+    # block counter will be multiplied by buffer
+    # to get the block size from the end
+    block_counter = -1
+
+    # loop until we find X lines
+    while len(lines_found) < lines:
+        try:
+            f.seek(block_counter * _buffer, os.SEEK_END)
+        except IOError:  # either file is too small, or too many lines requested
+            f.seek(0)
+            lines_found = f.readlines()
+            break
+
+        lines_found = f.readlines()
+
+        # decrement the block counter to get the
+        # next X bytes
+        block_counter -= 1
+
+    return lines_found[-lines:]
+
+
 def get_status(last_line: str):
     error_substrings = [
         "Permission denied",
@@ -46,7 +74,8 @@ def get_status(last_line: str):
     ]
     finish_substrings = [
         "All files written in",
-        "--:--:--"
+        "--:--:--",
+        "Simulation finished successfully"
     ]
     if any(s in last_line for s in error_substrings):
         return Status.FAIL

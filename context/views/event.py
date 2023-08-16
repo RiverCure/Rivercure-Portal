@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import check_celery
-from context.views.mesh import Status, get_last_line, get_status
+from context.views.mesh import Status, get_last_line, get_status, tail
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter
@@ -249,6 +249,8 @@ def event_status_progress(request, event_id):
     msg = ""
     with open(log_file, "r") as f_log:
         msg = f_log.read()
+        tail_log = tail(f_log)
+
     lastline = get_last_line(msg)
     status = get_status(lastline)
 
@@ -263,7 +265,7 @@ def event_status_progress(request, event_id):
         notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
                     verb=f"Simulation of event {event.Name} has failed")
 
-    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': msg})
+    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': tail_log})
 
 
 @login_required
