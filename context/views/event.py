@@ -219,8 +219,6 @@ def request_simulation(request, pk, event_id):
 
     if check_celery():
         task = simulate_task.delay(event_id)
-        # result = simulate_task.delay(args=[event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit,
-        #                                    event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
         # # Combination hasSimulation = False + task_id = val means it's processing
         event.hasSimulation = False  # Assume there is no simulation generated
         event.task_id = task.task_id
