@@ -166,13 +166,19 @@ def run_simulator(event, files):
 
     for key in files:
         if key == 'frequency':
-            shutil.copyfile(files[key], frequency_destination_folder)
+            with open(frequency_destination_folder, 'w') as file:
+                file.write(files[key])
         if key == 'time':
-            shutil.copyfile(files[key], time_destination_folder)
+            with open(time_destination_folder, 'w') as file:
+                file.write(files[key])
         if key == 'boundaries':
-            shutil.copyfile(files[key], boundary_destination_folder)
+            with open(boundary_destination_folder, 'w') as file:
+                file.write(files[key])
         else:
-            shutil.copyfile(files[key], os.path.join(sensor_data_destination_folder, key))
+            # The only case left is sensor data files
+            dest_folder = os.path.join(sensor_data_destination_folder, key)
+            with open(dest_folder, 'w') as file:
+                file.write(files[key])
 
     # bnd are duplicated might be necessary to remove them
     try:
