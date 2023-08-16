@@ -1,7 +1,7 @@
 import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
-from context.views.context import check_celery
+from context.views.context import check_celery, zip_file
 from context.views.mesh import Status, get_status, tail
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -96,17 +96,12 @@ def download_simulation_results(request, event_id):  # function to download simu
 
     folder_path = os.path.join(get_context_folder_path(context.tag), 'output', 'maxima')
     if not os.path.exists(folder_path) or len(os.listdir(folder_path)) == 0:
-        messages.error(request, "File doesn't exist")
+        messages.error(request, "File not found")
+        return HttpResponseRedirect(reverse('event-detail', args=(context.code, event.id,)))
 
     file_name = os.listdir(folder_path)[0]
     filepath = os.path.join(folder_path, file_name)
-    buf = BytesIO()
-    with zipfile.ZipFile(buf, 'w') as zip_file:
-        zip_info = zipfile.ZipInfo(file_name)
-        zip_info.compress_type = zipfile.ZIP_DEFLATED
-        with open(filepath, 'rb') as fd:
-            zip_file.writestr(zip_info, fd.read())
-    buf.seek(0)
+    buf = zip_file(file_name, filepath)
 
     response = FileResponse(buf)
     response['Content-Disposition'] = f'attachment; filename="{context.code}_{event.Name}_simulation_results.zip"'

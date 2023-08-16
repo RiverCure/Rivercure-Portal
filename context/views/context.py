@@ -1,4 +1,5 @@
 import os
+import zipfile
 import geojson
 import datetime
 import requests
@@ -318,6 +319,17 @@ def preprocessing_results(request):  # function to redirect the user to the para
     return redirect(paraviewweb_visualizer_url)
 
 
+def zip_file(file_name, file_path):
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, 'w') as zip_file:
+        zip_info = zipfile.ZipInfo(file_name)
+        zip_info.compress_type = zipfile.ZIP_DEFLATED
+        with open(file_path, 'rb') as fd:
+            zip_file.writestr(zip_info, fd.read())
+    buf.seek(0)
+    return buf
+
+
 @login_required
 def download_preprocessing_results(request, contextCode):
     context = get_object_or_404(e_Context, code=contextCode)
@@ -327,11 +339,11 @@ def download_preprocessing_results(request, contextCode):
 
     file_path = os.path.join(get_context_folder_path(context.tag), 'mesh', 'vtk', 'meshQuality.vtk')
     if not os.path.exists(file_path):
-        return HttpResponseNotFound("VTK file not found")
+        messages.error(request, "File not found")
+        return redirect('context-detail', contextCode=contextCode)
 
-    with open(file_path, "rb") as fh:
-        buf = BytesIO(fh.read())
+    buf = zip_file(file_path, f'{context.Name}_mesh')
     response = FileResponse(buf)
-    response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.vtk"'
+    response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.zip"'
 
     return response
