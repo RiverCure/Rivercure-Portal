@@ -139,10 +139,12 @@ def prepare_files_simulation(event, writing_perio, max_update_perio, writing_uni
         'boundaries': boundary_file,
     }
     files = {**files, **files_sensors}  # puts together all in the same dictionary
+    print("Finished preparing files")
     return files
 
 
 def run_simulator(event, files):
+    print("Starting simulation...")
     tag = event.context.tag
     # Remove whitespaces from event name
     eventName = eventName.replace(' ', '_')
