@@ -342,7 +342,7 @@ def download_preprocessing_results(request, contextCode):
         messages.error(request, "File not found")
         return redirect('context-detail', contextCode=contextCode)
 
-    buf = zip_file(file_path, f'{context.Name}_mesh')
+    buf = zip_file(file_path, 'meshQuality.vtk')
     response = FileResponse(buf)
     response['Content-Disposition'] = f'attachment; filename="{context.Name}_mesh.zip"'
 
