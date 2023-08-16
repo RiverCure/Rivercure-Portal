@@ -31,14 +31,13 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('<str:contextCode>/sensors/', ContextSensorListView.as_view(), name='context-sensor-list'),
     path('<str:pk>/events/<int:event_id>', EventDetailView.as_view(), name='event-detail'),
-    path('<str:pk>/events/<int:event_id>/run/', runsimulationview, name='event-run'),
+    path('<str:pk>/events/<int:event_id>/run/', request_simulation, name='event-run'),
     path('<str:contextCode>/events/', ContextEventListView.as_view(), name='event-list'),
     path('<str:pk>/events/new/', EventCreateView.as_view(), name='event-create'),
     path('<str:pk>/event/<int:event_id>/update/', EventUpdateView.as_view(), name='event-update'),
     # Event progress
     path('event-status/<str:event_id>', event_progress, name='event-progress'),
     path('event-status/<str:event_id>/progress', event_status_progress, name='event-status-progress'),
-    path('event-status/<str:event_id>/change', event_status_change, name='event-status-change'),
     path('event-status/<str:event_id>/regenerate-confirm', regenerate_event_confirm, name='event-regenerate-confirm'),
     path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
 ]

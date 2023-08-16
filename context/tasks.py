@@ -186,15 +186,13 @@ def run_simulator(event, files):
 
 
 @shared_task(bind=True)
-def simulate_task(self, event_id, writing_perio, max_update_perio, writing_unit, update_unit, init_date, end_date, init_time, end_time):
-    from .views import prepare_frequency_file, prepare_time_file, prepare_boundaries_file, prepare_gauge_file
+def simulate_task(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
 
     # Prepare files
     try:
-        files = prepare_files_simulation(event, writing_perio, max_update_perio,
-                                         writing_unit, update_unit, init_date, end_date, init_time, end_time)
-
+        files = prepare_files_simulation(event, event.WritingPeriodicity, event.UpdateMaximumValue,
+                                         event.WritingPeriodicityUnit, event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime)
         run_simulator(event, files)
         return 'OK'
     except Exception as e:

@@ -1,6 +1,7 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import check_celery
+from context.views.mesh import Status, get_last_line, get_status
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter
@@ -211,67 +212,39 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
 
 
-def runsimulationview(request, pk, event_id):
+def request_simulation(request, pk, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
     if not context_organization_event_permission_check(request.user, event.context.organization):
         return HttpResponseRedirect(reverse('event-detail', args=(pk, event_id, )))
 
     if check_celery():
-        # Using pickle serializer to have the datetime objects not transformed to string : https://stackoverflow.com/questions/48811824/how-can-i-deserialize-a-datetime-string-in-celery/48812310
-        result = simulate_task.apply_async(args=[event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit,
-                                           event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
+        task = simulate_task.delay(event_id)
+        # result = simulate_task.delay(args=[event.id, event.WritingPeriodicity, event.UpdateMaximumValue, event.WritingPeriodicityUnit,
+        #                                    event.UpdateMaximumValueUnit, event.startDate, event.endDate, event.startTime, event.endTime], serializer='pickle')
         # # Combination hasSimulation = False + task_id = val means it's processing
         event.hasSimulation = False  # Assume there is no simulation generated
-        event.task_id = result.task_id
+        event.task_id = task.task_id
         event.requester = request.user
         event.save()
         messages.success(request, 'Simulation run request sent')
     else:  # HiSTAV not online
         messages.error(request, 'Background process offline: Contact admin.')
 
-    print("RUN SIMULATION")
-    return HttpResponseRedirect(reverse('event-detail', args=(pk, event.id,)))
-
-# Return last line of output
+    return redirect('event-detail', pk=pk, event_id=event.id)
 
 
-def get_last_line(status: str):
-    if status == "":
-        return ""
-    lines: list = status.splitlines()
-    if lines[-1] == "" or lines[-1].isspace():
-        return get_last_line("\n".join(lines[0:len(lines)-1]))
-    return lines[-1]
-
-# Enhance this
-
-
-def get_status(last_line: str):
-    if ("Permission denied" in last_line) or ("Fail" in last_line) or ("Error" in last_line):
-        return "Fail"
-    elif ("all files written in" in last_line) or ("--:--:--" in last_line):
-        return "Finished successfully"
-    else:
-        return "Processing"
-
-# TODO: this checks if the simulation generation has finished when the user is in the event main page
-
-
-def inform_event_status(request, event_id):  # Function to inform if event is generated
-    event = e_ContextEvent.objects.get(id=event_id)
-    if event.hasSimulation:
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
+@login_required
+def event_progress(request, event_id):
+    '''Renders the page that shows the progress of the event simulation'''
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    return render(request, 'context/event/progress.html', {'event': event})
 
 
 @login_required
 def event_status_progress(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
-    # get_object_or_404(Membership, organization=context.organization, user=request.user)
 
-    log_folder = os.path.join(settings.BASE_DIR, 'logs', event.context.tag)
-    log_file = os.path.join(log_folder, f'{event.Name}_simulation_log.txt')
+    log_file = os.path.join('logs', event.context.tag, f'{event.Name}_simulation_log.txt')
     if not os.path.isfile(log_file):
         return HttpResponse(status=404)
 
@@ -281,34 +254,30 @@ def event_status_progress(request, event_id):
     lastline = get_last_line(msg)
     status = get_status(lastline)
 
-    # Notification
-    if ("Fail" in status) or ("Finished successfully" in status):
-        notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
-                    verb=f"Event {event.Name} has finished its simulation with status '{status}'")
-
-    return JsonResponse({'status': status, 'message': lastline, 'full_log': msg})
-
-
-def event_status_change(request, event_id):  # Function to mark event has generated
-    event = e_ContextEvent.objects.get(pk=event_id)
-    if request.GET.get('status'):
+    if status == Status.FINISH:
         event.hasSimulation = True
-        event.task_id = None  # task finished
-    else:
-        event.hasSimulation = False
+        event.task_id = None
+        event.save()
 
-    event.save()
+        notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
+                    verb=f"Simulation of event {event.Name} has finished successfully")
+    elif status == Status.FAIL:
+        notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
+                    verb=f"Simulation of event {event.Name} has failed")
 
-    return HttpResponse(status=200)
-
-
-@login_required
-def event_progress(request, event_id):
-    event = get_object_or_404(e_ContextEvent, id=event_id)
-    return render(request, 'context/event/progress.html', {'event': event})
+    return JsonResponse({'status': status.value, 'message': lastline, 'full_log': msg})
 
 
 @login_required
 def regenerate_event_confirm(request, event_id):
     event = get_object_or_404(e_ContextEvent, id=event_id)
     return render(request, 'context/event/regenerate_event_confirm.html', {'event': event})
+
+
+def inform_event_status(request, event_id):
+    '''Called repeatedly by the frontend when in /contexts/event-status/<int:contextId> to check if the event has simulated'''
+    event = e_ContextEvent.objects.get(id=event_id)
+    if event.hasSimulation:
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)

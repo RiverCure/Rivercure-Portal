@@ -71,7 +71,7 @@ def prepare_gauge_file(context, init_date, end_date, init_time, end_time):
                     instant += instant_increment
 
         file_name = f'sensor_{point.sensor.id}.bnd'
-        files[file_name] = (f'sensor_{point.sensor.id}.bnd', file_data)
+        files[file_name] = file_data
 
     return files
 
