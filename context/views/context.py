@@ -146,20 +146,19 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         context: e_Context = self.get_object()
         context_folder = get_context_folder_path(context.tag)
 
-        # TODO: commented bc should be based on context.code, not name bc name is not unique
         # Delete DTM and frictionCoef files
-        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_dtm.tif')
-        # if os.path.exists(path):
-        #     os.remove(path)
+        path = os.path.join(MEDIA_ROOT, f'{context.Name}_dtm.tif')
+        if os.path.exists(path):
+            os.remove(path)
 
-        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
-        # if os.path.exists(path):
-        #     os.remove(path)
+        path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
+        if os.path.exists(path):
+            os.remove(path)
 
-        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
-        # for i in os.listdir(MEDIA_ROOT):
-        #     if os.path.isfile(os.path.join(MEDIA_ROOT, i)) and f'frictionCoef_{context.Name}' in i:
-        #         os.remove(f'{MEDIA_ROOT}{i}')
+        path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
+        for i in os.listdir(MEDIA_ROOT):
+            if os.path.isfile(os.path.join(MEDIA_ROOT, i)) and f'frictionCoef_{context.Name}' in i:
+                os.remove(f'{MEDIA_ROOT}{i}')
 
         if os.path.exists(context_folder):
             shutil.rmtree(context_folder)
