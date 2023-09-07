@@ -28,6 +28,12 @@ DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 # Checks if it is on test env
 TEST_ENV = (os.getenv('TEST_ENV', 'False') == 'True')
 
+if TEST_ENV:
+    # /mnt/disks/RiverCurePortal
+    FILES_BASE_PATH = os.path.join(os.sep, 'mnt', 'disks', 'RiverCurePortal')
+else:
+    FILES_BASE_PATH = os.path.join(BASE_DIR, 'mnt', 'disks', 'RiverCurePortal')
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

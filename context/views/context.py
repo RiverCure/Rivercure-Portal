@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 import geojson
 import datetime
@@ -7,6 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.db import transaction
+
+from rivercureproject.settings import FILES_BASE_PATH, MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
 from ..models import e_Context, e_ContextSensor
@@ -141,18 +144,25 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def delete(self, *args, **kwargs):
         context: e_Context = self.get_object()
-        base_path = 'media/'
+        context_folder = get_context_folder_path(context.tag)
 
+        # TODO: commented bc should be based on context.code, not name bc name is not unique
         # Delete DTM and frictionCoef files
-        if os.path.exists(f'{base_path}{context.Name}_dtm.tif'):
-            os.remove(f'{base_path}{context.Name}_dtm.tif')
+        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_dtm.tif')
+        # if os.path.exists(path):
+        #     os.remove(path)
 
-        if os.path.exists(f'{base_path}{context.Name}_frictionCoef.tif'):
-            os.remove(f'{base_path}{context.Name}_frictionCoef.tif')
+        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
+        # if os.path.exists(path):
+        #     os.remove(path)
 
-        for i in os.listdir(base_path):
-            if os.path.isfile(os.path.join(base_path, i)) and f'frictionCoef_{context.Name}' in i:
-                os.remove(f'{base_path}{i}')
+        # path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
+        # for i in os.listdir(MEDIA_ROOT):
+        #     if os.path.isfile(os.path.join(MEDIA_ROOT, i)) and f'frictionCoef_{context.Name}' in i:
+        #         os.remove(f'{MEDIA_ROOT}{i}')
+
+        if os.path.exists(context_folder):
+            shutil.rmtree(context_folder)
 
         return super(ContextDeleteView, self).delete(*args, **kwargs)
 

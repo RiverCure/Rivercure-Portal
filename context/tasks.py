@@ -1,24 +1,16 @@
 from celery import shared_task
-import requests
 import geojson
 import subprocess
 import os
 import shutil
+from rivercureproject.settings import FILES_BASE_PATH
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
 from context.models import e_Context
-from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
-from celery_progress.backend import ProgressRecorder
 from django.conf import settings
 
 
 logger = get_task_logger(__name__)
-
-if settings.TEST_ENV:
-    # /mnt/disks/RiverCurePortal
-    FILES_BASE_PATH = os.path.join(os.sep, 'mnt', 'disks', 'RiverCurePortal')
-else:
-    FILES_BASE_PATH = os.path.join(settings.BASE_DIR, 'mnt', 'disks', 'RiverCurePortal')
 
 
 def get_context_folder_path(tag):
