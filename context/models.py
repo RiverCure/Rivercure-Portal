@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.utils import timezone
 from datetime import datetime, date
 from rivercureportal.models import e_HydroFeature
+from datetime import date
 from django.contrib.auth.models import User
 from sensors.models import Sensor
 from raster.models import RasterLayer
@@ -42,6 +43,13 @@ class e_Context(models.Model):
     task_id = models.CharField(max_length=200, null=True)
     # Requester of a mesh generation request
     requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='requester')
+    # Files
+    domain_file_name = models.CharField(max_length=200, null=True)
+    alignments_file_name = models.CharField(max_length=200, null=True)
+    refinements_file_name = models.CharField(max_length=200, null=True)
+    boundaries_file_name = models.CharField(max_length=200, null=True)
+    dtm_file_name = models.CharField(max_length=200, null=True)
+    frictionCoeff_file_name = models.CharField(max_length=200, null=True)
 
     @property
     def tag(self):

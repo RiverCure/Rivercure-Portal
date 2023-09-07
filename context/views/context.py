@@ -129,6 +129,7 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
+        print(dir(context['context']))
 
         return context
 

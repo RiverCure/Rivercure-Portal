@@ -26,14 +26,15 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
 
     def form_valid(self, form):
         message = ''
+        context = e_Context.objects.get(code=form.cleaned_data['code'])
         try:
             with transaction.atomic():
-                context = e_Context.objects.get(code=form.cleaned_data['code'])
                 try:
                     if form.cleaned_data['domain'] is not None:
                         handle_domain(form.cleaned_data['domain'], context, self.request.user)
-                    
-                    #Mark edited context for mesh regeneration need
+                        context.domain_file_name = form.cleaned_data['domain']
+
+                    # Mark edited context for mesh regeneration need
                     context.hasMesh = False
                     context.save()
                 except Exception as e:
@@ -43,47 +44,52 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                 try:
                     if form.cleaned_data['alignments'] is not None:
                         handle_alignment(form.cleaned_data['alignments'], context)
+                        context.alignments_file_name = form.cleaned_data['alignments']
                 except Exception as e:
                     message = 'Error in Alignment definition'
                     raise Exception(e)
                 try:
                     if form.cleaned_data['refinements'] is not None:
                         handle_refinement(form.cleaned_data['refinements'], context)
+                        context.refinements_file_name = form.cleaned_data['refinements']
                 except Exception as e:
                     message = 'Error in Refinement definition'
                     raise Exception(e)
                 try:
                     if form.cleaned_data['boundaries'] is not None:
                         handle_boundaries(form.cleaned_data['boundaries'], context)
+                        context.boundaries_file_name = form.cleaned_data['boundaries']
                 except Exception as e:
                     message = 'Error in Boundary definition'
                     raise Exception(e)
 
-                #Save dtm from raster file field
+                # Save dtm from raster file field
                 try:
                     dtm = self.request.FILES.get('dtm_file')
                     if dtm is not None:
                         # handle_upload_raster(context, dtm)
                         handle_upload_raster_file(context, dtm)
+                        context.dtm_file_name = form.cleaned_data['dtm_file']
                 except Exception as e:
                     message = 'Error in DTM definition'
                     raise Exception(e)
-                #Save contour lines from file
-                
+                # Save contour lines from file
+
                 try:
                     friction_coeff = self.request.FILES.get('friction_coefficient_file')
                     if friction_coeff is not None:
                         handle_friction_coeff_upload(context, friction_coeff)
+                        context.frictionCoeff_file_name = form.cleaned_data['friction_coefficient_file']
                 except Exception as e:
                     message = 'Error in Friction coefficient definition'
                     raise Exception(e)
 
+                context.save()
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
-            messages.warning(self.request, f'Context Upload Failed. Detail: {message}') 
+            messages.warning(self.request, f'Context Upload Failed. Detail: {message}')
 
-        
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -100,18 +106,20 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
         context['context'] = e_Context.objects.get(code=self.kwargs['contextCode'])
         return context
 
-#aux functions for manage_context()
-def handle_upload_raster(context, raster_file): #function to handle the upload of the raster file
+# aux functions for manage_context()
+
+
+def handle_upload_raster(context, raster_file):  # function to handle the upload of the raster file
     try:
-        dtm = e_ContextDTM.objects.get(context=context) 
-        dtm.contextDTM.datatype='co'
+        dtm = e_ContextDTM.objects.get(context=context)
+        dtm.contextDTM.datatype = 'co'
         dtm.contextDTM.name = str(dtm)
         dtm.contextDTM.rasterfile = raster_file
     except e_ContextDTM.DoesNotExist:
         dtm = e_ContextDTM()
         dtm.context = context
         raster = RasterLayer()
-        raster.datatype='co'
+        raster.datatype = 'co'
         raster.name = str(dtm)
         raster.rasterfile = raster_file
         raster.save()
@@ -119,39 +127,44 @@ def handle_upload_raster(context, raster_file): #function to handle the upload o
 
     dtm.save()
 
+
 def handle_upload_raster_file(context, raster_file):
     dtm = e_ContextDTMFile.objects.get_or_create(context=context)
     file_name = f'{context.Name}_dtm.tif'
     with open(f'media/{file_name}', 'wb+') as destination:
         for chunk in raster_file.chunks():
             destination.write(chunk)
-    
+
     dtm[0].raster = file_name
     dtm[0].save()
 
-def handle_friction_coeff_upload(context, friction_coeff_file): #function to handle the upload of the contour lines file
+
+# function to handle the upload of the contour lines file
+def handle_friction_coeff_upload(context, friction_coeff_file):
     friction_coeff = e_ContextFrictionCoeff.objects.get_or_create(context=context)
     file_name = f'{context.Name}_frictionCoef.tif'
     with open(f'media/{file_name}', 'wb+') as destination:
         for chunk in friction_coeff_file.chunks():
             destination.write(chunk)
 
-
     friction_coeff[0].raster = friction_coeff_file
     friction_coeff[0].save()
 
-def context_creation(form, user): # function to initialize and save the context given a form and the user that submited the form
-    context = e_Context.objects.get(pk=form.cleaned_data['code']) # get the model from the database
+
+def context_creation(form, user):  # function to initialize and save the context given a form and the user that submited the form
+    context = e_Context.objects.get(pk=form.cleaned_data['code'])  # get the model from the database
     organization_members = Organization.objects.get(pk=context.organization.id).members.all()
 
-    if user not in organization_members: # if user doesn't own the context
+    if user not in organization_members:  # if user doesn't own the context
         print('User that doesn\'t own the context tried to change it!')
         return None
-                
-    context.geomExternalBoundary = MultiPolygon(Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
+
+    context.geomExternalBoundary = MultiPolygon(
+        Polygon(json.loads(form.cleaned_data['domain'])['geometry']['coordinates'][0]))
     context.CLExternalBoundary = json.loads(form.cleaned_data['domain'])['properties']['CL']
     context.hasMesh = False
     return context
+
 
 def refinement_creation(form, context):
     e_ContextRefinement.objects.filter(context=context).delete()
@@ -162,6 +175,7 @@ def refinement_creation(form, context):
         refinement.geom = Polygon(feature['geometry']['coordinates'][0])
         refinement.save()
 
+
 def alignment_creation(form, context):
     e_ContextAlignment.objects.filter(context=context).delete()
     for feature in json.loads(form.cleaned_data['alignment'])['features']:
@@ -171,7 +185,8 @@ def alignment_creation(form, context):
         alignment.geom = LineString(feature['geometry']['coordinates'])
         alignment.save()
 
-def boundaryline_creation(form, context): # function to create the several lines
+
+def boundaryline_creation(form, context):  # function to create the several lines
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
     boundary_points = json.loads(form.cleaned_data['boundary_points'])['features']
@@ -182,15 +197,15 @@ def boundaryline_creation(form, context): # function to create the several lines
         boundary.type = feature['properties']['type']
         boundary.dataType = feature['properties']['dataType']
         boundary.save()
-        
+
         # Save the points on the boundary line
         for point in boundary_points:
-            if(point['properties']['boundaryLineId'] == feature['properties']['id']):
+            if (point['properties']['boundaryLineId'] == feature['properties']['id']):
                 boundary_point = e_ContextBoundaryPoint()
                 boundary_point.contextBoundaryLine = boundary
                 boundary_point.geom = Point(point['geometry']['coordinates'])
                 boundary_point.save()
-                
+
                 # Handle sensors on point
                 for sensor in point['properties']['sensors']:
                     boundary_point_sensor = e_ContextSensor()
@@ -198,10 +213,11 @@ def boundaryline_creation(form, context): # function to create the several lines
                     boundary_point_sensor.sensor = Sensor.objects.get(code=sensor)
                     boundary_point_sensor.boundary_point = boundary_point
                     boundary_point_sensor.save()
-                
-#end of aux functions for manage_context()
 
-def handle_domain(f, context, user): #handle the loading of domain from a geojson
+# end of aux functions for manage_context()
+
+
+def handle_domain(f, context, user):  # handle the loading of domain from a geojson
     domain_features = json.load(f)
     try:
         srid = SpatialReference(domain_features['crs']['properties']['name']).srid
@@ -212,17 +228,20 @@ def handle_domain(f, context, user): #handle the loading of domain from a geojso
     # context.hydroFeature = None
     context.CLExternalBoundary = domain_features['features'][0]['properties']['CL']
     try:
-        domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
+        domain_geom = MultiPolygon(Polygon(domain_features['features']
+                                   [0]['geometry']['coordinates'][0][0], srid=srid), srid=srid)
     except:
         print('Domain geojson doesn\'t contain a MultiPolygon\nTrying simple Polygon')
-        domain_geom = MultiPolygon(Polygon(domain_features['features'][0]['geometry']['coordinates'][0], srid=srid), srid=srid)
+        domain_geom = MultiPolygon(Polygon(domain_features['features']
+                                   [0]['geometry']['coordinates'][0], srid=srid), srid=srid)
     context.geomExternalBoundary = domain_geom
     # context.geomExternalBoundary.transform(SpatialReference(4326))
     # context.user = user
 
     context.save()
-    
-def handle_alignment(f, context): #handle the loading of alignment from a geojson
+
+
+def handle_alignment(f, context):  # handle the loading of alignment from a geojson
     alignment_features = json.load(f)
     e_ContextAlignment.objects.filter(context=context).delete()
     try:
@@ -241,7 +260,8 @@ def handle_alignment(f, context): #handle the loading of alignment from a geojso
             alignment.geom = LineString(feature['geometry']['coordinates'], srid=srid)
         alignment.save()
 
-def handle_refinement(f, context): #handle the loading of refinement from a geojson
+
+def handle_refinement(f, context):  # handle the loading of refinement from a geojson
     e_ContextRefinement.objects.filter(context=context).delete()
     refinement_features = json.load(f)
     try:
@@ -260,7 +280,8 @@ def handle_refinement(f, context): #handle the loading of refinement from a geoj
             refinement.geom = Polygon(feature['geometry']['coordinates'][0], srid=srid)
         refinement.save()
 
-def handle_boundaries(f, context): #handle the loading of boundaries from a geojson
+
+def handle_boundaries(f, context):  # handle the loading of boundaries from a geojson
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
     boundary_features = json.load(f)
@@ -271,7 +292,7 @@ def handle_boundaries(f, context): #handle the loading of boundaries from a geoj
 
     for feature in boundary_features['features']:
         boundary = e_ContextBoundaryLine()
-        boundary.context = context  
+        boundary.context = context
         try:
             boundary.geom = LineString(feature['geometry']['coordinates'][0], srid=srid)
         except:

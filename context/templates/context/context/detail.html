@@ -146,6 +146,15 @@
 <div id="geometriesUploadDiv" class="container" style="display: none">
     <h2>Files upload</h2>
     <div id="form-data" class="content-section">
+        <h3>These files are already in the server:</h3>
+        <ul>
+            {% if context.domain_file_name %}<li>{{ context.domain_file_name }}</li>{% endif %}
+            {% if context.alignments_file_name.geom %}<li>{{ context.alignments_file_name }}</li>{% endif %}
+            {% if context.refinements_file_name %}<li>{{ context.refinements_file_name }}</li>{% endif %}
+            {% if context.boundaries_file_name %}<li>{{ context.boundaries_file_name }}</li>{% endif %}
+            {% if context.dtm_file_name %}<li>{{ context.dtm_file_name }}</li>{% endif %}
+            {% if context.frictionCoeff_file_name %}<li>{{ context.frictionCoeff_file_name }}</li>{% endif %}
+        </ul>
         <form method='POST' enctype="multipart/form-data" >
             {% csrf_token %}
             {{ form|crispy }}
