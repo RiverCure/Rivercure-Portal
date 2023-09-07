@@ -9,6 +9,7 @@ from django.urls import reverse
 from sensors.authorization import sensor_general_create_permission_check, sensor_view_permission_check, sensor_edit_permission_check
 from django.shortcuts import get_object_or_404
 
+
 class SensorListView(LoginRequiredMixin, ListView):
     context_object_name = 'sensors'
     template_name = 'sensors/sensors/list.html'
@@ -18,9 +19,12 @@ class SensorListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         # Public sensors + Private sensors where the current user is member of the organization
         organizationCode = self.request.session['organizationCode']
-        organization = get_object_or_404(Organization, code=organizationCode)
+        if organizationCode:
+            organization = get_object_or_404(Organization, code=organizationCode)
+            queryset = Sensor.objects.filter(state='active', sensorClass__organization=organizationCode)
+        else:
+            queryset = Sensor.objects.filter(state='active', sensorClass__organization=None)
 
-        queryset = Sensor.objects.filter(state='active', sensorClass__organization=organization)
         filter = SensorFilter(self.request.GET, queryset.order_by('code'), organizationCode=organizationCode)
         return filter.qs
 
@@ -35,6 +39,7 @@ class SensorListView(LoginRequiredMixin, ListView):
         context['filter'] = filter
         return context
 
+
 class OtherSensorListView(LoginRequiredMixin, ListView):
     context_object_name = 'sensors'
     template_name = 'sensors/sensors/otherSensors_list.html'
@@ -42,8 +47,13 @@ class OtherSensorListView(LoginRequiredMixin, ListView):
     ordering = ['code']
 
     def get_queryset(self):
-        organization = get_object_or_404(Organization, code=self.request.session['organizationCode'])
-        queryset = Sensor.objects.exclude(sensorClass__organization=organization).exclude(isPublic=False)
+        organizationCode = self.request.session['organizationCode']
+        if organizationCode:
+            organization = get_object_or_404(Organization, code=organizationCode)
+            queryset = Sensor.objects.exclude(sensorClass__organization=organization).exclude(isPublic=False)
+        else:
+            queryset = Sensor.objects.exclude(isPublic=False)
+
         filter = OtherSensorFilter(self.request.GET, queryset.order_by('code'))
         return filter.qs
 
@@ -53,6 +63,7 @@ class OtherSensorListView(LoginRequiredMixin, ListView):
         filter = OtherSensorFilter(self.request.GET, queryset)
         context['filter'] = filter
         return context
+
 
 class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Sensor
@@ -64,10 +75,11 @@ class SensorDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['form'] = SensorObservationsFileForm()
         context['hasPerm'] = sensor_edit_permission_check(self.request.user, self.get_object())
         return context
-    
+
     def test_func(self):
         sensor = self.get_object()
         return sensor.isPublic or sensor_view_permission_check(self.request.user, sensor)
+
 
 class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Sensor
@@ -91,6 +103,7 @@ class SensorCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return sensor_general_create_permission_check(self.request.user)
 
+
 class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor
     form_class = GeoSensorForm
@@ -99,7 +112,7 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('sensor-list')
-    
+
     def form_valid(self, form):
         sensor = form.save(commit=False)
         sensor.local = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
@@ -108,6 +121,7 @@ class SensorGeoUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())
+
 
 class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor
@@ -119,7 +133,7 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         kwargs = super(SensorUpdateView, self).get_form_kwargs()
         kwargs.update({'organizationCode': self.request.session['organizationCode']})
         return kwargs
-    
+
     def form_valid(self, form):
         sensor = form.save(commit=False)
         sensor.local = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
@@ -132,16 +146,18 @@ class SensorUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())
 
+
 class SensorDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Sensor
     context_object_name = 'sensor'
     template_name = 'sensors/sensors/confirm_delete.html'
-    
+
     def get_success_url(self):
         return reverse('sensor-list')
 
     def test_func(self):
         return sensor_edit_permission_check(self.request.user, self.get_object())
+
 
 class SensorThresholdUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Sensor
@@ -153,7 +169,7 @@ class SensorThresholdUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
         kwargs = super(SensorThresholdUpdateView, self).get_form_kwargs()
         kwargs.update({'sensor': self.get_object()})
         return kwargs
-    
+
     def form_valid(self, form):
         sensor = form.save()
         for prop in form.cleaned_data["properties"]:

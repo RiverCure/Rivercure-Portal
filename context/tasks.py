@@ -105,8 +105,8 @@ def run_pre_processor(context, files):
 
 
 @shared_task(bind=True)
-def preprocess_task(self, organizationCode, contextCode):
-    context = e_Context.objects.get(organization__code=organizationCode, code=contextCode)
+def preprocess_task(self, contextCode):
+    context = e_Context.objects.get(code=contextCode)
 
     try:
         files = prepare_files_preprocessing(context)

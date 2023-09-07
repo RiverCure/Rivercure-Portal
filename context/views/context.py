@@ -3,13 +3,11 @@ import shutil
 import zipfile
 import geojson
 import datetime
-import requests
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.http import FileResponse, HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
-
-from rivercureproject.settings import FILES_BASE_PATH, MEDIA_ROOT
+from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
 from ..models import e_Context, e_ContextSensor
@@ -25,19 +23,12 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
-from ..tasks import get_context_folder_path, preprocess_task
+from ..tasks import get_context_folder_path
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
-from rivercureproject.celery import app
-
-
-def check_celery():
-    '''Checks if there is any celery worker.'''
-    # https://docs.celeryq.dev/en/latest/userguide/workers.html#ping
-    return bool(app.control.ping(timeout=1))  # 1 sec timeout
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -61,8 +52,13 @@ class ContextListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        organization = get_object_or_404(Organization, code=self.request.session['organizationCode'])
-        context_list = e_Context.objects.filter(organization=organization)
+        organizationCode = self.request.session['organizationCode']
+        if organizationCode:
+            organization = get_object_or_404(Organization, code=organizationCode)
+            context_list = e_Context.objects.filter(organization=organization)
+        else:
+            context_list = e_Context.objects.filter(creator=self.request.user)
+
         self.filter = ContextFilter(self.request.GET, queryset=context_list)
         return self.filter.qs
 
@@ -79,8 +75,14 @@ class OtherContextListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        organization = get_object_or_404(Organization, code=self.request.session['organizationCode'])
-        context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
+
+        organizationCode = self.request.session['organizationCode']
+        if organizationCode:
+            organization = get_object_or_404(Organization, code=organizationCode)
+            context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
+        else:
+            context['context_list'] = e_Context.objects.exclude(isPublic=False)
+
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
@@ -298,28 +300,6 @@ def download_context(request, contextCode):  # function that allows the download
         messages.warning(request, f'Context not complete for download')
         print(f'Error downloading context: {e}')
         return redirect(request.META['HTTP_REFERER'])
-
-
-@login_required
-def request_pre_processing(request, contextCode):
-    organizationCode = request.session['organizationCode']
-    context = get_object_or_404(e_Context, organization__code=organizationCode, code=contextCode)
-    # Authorization
-    if not context_organization_edit_permission_check(request.user, context.organization):
-        return HttpResponse('Unauthorized', status=401)
-
-    if check_celery():
-        task = preprocess_task.delay(organizationCode, contextCode)
-        # Combination hasMesh = False + task_id = val means it's processing
-        context.hasMesh = False  # Assume there is no mesh generated
-        context.task_id = task.task_id
-        context.requester = request.user
-        context.save()
-        messages.success(request, 'Mesh generation started')
-    else:
-        messages.error(request, 'Background process offline: Contact admin.')
-
-    return redirect('context-detail', contextCode=contextCode)
 
 
 @login_required

@@ -78,7 +78,7 @@
         </form>
     </div>
 
-    <a type="button" class="btn btn-secondary mt-3" href="{% url 'sensor-list' %}">Sensors of organization {{ request.session.organizationCode }}</a>
+    <a type="button" class="btn btn-secondary mt-3" href="{% url 'sensor-list' %}">{% if request.session.organizationCode %}Sensors of organization {{ request.session.organizationCode }}{% else %}Sensors{% endif %}</a>
 
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;

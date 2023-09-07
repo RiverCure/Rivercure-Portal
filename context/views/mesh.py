@@ -1,12 +1,21 @@
 import os
 from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context as Context
+from context.tasks import preprocess_task
 from organization.models import Membership
 from .authorization import context_organization_edit_permission_check
 from notifications.signals import notify
 from enum import Enum
+from rivercureproject.celery import app
+from django.contrib import messages
+
+
+def check_celery():
+    '''Checks if there is any celery worker.'''
+    # https://docs.celeryq.dev/en/latest/userguide/workers.html#ping
+    return bool(app.control.ping(timeout=1))  # 1 sec timeout
 
 
 class Status(Enum):
@@ -18,8 +27,7 @@ class Status(Enum):
 @login_required
 def mesh_status(request, contextCode):
     '''Renders the page that shows the progress of the mesh generation'''
-    organizationCode = request.session['organizationCode']
-    context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
+    context = get_object_or_404(Context, code=contextCode)
     # Authorization
     if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
@@ -78,8 +86,7 @@ def get_status(last_line: str):
 @login_required
 def mesh_status_progress(request, contextCode):
     '''Function called by the frontend as an API endpoint to get the progress of the mesh generation'''
-    organizationCode = request.session['organizationCode']
-    context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
+    context = get_object_or_404(Context, code=contextCode)
     membership = Membership.objects.filter(organization=context.organization, user=request.user)
     if membership.count() == 0:
         return HttpResponse(status=401)
@@ -113,8 +120,7 @@ def mesh_status_progress(request, contextCode):
 @login_required
 def regenerate_mesh_confirm(request, contextCode):
     '''Renders the confirm regeneration of mesh page'''
-    organizationCode = request.session['organizationCode']
-    context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
+    context = get_object_or_404(Context, code=contextCode)
     # Authorization
     if not context_organization_edit_permission_check(request.user, context.organization):
         return HttpResponse('Unauthorized', status=401)
@@ -125,9 +131,30 @@ def regenerate_mesh_confirm(request, contextCode):
 @login_required
 def inform_mesh_status(request, contextCode):
     '''Called repeatedly by the frontend when in /context/<str:contextCode>/detail to check if the mesh has been generated'''
-    organizationCode = request.session['organizationCode']
-    context = get_object_or_404(Context, organization__code=organizationCode, code=contextCode)
+    context = get_object_or_404(Context, code=contextCode)
     if context.hasMesh:
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
+
+
+@login_required
+def request_pre_processing(request, contextCode):
+    '''Starts the generation of the mesh'''
+    context = get_object_or_404(Context, code=contextCode)
+    # Authorization
+    if not context_organization_edit_permission_check(request.user, context.organization):
+        return HttpResponse('Unauthorized', status=401)
+
+    if check_celery():
+        task = preprocess_task.delay(contextCode)
+        # Combination hasMesh = False + task_id = val means it's processing
+        context.hasMesh = False  # Assume there is no mesh generated
+        context.task_id = task.task_id
+        context.requester = request.user
+        context.save()
+        messages.success(request, 'Mesh generation started')
+    else:
+        messages.error(request, 'Background process offline: Contact admin.')
+
+    return redirect('context-detail', contextCode=contextCode)

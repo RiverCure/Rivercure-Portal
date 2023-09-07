@@ -1,8 +1,8 @@
 import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
-from context.views.context import check_celery, zip_file
-from context.views.mesh import Status, get_status, tail
+from context.views.context import zip_file
+from context.views.mesh import Status, get_status, tail, check_celery
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from context.filters import EventFilter

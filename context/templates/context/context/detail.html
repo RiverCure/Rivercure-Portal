@@ -135,7 +135,7 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-        {% if context.task_id %}
+        {% if context.task_id and canEdit %}
             <a class="btn btn-warning mt-1 mb-1" href="{% url 'mesh-status' context.code %}">Progress</a>
         {% endif %}
             

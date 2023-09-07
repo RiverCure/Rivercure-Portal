@@ -23,7 +23,11 @@
     }
 </style>
 
-<h1>Sensors of organization {{ request.session.organizationCode }}</h1>
+{% if request.session.organizationCode %}
+    <h1>Sensors of organization {{ request.session.organizationCode }}</h1>
+{% else %}
+    <h1>Sensors</h1>
+{% endif %}
 
 <div class="row">
     <div class="col-md-9">
@@ -99,8 +103,8 @@
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-create' %}">Add Sensor</a>
         <a type="button" class="btn btn-info ml-0 mt-3" href="{% url 'sensor-excel-download' %}">Download sensors Excel template</a>
         <a type="button" class="btn btn-info ml-0 mt-3" href="#" onclick="showUploadDiv('block')">Upload Sensor(s)</a>
-        <a type="button" class="btn btn-secondary mt-3" href="{% url 'other-sensors-list' %}">Other sensors</a>
     {% endif %}
+    <a type="button" class="btn btn-secondary mt-3" href="{% url 'other-sensors-list' %}">Other sensors</a>
     </div>
 
 <script>

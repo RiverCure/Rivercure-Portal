@@ -61,7 +61,7 @@
     </div>
 </div>
 
-<a class="btn btn-info ml-0 mt-3" href="{% url 'context-list'  %}">Contexts of organization {{ request.session.organizationCode }}</a>
+<a class="btn btn-info ml-0 mt-3" href="{% url 'context-list'  %}">{% if request.session.organizationCode %}Contexts of organization {{ request.session.organizationCode }}{% else %}Contexts{% endif %}</a>
 
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
