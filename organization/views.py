@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
+
+from rivercureproject.settings import DEBUG
 from .models import Organization
 from .models import Organization, Membership
 from django.urls import reverse, reverse_lazy
@@ -17,6 +19,7 @@ from rivercureportal.authorization import is_platform_admin
 from organization.authorization import *
 from django.contrib.auth.signals import user_logged_in
 from django.contrib import messages
+from django.core.mail import send_mail
 
 # Adds the default organization to the session, so that it is available in every view
 
@@ -222,6 +225,14 @@ def organizationAccessRequest(request, organizationId):
             organization_id=organizationId, permission='org_manager'))
         notify.send(sender=user, recipient=managers, action_object=organization,
                     verb=f"{user.username} requested to enter the organization {organization.code}")
+
+        send_mail(
+            "Organization access request",
+            f"The user with username '{user.username}' has requested to join organization {organization.code}. If you wish to accept the request, access the RiverCure Portal.",
+            None,
+            [manager.email for manager in managers],
+            fail_silently=not DEBUG,
+        )
 
     return redirect('organization-list')
 
