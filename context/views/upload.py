@@ -45,6 +45,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if form.cleaned_data['alignments'] is not None:
                         handle_alignment(form.cleaned_data['alignments'], context)
                         context.alignments_file_name = form.cleaned_data['alignments']
+                        context.save()
                 except Exception as e:
                     message = 'Error in Alignment definition'
                     raise Exception(e)
@@ -52,6 +53,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if form.cleaned_data['refinements'] is not None:
                         handle_refinement(form.cleaned_data['refinements'], context)
                         context.refinements_file_name = form.cleaned_data['refinements']
+                        context.save()
                 except Exception as e:
                     message = 'Error in Refinement definition'
                     raise Exception(e)
@@ -59,6 +61,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if form.cleaned_data['boundaries'] is not None:
                         handle_boundaries(form.cleaned_data['boundaries'], context)
                         context.boundaries_file_name = form.cleaned_data['boundaries']
+                        context.save()
                 except Exception as e:
                     message = 'Error in Boundary definition'
                     raise Exception(e)
@@ -70,6 +73,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                         # handle_upload_raster(context, dtm)
                         handle_upload_raster_file(context, dtm)
                         context.dtm_file_name = form.cleaned_data['dtm_file']
+                        context.save()
                 except Exception as e:
                     message = 'Error in DTM definition'
                     raise Exception(e)
@@ -80,11 +84,11 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if friction_coeff is not None:
                         handle_friction_coeff_upload(context, friction_coeff)
                         context.frictionCoeff_file_name = form.cleaned_data['friction_coefficient_file']
+                        context.save()
                 except Exception as e:
                     message = 'Error in Friction coefficient definition'
                     raise Exception(e)
 
-                context.save()
                 messages.success(self.request, 'Context Uploaded')
         except Exception as e:
             print(f'Error loading the files:\n{e}')
