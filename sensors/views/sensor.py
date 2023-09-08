@@ -21,7 +21,7 @@ class SensorListView(LoginRequiredMixin, ListView):
         organizationCode = self.request.session['organizationCode']
         if organizationCode:
             organization = get_object_or_404(Organization, code=organizationCode)
-            queryset = Sensor.objects.filter(state='active', sensorClass__organization=organizationCode)
+            queryset = Sensor.objects.filter(state='active', sensorClass__organization=organization)
         else:
             queryset = Sensor.objects.filter(state='active', sensorClass__organization=None)
 
