@@ -55,9 +55,6 @@ class e_Context(models.Model):
     def tag(self):
         return f'{self.organization.code}-{self.code}'
 
-    def clean(self):
-        self.code = self.code.replace(' ', '')
-
     class Meta:
         verbose_name = 'Context'
         verbose_name_plural = 'Contexts'

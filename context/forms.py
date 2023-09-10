@@ -37,6 +37,8 @@ class ContextInitialForm(forms.ModelForm):
         if not bool(pattern.match(data)):
             raise ValidationError("Code must only have letters, numbers. These can be intercalated with slashes (-)")
 
+        return data
+
     def clean_Name(self):
         pattern = re.compile('^[\\w]+[-\\w]*$')
         data: str = self.cleaned_data['Name']
