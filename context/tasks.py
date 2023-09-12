@@ -3,22 +3,13 @@ import geojson
 import subprocess
 import os
 import shutil
-from rivercureproject.settings import FILES_BASE_PATH
+from context.views.helpers import cancel_execution, get_context_folder_path, get_log_folder_path
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
 from context.models import e_Context
-from django.conf import settings
 
 
 logger = get_task_logger(__name__)
-
-
-def get_context_folder_path(tag):
-    return os.path.join(FILES_BASE_PATH, f'{tag}_simulation')
-
-
-def get_log_folder_path(tag):
-    return os.path.join(settings.BASE_DIR, 'logs', tag)
 
 
 def prepare_files_preprocessing(context):
@@ -109,6 +100,7 @@ def run_pre_processor(context: e_Context, files):
 @shared_task(bind=True)
 def preprocess_task(self, contextCode):
     context = e_Context.objects.get(code=contextCode)
+    cancel_execution(context)
 
     try:
         files = prepare_files_preprocessing(context)
@@ -191,6 +183,7 @@ def get_log_file_path(event):
 @shared_task(bind=True)
 def simulate_task(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
+    cancel_execution(event)
 
     # This log file log was placed here instead of in run_simulator to write the "Preparing files line"
     # and prevent that the first few seconds the UI presents an error

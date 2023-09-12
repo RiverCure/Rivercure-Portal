@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
+from context.views.helpers import get_context_folder_path
 from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
@@ -23,7 +24,6 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
-from ..tasks import get_context_folder_path
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
@@ -129,7 +129,6 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
-        print(dir(context['context']))
 
         return context
 
