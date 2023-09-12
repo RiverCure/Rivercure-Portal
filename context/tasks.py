@@ -93,7 +93,7 @@ def run_pre_processor(context: e_Context, files):
                     file.write(files[key])
 
         log_f = open(log_file, 'w')
-        proc = subprocess.Popen('mesh', cwd=destination_folder, stdout=log_f, stderr=log_f)
+        proc = subprocess.Popen('./mesh', cwd=destination_folder, stdout=log_f, stderr=log_f)
         context.proc_id = proc.pid
         context.save()
 
