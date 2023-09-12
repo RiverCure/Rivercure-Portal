@@ -39,9 +39,9 @@ class e_Context(models.Model):
     CLExternalBoundary = models.FloatField(null=True, blank=True)  # aka Domain's CL, characteristic lenght
     hasMesh = models.BooleanField(default=False)
 
-    # For the pre-processing task
+    # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)
-    # For the process
+    # Id of the process of the execution of the mesh
     proc_id = models.IntegerField(null=True)
     # Requester of a mesh generation request
     requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='requester')
@@ -200,6 +200,8 @@ class e_ContextEvent(models.Model):
     # Celery simulation task
     task_id = models.TextField(null=True)
     requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    # Id of the process of the execution of the mesh
+    proc_id = models.IntegerField(null=True)
 
     class Meta:
         verbose_name = 'Context event'

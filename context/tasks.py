@@ -168,7 +168,9 @@ def run_simulator(event, files):
     log_file = get_log_file_path(event)
     try:
         log_f = open(log_file, 'w')
-        subprocess.Popen(f'(cd {context_folder} && ./solver2D &)', stdout=log_f, stderr=log_f, shell=True)
+        proc = subprocess.Popen('./solver2D', cwd=context_folder, stdout=log_f, stderr=log_f)
+        event.proc_id = proc.pid
+        event.save()
     except Exception as e:
         print(f'Failed simulation!\nException{e}')
         import traceback
