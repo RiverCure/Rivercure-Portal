@@ -61,7 +61,7 @@ def prepare_files_preprocessing(context):
     return files
 
 
-def run_pre_processor(context, files):
+def run_pre_processor(context: e_Context, files):
     tag = context.tag
 
     context_folder = get_context_folder_path(tag)
@@ -93,7 +93,10 @@ def run_pre_processor(context, files):
                     file.write(files[key])
 
         log_f = open(log_file, 'w')
-        subprocess.Popen(f'(cd {destination_folder} && ./mesh &)', stdout=log_f, stderr=log_f, shell=True)
+        script_location = os.path.join(destination_folder, 'mesh')
+        proc = subprocess.Popen(script_location, stdout=log_f, stderr=log_f)
+        context.proc_id = proc.pid
+        context.save()
 
     except Exception as e:
         print(f'Failed pre-processing!\nException{e}')

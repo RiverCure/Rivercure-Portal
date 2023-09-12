@@ -41,6 +41,8 @@ class e_Context(models.Model):
 
     # For the pre-processing task
     task_id = models.CharField(max_length=200, null=True)
+    # For the process
+    proc_id = models.IntegerField(null=True)
     # Requester of a mesh generation request
     requester = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='requester')
     # Files
