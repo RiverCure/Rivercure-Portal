@@ -54,6 +54,7 @@
                 {% if event.task_id %}
                     <a class="btn btn-secondary mt-1 mb-1" href="{% url 'event-regenerate-confirm' event.id %}">Re-run Simulation</a>
                     <a class="btn btn-warning mt-1 mb-1" href="{% url 'event-progress' event.id %}">Progress</a>
+                    <a class="btn btn-danger mt-1 mb-1" href="{% url 'event-cancel-confirm' event.id %}">Stop Simulation</a>
                 {% else %}
                     <a type="button" class="btn btn-info mt-1 mb-1" href="{% url 'event-run' event.context.code event.id %}">Run Simulation</a>
                 {% endif %}

@@ -137,6 +137,7 @@
         {% endif %}
         {% if context.task_id and canEdit %}
             <a class="btn btn-warning mt-1 mb-1" href="{% url 'mesh-status' context.code %}">Progress</a>
+            <a class="btn btn-danger mt-1 mb-1" href="{% url 'mesh-cancel-confirm' context.code %}">Cancel Mesh</a> 
         {% endif %}
             
         <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">Back to context list</a>

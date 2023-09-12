@@ -4,6 +4,7 @@ from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context as Context
 from context.tasks import preprocess_task
+from context.views.helpers import cancel_execution, cancel_task
 from organization.models import Membership
 from .authorization import context_organization_edit_permission_check
 from notifications.signals import notify
@@ -106,6 +107,7 @@ def mesh_status_progress(request, contextCode):
     if status == Status.FINISH:
         context.hasMesh = True
         context.task_id = None
+        context.proc_id = None
         context.save()
 
         notify.send(sender=context, recipient=context.requester, action_object=context.organization,
@@ -115,6 +117,17 @@ def mesh_status_progress(request, contextCode):
                     verb=f"Processing of context {context.Name} has failed")
 
     return JsonResponse({'status': status.value, 'message': lastline, 'full_log': tail_log})
+
+
+@login_required
+def cancel_mesh_confirm(request, contextCode):
+    '''Renders the confirmation of cancelation of mesh page'''
+    context = get_object_or_404(Context, code=contextCode)
+    # Authorization
+    if not context_organization_edit_permission_check(request.user, context.organization):
+        return HttpResponse('Unauthorized', status=401)
+
+    return render(request, 'context/context/cancel_mesh_confirm.html', {'context': context})
 
 
 @login_required
@@ -156,5 +169,27 @@ def request_pre_processing(request, contextCode):
         messages.success(request, 'Mesh generation started')
     else:
         messages.error(request, 'Background process offline: Contact admin.')
+
+    return redirect('context-detail', contextCode=contextCode)
+
+
+@login_required
+def cancel_mesh(request, contextCode):
+    '''Stops the generation of the mesh'''
+    context = get_object_or_404(Context, code=contextCode)
+    # Authorization
+    if not context_organization_edit_permission_check(request.user, context.organization):
+        return HttpResponse('Unauthorized', status=401)
+
+    try:
+        if context.proc_id:
+            cancel_execution(context)
+
+        if context.task_id:
+            cancel_task(context)
+
+        messages.success(request, 'Mesh generation stopped successfully')
+    except:
+        messages.error(request, 'An error occurred while stoping the mesh generation')
 
     return redirect('context-detail', contextCode=contextCode)

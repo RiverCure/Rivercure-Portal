@@ -1,0 +1,19 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Regenerate mesh {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<h1>Confirm cancel of event '{{ event.Name }}'</a></h1>
+
+<div>
+    <h2>A simulation run for this event is already on the way.</h2>
+    <p>Are you sure you want to cancel the simulation for this event?</p>
+    <p>This process is irreversible.</p>
+    <div>
+        <a class="btn btn-secondary mt-1 mb-1" href="{% url 'event-detail' event.context.code event.id %}">No</a>
+        <a class="btn btn-success mt-1 mb-1" href="{% url 'event-cancel' event.context.code event.id %}">Yes</a>
+    </div>
+</div>
+
+{% endblock content %}

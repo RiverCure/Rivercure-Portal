@@ -2,6 +2,7 @@ import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import zip_file
+from context.views.helpers import cancel_execution, cancel_task, get_context_folder_path
 from context.views.mesh import Status, get_status, tail, check_celery
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -21,7 +22,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from .prepare_files import *
-from context.tasks import get_context_folder_path, simulate_task
+from context.tasks import simulate_task
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 
@@ -244,6 +245,7 @@ def event_status_progress(request, event_id):
     if status == Status.FINISH:
         event.hasSimulation = True
         event.task_id = None
+        event.proc_id = None
         event.save()
 
         notify.send(sender=event, recipient=event.requester, action_object=event.context.organization,
@@ -261,6 +263,12 @@ def regenerate_event_confirm(request, event_id):
     return render(request, 'context/event/regenerate_event_confirm.html', {'event': event})
 
 
+@login_required
+def cancel_event_confirm(request, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    return render(request, 'context/event/cancel_event_confirm.html', {'event': event})
+
+
 def inform_event_status(request, event_id):
     '''Called repeatedly by the frontend when in /contexts/event-status/<int:contextId> to check if the event has simulated'''
     event = e_ContextEvent.objects.get(id=event_id)
@@ -268,3 +276,22 @@ def inform_event_status(request, event_id):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
+
+
+def cancel_simulation(request, pk, event_id):
+    event = get_object_or_404(e_ContextEvent, id=event_id)
+    if not context_organization_event_permission_check(request.user, event.context.organization):
+        return HttpResponseRedirect(reverse('event-detail', args=(pk, event_id, )))
+
+    try:
+        if event.proc_id:
+            cancel_execution(event)
+
+        if event.task_id:
+            cancel_task(event)
+
+        messages.success(request, 'Simulation stopped successfully')
+    except:
+        messages.error(request, 'An error occurred while stoping the simulation')
+
+    return redirect('event-detail', pk=pk, event_id=event.id)

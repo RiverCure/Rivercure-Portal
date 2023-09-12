@@ -1,0 +1,19 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Cancel mesh {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<h1>Confirm cancel of context '{{ context.Name }}' mesh</a></h1>
+
+<div>
+    <h2>A mesh generation for this context is already on the way.</h2>
+    <p>Are you sure you want to cancel the mesh generation for this context?</p>
+    <p>This process is irreversible.</p>
+    <div>
+        <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-detail' context.code %}">No</a>
+        <a class="btn btn-success mt-1 mb-1" href="{% url 'mesh-cancel' context.code %}">Yes</a>
+    </div>
+</div>
+
+{% endblock content %}
