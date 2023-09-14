@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
-from context.views.helpers import get_context_folder_path
+from context.views.helpers import get_context_folder_path, get_log_folder_path
 from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
@@ -147,6 +147,7 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, *args, **kwargs):
         context: e_Context = self.get_object()
         context_folder = get_context_folder_path(context.tag)
+        context_logs_folder = get_log_folder_path(context.tag)
 
         # Delete DTM and frictionCoef files
         path = os.path.join(MEDIA_ROOT, f'{context.Name}_dtm.tif')
@@ -164,6 +165,9 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         if os.path.exists(context_folder):
             shutil.rmtree(context_folder)
+
+        if os.path.exists(context_logs_folder):
+            shutil.rmtree(context_logs_folder)
 
         return super(ContextDeleteView, self).delete(*args, **kwargs)
 
@@ -322,9 +326,6 @@ def zip_file(file_name, file_path):
 @login_required
 def download_preprocessing_results(request, contextCode):
     context = get_object_or_404(e_Context, code=contextCode)
-    # verify that the user is logged in
-    if not context_organization_edit_permission_check(request.user, context.organization):
-        return HttpResponse('Unauthorized', status=401)
 
     file_path = os.path.join(get_context_folder_path(context.tag), 'mesh', 'vtk', 'meshQuality.vtk')
     if not os.path.exists(file_path):

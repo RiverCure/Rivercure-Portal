@@ -91,9 +91,6 @@ def view_events_results(request, event_id):  # function to view the results of a
 def download_simulation_results(request, event_id):  # function to download simulation results
     event = get_object_or_404(e_ContextEvent, pk=event_id)
     context = event.context
-    # verify that the user is logged in
-    if not context_organization_edit_permission_check(request.user, context.organization):
-        return HttpResponse('Unauthorized', status=401)
 
     folder_path = os.path.join(get_context_folder_path(context.tag), 'output', 'maxima')
     if not os.path.exists(folder_path) or len(os.listdir(folder_path)) == 0:
