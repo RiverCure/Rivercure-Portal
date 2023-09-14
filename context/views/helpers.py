@@ -13,7 +13,7 @@ def get_log_folder_path(tag):
     return os.path.join(BASE_DIR, 'logs', tag)
 
 
-def cancel_execution(context_or_event: e_Context | e_ContextEvent):
+def cancel_execution(context_or_event):
     '''Kills the existing/previous execution if it exists'''
     pid = context_or_event.proc_id
     if pid:
@@ -22,7 +22,7 @@ def cancel_execution(context_or_event: e_Context | e_ContextEvent):
         context_or_event.save()
 
 
-def cancel_task(context_or_event: e_Context | e_ContextEvent):
+def cancel_task(context_or_event):
     task_id = context_or_event.task_id
     if task_id:
         current_app.control.revoke(task_id)
