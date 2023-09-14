@@ -124,7 +124,7 @@
             {% if canEdit %}
                 <a class="btn btn-secondary mt-1 mb-1" href="{% url 'context-preprocessing-request' context.code %}">Regenerate Mesh</a> 
             {% endif %}
-            <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results' %}" target='_blank'>View Mesh</a> 
+            {% comment %} <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results' %}" target='_blank'>View Mesh</a>  {% endcomment %}
             <a class="btn btn-info mt-1 mb-1" href="{% url 'context-preprocessing-results-download' context.code %}" target='_blank'>Download Mesh</a> 
         {% else %}
             {% if canEdit %}
