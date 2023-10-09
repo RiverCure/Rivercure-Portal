@@ -2,7 +2,7 @@ import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import zip_file
-from context.views.helpers import cancel_execution, cancel_task, get_context_folder_path
+from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files, get_event_rasters_folder_path
 from context.views.mesh import Status, get_status, tail, check_celery
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -25,6 +25,8 @@ from .prepare_files import *
 from context.tasks import simulate_task
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -61,11 +63,19 @@ class EventDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        event = self.get_object()
         context['hasPerm'] = context_organization_event_permission_check(
-            self.request.user, self.get_object().context.organization)
-        return context
+            self.request.user, event.context.organization)
 
-# TODO: check for permissions
+        rasters = get_event_rasters_files(event.context.tag)
+        # TODO: This should be done at the end of a simulation
+        for key, value in rasters.items():
+            file_name = f'{event.Name}_{key}.tif'
+            copy_file_to_media_folder(value, file_name)
+            rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
+
+        context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
+        return context
 
 
 @login_required
