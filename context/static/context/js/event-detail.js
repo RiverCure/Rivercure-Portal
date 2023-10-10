@@ -1,12 +1,14 @@
-async function requestEvent () {
-    setTimeout(() => {
+async function requestEvent() {
+    var intervalId = setInterval(() => {
         const xhr = new XMLHttpRequest();
         const url = statusUrl;
         xhr.open('GET', url, true);
         xhr.responseType="json";
         xhr.onload =  (e) => {
             const request = e.target;
+            const result = request.response;
             if(request.status == 200 && result.status == "Finished successfully") {
+                clearInterval(intervalId);
                 location.reload(true);
             }
         };
