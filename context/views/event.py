@@ -1,8 +1,7 @@
-import zipfile
 from django.shortcuts import get_object_or_404, redirect, render
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.views.context import zip_file
-from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files, get_event_rasters_folder_path
+from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
 from context.views.mesh import Status, get_status, tail, check_celery
 from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -162,9 +161,18 @@ class EventCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = EventForm
     context_object_name = 'event'
 
+    def dispatch(self, request, *args, **kwargs):
+        context = get_object_or_404(e_Context, pk=self.kwargs['pk'])
+        self.context = context
+        if context.e_contextevent_set.count() >= 1:
+            messages.error(
+                request, 'There already exists an event for this context. Currently, RiverCure only allows one event per context.')
+            return redirect('event-list', contextCode=context.pk)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
+        context['context'] = self.context
         return context
 
     def form_valid(self, form):
