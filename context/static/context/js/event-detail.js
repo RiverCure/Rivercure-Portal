@@ -57,7 +57,10 @@ function placeInMap(map, georasters, min, max, range) {
 
         http://leafletjs.com/reference-1.2.0.html#gridlayer
     */
-   if(!Object.keys(georasters).length) return;
+   if(!Object.keys(georasters).length) {
+    document.getElementById('map-container').remove();
+    return;
+   };
 
    const layers = {};
    for(const key of Object.keys(georasters)) {
