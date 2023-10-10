@@ -62,9 +62,6 @@ function placeInMap(map, georasters, min, max, range) {
     */
    if(!Object.keys(georasters).length) return;
 
-   // Show map if there are georasters
-   document.getElementById('map-container').style.display = 'block';
-
    const layers = {};
    for(const key of Object.keys(georasters)) {
         let layer = new GeoRasterLayer({
@@ -98,6 +95,9 @@ function placeInMap(map, georasters, min, max, range) {
 
     // Center to the first layer (any would do)
     map.fitBounds(firstLayer.getBounds());
+
+    // Show map
+   document.getElementById('map-container').style.display = 'block';
 }
 
 async function main() {
