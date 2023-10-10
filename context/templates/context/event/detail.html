@@ -75,8 +75,9 @@
 
 <script>
     // Used to pass variables to script (context/js/event-detail.js)
-    var hasSimulation = "{{ event.hasSimulation }}";
-    var rasters = {{ rasters|safe }};
+    const statusUrl = "{% url 'event-status-progress' event.id %}";
+    const hasSimulation = "{{ event.hasSimulation }}";
+    const rasters = {{ rasters|safe }};
 </script>
 <script src="{% static 'context/js/event-detail.js' %}"></script>
 

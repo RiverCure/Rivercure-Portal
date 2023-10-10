@@ -1,7 +1,7 @@
 async function requestEvent () {
     setTimeout(() => {
         const xhr = new XMLHttpRequest();
-        const url = "{% url 'event-status-progress' event.id %}";
+        const url = statusUrl;
         xhr.open('GET', url, true);
         xhr.responseType="json";
         xhr.onload =  (e) => {
