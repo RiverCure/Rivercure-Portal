@@ -67,11 +67,10 @@ class EventDetailView(LoginRequiredMixin, DetailView):
             self.request.user, event.context.organization)
 
         rasters = get_event_rasters_files(event.context.tag)
-        # TODO: This should be done at the end of a simulation
-        for key, value in rasters.items():
+        for key in rasters.keys():
             file_name = f'{event.Name}_{key}.tif'
-            path = copy_file_to_media_folder(value, file_name)
-            if path:
+            path = os.path.join(settings.MEDIA_ROOT, file_name)
+            if os.path.isfile(path):
                 rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
             else:
                 rasters[key] = None

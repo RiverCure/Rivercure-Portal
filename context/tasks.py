@@ -3,7 +3,8 @@ import geojson
 import subprocess
 import os
 import shutil
-from context.views.helpers import cancel_execution, get_context_folder_path, get_log_folder_path
+from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files, get_log_folder_path
+from rivercureproject import settings
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
 from context.models import e_Context
@@ -210,3 +211,19 @@ def simulate_task(self, event_id):
     except Exception as e:
         print(f'Exception:{e}')
         return f'Exception:{e}'
+
+
+@shared_task(bind=True)
+def generate_tiffs(self, event_id):
+    event = e_ContextEvent.objects.get(id=event_id)
+
+    # TODO: Generate here
+
+    rasters = get_event_rasters_files(event.context.tag)
+    for key, value in rasters.items():
+        file_name = f'{event.Name}_{key}.tif'
+        path = copy_file_to_media_folder(value, file_name)
+        if path:
+            rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
+        else:
+            rasters[key] = None

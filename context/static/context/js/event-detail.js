@@ -1,16 +1,17 @@
-
 async function requestEvent () {
-    // TODO: NOT WORKING
-    const request = new XMLHttpRequest();
-    const url = "{% url 'event-status-request' event.id %}";
-    request.open("GET", url);
-    setTimeout (() => {
-        request.send();
-        request.onreadystatechange = e => {
-            if(request.status == 200)
+    setTimeout(() => {
+        const xhr = new XMLHttpRequest();
+        const url = "{% url 'event-status-progress' event.id %}";
+        xhr.open('GET', url, true);
+        xhr.responseType="json";
+        xhr.onload =  (e) => {
+            const request = e.target;
+            if(request.status == 200 && result.status == "Finished successfully") {
                 location.reload(true);
-        }
-        requestEvent(request);
+            }
+        };
+
+        xhr.send(null);
     }, 5000);
 }
 
