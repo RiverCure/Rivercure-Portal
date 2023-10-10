@@ -24,7 +24,7 @@ django-filter==2.4.0
 django-leaflet==0.28.1
 django-model-utils==4.1.1
 django-notifications-hq==1.8.2
-django-raster4 @ git+https://github.com/amserra/django-raster4@ece90650fb6ec5dc22858824a0afefa48f0d9dd9
+django-raster4 @ git+https://github.com/amserra/django-raster4
 djangorestframework==3.14.0
 docutils==0.17.1
 et-xmlfile==1.1.0

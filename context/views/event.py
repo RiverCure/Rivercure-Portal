@@ -70,8 +70,11 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         # TODO: This should be done at the end of a simulation
         for key, value in rasters.items():
             file_name = f'{event.Name}_{key}.tif'
-            copy_file_to_media_folder(value, file_name)
-            rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
+            path = copy_file_to_media_folder(value, file_name)
+            if path:
+                rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
+            else:
+                rasters[key] = None
 
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
         return context
