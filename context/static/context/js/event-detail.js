@@ -97,7 +97,7 @@ function placeInMap(map, georasters, min, max, range) {
     map.fitBounds(firstLayer.getBounds());
 
     // Show map
-   document.getElementById('map-container').style.display = 'block';
+    // document.getElementById('map-container').style.display = 'block';
 }
 
 async function main() {
