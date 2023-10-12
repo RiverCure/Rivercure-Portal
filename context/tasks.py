@@ -230,8 +230,8 @@ def generate_tiffs(self, event_id):
         raise Exception('No maxima files found')
     maxima_file = os.path.join(maxima_path, maxima_files[0])
 
-    result = subprocess.call(['/usr/bin/python3', 'stavResults.py', '-i', maxima_file,
-                             '-o', 'raster', '-e', '3763'], cwd=rasters_path).wait(120)
+    result = subprocess.Popen(['/usr/bin/python3', 'stavResults.py', '-i', maxima_file,
+                               '-o', 'raster', '-e', '3763'], cwd=rasters_path).wait(120)
     if result is None or result < 0:
         raise Exception(f'Calling stavResults.py failed. Return code: {result}')
 
