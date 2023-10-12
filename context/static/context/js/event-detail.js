@@ -9,7 +9,10 @@ async function requestEvent() {
             const result = request.response;
             if(request.status == 200 && result.status == "Finished successfully") {
                 clearInterval(intervalId);
-                location.reload(true);
+                // Give time for files to be copied
+                setTimeout(() => {
+                    location.reload(true);
+                }, 5000);
             }
         };
 
@@ -106,11 +109,12 @@ async function main() {
     if(hasSimulation == "False") {
         // Check if mesh exists
         requestEvent();
+    } else {
+        const map = loadMap();
+        // List of urls, removing the "null" ones
+        const { georasters, min, max, range } = await loadUrls(rasters);
+        placeInMap(map, georasters, min, max, range);
     }
-    const map = loadMap();
-    // List of urls, removing the "null" ones
-    const { georasters, min, max, range } = await loadUrls(rasters);
-    placeInMap(map, georasters, min, max, range);
 }
 
 main();
