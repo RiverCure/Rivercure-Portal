@@ -3,7 +3,7 @@ import geojson
 import subprocess
 import os
 import shutil
-from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_maxima_folder_path, get_event_rasters_files, get_event_rasters_folder_path, get_log_folder_path
+from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_maxima_folder_path, get_event_rasters_files, get_event_rasters_folder_path, get_log_folder_path, remove_file_to_media_folder
 from rivercureproject import settings
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
@@ -198,6 +198,11 @@ def simulate_task(self, event_id):
     # Creates folders if they dont exist
     if not os.path.exists(log_path):
         os.makedirs(log_path)
+
+    rasters = get_event_rasters_files(event.context.tag)
+    for key in rasters.keys():
+        file_name = f'{event.Name}_{key}.tif'
+        remove_file_to_media_folder(file_name)
 
     with open(log_file, 'w') as f:
         f.write('Preparing files...')

@@ -106,11 +106,12 @@ async function main() {
     if(hasSimulation == "False") {
         // Check if mesh exists
         requestEvent();
+    } else {
+        const map = loadMap();
+        // List of urls, removing the "null" ones
+        const { georasters, min, max, range } = await loadUrls(rasters);
+        placeInMap(map, georasters, min, max, range);
     }
-    const map = loadMap();
-    // List of urls, removing the "null" ones
-    const { georasters, min, max, range } = await loadUrls(rasters);
-    placeInMap(map, georasters, min, max, range);
 }
 
 main();

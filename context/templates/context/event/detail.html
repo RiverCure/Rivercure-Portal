@@ -28,9 +28,11 @@
         <div class="article-metadata">
             <h1><a href="{% url 'context-detail' event.context.code %}"> {{ event.context.Name }}</a> event '{{ event.Name }}'</h1>
         </div>
-        <div id="map-container">
-            <div id="map"></div>
-        </div>
+        {% if event.hasSimulation %}
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+        {% endif %}
         <p class="article-content"><b>Context: </b>{{ event.context }}</p>
         <p class="article-content"><b>Type: </b>{{ event.type }}</p> 
         <p class="article-content"><b>SubType: </b>{{ event.subtype }}</p> 
@@ -66,12 +68,14 @@
         <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'event-list' event.context.code %}" >Back to event list</a>
 </article>
 
+{% if event.hasSimulation %}
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/georaster"></script>
 <script src="https://unpkg.com/proj4"></script>
 <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
 <script src="https://unpkg.com/chroma-js"></script>
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+{% endif %}
 
 <script>
     // Used to pass variables to script (context/js/event-detail.js)

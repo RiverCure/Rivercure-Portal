@@ -48,6 +48,15 @@ def copy_file_to_media_folder(file_path, dest_name):
         return None
 
 
+def remove_file_to_media_folder(file_name):
+    try:
+        file = os.path.join(MEDIA_ROOT, file_name)
+        if os.path.exists(file):
+            os.remove(file)
+    except:
+        return None
+
+
 def get_log_folder_path(tag):
     return os.path.join(BASE_DIR, 'logs', tag)
 
