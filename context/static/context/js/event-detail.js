@@ -9,7 +9,10 @@ async function requestEvent() {
             const result = request.response;
             if(request.status == 200 && result.status == "Finished successfully") {
                 clearInterval(intervalId);
-                location.reload(true);
+                // Give time for files to be copied
+                setTimeout(() => {
+                    location.reload(true);
+                }, 5000);
             }
         };
 
