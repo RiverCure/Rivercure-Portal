@@ -3,7 +3,7 @@ import geojson
 import subprocess
 import os
 import shutil
-from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files, get_log_folder_path
+from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_maxima_folder_path, get_event_rasters_files, get_event_rasters_folder_path, get_log_folder_path
 from rivercureproject import settings
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
@@ -217,7 +217,18 @@ def simulate_task(self, event_id):
 def generate_tiffs(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
 
-    # TODO: Generate here
+    rasters_path = get_event_rasters_folder_path(event.context.tag)
+
+    maxima_path = get_event_maxima_folder_path(event.context.tag)
+    maxima_files = os.listdir(maxima_path)
+    if len(maxima_files) == 0:
+        raise Exception('No maxima files found')
+    maxima_file = os.path.join(maxima_path, maxima_files[0])
+
+    result = subprocess.call(['/usr/bin/python3', 'stavResults.py', '-i', maxima_file,
+                             '-o', 'raster', '-e', '3763'], cwd=rasters_path).wait(120)
+    if result is None or result < 0:
+        raise Exception(f'Calling stavResults.py failed. Return code: {result}')
 
     rasters = get_event_rasters_files(event.context.tag)
     for key, value in rasters.items():

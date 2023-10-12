@@ -14,6 +14,10 @@ def get_event_folder_path(tag):
     return os.path.join(get_context_folder_path(tag), 'output')
 
 
+def get_event_maxima_folder_path(tag):
+    return os.path.join(get_event_folder_path(tag), 'maxima')
+
+
 def get_event_rasters_folder_path(tag):
     return os.path.join(get_event_folder_path(tag), 'rasters')
 
@@ -21,16 +25,16 @@ def get_event_rasters_folder_path(tag):
 def get_event_rasters_files(tag):
     folder = get_event_rasters_folder_path(tag)
     files = {}
-    maxDepth = os.path.join(folder, 'Max_Depth.tif')
+    maxDepth = os.path.join(folder, 'raster-Max_Depth.tif')
     files['maxDepth'] = maxDepth if os.path.exists(maxDepth) else None
 
-    maxLevel = os.path.join(folder, 'Max_Level.tif')
+    maxLevel = os.path.join(folder, 'raster-Max_Level.tif')
     files['maxLevel'] = maxLevel if os.path.exists(maxLevel) else None
 
-    maxQ = os.path.join(folder, 'Max_Q.tif')
+    maxQ = os.path.join(folder, 'raster-Max_Q.tif')
     files['maxQ'] = maxQ if os.path.exists(maxQ) else None
 
-    maxVel = os.path.join(folder, 'Max_Vel.tif')
+    maxVel = os.path.join(folder, 'raster-Max_Vel.tif')
     files['maxVel'] = maxVel if os.path.exists(maxVel) else None
 
     return files
