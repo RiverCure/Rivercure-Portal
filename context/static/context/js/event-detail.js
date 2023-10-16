@@ -10,14 +10,73 @@ async function requestEvent() {
             if(request.status == 200 && result.status == "Finished successfully") {
                 clearInterval(intervalId);
                 // Give time for files to be copied
-                setTimeout(() => {
-                    location.reload(true);
-                }, 5000);
+                location.reload(true);
             }
         };
 
         xhr.send(null);
     }, 5000);
+}
+
+function generateHumanReadableLayerNames(key) {
+    switch (key) {
+        case 'maxDepth':
+            return 'Maximum depth';
+        case 'maxLevel':
+            return 'Maximum level';
+        case 'maxQ':
+            return 'Hazard index';
+        case 'maxVel':
+            return 'Maximum velocity';
+        default:
+            throw new Error('Key not found');
+    }
+}
+
+function generateMachineReadableNames(humanReadable) {
+    switch (humanReadable) {
+        case 'Maximum depth':
+            return 'maxDepth';
+        case 'Maximum level':
+            return'maxLevel';
+        case 'Hazard index':
+            return'maxQ';
+        case 'Maximum velocity':
+            return 'maxVel';
+        default:
+            throw new Error('Key not found');
+    }
+}
+
+function generateLegendLabel(layerName) {
+    switch (layerName) {
+        case 'maxDepth':
+            return `${generateHumanReadableLayerNames(layerName)} (m)`;
+        case 'maxLevel':
+            return `${generateHumanReadableLayerNames(layerName)} (m)`;
+        case 'maxQ':
+            return `${generateHumanReadableLayerNames(layerName)} (㎡/s)`;
+        case 'maxVel':
+            return `${generateHumanReadableLayerNames(layerName)} (m/s)`;
+        default:
+            throw new Error('Key not found');
+    }
+}
+
+// https://github.com/gka/chroma.js/blob/main/src/colors/colorbrewer.js
+function getScale(layerName) {
+    switch (layerName) {
+        case 'maxDepth':
+            return "Viridis";
+        case 'maxLevel':
+            return "Spectral";
+        case 'maxQ':
+            return "RdYlBu";
+        case 'maxVel':
+            return 'PuOr';
+        default:
+            throw new Error('Key not found');
+    }
 }
 
 function loadMap() {
@@ -49,12 +108,12 @@ async function loadUrls(rasters) {
         min = georaster.mins[0];
         max = georaster.maxs[0];
         range = georaster.ranges[0];
-        georasters[key] = georaster;
+        georasters[key] = { raster: georaster, min, max, range };
     }
-    return { georasters, min, max, range };
+    return georasters;
 }
 
-function placeInMap(map, georasters, min, max, range) {
+function placeInMap(map, georasters) {
     /*
         GeoRasterLayer is an extension of GridLayer,
         which means can use GridLayer options like opacity.
@@ -67,40 +126,92 @@ function placeInMap(map, georasters, min, max, range) {
 
    const layers = {};
    for(const key of Object.keys(georasters)) {
+        const georaster = georasters[key];
         let layer = new GeoRasterLayer({
-            georaster: georasters[key],
+            georaster: georaster.raster,
             // georasters: georasters,
             opacity: 0.7,
             resolution: 256,
             pixelValuesToColorFn: (pixelValues) => {
                 const pixelValue = pixelValues[0]; // there's just one band in this raster
-                const scale = chroma.scale("Viridis");
+                const scale = chroma.scale(getScale(key));
 
                 // if there's zero wind, don't return a color
                 if (pixelValue === 0) return null;
 
-                const scaledPixelValue = (pixelValue - min) / range;
+                const scaledPixelValue = (pixelValue - georaster.min) / georaster.range;
                 const color = scale(scaledPixelValue).hex();
 
                 return color;
             },
         });
-        layers[key] = layer;
+        layers[generateHumanReadableLayerNames(key)] = layer;
    }
 
    const firstLayer = layers[Object.keys(layers)[0]];
    // Add first layer as it will be the pre-selected one
    firstLayer.addTo(map);
     
-    L.control.layers(null, layers).addTo(map);
-    // Toggle to this if they want to only have 1 selected at a time
-    // L.control.layers(layers).addTo(map);
+    L.control.layers(layers).addTo(map);
+
+    // Toggle to this if they want to have multiple at the same time
+    // L.control.layers(null, layers).addTo(map);
 
     // Center to the first layer (any would do)
     map.fitBounds(firstLayer.getBounds());
 
     // Show map
     // document.getElementById('map-container').style.display = 'block';
+}
+
+function placeLegend(map, georasters) {
+    let legend;
+    
+    legend = L.control({position: 'bottomright'});
+    legend.onAdd = () => createLegend('maxDepth', georasters['maxDepth']); // Pre-selected layer
+    legend.addTo(map);
+
+    map.on('baselayerchange', (newLayer) => {
+        // Handle change of layer to change scale
+        console.log(`Layer added: ${newLayer.name}`);
+        const layerName = generateMachineReadableNames(newLayer.name);
+        const currentLayer = georasters[layerName];
+        // Remove old legend
+        map.removeControl(legend);
+
+        legend = L.control({position: 'bottomright'});
+        legend.onAdd = () => createLegend(layerName, currentLayer);
+        legend.addTo(map);
+    });
+}
+
+function createLegend(layerName, georaster) {
+    console.log(georaster)
+    const div = L.DomUtil.create('div', 'info legend');
+
+    // Build scale string
+    const scale = chroma.scale(getScale(layerName)).colors(8);
+    let range = '\'[';
+    scale.forEach((color, index, arr) => {
+        if(index != arr.length - 1) {
+            range += `"${color}",`;
+        } else {
+            range += `"${color}"]'`;
+        }
+    });
+
+    // div.innerHTML = labels.join('<br>');
+    div.innerHTML = `
+        <color-legend
+            titletext="${generateLegendLabel(layerName)}"
+            scaletype="continuous"
+            range=${range}
+            tickFormat=".0f"
+            ticks=5
+            domain="[${Math.round(georaster.min)}, ${Math.round(georaster.max)}]">
+        </color-legend>`;
+
+    return div;
 }
 
 async function main() {
@@ -112,8 +223,12 @@ async function main() {
     } else {
         const map = loadMap();
         // List of urls, removing the "null" ones
-        const { georasters, min, max, range } = await loadUrls(rasters);
-        placeInMap(map, georasters, min, max, range);
+        const georasters = await loadUrls(rasters);
+        placeInMap(map, georasters);
+
+        console.log(georasters);
+
+        placeLegend(map, georasters);
     }
 }
 
