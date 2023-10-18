@@ -208,7 +208,7 @@ class e_ContextEvent(models.Model):
         verbose_name_plural = 'Context\'s events'
 
     def __str__(self):
-        return f'{self.context} event {self.id}'
+        return f'{self.context} event {self.Name}'
 
 
 class e_ContextEventResult(models.Model):
