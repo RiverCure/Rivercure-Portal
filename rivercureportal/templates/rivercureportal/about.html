@@ -25,38 +25,6 @@
                 </p>
             </div>
         </div>
-        <h1 class="text-center text-uppercase text-black">Changelog</h1>
-        <div class="mt-2">
-            <h4>16-10-2021:</h4>
-            Usability improvments. Included way of downloading simulation results.
-        </div>
-        <div class="mt-2">
-            <h4>03-10-2021:</h4>
-            Altered the 'dependantOf' field name to 'derivedBy'. 
-            Now it actually does something - a sensor class property can be derived by another, and have a Python instruction associated with it.
-            This results that, when the property that this new property is dependant of is added/updated, it will calculate the new value of this derived property, through the python instruction.
-        </div>
-        <div class="mt-2">
-            <h4>02-10-2021:</h4>
-            Changed context boundary line 'Type'. Before the options were 'Input, Output and InputOutput'.
-            Now there are available the following options: 'Input, Output, Critical and Transmissive'.
-        </div>
-        <div class="mt-2">
-            <h4>29-09-2021:</h4>
-            Introuced a new field for the sensor class properties: a 'dependantOf' field.
-            Now a property can be dependant of another, thus the field it depends must be inserted first.
-        </div>
-        <div class="mt-2">
-            <h4>28-09-2021:</h4>
-            Bug fixes on the event generation, now events should work with the newest sensor model.
-        </div>
-        <div class="mt-2">
-            <h4>26-09-2021:</h4>
-            Altered way of interacting with the portal's organization. Now, when navigating through the portal you have an 'Active' session organization.
-            This will determine which context and sensors you see on the 'Context' and 'Sensor' pages, respectively. To set an organization as active,
-            you have to go to the organization menu, select the organization and click 'Make current organization'.
-        </div>
-    </div>
 </section>
 
 {% endblock content %}
