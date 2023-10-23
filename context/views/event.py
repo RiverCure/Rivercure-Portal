@@ -303,12 +303,13 @@ def cancel_simulation(request, pk, event_id):
     try:
         if event.proc_id:
             cancel_execution(event)
-
         if event.task_id:
             cancel_task(event)
-
-        messages.success(request, 'Simulation stopped successfully')
     except:
-        messages.error(request, 'An error occurred while stoping the simulation. The simulation may have already been stopped.')
+        event.proc_id = None
+        event.task_id = None
+        event.save()
+
+    messages.success(request, 'Simulation stopped successfully')
 
     return redirect('event-detail', pk=pk, event_id=event.id)
