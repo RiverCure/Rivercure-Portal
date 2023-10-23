@@ -184,12 +184,15 @@ def cancel_mesh(request, contextCode):
     try:
         if context.proc_id:
             cancel_execution(context)
-
         if context.task_id:
             cancel_task(context)
 
         messages.success(request, 'Mesh generation stopped successfully')
     except:
-        messages.error(request, 'An error occurred while stoping the mesh generation')
+        context.proc_id = None
+        context.task_id = None
+        context.save()
+
+    messages.success(request, 'Mesh generation stopped successfully')
 
     return redirect('context-detail', contextCode=contextCode)
