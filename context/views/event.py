@@ -309,6 +309,6 @@ def cancel_simulation(request, pk, event_id):
 
         messages.success(request, 'Simulation stopped successfully')
     except:
-        messages.error(request, 'An error occurred while stoping the simulation')
+        messages.error(request, 'An error occurred while stoping the simulation. The simulation may have already been stopped.')
 
     return redirect('event-detail', pk=pk, event_id=event.id)

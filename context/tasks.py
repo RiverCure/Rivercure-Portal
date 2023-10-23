@@ -101,7 +101,11 @@ def run_pre_processor(context: e_Context, files):
 @shared_task(bind=True)
 def preprocess_task(self, contextCode):
     context = e_Context.objects.get(code=contextCode)
-    cancel_execution(context)
+    try:
+        cancel_execution(context)
+    except:
+        context.proc_id = None
+        context.save()
 
     try:
         files = prepare_files_preprocessing(context)
@@ -184,7 +188,11 @@ def get_log_file_path(event):
 @shared_task(bind=True)
 def simulate_task(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
-    cancel_execution(event)
+    try:
+        cancel_execution(event)
+    except:
+        event.proc_id = None
+        event.save()
 
     # This log file log was placed here instead of in run_simulator to write the "Preparing files line"
     # and prevent that the first few seconds the UI presents an error
