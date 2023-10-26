@@ -8,7 +8,7 @@ router.register(r'context', ContextViewSet)
 urlpatterns = [
     path('', ContextListView.as_view(), name='context-list'),
     path('new/', ContextCreateView.as_view(), name='context-create'),
-    path('others/', OtherContextListView.as_view(), name='other-contexts'),
+    path('public/', PublicContextListView.as_view(), name='public-contexts'),
     path('<str:contextCode>', ContextDetailView.as_view(), name='context-detail'),
     path('<str:contextCode>/update/', ContextUpdateView.as_view(), name='context-update'),
     path('<str:contextCode>/delete/', ContextDeleteView.as_view(), name='context-delete'),

@@ -69,20 +69,14 @@ class ContextListView(LoginRequiredMixin, ListView):
         return context
 
 
-class OtherContextListView(LoginRequiredMixin, ListView):
+class PublicContextListView(LoginRequiredMixin, ListView):
     model = e_Context
-    template_name = 'context/context/otherContext_list.html'
+    template_name = 'context/context/publicContext_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        organizationCode = self.request.session['organizationCode']
-        if organizationCode:
-            organization = get_object_or_404(Organization, code=organizationCode)
-            context['context_list'] = e_Context.objects.exclude(organization=organization).exclude(isPublic=False)
-        else:
-            context['context_list'] = e_Context.objects.exclude(isPublic=False)
-
+        context['context_list'] = e_Context.objects.exclude(isPublic=False)
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
