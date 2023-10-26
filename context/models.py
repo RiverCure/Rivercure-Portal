@@ -189,7 +189,8 @@ class e_ContextEvent(models.Model):
     # Attributes for "Flood Simulation" event, with HiSTAV
     returnPeriod = models.IntegerField(verbose_name='Return period', default=1)
     warmUp = models.BooleanField(verbose_name='Warm-up', default=False)
-    WritingPeriodicity = models.FloatField(verbose_name='Writing periodicity', default=1.0, null=True, blank=True)
+    WritingPeriodicity = models.FloatField(verbose_name='Writing periodicity', default=1.0, null=True,
+                                           blank=True, help_text='E.x.: 4.0/hour means that 1 file is going to be generated for each hour, for a total of 4 hours.')
     WritingPeriodicityUnit = models.CharField(
         verbose_name='Writing periodicity unit', max_length=20, choices=TIME_UNITS, null=True, blank=True)
     UpdateMaximumValue = models.FloatField(verbose_name='Update maximum value', default=1.0, null=True, blank=True)
