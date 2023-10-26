@@ -152,6 +152,8 @@ function placeInMap(map, georasters) {
    const firstLayer = layers[Object.keys(layers)[0]];
    // Add first layer as it will be the pre-selected one
    firstLayer.addTo(map);
+
+   layers['No layer'] = L.tileLayer('');
     
     L.control.layers(layers).addTo(map);
 
@@ -175,10 +177,13 @@ function placeLegend(map, georasters) {
     map.on('baselayerchange', (newLayer) => {
         // Handle change of layer to change scale
         console.log(`Layer added: ${newLayer.name}`);
-        const layerName = generateMachineReadableNames(newLayer.name);
-        const currentLayer = georasters[layerName];
         // Remove old legend
         map.removeControl(legend);
+
+        if(newLayer.name == 'No layer') return;
+
+        const layerName = generateMachineReadableNames(newLayer.name);
+        const currentLayer = georasters[layerName];
 
         legend = L.control({position: 'bottomright'});
         legend.onAdd = () => createLegend(layerName, currentLayer);
