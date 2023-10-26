@@ -67,7 +67,8 @@ function generateLegendLabel(layerName) {
 function getScale(layerName) {
     switch (layerName) {
         case 'maxDepth':
-            return "Viridis";
+            // Reversed Virdis (https://github.com/gka/chroma.js/blob/main/src/colors/colorbrewer.js)
+            return ['#fee825', '#b6de2b', '#6cce5a', '#1f9d8a', '#26838f', '#31678e', '#3f4a8a', '#482777', '#440154'];
         case 'maxLevel':
             return "Spectral";
         case 'maxQ':
