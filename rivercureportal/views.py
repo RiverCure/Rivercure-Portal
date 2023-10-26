@@ -15,6 +15,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
 
+
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
     context_object_name = 'u'
@@ -22,6 +23,7 @@ class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def test_func(self):
         return is_platform_admin(self.request.user) or self.request.user == self.get_object()
+
 
 @user_passes_test(is_platform_admin)
 def users(request):
@@ -34,37 +36,40 @@ def users(request):
     context = {
         'users': user_list,
         'groups': Group.objects.all(),
-        'filter' :  user_filter,
+        'filter':  user_filter,
     }
 
     return render(request, 'rivercureportal/users.html', context)
 
+
 def home(request):
-    
+
     context = {
         'users': User.objects.all(),
         'groups': Group.objects.all(),
-        'contexts' : e_Context.objects.all(),
-        'recent_context' : e_Context.objects.all().first(),
-        'recent_sensor' : Sensor.objects.all().first()
+        'contexts': e_Context.objects.all(),
+        'recent_context': e_Context.objects.all().first(),
+        'recent_sensor': Sensor.objects.all().first()
     }
 
     return render(request, 'rivercureportal/home.html', context)
 
+
 def about(request):
     return render(request, 'rivercureportal/about.html')
+
 
 class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
-    template_name = 'rivercureportal/e_HydroFeature_list.html'
+    template_name = 'rivercureportal/hydrofeature_list.html'
     paginate_by = 10
 
     def get_queryset(self):
         queryset = e_HydroFeature.objects.all()
         filter = HydroFeatureFilter(self.request.GET, queryset.order_by('Name'))
         return filter.qs
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
@@ -72,24 +77,28 @@ class HydroFeatureListView(LoginRequiredMixin, ListView):
         context["filter"] = filter
         return context
 
+
 class HydroFeatureForm(forms.ModelForm):
     class Meta:
         model = e_HydroFeature
         fields = ['Name', 'type', 'PartOf', 'flowsInto', 'geom']
         widgets = {'geom': LeafletWidget()}
-        
-    
-class HydroFeatureCreateView(LoginRequiredMixin,UserPassesTestMixin, CreateView):
+
+
+class HydroFeatureCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_HydroFeature
     form_class = HydroFeatureForm
+    template_name = 'rivercureportal/hydrofeature_form.html'
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
         return is_platform_admin_or_manager(self.request.user)
 
+
 class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_HydroFeature
     context_object_name = 'hydrofeature'
+    template_name = 'rivercureportal/hydrofeature_form.html'
     form_class = HydroFeatureForm
     success_url = reverse_lazy('hydrofeature-list')
 
@@ -100,16 +109,18 @@ class HydroFeatureUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
 class HydroFeatureDetailView(DetailView):
     model = e_HydroFeature
     context_object_name = 'Hydrofeatures'
-    template_name = 'rivercureportal/e_HydroFeature_detail.html'
+    template_name = 'rivercureportal/hydrofeature_detail.html'
 
-class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView ):
+
+class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_HydroFeature
     context_object_name = 'Hydrofeatures'
-    template_name = 'rivercureportal/e_HydroFeature_confirm_delete.html'
+    template_name = 'rivercureportal/hydrofeature_confirm_delete.html'
     success_url = reverse_lazy('hydrofeature-list')
 
     def test_func(self):
         return is_platform_admin_or_manager(self.request.user)
+
 
 @login_required
 def clearNotifications(request):
