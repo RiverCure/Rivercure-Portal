@@ -4,6 +4,7 @@ import subprocess
 import os
 import shutil
 from context.views.helpers import cancel_execution, copy_file_to_media_folder, get_context_folder_path, get_event_maxima_folder_path, get_event_rasters_files, get_event_rasters_folder_path, get_log_folder_path, remove_file_to_media_folder
+from context.views.prepare_files import prepare_domain
 from rivercureproject import settings
 from .models import e_ContextDTMFile, e_ContextEvent, e_ContextFrictionCoeff
 from celery.utils.log import get_task_logger
@@ -230,6 +231,7 @@ def simulate_task(self, event_id):
 def generate_tiffs(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
 
+    gis_scripts_path = os.path.join(settings.BASE_DIR, 'gis-scripts')
     rasters_path = get_event_rasters_folder_path(event.context.tag)
 
     maxima_path = get_event_maxima_folder_path(event.context.tag)
@@ -239,9 +241,31 @@ def generate_tiffs(self, event_id):
     maxima_file = os.path.join(maxima_path, maxima_files[0])
 
     result = subprocess.Popen(['/usr/bin/python3', 'stavResults.py', '-i', maxima_file,
-                               '-o', 'raster', '-e', '3763'], cwd=rasters_path).wait(120)
+                               '-o', 'raster_pre', '-e', '3763'], cwd=rasters_path).wait(120)
     if result is None or result < 0:
         raise Exception(f'Calling stavResults.py failed. Return code: {result}')
+
+    domain_file_name = f'{event.context.code}.geojson'
+    domain_file_content = geojson.dumps(prepare_domain(event.context.code))
+    with open(os.path.join(gis_scripts_path, f'{event.context.code}.geojson', 'w')) as file:
+        file.write(domain_file_content)
+
+    raster_file_path = os.path.join(rasters_path, 'raster-Max_Depth.tif')
+    domain_cl = event.context.CLExternalBoundary
+    result = subprocess.Popen(['/usr/bin/python3', 'bufferTiff.py', '-i', domain_file_name,
+                               '-o', raster_file_path, '-d', domain_cl * (-2.5)], cwd=gis_scripts_path).wait(120)
+    if result is None or result < 0:
+        raise Exception(f'Calling bufferTiff.py failed. Return code: {result}')
+
+    raster_files_pre = ['raster_pre-Max_Depth.tif', 'raster_pre-Max_Level.tif',
+                        'raster_pre-Max_Q.tif', 'raster_pre-Max_Vel.tif']
+    raster_files = ['raster-Max_Depth.tif', 'raster-Max_Level.tif', 'raster-Max_Q.tif', 'raster-Max_Vel.tif']
+    for raster_file_pre, raster_file in zip(raster_files_pre, raster_files):
+        result = subprocess.Popen(['gdalwarp', '-overwrite', '-cutline', 'buffers.shp',
+                                   '-crop_to_cutline', raster_file_pre, raster_file], cwd=rasters_path).wait(120)
+
+        if result is None or result < 0:
+            raise Exception(f'Calling gdalwarp failed. Return code: {result}')
 
     rasters = get_event_rasters_files(event.context.tag)
     for key, value in rasters.items():
