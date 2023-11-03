@@ -55,7 +55,7 @@ function generateLegendLabel(layerName) {
         case 'maxLevel':
             return `${generateHumanReadableLayerNames(layerName)} (m)`;
         case 'maxQ':
-            return `${generateHumanReadableLayerNames(layerName)} (㎡/s)`;
+            return `${generateHumanReadableLayerNames(layerName)}`;
         case 'maxVel':
             return `${generateHumanReadableLayerNames(layerName)} (m/s)`;
         default:
@@ -72,7 +72,7 @@ function getScale(layerName) {
         case 'maxLevel':
             return "Spectral";
         case 'maxQ':
-            return "RdYlBu";
+            return ["yellow", "orange", "red"];
         case 'maxVel':
             return 'PuOr';
         default:
@@ -135,12 +135,17 @@ function placeInMap(map, georasters) {
             resolution: 256,
             pixelValuesToColorFn: (pixelValues) => {
                 const pixelValue = pixelValues[0]; // there's just one band in this raster
-                const scale = chroma.scale(getScale(key));
-
-                // if there's zero wind, don't return a color
                 if (pixelValue === 0) return null;
 
-                const scaledPixelValue = (pixelValue - georaster.min) / georaster.range;
+                let scale;
+                let scaledPixelValue;
+                if(key == 'maxQ') {
+                    scale = chroma.scale(getScale(key)).domain([0, 2.0]);
+                    scaledPixelValue = pixelValue / 2.0;
+                } else {
+                    scale = chroma.scale(getScale(key));
+                    scaledPixelValue = (pixelValue - georaster.min) / georaster.range;
+                }
                 const color = scale(scaledPixelValue).hex();
 
                 return color;
@@ -175,8 +180,6 @@ function placeLegend(map, georasters) {
     legend.addTo(map);
 
     map.on('baselayerchange', (newLayer) => {
-        // Handle change of layer to change scale
-        console.log(`Layer added: ${newLayer.name}`);
         // Remove old legend
         map.removeControl(legend);
 
@@ -192,36 +195,45 @@ function placeLegend(map, georasters) {
 }
 
 function createLegend(layerName, georaster) {
-    console.log(georaster)
     const div = L.DomUtil.create('div', 'info legend');
 
-    // Build scale string
-    const scale = chroma.scale(getScale(layerName)).colors(8);
-    let range = '\'[';
-    scale.forEach((color, index, arr) => {
-        if(index != arr.length - 1) {
-            range += `"${color}",`;
-        } else {
-            range += `"${color}"]'`;
-        }
-    });
+    if(layerName == 'maxQ') {
+        div.innerHTML = `
+            <color-legend
+                titletext="${generateLegendLabel(layerName)}"
+                scaletype="continuous"
+                range='["yellow", "orange", "red"]'
+                tickFormat=".1f"
+                domain="[0, 2.0]">
+            </color-legend>`;
+    } else {
+        // Build scale string
+        const scale = chroma.scale(getScale(layerName)).colors(8);
+        let range = '\'[';
+        scale.forEach((color, index, arr) => {
+            if(index != arr.length - 1) {
+                range += `"${color}",`;
+            } else {
+                range += `"${color}"]'`;
+            }
+        });
 
-    // div.innerHTML = labels.join('<br>');
-    div.innerHTML = `
-        <color-legend
-            titletext="${generateLegendLabel(layerName)}"
-            scaletype="continuous"
-            range=${range}
-            tickFormat=".0f"
-            ticks=5
-            domain="[${Math.round(georaster.min)}, ${Math.round(georaster.max)}]">
-        </color-legend>`;
+        // div.innerHTML = labels.join('<br>');
+        div.innerHTML = `
+            <color-legend
+                titletext="${generateLegendLabel(layerName)}"
+                scaletype="continuous"
+                range=${range}
+                tickFormat=".0f"
+                ticks=5
+                domain="[${Math.round(georaster.min)}, ${Math.round(georaster.max)}]">
+            </color-legend>`;
+    }
 
     return div;
 }
 
 async function main() {
-    // console.log(rasters);
     // hasSimulation and rasters variables are declared on context/event/detail.html
     if(hasSimulation == "False") {
         // Check if mesh exists
@@ -231,9 +243,6 @@ async function main() {
         // List of urls, removing the "null" ones
         const georasters = await loadUrls(rasters);
         placeInMap(map, georasters);
-
-        console.log(georasters);
-
         placeLegend(map, georasters);
     }
 }
