@@ -247,7 +247,7 @@ def generate_tiffs(self, event_id):
 
     domain_file_name = f'{event.context.code}.geojson'
     domain_file_content = geojson.dumps(prepare_domain(event.context.code))
-    with open(os.path.join(gis_scripts_path, f'{event.context.code}.geojson', 'w')) as file:
+    with open(os.path.join(gis_scripts_path, f'{event.context.code}.geojson'), 'w') as file:
         file.write(domain_file_content)
 
     raster_file_path = os.path.join(rasters_path, 'raster-Max_Depth.tif')
