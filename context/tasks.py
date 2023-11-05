@@ -252,8 +252,9 @@ def generate_tiffs(self, event_id):
 
     raster_file_path = os.path.join(rasters_path, 'raster-Max_Depth.tif')
     domain_cl = event.context.CLExternalBoundary
+    cl = domain_cl * (-2.5)
     result = subprocess.Popen(['/usr/bin/python3', 'bufferTiff.py', '-i', domain_file_name,
-                               '-o', raster_file_path, '-d', domain_cl * (-2.5)], cwd=gis_scripts_path).wait(120)
+                               '-o', raster_file_path, '-d', str(cl)], cwd=gis_scripts_path).wait(120)
     if result is None or result < 0:
         raise Exception(f'Calling bufferTiff.py failed. Return code: {result}')
 
