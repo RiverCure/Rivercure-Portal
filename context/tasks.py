@@ -245,16 +245,16 @@ def generate_tiffs(self, event_id):
     if result is None or result < 0:
         raise Exception(f'Calling stavResults.py failed. Return code: {result}')
 
-    domain_file_name = f'{event.context.code}.geojson'
+    domain_file_path = os.path.join(rasters_path, 'domain.geojson')
     domain_file_content = geojson.dumps(prepare_domain(event.context.code))
-    with open(os.path.join(gis_scripts_path, f'{event.context.code}.geojson'), 'w') as file:
+    with open(domain_file_path, 'w') as file:
         file.write(domain_file_content)
 
-    raster_file_path = os.path.join(rasters_path, 'raster-Max_Depth.tif')
+    buffers_shp_file_path = os.path.join(rasters_path, 'buffers.shp')
     domain_cl = event.context.CLExternalBoundary
     cl = domain_cl * (-2.5)
-    result = subprocess.Popen(['/usr/bin/python3', 'bufferTiff.py', '-i', domain_file_name,
-                               '-o', raster_file_path, '-d', str(cl)], cwd=gis_scripts_path).wait(120)
+    result = subprocess.Popen(['/usr/bin/python3', 'bufferTiff.py', '-i', domain_file_path,
+                               '-o', buffers_shp_file_path, '-d', str(cl)], cwd=gis_scripts_path).wait(120)
     if result is None or result < 0:
         raise Exception(f'Calling bufferTiff.py failed. Return code: {result}')
 

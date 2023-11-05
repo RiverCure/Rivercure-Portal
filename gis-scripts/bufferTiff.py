@@ -36,7 +36,7 @@ if __name__ == "__main__":
                         required=True,
                         help='path to tiff to use as buffer')
     parser.add_argument('-d', '--distance',
-                        type=str,
+                        type=float,
                         required=True,
                         help='buffer distance')
     args = parser.parse_args()
