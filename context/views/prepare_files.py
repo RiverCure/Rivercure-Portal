@@ -227,10 +227,12 @@ def prepare_boundary_points(context_code, context_name):
         for boundary_point in rows:
             geom, boundary_id, sensor_id, criteria, dataType = boundary_point
             boundary_point_geom = GEOSGeometry(geom)
+
+            includeSensorFile = False if criteria.lower() == 'critical' or criteria.lower() == 'transmissive' else True
             properties = {
                 "Geometry type": 'Boundary Point',
                 "Boundary": boundary_id,
-                "Series": None if criteria.lower() == 'critical' or criteria.lower() == 'transmissive' else f'sensor_{sensor_id}.bnd',
+                "Series": f'sensor_{sensor_id}.bnd' if includeSensorFile else None,
                 "Type": dataType
             }
             context_boundary_points = geojson.Feature(geometry=geojson.Point(
