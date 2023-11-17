@@ -85,13 +85,16 @@ def prepare_boundaries_file(context):
         result += f'{i}\r\n'
         i += 1
 
-        if boundary.type.lower() == 'input':
+        boundaryType = boundary.type.lower()
+        boundaryCriteria = boundary.criteria.lower()
+
+        if boundaryType == 'inlet':
             result += '2\r\n'
-        elif boundary.type.lower() == 'output':
+        elif boundaryType == 'outlet' and boundaryCriteria == 'characteristics':
             result += '3\r\n'
-        elif boundary.type.lower() == 'critical':
+        elif boundaryType == 'outlet' and boundaryCriteria == 'critical':
             result += '4\r\n'
-        elif boundary.type.lower() == 'transmissive':
+        elif boundaryType == 'outlet' and boundaryCriteria == 'transmissive':
             result += '5\r\n'
         else:  # this only happens if an error occurs
             result += '0\r\n'
@@ -184,7 +187,7 @@ def prepare_boundaries(context_code, context_name):
 
     with connection.cursor() as cursor:
         cursor.execute(
-            'SELECT ST_AsText(ST_Transform("geom", 3763)), "type", "dataType" FROM public.context_e_contextboundaryline WHERE context_id= %s', [context_code])
+            'SELECT ST_AsText(ST_Transform("geom", 3763)), "type", "criteria", "dataType" FROM public.context_e_contextboundaryline WHERE context_id= %s', [context_code])
         rows = cursor.fetchall()
         if len(rows) == 0:
             return None
@@ -193,7 +196,8 @@ def prepare_boundaries(context_code, context_name):
             context_boundary = geojson.Feature(geometry=geojson.LineString(boundary_geom.coords),
                                                properties={"Geometry type": 'Boundary Line',
                                                            "Type": boundary[1],
-                                                           "Data type": boundary[2]})
+                                                           "Criteria": boundary[2],
+                                                           "Data type": boundary[3]})
 
             features.append(context_boundary)
 
@@ -210,7 +214,7 @@ def prepare_boundary_points(context_code, context_name):
     features = []
 
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id", "context_e_contextboundaryline"."dataType"
+        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id", "context_e_contextboundaryline"."criteria", "context_e_contextboundaryline"."dataType"
                             FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
@@ -221,12 +225,16 @@ def prepare_boundary_points(context_code, context_name):
         if len(rows) == 0:
             return None
         for boundary_point in rows:
-            boundary_point_geom = GEOSGeometry(boundary_point[0])
-            context_boundary_points = geojson.Feature(geometry=geojson.Point(boundary_point_geom.coords),
-                                                      properties={"Geometry type": 'Boundary Point',
-                                                                  "Boundary": boundary_point[1],
-                                                                  "Series": f'sensor_{boundary_point[2]}.bnd',
-                                                                  "Type": boundary_point[3]})
+            geom, boundary_id, sensor_id, criteria, dataType = boundary_point
+            boundary_point_geom = GEOSGeometry(geom)
+            properties = {
+                "Geometry type": 'Boundary Point',
+                "Boundary": boundary_id,
+                "Series": None if criteria.lower() == 'critical' or criteria.lower() == 'transmissive' else f'sensor_{sensor_id}.bnd',
+                "Type": dataType
+            }
+            context_boundary_points = geojson.Feature(geometry=geojson.Point(
+                boundary_point_geom.coords), properties=properties)
 
             features.append(context_boundary_points)
 

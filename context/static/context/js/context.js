@@ -172,121 +172,40 @@ var MyFunctions = {
     map.layerscontrol.addOverlay(MyFunctions.createdPolygons.Boundaries, 'Boundaries');
   },
   //function to return boundary line popup
-  boundaryPopup: (id, type, dataType) => {
-    getType = () => {
-      switch (type) {
-        case 'Input':
-          return `<option id='popup-current-type' value="Input" selected>Input</option>
-                            <option value="Output">Output</option>
-                            <option value="Critical">Critical</option>
-                            <option value="Transmissive">Transmissive</option>`;
-        case 'Output':
-          return `<option value="Input">Input</option>
-                            <option id='popup-current-type' value="Output" selected>Output</option>
-                            <option value="Critical">Critical</option>
-                            <option value="Transmissive">Transmissive</option>`;
-        case 'Critical':
-          return `<option value="Input">Input</option>
-                            <option value="Output">Output</option>
-                            <option id='popup-current-type' value="Critical" selected>Critical</option>
-                            <option value="Transmissive">Transmissive</option>`;
-        case 'Transmissive':
-          return `<option value="Input">Input</option>
-                            <option value="Output">Output</option>
-                            <option value="Critical">Critical</option>
-                            <option id='popup-current-type' value="Transmissive" selected>Transmissive</option>`;
-        default:
-          return `<option id='popup-current-type' value="Input" selected>Input</option>
-                            <option value="Output">Output</option>
-                            <option value="Critical">Critical</option>
-                            <option value="Transmissive">Transmissive</option>`;
-      }
-    };
-
-    getDataType = () => {
-      switch (dataType) {
+  boundaryPopup: (id, type, criteria, dataType) => {
+    const transformDataType = (dtType) => {
+      switch (dtType) {
         case 'H':
-          return `<option id='popup-current-data-type' value="H" selected>Depth</option>
-                            <option value="Q">Discharge</option>
-                            <option value="Z">Elevation</option>
-                            <option value="V">Velocity</option>`;
+          return 'Depth';
         case 'Q':
-          return `<option value="H">Depth</option>
-                            <option id='popup-current-data-type' value="Q" selected>Discharge</option>
-                            <option value="Z">Elevation</option>
-                            <option value="V">Velocity</option>`;
+          return 'Discharge';
         case 'Z':
-          return `<option value="H">Depth</option>
-                            <option value="Q">Discharge</option>
-                            <option id='popup-current-data-type' value="Z" selected>Elevation</option>
-                            <option value="Velocity">Velocity</option>`;
+          return 'Elevation';
         default:
-          return `<option value="H">Depth</option>
-                            <option value="Q">Discharge</option>
-                            <option value="Z">Elevation</option>
-                            <option id='popup-current-data-type' value="V" selected>Velocity</option>`;
+          return 'Velocity';
       }
-    };
-
-    if (MyFunctions.mode == 'edit') {
-      return (
-        `<h1><small>Boundary ` +
-        id +
-        `</small></h1>
-                <div class="form-group">
-                    <label for="popup-selected-type"><big>Type</big></label><br>
-                    <select id='popup-selected-type' class="form-control form-control-sm">
-                        ` +
-        getType() +
-        `
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="popup-selected-data-type"><big>Data Type</big></label><br>  
-                    <select id='popup-selected-data-type' class="form-control form-control-sm">
-                        ` +
-        getDataType() +
-        `
-                    </select>
-                    
-                </div>
-                <button type="button" id='popup-btn' class="btn btn-outline-info btn-sm")">Save</button>
-            `
-      );
-    }
-    let newDataType;
-    switch (dataType) {
-      case 'H':
-        newDataType = 'Depth';
-      case 'Q':
-        newDataType = 'Discharge';
-      case 'Z':
-        newDataType = 'Elevation';
-      default:
-        newDataType = 'Velocity';
     }
 
     return (
-      `
-            <h1><small>Boundary ` +
-      id +
-      `</small></h1>
-            <table class='table'>
-                <tr>
-                    <th scope="row">Type</th>
-                    <td>` +
-      type +
-      `</td>
-                </tr>
-                <tr>
-                    <th scope="row">Data Type</th>
-                    <td>` +
-      newDataType +
-      `</td>
-                </tr>
-            </table>
-        `
-    );
+      `<h1><small>Boundary ${id}</small></h1>
+      <table class='table'>
+        <tr>
+          <th scope="row">Type</th>
+          <td>${type}</td>
+        </tr>
+        <tr>
+          <th scope="row">Criteria</th>
+          <td>${criteria}</td>
+        </tr>
+        ${type == 'Outlet' && (criteria == 'Critical' || criteria == 'Transmissive') ? '' 
+        : `<tr>
+            <th scope="row">Data Type</th>
+            <td>${transformDataType(dataType)}</td>
+          </tr>`
+        }
+      </table>
+      <p>You can edit the boundary type, criteria, and data type for this boundary on the side bar.</p>
+      `);
   },
   //function to configure boundary popup
   boundaryLinePopupConfig: (popup) => {
@@ -311,6 +230,7 @@ var MyFunctions = {
             MyFunctions.boundaryPopup(
               e.target._leaflet_id,
               document.querySelector('#popup-selected-type').value,
+              document.querySelector('#popup-selected-criteria').value,
               document.querySelector('#popup-selected-data-type').value
             )
           );
@@ -319,6 +239,9 @@ var MyFunctions = {
           document.querySelector(
             '#boundaryline-' + e.target._leaflet_id + '-type-value'
           ).value = document.querySelector('#popup-selected-type').value;
+          document.querySelector(
+            '#boundaryline-' + e.target._leaflet_id + '-criteria-value'
+          ).value = document.querySelector('#popup-selected-criteria').value;
           document.querySelector(
             '#boundaryline-' + e.target._leaflet_id + '-datatype-value'
           ).value = document.querySelector('#popup-selected-data-type').value;
@@ -865,7 +788,7 @@ var MyFunctions = {
         MyFunctions.boundaryPolylineMarkersTemp.length > 1
       ) {
         //check if the user is currently drawing the boundary
-        MyFunctions.defineBoundary(MyFunctions.boundaryPolyline, null, null);
+        MyFunctions.defineBoundary(MyFunctions.boundaryPolyline, null, null, null);
       }
       MyFunctions.tempPolyline.setLatLngs([]); //remove visual aid since the polyline draw is finished
       MyFunctions.boundaryPolyline = null; //restart the boundary draw
@@ -969,6 +892,9 @@ var MyFunctions = {
             popup.indexOf('current-type\' value="') + 'current-type\' value="'.length,
             popup.indexOf('" selected')
           )
+          .trim();
+        boundaryLine.properties.criteria = popup
+          .substr(popup.indexOf('criteria\' value="') + 'criteria\' value="'.length, 1)
           .trim();
         boundaryLine.properties.dataType = popup
           .substr(popup.indexOf('data-type\' value="') + 'data-type\' value="'.length, 1)
@@ -1147,7 +1073,7 @@ var MyFunctions = {
         }
         //Boundary Lines
         boundary = L.polyline(MyFunctions.coordStringToArray(element.geom));
-        MyFunctions.defineBoundary(boundary, element.type, element.dataType);
+        MyFunctions.defineBoundary(boundary, element.type, element.criteria, element.dataType);
       });
     }
   },
@@ -1186,14 +1112,14 @@ var MyFunctions = {
     }
   },
   //function to define boundary and draw it on the map
-  defineBoundary: (boundary, type, dataType) => {
+  defineBoundary: (boundary, type, criteria, dataType) => {
     boundary.setStyle({ color: '#008080' });
     MyFunctions.createdPolygons.Boundaries.addLayer(boundary);
     if (MyFunctions.mode == 'edit')
       MyFunctions.boundaryLinePopupConfig(
-        boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, dataType))
+        boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, criteria, dataType))
       );
-    else boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, dataType));
+    else boundary.bindPopup(MyFunctions.boundaryPopup(boundary._leaflet_id, type, criteria, dataType));
     boundary.bindTooltip('Boundary ' + boundary._leaflet_id);
     MyFunctions.handleHighlights(boundary, MyFunctions.createdPolygons.Boundaries);
 
@@ -1216,7 +1142,7 @@ var MyFunctions = {
         e.target.removeFrom(MyFunctions.createdPolygons.Boundaries);
         document.querySelector('#boundaryline-tree-id-' + e.target._leaflet_id).remove();
       });
-      MyFunctions.addBoundaryLineToTree(boundary._leaflet_id, type, dataType);
+      MyFunctions.addBoundaryLineToTree(boundary._leaflet_id, type, criteria, dataType);
 
       // for(point of boundaryPoints) {
       //     MyFunctions.addBoundaryPointToTree(point._leaflet_id, [], boundary._leaflet_id);
@@ -1338,12 +1264,67 @@ var MyFunctions = {
     });
   },
   //adds a boundary line to the tree
-  addBoundaryLineToTree: (id, selectedType, selectedDataType) => {
+  addBoundaryLineToTree: (id, selectedType, selectedCriteria, selectedDataType) => {
     const element = new DOMParser().parseFromString(
-      MyFunctions.boundaryLineInTreeHTML(id, selectedType, selectedDataType),
+      MyFunctions.boundaryLineInTreeHTML(id, selectedType, selectedCriteria, selectedDataType),
       'text/html'
     ).firstChild.lastChild.firstChild;
     document.querySelector('#boundaryline-tree-id').appendChild(element);
+
+    // Handle changes on the boundary line selects
+    const typeSelect = document.querySelector(`#boundaryline-${id}-type-value`);
+    const criteriaSelect = document.querySelector(`#boundaryline-${id}-criteria-value`);
+    const dataTypeSelect = document.querySelector(`#boundaryline-${id}-datatype-value`);
+    const criteriaDiv = document.querySelector(`#boundaryline-${id}-criteria-div`);
+    const dataTypeDiv = document.querySelector(`#boundaryline-${id}-datatype-div`);
+
+    typeSelect.setAttribute("prev", selectedType);
+    criteriaSelect.setAttribute("prev", selectedCriteria);
+    dataTypeSelect.setAttribute("prev", selectedDataType);
+
+    typeSelect.addEventListener("change", (e) => {
+      if(e.target.value != typeSelect.getAttribute("prev")) {
+        updateSelects(true, false);
+        typeSelect.setAttribute("prev", e.target.value);
+      }
+    });
+    criteriaSelect.addEventListener("change", (e) => {
+      if(e.target.value != criteriaSelect.getAttribute("prev")) {
+        updateSelects(false, true);
+        criteriaSelect.setAttribute("prev", e.target.value);
+      }
+    });
+
+    function clearSelectAndAddOptions(select, ...newOptions) {
+      // It's important to remove the options backwards; as the remove() method rearranges the options collection. This way, it's guaranteed that the element to be removed still exists!
+      let i, L = select.options.length - 1;
+      for(i = L; i >= 0; i--) {
+        select.remove(i);
+      }
+      newOptions.forEach((option) => select.add(option));
+    }
+
+    function updateSelects(changedType, changedCriteria) {
+      if(typeSelect.value == "Inlet") {
+        // Criteria
+        clearSelectAndAddOptions(criteriaSelect, new Option("M. Characteristics", "Characteristics", true));
+        // Data type
+        dataTypeDiv.hidden = false;
+        clearSelectAndAddOptions(dataTypeSelect, new Option("Discharge", "Q", true), new Option("Elevation", "Z"));
+      } else if(typeSelect.value == "Outlet") {
+        // Criteria
+        if(!changedCriteria) {
+          clearSelectAndAddOptions(criteriaSelect, new Option("M. Characteristics", "Characteristics", true), new Option("Transmissive", "Transmissive"), new Option("Critical", "Critical"));
+        }
+        // Data type        
+        if(criteriaSelect.value == "Critical" || criteriaSelect.value == "Transmissive") {
+          dataTypeDiv.hidden = true;
+        } else if(criteriaSelect.value == "Characteristics") {
+          dataTypeDiv.hidden = false;
+          clearSelectAndAddOptions(dataTypeSelect, new Option("Depth", "H", true), new Option("Velocity", "V"));
+        }
+      }
+    }
 
     element.addEventListener('mouseover', () => {
       if (MyFunctions.highlightStatus) {
@@ -1357,22 +1338,26 @@ var MyFunctions = {
     document.querySelector('#boundaryline-' + id + '-type-value').options[
       document.querySelector('#boundaryline-' + id + '-type-value').selectedIndex
     ].style.backgroundColor = '#E8E8E8';
+    document.querySelector('#boundaryline-' + id + '-criteria-value').options[
+      document.querySelector('#boundaryline-' + id + '-criteria-value').selectedIndex
+    ].style.backgroundColor = '#E8E8E8';
     document.querySelector('#boundaryline-' + id + '-datatype-value').options[
       document.querySelector('#boundaryline-' + id + '-datatype-value').selectedIndex
     ].style.backgroundColor = '#E8E8E8';
 
     document
-      .querySelector('#boundaryline-' + id + '-types-input-btn')
+      .querySelector(`#boundaryline-${id}-types-input-btn`)
       .addEventListener('click', () => {
-        MyFunctions.createdPolygons.Boundaries.getLayer(id)
-          .getPopup()
-          .setContent(
-            MyFunctions.boundaryPopup(
-              id,
-              document.querySelector('#boundaryline-' + id + '-type-value').value,
-              document.querySelector('#boundaryline-' + id + '-datatype-value').value
-            )
-          );
+        const layer = MyFunctions.createdPolygons.Boundaries.getLayer(id);
+        const popup = layer.getPopup();
+        popup.setContent(
+          MyFunctions.boundaryPopup(
+            id,
+            document.querySelector('#boundaryline-' + id + '-type-value').value,
+            document.querySelector('#boundaryline-' + id + '-criteria-value').value,
+            document.querySelector('#boundaryline-' + id + '-datatype-value').value
+          )
+        );
 
         MyFunctions.boundaryLineTreeOptionsHighlight(id);
       });
@@ -1432,82 +1417,70 @@ var MyFunctions = {
     );
   },
   //write boundary line html for tree
-  boundaryLineInTreeHTML: (id, selectedType, selectedDataType) => {
+  boundaryLineInTreeHTML: (id, selectedType, selectedCriteria, selectedDataType) => {
     findSelected = (valueInAnalisys, selected) => {
       if (valueInAnalisys == selected) return 'selected';
       else return '';
     };
+    
 
     return (
-      `
-            <div ` +
-      'id=boundaryline-tree-id-' +
-      id +
-      ` class="polygon-tree container border-bottom">
-                <div class="row" style="margin-bottom:5px;">
-                    <span class="tree-titles"><b>Boundary ` +
-      id +
-      `</b></span>
-                </div>
-                <div class="row polygon-tree-label">
-                    <b>Type:</b>
-                </div>
-                <div class="row">
-                    <div class="input-group mb-3">
-                        <select ` +
-      'id=boundaryline-' +
-      id +
-      '-type-value' +
-      ` class="custom-select">
-                            <option value="Input" ` +
-      findSelected('Input', selectedType) +
-      `>Input</option>
-                            <option value="Output" ` +
-      findSelected('Output', selectedType) +
-      `>Output</option>
-                            <option value="Critical" ` +
-      findSelected('Critical', selectedType) +
-      `>Critical</option>
-                            <option value="Transmissive" ` +
-      findSelected('Transmissive', selectedType) +
-      `>Transmissive</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row polygon-tree-label" style="margin-top:-8px">
-                    <b>Data Type:</b>
-                </div>
-                <div class="row">
-                    <div class="input-group mb-3">
-                        <select ` +
-      'id=boundaryline-' +
-      id +
-      '-datatype-value' +
-      ` class="custom-select">
-                            <option value="H" ` +
-      findSelected('H', selectedDataType) +
-      `>Depth</option>
-                            <option value="Q" ` +
-      findSelected('Q', selectedDataType) +
-      `>Discharge</option>
-                            <option value="Z" ` +
-      findSelected('Z', selectedDataType) +
-      `>Elevation</option>
-                            <option value="V" ` +
-      findSelected('V', selectedDataType) +
-      `>Velocity</option>
-                        </select>
-                        <div class="input-group-append">
-                            <button type="button" ` +
-      'id=boundaryline-' +
-      id +
-      '-types-input-btn' +
-      ` class="btn btn-outline-info">Save</button>
-                        </div>
-                    </div>
-                </div>
+      `<div id="boundaryline-tree-id-${id}" class="polygon-tree container border-bottom">
+        <div class="row" style="margin-bottom:5px;">
+          <span class="tree-titles"><b>Boundary ${id}</b></span>
+        </div>
+        <div>
+          <div class="row polygon-tree-label">
+            <b>Type:</b>
+          </div>
+          <div class="row">
+            <div class="input-group mb-3">
+              <select id="boundaryline-${id}-type-value" class="custom-select">
+                <option value="Inlet" ${findSelected('Inlet', selectedType)}>Inlet</option>
+                <option value="Outlet" ${findSelected('Outlet', selectedType)}>Outlet</option>
+              </select>
             </div>
-        `
+          </div>
+        </div>
+        <div id="boundaryline-${id}-criteria-div">
+          <div class="row polygon-tree-label">
+            <b>Criteria:</b>
+          </div>
+          <div class="row">
+            <div class="input-group mb-3">
+              <select id="boundaryline-${id}-criteria-value" class="custom-select">
+                ${selectedType == "Outlet" ?
+                `<option value="Characteristics" ${findSelected('Characteristics', selectedCriteria)}>M. Characteristics</option>
+                <option value="Transmissive" ${findSelected('Transmissive', selectedCriteria)}>Transmissive</option>
+                <option value="Critical" ${findSelected('Critical', selectedCriteria)}>Critical</option>`
+                : 
+              `<option value="Characteristics" ${findSelected('Characteristics', selectedCriteria)}>M. Characteristics</option>`}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="boundaryline-${id}-datatype-div" ${selectedType == "Outlet" && (selectedCriteria == "Critical" || selectedCriteria == "Transmissive") ? 'hidden': ''}>
+          <div class="row polygon-tree-label" style="margin-top:-8px">
+              <b>Data Type:</b>
+          </div>
+          <div class="row">
+            <div class="input-group mb-3">
+              <select id="boundaryline-${id}-datatype-value" class="custom-select">
+              ${selectedType == "Outlet" ?
+              `<option value="H" ${findSelected('H', selectedDataType)}>Depth</option>
+              <option value="V" ${findSelected('V', selectedDataType)}>Velocity</option>`
+              : 
+              `<option value="Q" ${findSelected('Q', selectedDataType)}>Discharge</option>
+              <option value="Z" ${findSelected('Z', selectedDataType)}>Elevation</option>`
+              }
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <button type="button" id="boundaryline-${id}-types-input-btn" class="btn btn-outline-info btn-block">Save</button>
+        </div>
+      </div>`
     );
   },
   //write boundary point html for tree
@@ -1585,12 +1558,18 @@ var MyFunctions = {
     for (node of document.querySelector('#boundaryline-' + id + '-type-value').childNodes) {
       if (node.style !== undefined) node.style.backgroundColor = 'white';
     }
+    for (node of document.querySelector('#boundaryline-' + id + '-criteria-value').childNodes) {
+      if (node.style !== undefined) node.style.backgroundColor = 'white';
+    }
     for (node of document.querySelector('#boundaryline-' + id + '-datatype-value').childNodes) {
       if (node.style !== undefined) node.style.backgroundColor = 'white';
     }
 
     document.querySelector('#boundaryline-' + id + '-type-value').options[
       document.querySelector('#boundaryline-' + id + '-type-value').selectedIndex
+    ].style.backgroundColor = '#E8E8E8';
+    document.querySelector('#boundaryline-' + id + '-criteria-value').options[
+      document.querySelector('#boundaryline-' + id + '-criteria-value').selectedIndex
     ].style.backgroundColor = '#E8E8E8';
     document.querySelector('#boundaryline-' + id + '-datatype-value').options[
       document.querySelector('#boundaryline-' + id + '-datatype-value').selectedIndex

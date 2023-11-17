@@ -16,10 +16,12 @@ EVENTSTATE_CHOICES = (('announced', 'Announced'),  ('occurring', 'Occurring'),  
 
 EVENTSUBKIND_CHOICES = (('Forecast', 'forecast'), ('Hindcast', 'hindcast'), ('Planning', 'planning'),)
 
-CONTEXTBOUNDARY_CHOICES = (('Input', 'input'), ('Output', 'output'),
-                           ('Critical', 'critical'), ('Transmissive', 'transmissive'),)
+CONTEXTBOUNDARY_CHOICES = (('Input', 'input'), ('Output', 'output'))
 
-CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('H', 'Depth'), ('Q', 'Discharge'), ('Z', 'Elevation'), ('V', 'Velocity'), )
+CRITERIA_CHOICES = (('Critical', 'critical'), ('Transmissive', 'transmissive'),
+                    ('Characteristics', 'characteristics'))
+
+CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('Q', 'Discharge'), ('Z', 'Elevation'), ('H', 'Depth'), ('V', 'Velocity'))
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
@@ -133,6 +135,7 @@ class e_ContextBoundaryLine(models.Model):
     # superimposed "must be a line superimposed on context.geomExternalBoundary"))]
     geom = models.LineStringField(null=True, blank=True)
     type = models.CharField(max_length=30, choices=CONTEXTBOUNDARY_CHOICES)
+    criteria = models.CharField(max_length=30, choices=CRITERIA_CHOICES, null=True)
     dataType = models.CharField(max_length=30, choices=CONTEXTBOUNDARYLINEDATAKIND_CHOICES, null=True)
 
     class Meta:

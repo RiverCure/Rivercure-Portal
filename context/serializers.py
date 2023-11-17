@@ -20,7 +20,7 @@ class ContextBoundarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = e_ContextBoundaryLine
-        fields = ['geom', 'type', 'dataType', 'context_boundary_points']
+        fields = ['geom', 'type', 'criteria', 'dataType', 'context_boundary_points']
 
 class ContextRefinementSerializer(serializers.ModelSerializer):
     class Meta:

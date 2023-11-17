@@ -190,6 +190,45 @@ def alignment_creation(form, context):
         alignment.save()
 
 
+def parseHTMLgetTypeCriteriaDataType(html: str):
+    _type, criteria, dataType = None, None, None
+    # Type
+    isInlet = html.find('Inlet') != -1
+    isOutlet = html.find('Outlet') != -1
+    if isInlet:
+        _type = 'Inlet'
+    elif isOutlet:
+        _type = 'Outlet'
+
+    # Criteria
+    isCritical = html.find('Critical') != -1
+    isTransmissive = html.find('Transmissive') != -1
+    isCharacteristics = html.find('Characteristics') != -1
+    if isCritical:
+        criteria = 'Critical'
+    elif isTransmissive:
+        criteria = 'Transmissive'
+    elif isCharacteristics:
+        criteria = 'Characteristics'
+
+    # Data Type
+    isDepth = html.find('Depth') != -1
+    isVelocity = html.find('Velocity') != -1
+    isDischarge = html.find('Discharge') != -1
+    isElevation = html.find('Elevation') != -1
+
+    if isDepth:
+        dataType = 'H'
+    elif isVelocity:
+        dataType = 'V'
+    elif isDischarge:
+        dataType = 'Q'
+    elif isElevation:
+        dataType = 'Z'
+
+    return _type, criteria, dataType
+
+
 def boundaryline_creation(form, context):  # function to create the several lines
     e_ContextBoundaryLine.objects.filter(context=context).delete()
     e_ContextBoundaryPoint.objects.filter(contextBoundaryLine__context=context).delete()
@@ -198,8 +237,10 @@ def boundaryline_creation(form, context):  # function to create the several line
         boundary = e_ContextBoundaryLine()
         boundary.context = context
         boundary.geom = LineString(feature['geometry']['coordinates'])
-        boundary.type = feature['properties']['type']
-        boundary.dataType = feature['properties']['dataType']
+        _type, criteria, dataType = parseHTMLgetTypeCriteriaDataType(feature['properties']['type'])
+        boundary.type = _type
+        boundary.criteria = criteria
+        boundary.dataType = dataType
         boundary.save()
 
         # Save the points on the boundary line
