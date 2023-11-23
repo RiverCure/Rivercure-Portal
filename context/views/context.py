@@ -209,12 +209,14 @@ def get_context_sensors(context_code):
 
 @login_required
 def manage_context(request, contextCode):
+    context = get_object_or_404(e_Context, code=contextCode)
     web_host = os.environ['CONTEXT_API']
 
     context = {
         'sensors': get_context_sensors(contextCode),
         'form': ContextForm(),
         'api': f'http://{web_host}/contexts/api/context/',
+        'context': context
     }
     if request.method == 'POST':
 
