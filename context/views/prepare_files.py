@@ -233,7 +233,8 @@ def prepare_boundary_points(context_code, context_name):
                 "Geometry type": 'Boundary Point',
                 "Boundary": boundary_id,
                 "Series": f'sensor_{sensor_id}.bnd' if includeSensorFile else None,
-                "Type": dataType
+                "Type": dataType,
+                "Criteria": criteria
             }
             context_boundary_points = geojson.Feature(geometry=geojson.Point(
                 boundary_point_geom.coords), properties=properties)
