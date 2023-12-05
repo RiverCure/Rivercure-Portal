@@ -232,7 +232,7 @@ def prepare_boundary_points(context_code, context_name):
             properties = {
                 "Geometry type": 'Boundary Point',
                 "Boundary": boundary_id,
-                "Series": f'sensor_{sensor_id}.bnd' if includeSensorFile else None,
+                "Series": f'sensor_{sensor_id}.bnd' if includeSensorFile else 'no_file.bnd',
                 "Type": dataType,
                 "Criteria": criteria
             }
