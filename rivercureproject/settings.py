@@ -149,7 +149,7 @@ LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (38.707616, -9.1365),  # Lisbon coordinates
     'DEFAULT_ZOOM': 6,
     'MIN_ZOOM': 3,
-    'MAX_ZOOM': 20,
+    'MAX_ZOOM': 30,
     'RESET_VIEW': False,
     'TILES': [('Satellite', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
         'id': 'satellite-streets-v11',
