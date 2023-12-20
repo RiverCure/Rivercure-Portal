@@ -1,14 +1,14 @@
 from django.urls import path
 from . import views
 from .views import (
-    HydroFeatureCreateView, 
-    HydroFeatureListView, 
-    HydroFeatureUpdateView, 
+    HydroFeatureCreateView,
+    HydroFeatureListView,
+    HydroFeatureUpdateView,
     HydroFeatureDetailView,
     HydroFeatureDeleteView,
     home,
     users,
-    ProfileDetailView, 
+    ProfileDetailView,
     clearNotifications,
     UserUpdateView,
     NotificationListView
@@ -16,7 +16,6 @@ from .views import (
 
 urlpatterns = [
     path('', home, name='rivercure-home'),
-    path('about/', views.about, name='rivercure-about'),
     path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
     path('hydrofeature/<int:pk>', HydroFeatureDetailView.as_view(), name='hydrofeature-detail'),
     path('hydrofeature/new/', HydroFeatureCreateView.as_view(), name='hydrofeature-create'),

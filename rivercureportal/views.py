@@ -55,10 +55,6 @@ def home(request):
     return render(request, 'rivercureportal/home.html', context)
 
 
-def about(request):
-    return render(request, 'rivercureportal/about.html')
-
-
 class HydroFeatureListView(LoginRequiredMixin, ListView):
     model = e_HydroFeature
     context_object_name = 'hydrofeatures'
