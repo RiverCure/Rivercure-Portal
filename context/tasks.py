@@ -230,6 +230,7 @@ def simulate_task(self, event_id):
 @shared_task(bind=True)
 def generate_tiffs(self, event_id):
     event = e_ContextEvent.objects.get(id=event_id)
+    domain_cl = event.context.CLExternalBoundary
 
     gis_scripts_path = os.path.join(settings.BASE_DIR, 'gis-scripts')
     rasters_path = get_event_rasters_folder_path(event.context.tag)
@@ -240,8 +241,9 @@ def generate_tiffs(self, event_id):
         raise Exception('No maxima files found')
     maxima_file = os.path.join(maxima_path, maxima_files[0])
 
+    resolution = domain_cl * 0.5
     result = subprocess.Popen(['/usr/bin/python3', 'stavResults.py', '-i', maxima_file,
-                               '-o', 'raster_pre', '-e', '3763'], cwd=rasters_path).wait(120)
+                               '-o', 'raster_pre', '-e', '3763', '-r', str(resolution)], cwd=rasters_path).wait(120)
     if result is None or result < 0:
         raise Exception(f'Calling stavResults.py failed. Return code: {result}')
 
@@ -251,7 +253,6 @@ def generate_tiffs(self, event_id):
         file.write(domain_file_content)
 
     buffers_shp_file_path = os.path.join(rasters_path, 'buffers.shp')
-    domain_cl = event.context.CLExternalBoundary
     cl = domain_cl * (-2.5)
     result = subprocess.Popen(['/usr/bin/python3', 'bufferTiff.py', '-i', domain_file_path,
                                '-o', buffers_shp_file_path, '-d', str(cl)], cwd=gis_scripts_path).wait(120)
