@@ -214,11 +214,11 @@ def prepare_boundary_points(context_code, context_name):
     features = []
 
     with connection.cursor() as cursor:
-        cursor.execute('''SELECT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id", "context_e_contextboundaryline"."criteria", "context_e_contextboundaryline"."dataType"
+        cursor.execute('''SELECT DISTINCT ST_AsText(ST_Transform("context_e_contextboundarypoint"."geom", 3763)), "context_e_contextboundaryline"."id", "context_e_contextsensor"."sensor_id", "context_e_contextboundaryline"."criteria", "context_e_contextboundaryline"."dataType"
                             FROM public.context_e_contextboundarypoint 
                             INNER JOIN "context_e_contextboundaryline" 
                             ON ("context_e_contextboundarypoint"."contextBoundaryLine_id" = "context_e_contextboundaryline"."id") 
-                            INNER JOIN "context_e_contextsensor" 
+                            LEFT JOIN "context_e_contextsensor" 
                             ON ("context_e_contextboundarypoint"."id" = "context_e_contextsensor"."boundary_point_id") 
                             WHERE "context_e_contextboundaryline"."context_id" = %s''', [context_code])
         rows = cursor.fetchall()
@@ -228,7 +228,11 @@ def prepare_boundary_points(context_code, context_name):
             geom, boundary_id, sensor_id, criteria, dataType = boundary_point
             boundary_point_geom = GEOSGeometry(geom)
 
-            includeSensorFile = False if criteria.lower() == 'critical' or criteria.lower() == 'transmissive' else True
+            if sensor_id == None or criteria.lower() == 'critical' or criteria.lower() == 'transmissive':
+                includeSensorFile = False
+            else:
+                includeSensorFile = True
+
             properties = {
                 "Geometry type": 'Boundary Point',
                 "Boundary": boundary_id,
