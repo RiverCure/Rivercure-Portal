@@ -1,5 +1,6 @@
 from context.forms import UploadContextForm
 from django.shortcuts import get_object_or_404
+from context.tasks import generate_optimized_dtm
 from .authorization import *
 from django.db import transaction
 from context.models import e_Context, e_ContextAlignment, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextRefinement, e_ContextSensor
@@ -72,6 +73,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if dtm is not None:
                         # handle_upload_raster(context, dtm)
                         handle_upload_raster_file(context, dtm)
+                        generate_optimized_dtm.delay(context.Name)
                         context.dtm_file_name = form.cleaned_data['dtm_file']
                         context.save()
                 except Exception as e:

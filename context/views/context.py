@@ -148,6 +148,10 @@ class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if os.path.exists(path):
             os.remove(path)
 
+        path = os.path.join(MEDIA_ROOT, f'{context.Name}_dtm_optimized.tif')
+        if os.path.exists(path):
+            os.remove(path)
+
         path = os.path.join(MEDIA_ROOT, f'{context.Name}_frictionCoef.tif')
         if os.path.exists(path):
             os.remove(path)
