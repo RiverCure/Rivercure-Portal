@@ -277,29 +277,3 @@ def generate_tiffs(self, event_id):
             rasters[key] = os.path.join(os.sep, settings.MEDIA_URL, file_name)
         else:
             rasters[key] = None
-
-
-@shared_task(bind=True)
-def generate_optimized_dtm(self, contextName):
-    media_folder = settings.MEDIA_ROOT
-
-    dtm = f'{contextName}_dtm.tif'
-    temp_dtm = f'{contextName}_dtm_temp.tif'
-    optimized_dtm = f'{contextName}_dtm_optimized.tif'
-
-    result = subprocess.Popen(['gdalwarp', '-overwrite', '-t_srs', 'EPSG:4326',
-                              dtm, temp_dtm], cwd=media_folder).wait(120)
-    if result is None or result < 0:
-        raise Exception(f'Calling gdalwarp failed. Return code: {result}')
-
-    result = subprocess.Popen(['gdal_translate', temp_dtm, optimized_dtm, '-co', 'TILED=YES',
-                              '-co', 'COMPRESS=DEFLATE'], cwd=media_folder).wait(120)
-    if result is None or result < 0:
-        raise Exception(f'Calling gdal_translate failed. Return code: {result}')
-
-    result = subprocess.Popen(['gdaladdo', '-r', 'average', optimized_dtm, '2',
-                              '4', '8', '16', '32'], cwd=media_folder).wait(120)
-    if result is None or result < 0:
-        raise Exception(f'Calling gdaladdo failed. Return code: {result}')
-
-    os.remove(os.path.join(media_folder, temp_dtm))

@@ -1,6 +1,8 @@
+import os
+import subprocess
 from context.forms import UploadContextForm
 from django.shortcuts import get_object_or_404
-from context.tasks import generate_optimized_dtm
+from rivercureproject import settings
 from .authorization import *
 from django.db import transaction
 from context.models import e_Context, e_ContextAlignment, e_ContextBoundaryLine, e_ContextBoundaryPoint, e_ContextDTM, e_ContextDTMFile, e_ContextFrictionCoeff, e_ContextRefinement, e_ContextSensor
@@ -73,7 +75,7 @@ class UploadContext(LoginRequiredMixin, UserPassesTestMixin, FormView):
                     if dtm is not None:
                         # handle_upload_raster(context, dtm)
                         handle_upload_raster_file(context, dtm)
-                        generate_optimized_dtm.delay(context.Name)
+                        generate_optimized_dtm(context.Name)
                         context.dtm_file_name = form.cleaned_data['dtm_file']
                         context.save()
                 except Exception as e:
@@ -145,7 +147,33 @@ def handle_upload_raster_file(context, raster_file):
     dtm[0].save()
 
 
+def generate_optimized_dtm(contextName):
+    media_folder = settings.MEDIA_ROOT
+
+    dtm = f'{contextName}_dtm.tif'
+    temp_dtm = f'{contextName}_dtm_temp.tif'
+    optimized_dtm = f'{contextName}_dtm_optimized.tif'
+
+    result = subprocess.Popen(['gdalwarp', '-overwrite', '-t_srs', 'EPSG:4326',
+                              dtm, temp_dtm], cwd=media_folder).wait(60)
+    if result is None or result < 0:
+        raise Exception(f'Calling gdalwarp failed. Return code: {result}')
+
+    result = subprocess.Popen(['gdal_translate', temp_dtm, optimized_dtm, '-co', 'TILED=YES',
+                              '-co', 'COMPRESS=DEFLATE'], cwd=media_folder).wait(60)
+    if result is None or result < 0:
+        raise Exception(f'Calling gdal_translate failed. Return code: {result}')
+
+    result = subprocess.Popen(['gdaladdo', '-r', 'average', optimized_dtm, '2',
+                              '4', '8', '16', '32'], cwd=media_folder).wait(60)
+    if result is None or result < 0:
+        raise Exception(f'Calling gdaladdo failed. Return code: {result}')
+
+    os.remove(os.path.join(media_folder, temp_dtm))
+
 # function to handle the upload of the contour lines file
+
+
 def handle_friction_coeff_upload(context, friction_coeff_file):
     friction_coeff = e_ContextFrictionCoeff.objects.get_or_create(context=context)
     file_name = f'{context.Name}_frictionCoef.tif'
