@@ -983,10 +983,20 @@ var MyFunctions = {
       map.setView(MyFunctions.createdPolygons.Domain.getLayers()[0].getCenter(), 12);
 
     //get DTM if it exists
-    if (response.context_dtm !== null)
-      L.tileLayer(
-        `http://127.0.0.1:8000/context/raster/tiles/${response.context_dtm.contextDTM}/{z}/{x}/{y}.png`
-      ).addTo(MyFunctions.dtm);
+    if (response.context_dtm !== null) {
+      fetch(response.context_dtm)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          parseGeoraster(arrayBuffer).then(georaster => {
+            var layer = new GeoRasterLayer({
+                georaster: georaster,
+            });
+            layer.addTo(MyFunctions.dtm);
+
+            // map.fitBounds(layer.getBounds());
+        });
+      });
+    }
   },
   //function to clear the map to fill with new data
   clearMap: () => {

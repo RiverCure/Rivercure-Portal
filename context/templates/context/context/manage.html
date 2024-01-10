@@ -7,6 +7,10 @@
 {% block scripts %}
     {% leaflet_js plugins="ALL" %}
     {% leaflet_css plugins="ALL" %}
+    <script src="https://unpkg.com/georaster"></script>
+    <script src="https://unpkg.com/proj4"></script>
+    <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+    <script src="https://unpkg.com/chroma-js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
     <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
     <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
