@@ -118,3 +118,24 @@
 }
 
 /*# sourceMappingURL=style.css.map */
+
+/* Context cards */
+.context-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.context-card-container {
+  border: 0.125rem solid #dddddd;
+  border-radius: 0.5rem;
+  margin: 5px;
+  padding: 5px;
+}
+
+.context-cards-container>:first-child {
+  margin-left: 0px;
+}
+
+.context-cards-container>:last-child {
+  margin-right: 0px;
+}
