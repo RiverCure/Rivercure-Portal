@@ -139,3 +139,8 @@
 .context-cards-container>:last-child {
   margin-right: 0px;
 }
+
+/* Filter and Order */
+#filter-menu {
+  margin-top: 5px;
+}

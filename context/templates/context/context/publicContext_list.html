@@ -28,8 +28,9 @@
 
 <h1>Public contexts</h1>
 <h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
-<div class="filter-section">
-    <h5>Filter</h5>
+
+<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter and Order</button>
+<div id="filter-menu" class="collapse card card-body">
     <form method="get">
         {{ filter.form |crispy }}
         <button type="submit" class="btn btn-info">Filter</button>
@@ -39,7 +40,6 @@
 <div class="context-cards-container">
     {% for context in filter.qs %}
     <div class="context-card-container">
-        <!-- TODO: Add image -->
         <img src={{ context.picture.url }} alt="Picture of Context">
         <div class="card-detail">
             <h3>{{ context.Name }}</h3>
@@ -51,7 +51,17 @@
     {% endfor %}
 </div>
 
-<!--
+<!-- Old filtering section
+<div class="filter-section">
+    <h5>Filter</h5>
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-info">Filter</button>
+    </form>
+</div>
+-->
+
+<!-- Old list of contexts
 <div class="row">
     <div class="col-md-8">
         <table class="table table-hover">
