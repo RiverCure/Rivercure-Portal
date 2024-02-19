@@ -29,7 +29,7 @@
 <h1>Public contexts</h1>
 <h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
 
-<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter and Order</button>
+<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter</button>
 <div id="filter-menu" class="collapse card card-body">
     <form method="get">
         {{ filter.form |crispy }}
@@ -37,6 +37,21 @@
     </form>
 </div>
 
+<div class="public-context-cards-container">
+    {% for context in filter.qs %}
+    <div class="card public-context-card" style="width: 18rem;">
+        <div class="card-body">
+            <img src={{ context.picture.url }} alt="Picture of Context">
+            <h5 class="card-title">{{ context.Name }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">{{ context.hydroFeature }}</h6>
+            <!-- TODO: Add nr of contributions-->
+            <p class="card-text">Contributions: </p>
+        </div>    
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Cards are not Bootstrap
 <div class="context-cards-container">
     {% for context in filter.qs %}
     <div class="context-card-container">
@@ -44,12 +59,13 @@
         <div class="card-detail">
             <h3>{{ context.Name }}</h3>
             <p><i>{{ context.hydroFeature }}</i></p>
-            <!-- TODO: Add nr of contributions-->
+            TODO: Add nr of contribution
             <p>Contributions: </p>
         </div>
     </div>
     {% endfor %}
 </div>
+-->
 
 <!-- Old filtering section
 <div class="filter-section">
