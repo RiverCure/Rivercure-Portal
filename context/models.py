@@ -41,6 +41,9 @@ class e_Context(models.Model):
     CLExternalBoundary = models.FloatField(null=True, blank=True)  # aka Domain's CL, characteristic lenght
     hasMesh = models.BooleanField(default=False)
 
+    # Picture
+    picture = models.ImageField(default='default.jpg', upload_to="images/contexts_pictures/") # TODO: Pôr uma default image melhor
+
     # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)
     # Id of the process of the execution of the mesh

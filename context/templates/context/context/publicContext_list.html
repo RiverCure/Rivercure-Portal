@@ -40,7 +40,7 @@
     {% for context in filter.qs %}
     <div class="context-card-container">
         <!-- TODO: Add image -->
-        <!-- <img src={{ context.photo }} alt=""> -->
+        <img src={{ context.picture.url }} alt="Picture of Context">
         <div class="card-detail">
             <h3>{{ context.Name }}</h3>
             <p><i>{{ context.hydroFeature }}</i></p>
