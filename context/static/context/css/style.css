@@ -130,10 +130,26 @@
   margin: 8px;
 }
 
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.card-contributions {
+  color: #333333;
+}
+
+
 /* Filter */
 #filter-menu {
   margin-top: 5px;
 }
+
+
 
 /*
 .context-card-container {
