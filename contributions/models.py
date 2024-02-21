@@ -11,7 +11,7 @@ class e_ContextContribution(models.Model):
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
     creationDateTime = models.DateTimeField(auto_now_add=True) # Date of creation of contribution in DB/submission by user
     # TODO: state ; use django-fsm
-    moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="moderator")
+    moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="moderator")
     validationDateTime =  models.DateTimeField(null=True, blank=True) # TODO: Add null or blank? How to allow this field to be empty on creation of the row?
 
     # Information provided by the user
