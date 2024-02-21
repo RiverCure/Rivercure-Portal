@@ -30,3 +30,11 @@ class e_ContextContribution(models.Model):
     
     def __str__(self):
         return self.id
+
+class e_ContributionAttachment(models.Model):
+    file = models.FileField('Attachment', upload_to="contributions")
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        verbose_name = 'Contribution\'s Attachment'
+        verbose_name_plural = 'Contribution\'s Attachments'
