@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rivercureportal.apps.RivercureportalConfig',
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
+    'contributions.apps.ContributionsConfig',
     'crispy_forms',
     'rest_framework',
     'corsheaders',
