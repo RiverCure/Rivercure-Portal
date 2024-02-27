@@ -40,12 +40,10 @@
 <!-- TODO: Apply Bootstrap's grid system -->
 <div class="public-context-cards-container">
     {% for context in filter.qs %}
-    <!-- TODO: Remove underlining when hovering mouse over card-->
     <a href="{% url 'context-detail' context.code %}">
         <div class="card public-context-card" style="width: 18rem;">
             <img src={{ context.picture.url }} class="card-img-top" alt="Picture of Context">
             <div class="card-body">
-                <!--<img src={{ context.picture.url }} alt="Picture of Context">-->
                 <h5 class="card-title">{{ context.Name }}</h5>
                 <h6 class="card-text">{{ context.hydroFeature }}</h6>
             </div>    

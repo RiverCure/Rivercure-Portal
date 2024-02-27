@@ -26,6 +26,17 @@
     html {
         scroll-behavior: smooth;
     }
+
+    .contribution-cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .contribution-card {
+        margin: 8px;
+    }
 </style>
 
 <script>
@@ -107,7 +118,9 @@
 {% block content %}
 
 <h1>{{ context.Name }} context</h1>
+<!-- TODO: Fix styling of this part (button and etc) -->
 <h3>Organization: {{ context.organization }}</h3>
+<button type="button" class="btn btn-info">Contribute</button>
 <article class="media content-section">
     <div class="media-body">
         <div id="map-container" class="container">
@@ -118,8 +131,10 @@
             <button class="btn btn-info mt-1 mb-1" href="#" onclick="showGeometriesUploadDiv('block')">Geo Edit</button>  
             <a class="btn btn-dark mt-1 mb-1" href="{% url 'download_context' context.code %}" >Download</a>
         {% endif %}
+        {% if belongsToOrg %}
             <a class="btn btn-info mt-1 mb-1" href="{% url 'event-list' context.code %}">Events</a>  
             <a class="btn btn-dark mt-1 mb-1" href="{% url 'context-sensor-list' context.code %}">Sensors</a>
+        {% endif %}
         {% if canEdit %}
             <a class="btn btn-danger mt-1 mb-1" href="{% url 'context-delete' context.code %}">Delete</a>  
         {% endif %}
@@ -147,6 +162,39 @@
         <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">Back to context list</a>
     </div>
 </article>
+
+<article class="content-section">
+    <!-- Viewing options -->
+    <div class="btn-group" role="group" aria-label="View options">
+        <button type="button" class="btn btn-primary">Grid</button>
+        <button type="button" class="btn btn-primary">List</button>
+    </div>
+
+    <!-- List of Contributions -->
+    <!-- Grid (card) view -->
+    <div class="row">
+        <div class="contribution-cards-container">
+            {% for contribution in contributions %}
+                <div class="card contribution-card">
+                    <img src="" class="card-img-top" alt="Contribution image">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ contribution.situationObserved }}</h5>
+                        <p class="card-text">By: {{ contribution.createdBy }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-body-secondary">Posted on {{ contribution.creationDateTime }}</small>
+                    </div>            
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- List view -->
+    <!-- TODO -->
+
+</article>
+
+
 
 <div id="geometriesUploadDiv" class="container" style="display: none">
     <h2>Files upload</h2>

@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views
+from .views import *
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path('', ContributionListView.as_view(), name='contribution-list'),
+    path('new/', ContributionCreateView.as_view(), name='contribution-create')
 ]

@@ -29,6 +29,7 @@ from .prepare_files import *
 from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
+from contributions.models import e_ContextContribution
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -123,6 +124,8 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
+        context['belongsToOrg'] = context_organization_belong_check(user, organization) # Check if user belongs to this context's organization
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk) # Contributions that belong to this context
 
         return context
 

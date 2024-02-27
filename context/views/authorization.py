@@ -27,3 +27,10 @@ def context_organization_event_permission_check(user, organization):
         return Membership.objects.filter(user=user, organization=organization, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
     except:
         return False
+
+# Check if the user belongs to an organization
+def context_organization_belong_check(user, organization):
+    try:
+        return Membership.objects.filter(user=user, organization=organization).exists()
+    except:
+        return False

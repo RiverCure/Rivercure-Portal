@@ -1,0 +1,16 @@
+{% extends "rivercureportal/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <input type="submit" name="Submit">
+
+</form>
+
+{% endblock content %}
