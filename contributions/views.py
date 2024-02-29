@@ -5,38 +5,30 @@ from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from datetime import datetime
 
-from .models import e_ContextContribution
+from .models import e_ContextContribution,  e_ContributionAttachment
 from .forms import ContributionInitialForm
 
 # Create your views here.
 
-class ContributionListView(ListView):
+class ContributionListView(LoginRequiredMixin, ListView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
 
 class ContributionCreateView(LoginRequiredMixin, CreateView):
     model = e_ContextContribution
     form_class = ContributionInitialForm
-    context_object_name = 'contribution'
     template_name = 'contributions/contribution_form.html'
-    success_url = reverse_lazy('contribution-list')
+    context_object_name = 'contribution'
+    # TODO: Change sucess_url to the new Contribution's page
+    success_url = reverse_lazy('contribution-list') # We are overriding the get_absolute_url function of the e_ContextContribution model (if it had been defined)
 
-    # fields = ['observationDateTime', 'observationDescription', 'situationObserved']
-
-    # def get_form_kwargs(self):
-    #     kwargs = super(ContributionCreateView, self).get_form_kwargs()
-    #     kwargs.update({'user_id': self.request.user.id})
-    #     return kwargs
-
-    # def form_valid(self, form):
-    #     currentTime = datetime.datetime.now()
-    #     organization = form.save(commit=False)
-    #     # Add metadata to organization
-    #     organization.creator = self.request.user
-    #     organization.create_date = currentTime
-    #     organization.save()
-
-    #     return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
         # Set metadata
@@ -46,7 +38,16 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         context = form.cleaned_data['context']
         new_contribution.context = context
         new_contribution.creationDateTime = datetime.now()
+
+        # Deal with files
+        files = form.cleaned_data["file_field"]
+        for f in files:
+            print("hello file")
+            # TODO: Create file object in DB
+            attachment = e_ContributionAttachment(file=f, contribution=new_contribution.id) # TODO: How to get contribution id?
+            attachment.save() # TODO: Is it saving?
         
+        # Save
         new_contribution.save()
 
         return super().form_valid(form)

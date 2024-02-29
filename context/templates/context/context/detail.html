@@ -120,7 +120,7 @@
 <h1>{{ context.Name }} context</h1>
 <!-- TODO: Fix styling of this part (button and etc) -->
 <h3>Organization: {{ context.organization }}</h3>
-<button type="button" class="btn btn-info">Contribute</button>
+<a class="btn btn-info" href="{% url 'contribution-create' %}">Contribute</a>
 <article class="media content-section">
     <div class="media-body">
         <div id="map-container" class="container">
@@ -166,8 +166,8 @@
 <article class="content-section">
     <!-- Viewing options -->
     <div class="btn-group" role="group" aria-label="View options">
-        <button type="button" class="btn btn-primary">Grid</button>
-        <button type="button" class="btn btn-primary">List</button>
+        <button type="button" class="btn btn-info">Grid</button>
+        <button type="button" class="btn btn-info">List</button>
     </div>
 
     <!-- List of Contributions -->

@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load crispy_forms_tags %}
 {% load static %}
 
 
@@ -7,9 +8,9 @@
 <form method="POST">
     {% csrf_token %}
 
-    {{ form.as_p }}
+    {{ form|crispy }}
 
-    <input type="submit" name="Submit">
+    <button class="btn btn-outline-info" type="submit">Submit</button>
 
 </form>
 

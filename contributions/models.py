@@ -15,9 +15,9 @@ class e_ContextContribution(models.Model):
     validationDateTime =  models.DateTimeField(null=True, blank=True)
 
     # Information provided by the user
-    observationDateTime = models.DateTimeField()
+    observationDate = models.DateField()
     # TODO: observationPlace ; SEE what the best way to do this is (depends on how we'll be collecting the geolocation)
-    observationDescription = models.TextField()
+    observationDescription = models.TextField() # TODO: Set max length?
     situationObserved = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
 
     # TODO: Add extra information asked depending on SituationObserved
