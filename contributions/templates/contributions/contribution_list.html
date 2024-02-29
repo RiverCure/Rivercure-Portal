@@ -1,3 +1,12 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} All Contributions {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
 {% for contribution in object_list %}
     {{ contribution.id }}<br>
 {% endfor %}
+
+{% endblock content %}

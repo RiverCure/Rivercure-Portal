@@ -133,6 +133,21 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = self.get_object()
         return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
 
+class PublicContextDetailView(UserPassesTestMixin, DetailView):
+    model = e_Context
+    context_object_name = 'context'
+    template_name = 'context/context/public_context_detail.html'
+    pk_url_kwarg = 'contextCode'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk) # Contributions that belong to this context
+        return context
+    
+    def test_func(self, *args, **kwargs):
+        context = self.get_object()
+        return context.isPublic
+
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_Context

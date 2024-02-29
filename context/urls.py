@@ -9,6 +9,7 @@ urlpatterns = [
     path('', ContextListView.as_view(), name='context-list'),
     path('new/', ContextCreateView.as_view(), name='context-create'),
     path('public/', PublicContextListView.as_view(), name='public-contexts'),
+    path('public/<str:contextCode>', PublicContextDetailView.as_view(), name='public-context-detail'),
     path('<str:contextCode>', ContextDetailView.as_view(), name='context-detail'),
     path('<str:contextCode>/update/', ContextUpdateView.as_view(), name='context-update'),
     path('<str:contextCode>/delete/', ContextDeleteView.as_view(), name='context-delete'),

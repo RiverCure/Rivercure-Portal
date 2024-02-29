@@ -36,24 +36,28 @@
                     <div class="collapse navbar-collapse" id="navbarToggle">
                         <div class="navbar-nav mr-auto">
                             {% if user.is_authenticated %}
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Management
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
-                                        <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                {% if user.is_superuser or user|has_group:"Admin" or user|has_group:"Manager" %} {# TODO: Does this cover all cases?#}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Management
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
+                                            <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                        </div>
+                                    </li>
+                                    <div class="nav-item">
+                                        <a href="{% url 'organization-list' %}" class="nav-link">Organizations</a>
                                     </div>
-                                </li>
+                                {% endif %}
                                 <div class="nav-item">
                                     <a href="{% url 'hydrofeature-list' %}" class="nav-link">Hydrofeatures</a>
                                 </div>
-                                <div class="nav-item">
-                                    <a href="{% url 'organization-list' %}" class="nav-link">Organizations</a>
-                                </div>
+                                <!--
                                 <div class="nav-item">
                                     <a href="{% url 'public-contexts' %}" class="nav-link">Public contexts</a>
                                 </div>
+                                -->
                             {% endif %}
                             <div class="nav-item">
                                 <a href="{% url 'rivercure-about' %}" class="nav-link">About</a>

@@ -40,7 +40,7 @@
 <!-- TODO: Apply Bootstrap's grid system -->
 <div class="public-context-cards-container">
     {% for context in filter.qs %}
-    <a href="{% url 'context-detail' context.code %}">
+    <a href="{% url 'public-context-detail' context.code %}">
         <div class="card public-context-card" style="width: 18rem;">
             <img src={{ context.picture.url }} class="card-img-top" alt="Picture of Context">
             <div class="card-body">
