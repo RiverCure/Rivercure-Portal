@@ -70,7 +70,7 @@ class ContextListView(LoginRequiredMixin, ListView):
         return context
 
 
-class PublicContextListView(LoginRequiredMixin, ListView):
+class PublicContextListView(ListView):
     model = e_Context
     template_name = 'context/context/publicContext_list.html'
 

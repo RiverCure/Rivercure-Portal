@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from leaflet.forms.widgets import LeafletWidget
@@ -44,6 +44,18 @@ def users(request):
 
 def home(request):
 
+    # context = {
+    #     'users': User.objects.all(),
+    #     'groups': Group.objects.all(),
+    #     'contexts': e_Context.objects.all(),
+    #     'recent_context': e_Context.objects.all().first(),
+    #     'recent_sensor': Sensor.objects.all().first()
+    # }
+
+    # return render(request, 'rivercureportal/home.html', context)
+    return redirect('public-contexts')
+
+def about(request):
     context = {
         'users': User.objects.all(),
         'groups': Group.objects.all(),
