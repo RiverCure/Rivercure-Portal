@@ -1,0 +1,47 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} About {% endblock %}
+{% load auth_extras %}
+{% load static %}
+
+{% block landing_page %}
+
+<style>
+    #wel {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        animation: mymove 5s forwards;
+    }
+    @keyframes mymove {
+        from {
+        opacity: 0;
+        }
+        to {
+        opacity: 1;
+        }
+    }
+
+    #subwel {
+        text-align: center;
+        animation: mymove 5s forwards;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: large;
+    }
+    #info {
+        text-align: center;
+        animation: mymove 5s forwards;
+        font-size: large;
+    }
+</style>
+
+<img id="wel" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
+<p id="subwel"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IST-ID, INESC-ID, APA I.P.</b></p>
+<br />
+<div id="info">
+    <p class="lead">
+        RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical<br />
+        models for flood simulation, water resources management and habitat protection.
+    </p>
+</div>
+
+{% endblock %}

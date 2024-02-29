@@ -56,15 +56,7 @@ def home(request):
     return redirect('public-contexts')
 
 def about(request):
-    context = {
-        'users': User.objects.all(),
-        'groups': Group.objects.all(),
-        'contexts': e_Context.objects.all(),
-        'recent_context': e_Context.objects.all().first(),
-        'recent_sensor': Sensor.objects.all().first()
-    }
-
-    return render(request, 'rivercureportal/home.html', context)
+    return render(request, 'rivercureportal/about.html')
 
 
 class HydroFeatureListView(LoginRequiredMixin, ListView):
