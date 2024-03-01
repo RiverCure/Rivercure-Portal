@@ -39,10 +39,10 @@
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col-10">
-            <h1 class="">Contributions</h1>
+            <h2 class="">Contributions</h2>
         </div>
         <div class="col-2 text-center my-auto">
-            <button class="btn btn-secondary" type="button">See more</button>
+            <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">See more</a>
         </div>
     </div>
     <p class="subtitle">Most recent contributions.</p>
@@ -70,7 +70,7 @@
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col-10">
-            <h1 class="">Events</h1>
+            <h2 class="">Events</h2>
         </div>
         <div class="col-2 text-center my-auto">
             <button class="btn btn-secondary" type="button">See more</button>

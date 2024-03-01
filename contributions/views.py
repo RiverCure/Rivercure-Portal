@@ -10,7 +10,7 @@ from .forms import ContributionInitialForm
 
 # Create your views here.
 
-class ContributionListView(LoginRequiredMixin, ListView):
+class AllContributionsListView(LoginRequiredMixin, ListView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
 
@@ -20,7 +20,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
     template_name = 'contributions/contribution_form.html'
     context_object_name = 'contribution'
     # TODO: Change sucess_url to the new Contribution's page
-    success_url = reverse_lazy('contribution-list') # We are overriding the get_absolute_url function of the e_ContextContribution model (if it had been defined)
+    success_url = reverse_lazy('all-contributions-list') # We are overriding the get_absolute_url function of the e_ContextContribution model (if it had been defined)
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -51,3 +51,9 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution.save()
 
         return super().form_valid(form)
+
+class ContributionListView(ListView):
+    model = e_ContextContribution
+    template_name = 'contributions/contribution_list.html'
+    pk_url_kwarg = 'contextCode'
+    paginate_by = 10
