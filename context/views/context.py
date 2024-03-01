@@ -11,7 +11,7 @@ from context.views.helpers import get_context_folder_path, get_log_folder_path
 from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
-from ..models import e_Context, e_ContextSensor
+from ..models import e_Context, e_ContextSensor, e_ContextEvent
 from sensors.models import Sensor
 from rest_framework import viewsets
 from ..serializers import ContextSerializer
@@ -30,6 +30,7 @@ from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution
+from django_filters.views import FilterView
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -70,14 +71,17 @@ class ContextListView(LoginRequiredMixin, ListView):
         return context
 
 
-class PublicContextListView(ListView):
+class PublicContextListView(FilterView):
     model = e_Context
     template_name = 'context/context/publicContext_list.html'
+    filterset_class = ContextFilter
+    context_object_name = 'contexts'
+    paginate_by = 9
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['context_list'] = e_Context.objects.exclude(isPublic=False)
+        context['context_list'] = e_Context.objects.exclude(isPublic=False).order_by('Name')
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
@@ -141,7 +145,8 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk) # Contributions that belong to this context
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk).order_by('creationDateTime') # Contributions that belong to this context
+        context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
         return context
     
     def test_func(self, *args, **kwargs):

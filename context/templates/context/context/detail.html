@@ -118,9 +118,7 @@
 {% block content %}
 
 <h1>{{ context.Name }} context</h1>
-<!-- TODO: Fix styling of this part (button and etc) -->
 <h3>Organization: {{ context.organization }}</h3>
-<a class="btn btn-info" href="{% url 'contribution-create' %}">Contribute</a>
 <article class="media content-section">
     <div class="media-body">
         <div id="map-container" class="container">
@@ -162,39 +160,6 @@
         <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">Back to context list</a>
     </div>
 </article>
-
-<article class="content-section">
-    <!-- Viewing options -->
-    <div class="btn-group" role="group" aria-label="View options">
-        <button type="button" class="btn btn-info">Grid</button>
-        <button type="button" class="btn btn-info">List</button>
-    </div>
-
-    <!-- List of Contributions -->
-    <!-- Grid (card) view -->
-    <div class="row">
-        <div class="contribution-cards-container">
-            {% for contribution in contributions %}
-                <div class="card contribution-card">
-                    <img src="" class="card-img-top" alt="Contribution image">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ contribution.situationObserved }}</h5>
-                        <p class="card-text">By: {{ contribution.createdBy }}</p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-body-secondary">Posted on {{ contribution.creationDateTime }}</small>
-                    </div>            
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- List view -->
-    <!-- TODO -->
-
-</article>
-
-
 
 <div id="geometriesUploadDiv" class="container" style="display: none">
     <h2>Files upload</h2>

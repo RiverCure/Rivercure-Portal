@@ -44,7 +44,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         for f in files:
             print("hello file")
             # TODO: Create file object in DB
-            attachment = e_ContributionAttachment(file=f, contribution=new_contribution.id) # TODO: How to get contribution id?
+            attachment = e_ContributionAttachment(file=f, contribution=new_contribution.pk) # TODO: How to get contribution id?
             attachment.save() # TODO: Is it saving?
         
         # Save
