@@ -75,7 +75,7 @@ class PublicContextListView(FilterView):
     model = e_Context
     template_name = 'context/context/publicContext_list.html'
     filterset_class = ContextFilter
-    context_object_name = 'contexts'
+    context_object_name = 'public_contexts'
     paginate_by = 9
 
     def get_context_data(self, **kwargs):

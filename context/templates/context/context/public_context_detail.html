@@ -3,6 +3,14 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+{% endblock %}
+
+
+
 {% block content %}
 
 <style>
@@ -35,8 +43,8 @@
     </div>
 </div>
 
-<!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
 <!-- Contribution list -->
+<!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col-10">
@@ -51,21 +59,26 @@
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
         {% for contribution in contributions|slice:":5" %}
             <div class="col-4">
-                <div class="card contribution-card">
-                    <img src="" class="card-img-top" alt="Contribution image">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                        <p class="card-text">By: {{ contribution.createdBy }}</p>
+                <a href="{% url 'contribution-detail' contribution.pk %}">
+                    <div class="card contribution-card">
+                        <img src="" class="card-img-top" alt="Contribution image">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
+                            <h6 class="card-text">By: {{ contribution.createdBy }}</h6>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-body-secondary card-contributions">Posted on {{ contribution.creationDateTime }}</small>
+                        </div>            
                     </div>
-                    <div class="card-footer">
-                        <small class="text-body-secondary">Posted on {{ contribution.creationDateTime }}</small>
-                    </div>            
-                </div>
+                </a>
             </div>
         {% endfor %}
     </div>
 
 </div>
+
+<!-- TODO: Line or no line? -->
+<hr>
 
 <!-- Event list -->
 <div class="container-fluid">
@@ -80,15 +93,13 @@
     <p class="subtitle">Most recent events.</p>
 
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
-        <!-- TODO: Change to events -->
         {% for event in events|slice:":5" %}
             <div class="col-4">
                 <div class="card contribution-card">
                     {% comment %} <img src="" class="card-img-top" alt="Contribution image"> {% endcomment %}
                     <div class="card-body">
                         <h5 class="card-title">{{ event.Name }}</h5>
-                        <p class="card-text">{{ event.type|title }}</p>
-                        <p class="card-text">{{ event.state|title }}</p>
+                        <p class="card-text">{{ event.type|title }} {% if event.subtype is not None %}- {{ event.subtype|title }} {% endif %}</p>
                     </div>
                     <div class="card-footer">
                         <small class="text-body-secondary">Started on {{ event.startDate }}</small>

@@ -27,6 +27,7 @@
     }
 </style>
 
+<!-- Header -->
 <div class="row">
     <h1>Public contexts</h1>
 </div>
@@ -34,6 +35,7 @@
     <h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
 </div>
 
+<!-- Filter -->
 <!-- TODO: Apply Bootstrap's grid system -->
 <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter</button>
 <div id="filter-menu" class="collapse card card-body">
@@ -43,10 +45,11 @@
     </form>
 </div>
 
+<!-- List of Public Contexts-->
 <!-- TODO: Apply Bootstrap's grid system -->
-<div class="row">
-    <div class="public-context-cards-container">
-        {% for context in filter.qs %}
+<div class="row row-cols-3">
+    {% for context in public_contexts %} <!-- TODO: Not filter.qs (instead of public_contexts)? -->
+        <div class="col">
             <a href="{% url 'public-context-detail' context.code %}">
                 <div class="card public-context-card" style="width: 18rem;">
                     <img src={{ context.picture.url }} class="card-img-top" alt="Picture of Context">
@@ -59,30 +62,35 @@
                     </ul>        
                 </div>
             </a>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
 </div>
 
+<!-- Pagination -->
 <!-- TODO: Apply Bootstrap's grid system -->
-{% if is_paginated %}
-    <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
-        <ul class="pagination">
-        {% if page_obj.has_previous and page_obj.number != 2 %}
-        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+<div class="row">
+    <div class="col">
+        {% if is_paginated %}
+            <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
+                <ul class="pagination">
+                {% if page_obj.has_previous and page_obj.number != 2 %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                {% endif %}
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+                {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                {% endif %}
+                </ul>
+            </nav>
         {% endif %}
-        {% if page_obj.has_previous %}
-        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
-        {% endif %}
-        <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
-        {% if page_obj.has_next %}
-        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
-        {% endif %}
-        {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
-        {% endif %}
-        </ul>
-    </nav>
-{% endif %}
+    </div>
+</div>
 
 <!-- Cards are not Bootstrap
 <div class="context-cards-container">

@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse_lazy
 from datetime import datetime
 
 from .models import e_ContextContribution,  e_ContributionAttachment
 from .forms import ContributionInitialForm
+from context.models import e_Context
 
 # Create your views here.
 
@@ -56,4 +57,28 @@ class ContributionListView(ListView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
     pk_url_kwarg = 'contextCode'
-    paginate_by = 10
+    context_object_name = 'contributions'
+    # paginate_by = 10
+
+    def get_queryset(self):
+
+        context_code = self.kwargs['contextCode']
+        context_list = e_ContextContribution.objects.filter(context=context_code).order_by('creationDateTime') # TODO: Fix ordering
+
+        # TODO: Add Filter
+
+        return context_list
+    
+    def get_context_data(self, **kwargs):
+        context_code = self.kwargs['contextCode']
+
+        context = super().get_context_data(**kwargs)
+        context['context_name'] = get_object_or_404(e_Context, code=context_code).Name
+        
+        return context
+
+class ContributionDetailView(DetailView):
+    model = e_ContextContribution
+    context_object_name = 'contribution'
+    template_name = 'contributions/contribution_detail.html'
+    pk_url_kwarg = 'contributionId'
