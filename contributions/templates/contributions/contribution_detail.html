@@ -1,1 +1,17 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} {{ context.Name }} {% endblock %}
+{% load static %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+{% endblock %}
+
+
+
+{% block content %}
+
 <p>hi</p>
+
+{% endblock content %}
