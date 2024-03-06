@@ -63,7 +63,7 @@ class ContributionListView(ListView):
     def get_queryset(self):
 
         context_code = self.kwargs['contextCode']
-        context_list = e_ContextContribution.objects.filter(context=context_code).order_by('creationDateTime') # TODO: Fix ordering
+        context_list = e_ContextContribution.objects.filter(context=context_code)
 
         # TODO: Add Filter
 

@@ -13,7 +13,7 @@ class e_ContextContribution(models.Model):
     # Metadata
     #id = models.CharField(primary_key=True, max_length=100, unique=True)
     createdBy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    creationDateTime = models.DateTimeField(auto_now_add=True) # Date of creation of contribution
+    creationDateTime = models.DateTimeField(auto_now_add=True) # Date and time of creation of contribution
     context = models.ForeignKey('context.e_Context', on_delete=models.SET_NULL, null=True)
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
     state = FSMField(default=ContributionStatus.PENDING, choices=ContributionStatus.choices , protected=True) # protected=True prevents changing the state directly
@@ -31,6 +31,7 @@ class e_ContextContribution(models.Model):
     class Meta:
         verbose_name = 'Contribution'
         verbose_name_plural = 'Contributions'
+        ordering = ['creationDateTime']
     
     def __str__(self):
         return str(self.id)
