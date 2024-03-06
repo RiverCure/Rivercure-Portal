@@ -1,10 +1,107 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Create Contribution {% endblock %}
 {% load crispy_forms_tags %}
+{% load leaflet_tags %}
 {% load static %}
 
 
+
+{% block scripts %}
+
+{% leaflet_js plugins="ALL" %}
+{% leaflet_css plugins="ALL" %}
+<script src="https://unpkg.com/georaster"></script>
+<script src="https://unpkg.com/proj4"></script>
+<script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+<script src="https://unpkg.com/chroma-js"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+<script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
+<script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+<script>
+
+    {% comment %} document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener("map:init", e => {
+            const map = e.detail.map;   
+            map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
+            
+            MyFunctions.mode = 'view';
+            MyFunctions.showMousePosition();
+            MyFunctions.mouseMove(map, 'view');
+            //visual tools
+            map.on('dragstart', e => {
+                e.target._container.style.cursor = 'grab';
+            });
+            map.on('dragend', e => {
+                e.target._container.style.cursor = 'pointer';
+            });
+            /*
+            MyFunctions.drawSensors(map, loadSensors());
+            MyFunctions.domainMarkers = L.markerClusterGroup();
+            MyFunctions.domainMarkers.addTo(map);
+            map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
+            MyFunctions.domainMarkers.bindTooltip("Boundary Line Point");
+            MyFunctions.polygonsInit(map); //init the polygon storing system
+            MyFunctions.boundariesInit(map); //init the boundaries variables
+
+            MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
+            */
+        });
+    }); {% endcomment %}
+
+    document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener("map:init", e => {
+            console.log("Hi")
+            const map = e.detail.map;
+            
+            // Try to find the user's current location
+            map.locate({setView: true, maxZoom: 17});
+
+            // On success (of finding user's location)
+            map.on('locationfound', function (e) {
+                console.log("Hiiii")
+                // var marker = L.marker(e.latlng, {draggable:'true'}).addTo(map);
+            });
+
+            // On error (of finding user's location)
+            map.on('locationerror', function (e) {
+                alert(e.message);
+            });
+
+
+            map.on('map:loadfield', function (e) {
+                // Customize map for field
+                console.log(e.field, e.fieldid);
+                
+            });
+
+            var marker;
+            map.on('click', function(e) {
+                if(marker)
+                    map.removeLayer(marker);
+                console.log(e.latlng); // e is an event object (MouseEvent in this case)
+                marker = L.marker(e.latlng).addTo(map);
+                console.log("Hellooo")
+            });
+        });
+    })
+
+</script>
+
+{% endblock scripts %}
+
+
+
 {% block content %}
+
+<h1>{{ context_name }}</h1>
+<hr>
 
 <form method="POST">
     {% csrf_token %}
@@ -14,5 +111,9 @@
     <button class="btn btn-outline-info" type="submit">Submit</button>
 
 </form>
+
+{% comment %} <div id="map-container" class="container">
+    {% leaflet_map "my_map" %}
+</div> {% endcomment %}
 
 {% endblock content %}

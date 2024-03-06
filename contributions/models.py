@@ -1,4 +1,6 @@
-from django.db import models
+# from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 from context.models import EVENTKIND_CHOICES
 from django_fsm import FSMField, transition
@@ -22,7 +24,7 @@ class e_ContextContribution(models.Model):
 
     # Information provided by the user
     observationDate = models.DateField()
-    # TODO: observationPlace ; SEE what the best way to do this is (depends on how we'll be collecting the geolocation)
+    observationPlace = models.PointField()
     observationDescription = models.TextField() # TODO: Set max length?
     situationObserved = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
 

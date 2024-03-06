@@ -22,6 +22,15 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
     context_object_name = 'contribution'
     # TODO: Change sucess_url to the new Contribution's page
     success_url = reverse_lazy('all-contributions-list') # We are overriding the get_absolute_url function of the e_ContextContribution model (if it had been defined)
+    pk_url_kwarg = 'contextCode'
+
+    def get_context_data(self, **kwargs):
+        context_code = self.kwargs['contextCode']
+
+        context = super().get_context_data(**kwargs)
+        context['context_name'] = get_object_or_404(e_Context, code=context_code).Name
+        
+        return context
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -36,8 +45,9 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution = form.save(commit=False)
 
         new_contribution.createdBy = self.request.user
-        context = form.cleaned_data['context']
-        new_contribution.context = context
+        context_code = self.kwargs['contextCode']
+        _context = get_object_or_404(e_Context, code=context_code)
+        new_contribution.context = _context # TODO: Check whether this is correct (aka if it shouldn't be the pk)
         new_contribution.creationDateTime = datetime.now()
 
         # Deal with files

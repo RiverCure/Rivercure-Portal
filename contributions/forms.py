@@ -3,8 +3,8 @@ from django import forms
 from datetime import datetime
 
 from .models import e_ContextContribution
-from context.models import e_Context
 from context.models import EVENTKIND_CHOICES
+from leaflet.forms.widgets import LeafletWidget
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -25,12 +25,11 @@ class MultipleFileField(forms.FileField):
     
 
 class ContributionInitialForm(forms.ModelForm):
-    context = forms.ModelChoiceField(queryset=e_Context.objects,
-                                     help_text='This is the context in which you have made your observation.')
     observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','max': datetime.now().date()}),
                                               help_text='This is the date at which you have made your observation.',
                                               label='Observation Date')
     observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter a description of what you observed.'}),
+                                             help_text='This is a text description of the observation you have made.',
                                              label='Description')
     situationObserved = forms.ChoiceField(choices=EVENTKIND_CHOICES,
                                           help_text='This is the situation you observed.',
@@ -39,4 +38,9 @@ class ContributionInitialForm(forms.ModelForm):
 
     class Meta:
         model = e_ContextContribution
-        fields = ['id', 'observationDate', 'context', 'observationDescription', 'situationObserved']
+        fields = ['id', 'situationObserved', 'observationDescription', 'observationDate', 'observationPlace']
+        widgets = {'observationPlace': LeafletWidget()}
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
