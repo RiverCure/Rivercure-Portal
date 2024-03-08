@@ -24,6 +24,11 @@
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
+<!-- Search function in map -->
+<!-- https://github.com/perliedman/leaflet-control-geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
 
 <style>
     /* Silly fix for hiding the draw controls that were showing up by default on the map */
@@ -31,6 +36,7 @@
         display: none;
     }
 
+    /* TODO: Delete!!
     .fixed-centered-map-marker {
         background-image: url("https://img.icons8.com/color/48/000000/marker--v1.png");
         width: 50px;
@@ -41,6 +47,7 @@
         top: calc(50% - 50px);
         transition: all 0.4s ease;
     }
+    */
 </style>
 
 
@@ -117,6 +124,8 @@
             const map = e.detail.map;
             console.log(e.detail.map);
 
+            
+
             // Try to find the user's current location
             map.locate({setView: true, maxZoom: 17});
 
@@ -154,6 +163,18 @@
                 console.log(map.getCenter());
                 marker.setLatLng(map.getCenter());
             });
+
+            // Add search function to map
+            // Using leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
+            L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).on('markgeocode', function(e) {
+                var bbox = e.geocode.bbox;
+                console.log("bonjour");
+                console.log(bbox);
+                map.fitBounds(bbox);
+                map.setZoom(17);
+            }).addTo(map);
 
             /*
             map.on('move', function () {
