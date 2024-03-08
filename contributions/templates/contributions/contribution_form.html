@@ -24,7 +24,29 @@
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
+
+<style>
+    /* Silly fix for hiding the draw controls that were showing up by default on the map */
+    .leaflet-draw-section {
+        display: none;
+    }
+
+    .fixed-centered-map-marker {
+        background-image: url("https://img.icons8.com/color/48/000000/marker--v1.png");
+        width: 50px;
+        height: 48px;
+        position: absolute;
+        z-index: 20;
+        left: calc(50% - 25px);
+        top: calc(50% - 50px);
+        transition: all 0.4s ease;
+    }
+</style>
+
+
 <script>
+
+    
 
     {% comment %} document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener("map:init", e => {
@@ -57,30 +79,100 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener("map:init", e => {
+
+            /*
+            // TODO: Is this the best way to do things?
+            // Add div where fixed marker is
+            document.getElementById('id_observationplace-map').insertAdjacentHTML('beforebegin', '<div class="fixed-centered-map-marker"></div>');
+
+            // Wrap previous div and div with map in a parent div
+            var parentDiv = document.createElement('div')
+
+            const div1 = document.querySelector();
+            const div2 = document.querySelector();
+            parentDiv.appendChild(div1);
+            parentDiv.appendChild(div2);
+
+
+
+
+            // element that will be wrapped
+            var el = document.querySelector('div.wrap_me');
+
+            // create wrapper container
+            var wrapper = document.createElement('div');
+
+            // insert wrapper before el in the DOM tree
+            el.parentNode.insertBefore(wrapper, el);
+
+            // move el into wrapper
+            wrapper.appendChild(el);
+            */
+
+
+
+
+
             console.log("Hi")
             const map = e.detail.map;
-            
+            console.log(e.detail.map);
+
             // Try to find the user's current location
             map.locate({setView: true, maxZoom: 17});
 
+            var marker = L.marker([0,0]).addTo(map);
             // On success (of finding user's location)
             map.on('locationfound', function (e) {
                 console.log("Hiiii")
-                // var marker = L.marker(e.latlng, {draggable:'true'}).addTo(map);
+                //var marker = L.marker(e.latlng).addTo(map); // {draggable:'false'}
+                marker.setLatLng(e.latlng);
+                console.log(e.latlng);
             });
 
             // On error (of finding user's location)
             map.on('locationerror', function (e) {
-                alert(e.message);
+                // alert(e.message);
+                marker.setLatLng([38.722252, -9.139337]); // Default location is Praca do Comercio in Lisbon!
+                map.setZoom(17);
             });
 
-
+            /*
             map.on('map:loadfield', function (e) {
                 // Customize map for field
                 console.log(e.field, e.fieldid);
                 
             });
+            */
 
+            // Update position of the marker to be the center while the map is being moved
+            map.on('move',function(e){
+                marker.setLatLng(map.getCenter());
+            });
+
+            // Get latlng of center of the map (which is where the marker is fixed)
+            map.on("moveend", function () {
+                console.log(map.getCenter());
+                marker.setLatLng(map.getCenter());
+            });
+
+            /*
+            map.on('move', function () {
+                marker.setLatLng(map.getCenter());
+                //console.log(map.getCenter());
+            });
+            //Dragend event of map for update marker position
+            map.on('dragend', function(e) {
+                var cnt = map.getCenter();
+                var position = marker.getLatLng();
+                lat = Number(position['lat']).toFixed(5);
+                lng = Number(position['lng']).toFixed(5);
+                //console.log(position);
+                setLeafLatLong(lat, lng);
+                
+            });
+            */
+
+            /*
             var marker;
             map.on('click', function(e) {
                 if(marker)
@@ -89,6 +181,7 @@
                 marker = L.marker(e.latlng).addTo(map);
                 console.log("Hellooo")
             });
+            */
         });
     })
 
