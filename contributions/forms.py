@@ -28,7 +28,7 @@ class ContributionInitialForm(forms.ModelForm):
     observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','max': datetime.now().date()}),
                                               help_text='This is the date at which you have made your observation.',
                                               label='Observation Date')
-    observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter a description of what you observed.'}),
+    observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter a description of what you observed. Example: The water level reached 2 meters.'}),
                                              help_text='This is a text description of the observation you have made.',
                                              label='Description')
     situationObserved = forms.ChoiceField(choices=EVENTKIND_CHOICES,
@@ -37,13 +37,17 @@ class ContributionInitialForm(forms.ModelForm):
     lat = forms.FloatField(label='Latitude')
     lng = forms.FloatField(label='Longitude')
     file_field = MultipleFileField(help_text='Submit any photos or videos you have related to the situation you observed.',
-                                   label='Images and videos')
+                                   label='Images and videos',
+                                   required=False)
 
     class Meta:
         model = e_ContextContribution
         fields = ['id', 'situationObserved', 'observationDescription', 'observationDate', 'observationPlace']
         labels = {
             'observationPlace': 'Observation Place',
+        }
+        help_texts = {
+            'observationPlace': 'Move around in the map to pick your location. Additionally, you can search for the desired location.'
         }
         widgets = {'observationPlace': LeafletWidget()}
     

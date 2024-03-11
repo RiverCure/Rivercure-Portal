@@ -222,17 +222,31 @@
 
 {% block content %}
 
-<h1>{{ context_name }}</h1>
-<hr>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+<div class="content-section">
+    <!-- Header -->
+    <h1>{{ context_name }}</h1>
+    <p class="font-weight-light">
+        If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting
+        a <b>contribution</b>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
+        the date and place of this episode, and, optionally, any videos or images you have collected of the incident.
+    </p>
+    <p class="font-weight-light">
+        For more information about RiverCure and contributions, please visit our <a href="{% url 'rivercure-about' %}">About</a> page.
+    </p>
+    <hr>
 
-    {{ form|crispy }}
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
 
-    <button class="btn btn-outline-info" type="submit">Submit</button>
+        {{ form|crispy }}
 
-</form>
+        <button class="btn btn-outline-info" type="submit">Submit</button>
+        <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context_code %}">Cancel</a>
+
+    </form>
+</div>
 
 {% comment %} <div id="map-container" class="container">
     {% leaflet_map "my_map" %}
