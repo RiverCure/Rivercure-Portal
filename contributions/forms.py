@@ -34,13 +34,19 @@ class ContributionInitialForm(forms.ModelForm):
     situationObserved = forms.ChoiceField(choices=EVENTKIND_CHOICES,
                                           help_text='This is the situation you observed.',
                                           label='Situation Observed')
-    file_field = MultipleFileField()
+    lat = forms.FloatField(label='Latitude')
+    lng = forms.FloatField(label='Longitude')
+    # file_field = MultipleFileField()
 
     class Meta:
         model = e_ContextContribution
         fields = ['id', 'situationObserved', 'observationDescription', 'observationDate', 'observationPlace']
+        labels = {
+            'observationPlace': 'Observation Place',
+        }
         widgets = {'observationPlace': LeafletWidget()}
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
+        self.fields['observationPlace'].required = False

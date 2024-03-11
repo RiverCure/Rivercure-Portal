@@ -145,6 +145,11 @@
                 map.setZoom(17);
             });
 
+            var lat = document.querySelector('#id_lat');
+            var lng = document.querySelector('#id_lng');
+            let lat_initial = lat.value == '' ? 0 : lat.value;
+            let lng_initial = lng.value == '' ? 0 : lng.value;
+
             /*
             map.on('map:loadfield', function (e) {
                 // Customize map for field
@@ -162,6 +167,9 @@
             map.on("moveend", function () {
                 console.log(map.getCenter());
                 marker.setLatLng(map.getCenter());
+
+                lat.value = map.getCenter().lat;
+                lng.value = map.getCenter().lng;
             });
 
             // Add search function to map

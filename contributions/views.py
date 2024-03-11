@@ -2,8 +2,9 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from datetime import datetime
+from django.contrib.gis.geos import Point
 
 from .models import e_ContextContribution,  e_ContributionAttachment
 from .forms import ContributionInitialForm
@@ -20,9 +21,10 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
     form_class = ContributionInitialForm
     template_name = 'contributions/contribution_form.html'
     context_object_name = 'contribution'
-    # TODO: Change sucess_url to the new Contribution's page
-    success_url = reverse_lazy('all-contributions-list') # We are overriding the get_absolute_url function of the e_ContextContribution model (if it had been defined)
     pk_url_kwarg = 'contextCode'
+
+    def get_success_url(self):
+        return reverse('contribution-detail', args=(self.object.id, ))
 
     def get_context_data(self, **kwargs):
         context_code = self.kwargs['contextCode']
@@ -46,17 +48,18 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
         new_contribution.createdBy = self.request.user
         context_code = self.kwargs['contextCode']
-        _context = get_object_or_404(e_Context, code=context_code)
-        new_contribution.context = _context # TODO: Check whether this is correct (aka if it shouldn't be the pk)
+        _context = e_Context.objects.get(code=context_code)
+        new_contribution.context = _context
         new_contribution.creationDateTime = datetime.now()
+        new_contribution.observationPlace = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
 
-        # Deal with files
-        files = form.cleaned_data["file_field"]
-        for f in files:
-            print("hello file")
-            # TODO: Create file object in DB
-            attachment = e_ContributionAttachment(file=f, contribution=new_contribution.pk) # TODO: How to get contribution id?
-            attachment.save() # TODO: Is it saving?
+        # # Deal with files
+        # files = form.cleaned_data["file_field"]
+        # for f in files:
+        #     print("hello file")
+        #     # TODO: Create file object in DB
+        #     attachment = e_ContributionAttachment(file=f, contribution=new_contribution.pk) # TODO: How to get contribution id?
+        #     attachment.save() # TODO: Is it saving?
         
         # Save
         new_contribution.save()
