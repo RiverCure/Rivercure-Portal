@@ -53,16 +53,15 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution.creationDateTime = datetime.now()
         new_contribution.observationPlace = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
 
-        # # Deal with files
-        # files = form.cleaned_data["file_field"]
-        # for f in files:
-        #     print("hello file")
-        #     # TODO: Create file object in DB
-        #     attachment = e_ContributionAttachment(file=f, contribution=new_contribution.pk) # TODO: How to get contribution id?
-        #     attachment.save() # TODO: Is it saving?
-        
         # Save
         new_contribution.save()
+
+        # Deal with files
+        files = form.cleaned_data["file_field"]
+        count = 0
+        for f in files:
+            handle_uploaded_file(new_contribution, f, count)
+            count+=1
 
         return super().form_valid(form)
 
@@ -95,3 +94,15 @@ class ContributionDetailView(DetailView):
     context_object_name = 'contribution'
     template_name = 'contributions/contribution_detail.html'
     pk_url_kwarg = 'contributionId'
+
+
+# Helper functions
+def handle_uploaded_file(contribution, uploaded_file, count):
+    attachment = e_ContributionAttachment.objects.create(file=uploaded_file, contribution=contribution)
+
+    # file_name = f'contribution_{contribution.id}_{count}'
+    # with open(f'media/contributions/uploaded_files/{file_name}', 'wb+') as destination:
+    #     for chunk in uploaded_file.chunks():
+    #         destination.write(chunk)
+
+    attachment.save()

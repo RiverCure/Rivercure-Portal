@@ -225,7 +225,7 @@
 <h1>{{ context_name }}</h1>
 <hr>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
     {{ form|crispy }}

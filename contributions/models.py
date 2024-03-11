@@ -4,6 +4,9 @@ from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 from context.models import EVENTKIND_CHOICES
 from django_fsm import FSMField, transition
+import os
+from datetime import datetime
+from uuid import uuid4
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
@@ -11,6 +14,7 @@ class ContributionStatus(models.TextChoices):
     ACCEPTED = "ACCEPTED", "Accepted"
     REJECTED = "REJECTED", "Rejected"
 
+# Contribution
 class e_ContextContribution(models.Model):
     # Metadata
     #id = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -46,8 +50,24 @@ class e_ContextContribution(models.Model):
     def reject(self):
         return
 
+
+# For upload_to=
+def create_media_file_name(instance, filename):
+    """
+    Callable that saves the upload path as: contributions/uploaded_files/%Y-%m-%d-%H%M%S-uuid4
+
+    As indicated in: https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.FileField.upload_to
+    """
+
+    path = "contributions/uploaded_files/"
+    extension = "." + filename.split('.')[-1]
+    format = datetime.now().strftime('%Y-%m-%d-%H%M%S-') + str(uuid4()) + extension
+    # format = instance.pk + '_' + instance + instance.file_extension
+    return os.path.join(path, format)
+
+# Attachment
 class e_ContributionAttachment(models.Model):
-    file = models.FileField('Attachment', upload_to="contributions")
+    file = models.FileField('Attachment', upload_to=create_media_file_name)
     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.SET_NULL, null=True)
 
     class Meta:

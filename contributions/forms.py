@@ -36,7 +36,8 @@ class ContributionInitialForm(forms.ModelForm):
                                           label='Situation Observed')
     lat = forms.FloatField(label='Latitude')
     lng = forms.FloatField(label='Longitude')
-    # file_field = MultipleFileField()
+    file_field = MultipleFileField(help_text='Submit any photos or videos you have related to the situation you observed.',
+                                   label='Images and videos')
 
     class Meta:
         model = e_ContextContribution
