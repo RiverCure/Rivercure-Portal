@@ -29,57 +29,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener("map:init", e => {
 
-            /*
-            // TODO: Is this the best way to do things?
-            // Add div where fixed marker is
-            document.getElementById('id_observationplace-map').insertAdjacentHTML('beforebegin', '<div class="fixed-centered-map-marker"></div>');
-
-            // Wrap previous div and div with map in a parent div
-            var parentDiv = document.createElement('div')
-
-            const div1 = document.querySelector();
-            const div2 = document.querySelector();
-            parentDiv.appendChild(div1);
-            parentDiv.appendChild(div2);
-
-
-
-
-            // element that will be wrapped
-            var el = document.querySelector('div.wrap_me');
-
-            // create wrapper container
-            var wrapper = document.createElement('div');
-
-            // insert wrapper before el in the DOM tree
-            el.parentNode.insertBefore(wrapper, el);
-
-            // move el into wrapper
-            wrapper.appendChild(el);
-            */
-
-            console.log("Hi")
             const map = e.detail.map;
             console.log(e.detail.map);
 
-            // Try to find the user's current location
-            map.locate({setView: true, maxZoom: 17});
+            var lat = {{ contribution.get_lat }};
+            var long = {{ contribution.get_long }};
 
-            var marker = L.marker([0,0]).addTo(map);
-            // On success (of finding user's location)
-            map.on('locationfound', function (e) {
-                console.log("Hiiii")
-                //var marker = L.marker(e.latlng).addTo(map); // {draggable:'false'}
-                marker.setLatLng(e.latlng);
-                console.log(e.latlng);
-            });
-
-            // On error (of finding user's location)
-            map.on('locationerror', function (e) {
-                // alert(e.message);
-                marker.setLatLng([38.722252, -9.139337]); // Default location is Praca do Comercio in Lisbon!
-                map.setZoom(17);
-            });
+            map.setView([lat, long], 17);
+            L.marker([lat, long]).addTo(map);
+            
         });
     })
 
@@ -134,7 +92,6 @@
                 <h2 class="mt-2">Contribution {{ contribution }}</h2>
                 <hr>
 
-                
                 <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
                 <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
                 {% if contribution.contextEvent is not Null %}
@@ -149,8 +106,7 @@
 
     <!-- Map section -->
     <div class="content-section">
-        <h3 class="mt-2">Details</h3>
-        <hr>
+        
         
         <!-- Information about contribution itself -->
         <div class="row">
@@ -162,15 +118,17 @@
             </div>
 
             <div class="col-4">
+                <h3 class="mt-2">Details</h3>
+                <hr>
+                
                 <p class="font-weight-light"><strong>Observed on:</strong> {{ contribution.observationDate }}</p>
                 <p class="font-weight-light"><strong>Situation:</strong> {{ contribution.situationObserved|title }}</p>
                 <p class="font-weight-light"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
 
+                <hr>
+                <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
+                <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
 
-                <p class="font-weight-light"><strong>Latitude:</strong>{{ contribution.observationPlace.get_lat }}</p>
-                <p class="font-weight-light"><strong>Longitude:</strong>{{ contribution.observationPlace }}</p>
-
-                <p>{{ contribution.observationPlace }}</p>
             </div>
 
         </div>

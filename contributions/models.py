@@ -50,17 +50,17 @@ class e_ContextContribution(models.Model):
     def reject(self):
         return
     
-    def get_lat(self):
-        """
-        Returns the latitude for this contribution's location
-        """
-        return self.observationPlace.coord[0]
-    
     def get_long(self):
         """
         Returns the longitude for this contribution's location
         """
-        return self.observationPlace.coord[0]
+        return self.observationPlace.x
+    
+    def get_lat(self):
+        """
+        Returns the latitude for this contribution's location
+        """
+        return self.observationPlace.y
 
 
 # For upload_to

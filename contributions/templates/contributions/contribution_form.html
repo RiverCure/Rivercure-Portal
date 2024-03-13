@@ -128,7 +128,7 @@
             // On error (of finding user's location)
             map.on('locationerror', function (e) {
                 // alert(e.message);
-                marker.setLatLng([38.722252, -9.139337]); // Default location is Praca do Comercio in Lisbon!
+                marker.setLatLng([38.722252, -9.139337]); // TODO: Change default location to what is in LEAFLET_SETTINGS
                 map.setZoom(17);
             });
 
@@ -213,12 +213,12 @@
 <div class="content-section">
     <!-- Header -->
     <h1>{{ context_name }}</h1>
-    <p class="font-weight-light">
+    <p class="font-weight-light" align="justify">
         If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting
         a <b>contribution</b>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
         the date and place of this episode, and, optionally, any videos or images you have collected of the incident.
     </p>
-    <p class="font-weight-light">
+    <p class="font-weight-light" align="justify">
         For more information about RiverCure and contributions, please visit our <a href="{% url 'rivercure-about' %}">About</a> page.
     </p>
     <hr>
