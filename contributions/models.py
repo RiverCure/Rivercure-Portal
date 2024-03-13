@@ -49,9 +49,21 @@ class e_ContextContribution(models.Model):
     @transition(field=state, source=ContributionStatus.PENDING, target=ContributionStatus.REJECTED)
     def reject(self):
         return
+    
+    def get_lat(self):
+        """
+        Returns the latitude for this contribution's location
+        """
+        return self.observationPlace.coord[0]
+    
+    def get_long(self):
+        """
+        Returns the longitude for this contribution's location
+        """
+        return self.observationPlace.coord[0]
 
 
-# For upload_to=
+# For upload_to
 def create_media_file_name(instance, filename):
     """
     Callable that saves the upload path as: contributions/uploaded_files/%Y-%m-%d-%H%M%S-uuid4

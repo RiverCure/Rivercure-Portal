@@ -1,20 +1,22 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from datetime import datetime
 from django.contrib.gis.geos import Point
 
-from .models import e_ContextContribution,  e_ContributionAttachment
+from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
 from context.models import e_Context
+from rivercureproject import settings
 
-# Create your views here.
+
 
 class AllContributionsListView(LoginRequiredMixin, ListView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
+
+
 
 class ContributionCreateView(LoginRequiredMixin, CreateView):
     model = e_ContextContribution
@@ -66,6 +68,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
+
+
 class ContributionListView(ListView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
@@ -90,11 +94,21 @@ class ContributionListView(ListView):
         
         return context
 
+
+
 class ContributionDetailView(DetailView):
     model = e_ContextContribution
-    context_object_name = 'contribution'
     template_name = 'contributions/contribution_detail.html'
     pk_url_kwarg = 'contributionId'
+    context_object_name = 'contribution'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=self.get_object().pk)
+        context['MEDIA_URL'] = settings.MEDIA_URL
+        return context
+
 
 
 # Helper functions
