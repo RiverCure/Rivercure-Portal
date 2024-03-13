@@ -61,10 +61,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
         # Deal with files
         files = form.cleaned_data["file_field"]
-        count = 0
         for f in files:
-            handle_uploaded_file(new_contribution, f, count)
-            count+=1
+            handle_uploaded_file(new_contribution, f)
 
         return super().form_valid(form)
 
@@ -112,7 +110,7 @@ class ContributionDetailView(DetailView):
 
 
 # Helper functions
-def handle_uploaded_file(contribution, uploaded_file, count):
+def handle_uploaded_file(contribution, uploaded_file):
     attachment = e_ContributionAttachment.objects.create(file=uploaded_file, contribution=contribution)
 
     # file_name = f'contribution_{contribution.id}_{count}'
