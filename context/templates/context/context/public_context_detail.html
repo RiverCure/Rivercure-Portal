@@ -41,7 +41,9 @@
                 <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}">Contribute</a>
                 <div class="float-right">
                     <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
-                    <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
+                    {% if context.hydroFeature %}
+                        <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
