@@ -32,7 +32,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         context_code = self.kwargs['contextCode']
 
         context = super().get_context_data(**kwargs)
-        context['context_name'] = get_object_or_404(e_Context, code=context_code).Name
+        context['context'] = get_object_or_404(e_Context, code=context_code)
         context['context_code'] = self.kwargs['contextCode']
         
         return context

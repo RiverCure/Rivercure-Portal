@@ -210,9 +210,14 @@
 {% block content %}
 
 
+<h1>{{ context.Name }} context </h1>
+<p>Organization: <em>{{ context.organization }}</em></p>
+<hr>
+
+
 <div class="content-section">
     <!-- Header -->
-    <h1>{{ context_name }}</h1>
+    {% comment %} <h1>{{ context_name }}</h1> {% endcomment %}
     <p class="font-weight-light" align="justify">
         If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting
         a <b>contribution</b>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
@@ -230,7 +235,7 @@
         {{ form|crispy }}
 
         <button class="btn btn-outline-info" type="submit">Submit</button>
-        <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context_code %}">Cancel</a>
+        <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context.code %}">Cancel</a>
 
     </form>
 </div>

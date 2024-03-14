@@ -4,9 +4,11 @@ from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 from context.models import EVENTKIND_CHOICES
 from django_fsm import FSMField, transition
+
 import os
 from datetime import datetime
 from uuid import uuid4
+
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
@@ -66,15 +68,23 @@ class e_ContextContribution(models.Model):
 # For upload_to
 def create_media_file_name(instance, filename):
     """
-    Callable that saves the upload path as: contributions/uploaded_files/%Y-%m-%d-%H%M%S-uuid4
+    Callable that saves the file with the path and name: contributions/uploaded_files/organization_name/context_code/year/month/day/uuid4.ext
 
     As indicated in: https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.FileField.upload_to
     """
 
-    path = "contributions/uploaded_files/"
+    organization = instance.contribution.context.organization
+    _context = instance.contribution.context.code
+    year = datetime.now().strftime('%Y')
+    month = datetime.now().strftime('%m')
+    day = datetime.now().strftime('%d')
+    # Path is: contributions/uploaded_files/organization_name/context_code/year/month/day
+    path = "contributions/uploaded_files/{}/{}/{}/{}/{}".format(organization, _context, year, month, day)
     extension = "." + filename.split('.')[-1]
-    format = datetime.now().strftime('%Y-%m-%d-%H%M%S-') + str(uuid4()) + extension
-    # format = instance.pk + '_' + instance + instance.file_extension
+    
+    # Filename is: uuid4.ext
+    format = str(uuid4()) + extension
+
     return os.path.join(path, format)
 
 # Attachment
