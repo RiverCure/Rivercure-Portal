@@ -53,6 +53,10 @@
 
 {% block content %}
 
+<h1>{{ contribution.context.Name }} context </h1>
+<p>Organization: <em>{{ contribution.context.organization }}</em></p>
+<hr>
+
 <div class="container">
 
     <!-- Photo section -->
@@ -95,6 +99,7 @@
 
                     <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
                     <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
+                    <p class="font-weight-light"><strong>Context:</strong> {{ contribution.context.Name }}</p>
                     {% if contribution.contextEvent is not Null %}
                         <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
                     {% endif %}
@@ -109,6 +114,7 @@
 
                     <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
                     <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
+                    <p class="font-weight-light"><strong>Context:</strong> {{ contribution.context.Name }}</p>
                     {% if contribution.contextEvent is not Null %}
                         <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
                     {% endif %}
@@ -142,6 +148,7 @@
                 <p class="font-weight-light" align="justify"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
 
                 <hr>
+                <p class="font-weight-light"><strong>Address:</strong></p>
                 <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
                 <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
 
