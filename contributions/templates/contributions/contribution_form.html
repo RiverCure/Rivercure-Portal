@@ -201,6 +201,10 @@
         });
     })
 
+    function thankUser() {
+        alert("Thank you for submitting your contribution. We greatly appreciate it!");
+    }
+
 </script>
 
 {% endblock scripts %}
@@ -229,7 +233,7 @@
     <hr>
 
     <!-- Form -->
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" onsubmit="thankUser()">
         {% csrf_token %}
 
         {{ form|crispy }}
