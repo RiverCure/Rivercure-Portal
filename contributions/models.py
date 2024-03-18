@@ -8,6 +8,7 @@ from django_fsm import FSMField, transition
 import os
 from datetime import datetime
 from uuid import uuid4
+from mimetypes import guess_type
 
 
 # States for a Contribution
@@ -95,3 +96,20 @@ class e_ContributionAttachment(models.Model):
     class Meta:
         verbose_name = 'Contribution\'s Attachment'
         verbose_name_plural = 'Contribution\'s Attachments'
+    
+    def is_video_or_image(self):
+        """
+        Returns whether attachment is a video or an image
+        """
+        type_tuple = guess_type(self.file.url, strict=True)
+        if (type_tuple[0]).__contains__("image"):
+            return "image"
+        elif (type_tuple[0]).__contains__("video"):
+            return "video"
+
+    def get_type(self):
+        """
+        Returns type of attachment
+        """
+        type_tuple = guess_type(self.file.url, strict=True)
+        return type_tuple[0]
