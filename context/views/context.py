@@ -79,6 +79,14 @@ class PublicContextListView(FilterView):
     context_object_name = 'public_contexts'
     paginate_by = 9
 
+    def get_queryset(self):
+        # Order by number of contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
+        # context_list = e_Context.objects.exclude(isPublic=False).order_by('Name')
+        return context_list
+    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
