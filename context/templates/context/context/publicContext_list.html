@@ -28,12 +28,9 @@
 </style>
 
 <!-- Header -->
-<div class="row">
-    <h1>Public contexts</h1>
-</div>
-<div class="row">
-    <h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
-</div>
+<h1>Public contexts</h1>
+<h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
+<hr>
 
 <!-- Filter -->
 <!-- TODO: Apply Bootstrap's grid system -->
@@ -48,7 +45,7 @@
 <!-- List of Public Contexts-->
 <!-- TODO: Apply Bootstrap's grid system -->
 <div class="row row-cols-3">
-    {% for context in public_contexts %} <!-- TODO: Not filter.qs (instead of public_contexts)? -->
+    {% for context in context_list %} <!-- TODO: Not filter.qs (instead of public_contexts)? -->
         <div class="col">
             <a href="{% url 'public-context-detail' context.code %}">
                 <div class="card public-context-card" style="width: 18rem;">
@@ -58,7 +55,7 @@
                         <h6 class="card-text"><em>{{ context.hydroFeature }}</em></h6>
                     </div>    
                     <ul class="list-group list-group-flush">
-                        <p class="list-group-item card-text card-contributions">Contributions: </p> <!-- TODO: Add nr of contributions-->
+                        <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set.count }}</p> <!-- TODO: Add nr of contributions-->
                     </ul>        
                 </div>
             </a>
@@ -145,6 +142,7 @@
 </div>
 -->
 
+<!-- TODO: What is this? -->
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
 const comparer = (idx, asc) => (a, b) => ((v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)))(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));

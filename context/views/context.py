@@ -31,6 +31,7 @@ from context.views.upload import alignment_creation, context_creation, refinemen
 from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution
 from django_filters.views import FilterView
+from django.db.models import Count
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -81,7 +82,7 @@ class PublicContextListView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['context_list'] = e_Context.objects.exclude(isPublic=False).order_by('Name')
+        context['context_list'] = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions')
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
