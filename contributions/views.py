@@ -2,13 +2,16 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView
 from django.urls import reverse
-from datetime import datetime
 from django.contrib.gis.geos import Point
+from django_filters.views import FilterView
+
+from datetime import datetime
 
 from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
 from context.models import e_Context
 from rivercureproject import settings
+from .filters import ContributionFilter
 
 
 
@@ -68,27 +71,30 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
 
 
-class ContributionListView(ListView):
+class ContributionListView(FilterView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
+    filterset_class = ContributionFilter
     pk_url_kwarg = 'contextCode'
     context_object_name = 'contributions'
-    # paginate_by = 10
+    paginate_by = 9
 
     def get_queryset(self):
 
         context_code = self.kwargs['contextCode']
-        context_list = e_ContextContribution.objects.filter(context=context_code)
+        contribution_list = e_ContextContribution.objects.filter(context=context_code)
 
         # TODO: Add Filter
 
-        return context_list
+        return contribution_list
     
     def get_context_data(self, **kwargs):
         context_code = self.kwargs['contextCode']
 
         context = super().get_context_data(**kwargs)
-        context['context_name'] = get_object_or_404(e_Context, code=context_code).Name
+        context['context'] = get_object_or_404(e_Context, code=context_code)
+        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code)
+        context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context
 

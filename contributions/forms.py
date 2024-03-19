@@ -47,7 +47,7 @@ class ContributionInitialForm(forms.ModelForm):
             'observationPlace': 'Observation Place',
         }
         help_texts = {
-            'observationPlace': 'Move around in the map to pick your location. Additionally, you can search for the desired location.'
+            'observationPlace': 'Move the map around to pick the location. Alternatively, you can search for the desired position.'
         }
         widgets = {'observationPlace': LeafletWidget()}
     
