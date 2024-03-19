@@ -23,13 +23,13 @@ class ContextDetailsForm(forms.ModelForm):
 
     class Meta:
         model = e_Context
-        fields = ['Name', 'hydroFeature', 'isPublic']
+        fields = ['Name', 'hydroFeature', 'isPublic', 'description']
 
 
 class ContextInitialForm(forms.ModelForm):
     class Meta:
         model = e_Context
-        fields = ['code', 'Name', 'hydroFeature', 'organization', 'isPublic',]
+        fields = ['code', 'Name', 'hydroFeature', 'organization', 'isPublic', 'description']
 
     def clean_code(self):
         pattern = re.compile('^[\\w]+[-\\w]*$')
