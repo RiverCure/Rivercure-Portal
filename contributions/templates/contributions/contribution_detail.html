@@ -78,6 +78,21 @@
                 {% if contribution.contextEvent is not Null %}
                     <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
                 {% endif %}
+
+                {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" %}
+                    {% if contribution.state == 'PENDING' %}
+                        <p class="font-weight-light"><strong>State:</strong> <span class="text-warning">{{ contribution.state|title }}</span></p>
+                    {% elif contribution.state == 'ACCEPTED' %}
+                        <p class="font-weight-light"><strong>State:</strong> <span class="text-success">{{ contribution.state|title }}</span></p>
+                        <p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>
+                        <p class="font-weight-light"><strong>Validated by:</strong> </p>
+                    {% else %} {# contribution.state == 'REJECTED' #}
+                        <p class="font-weight-light"><strong>State:</strong> <span class="text-danger">{{ contribution.state|title }}</span></p>
+                        <p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>
+                        <p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>
+                    {% endif %}
+                {% endif %}
+
                 <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">See Context</a>
             </div>
         </div>
