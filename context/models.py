@@ -34,6 +34,7 @@ class e_Context(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     create_date = models.DateTimeField()
     isPublic = models.BooleanField(default=False)
+    description = models.TextField(blank=True) # TODO: Change this to default (blank=False)
 
     # Context detail
     hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=True)

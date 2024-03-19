@@ -31,7 +31,6 @@
 <div class="media content-section">
 
 
-    <div class="row">
         <div class="col-4">
             <div class="media-left">
                 <img src="{{ context.picture.url }}" class="media-object img-fluid" alt="Context Picture"> <!-- TODO: Resize -->
@@ -40,9 +39,9 @@
         <div class="col-8">
             <div class="media-body">
                 
-                <p align="justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis dui lobortis risus scelerisque hendrerit at eget ligula. Cras varius ex nec ornare cursus. Fusce sed orci suscipit, cursus leo ac, viverra ligula. Morbi luctus ipsum eu imperdiet iaculis. Etiam eget magna mauris. Nam mattis condimentum dui, eu scelerisque arcu. Integer consequat ante et pellentesque sagittis. Proin tempor pretium purus ut blandit. Etiam sapien dolor, dictum vitae posuere eget, sagittis in nibh. Morbi eget ipsum porta est accumsan fermentum. Vestibulum tempor lorem sed condimentum sodales. Nullam vitae mauris orci. Praesent ullamcorper turpis lorem, vitae sollicitudin diam imperdiet quis.</p>
-                {% comment %} <p><em>{{ context.hydroFeature }}</em></p> {% endcomment %}
-                {% comment %} <a href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}"><em>{{ context.hydroFeature }}</em></a> {% endcomment %}
+                {% if context.description %}
+                    <p align="justify">{{ context.description }}</p>
+                {% endif %}
                 <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}">Contribute</a>
                 <div class="float-right">
                     <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
@@ -50,10 +49,11 @@
                         <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
                     {% endif %}
                 </div>
+
             </div>
         </div>
-    </div>
 </div>
+
 
 <!-- Contribution list -->
 <!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
