@@ -11,7 +11,7 @@ from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
 from context.models import e_Context
 from rivercureproject import settings
-from .filters import ContributionFilter
+from .filters import ContributionFilter, MyContributionsFilter
 
 
 
@@ -84,8 +84,6 @@ class ContributionListView(FilterView):
         context_code = self.kwargs['contextCode']
         contribution_list = e_ContextContribution.objects.filter(context=context_code)
 
-        # TODO: Add Filter
-
         return contribution_list
     
     def get_context_data(self, **kwargs):
@@ -115,13 +113,34 @@ class ContributionDetailView(DetailView):
 
 
 
+class MyContributionsListView(LoginRequiredMixin, FilterView):
+    model = e_ContextContribution
+    template_name = 'contributions/my_contributions_list.html'
+    context_object_name = 'contributions'
+    filterset_class = MyContributionsFilter
+    paginate_by = 9
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        contribution_list = e_ContextContribution.objects.filter(createdBy=user)
+
+        return contribution_list
+    
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+
+        context = super().get_context_data(**kwargs)
+        context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user)
+        context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
+        
+        return context
+
+
+
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):
     attachment = e_ContributionAttachment.objects.create(file=uploaded_file, contribution=contribution)
-
-    # file_name = f'contribution_{contribution.id}_{count}'
-    # with open(f'media/contributions/uploaded_files/{file_name}', 'wb+') as destination:
-    #     for chunk in uploaded_file.chunks():
-    #         destination.write(chunk)
 
     attachment.save()

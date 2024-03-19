@@ -5,6 +5,7 @@ from .views import *
 urlpatterns = [
     path('', AllContributionsListView.as_view(), name='all-contributions-list'),
     path('new/<str:contextCode>', ContributionCreateView.as_view(), name='contribution-create'),
-    path('<str:contextCode>', ContributionListView.as_view(), name='contribution-list'),
     path('detail/<str:contributionId>', ContributionDetailView.as_view(), name='contribution-detail'),
+    path('context/<str:contextCode>', ContributionListView.as_view(), name='contribution-list'), # TODO: URL good like this?
+    path('mine', MyContributionsListView.as_view(), name='my-contributions'),
 ]
