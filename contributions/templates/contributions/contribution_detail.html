@@ -100,118 +100,120 @@
     </div>
 
     <!-- Photo section -->
-    <div class="content-section">        
+    {% if contribution_media_list %}
+        <div class="content-section">        
 
-        <div class="row">
+            <div class="row">
 
-            <!-- Image slideshow -->
-            {% if contribution_media_list %}
+                <!-- Image slideshow -->
+                
 
-                <div class="col">
-                    
-                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
-                        <div class="carousel-inner">
-                            {% for media in contribution_media_list %}
+                    <div class="col">
+                        
+                        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
+                            <div class="carousel-inner">
+                                {% for media in contribution_media_list %}
 
-                                <!-- 1st element of the list (must have 'active' class) -->
-                                {% if forloop.first%}
+                                    <!-- 1st element of the list (must have 'active' class) -->
+                                    {% if forloop.first%}
 
-                                    <!-- Image -->
-                                    {% if media.is_video_or_image == "image" %}
+                                        <!-- Image -->
+                                        {% if media.is_video_or_image == "image" %}
 
-                                        <div class="carousel-item active">
-                                            <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
-                                                <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
-                                            </a>
-                                        </div>
-
-                                    <!-- Video -->
-                                    {% elif media.is_video_or_image == "video" %}
-
-                                        <div class="carousel-item active">
-                                            <div class="embed-responsive embed-responsive-16by9">
-                                                <video controls>
-                                                    <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
-                                                </video>
+                                            <div class="carousel-item active">
+                                                <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                                    <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
+                                                </a>
                                             </div>
-                                        </div>
 
-                                    <!-- Something else? -->
+                                        <!-- Video -->
+                                        {% elif media.is_video_or_image == "video" %}
+
+                                            <div class="carousel-item active">
+                                                <div class="embed-responsive embed-responsive-16by9">
+                                                    <video controls>
+                                                        <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
+                                                    </video>
+                                                </div>
+                                            </div>
+
+                                        <!-- Something else? -->
+                                        {% else %}
+                                            <p>Error!</p> <!-- TODO: What to do here? -->
+                                        {% endif %}
+
+
+                                    <!-- Rest of list elements -->
                                     {% else %}
-                                        <p>Error!</p> <!-- TODO: What to do here? -->
+
+                                        <!-- Image -->
+                                        {% if media.is_video_or_image == "image" %}
+
+                                            <div class="carousel-item">
+                                                <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                                    <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
+                                                </a>
+                                            </div>
+
+                                        <!-- Video -->
+                                        {% elif media.is_video_or_image == "video" %}
+
+                                            <div class="carousel-item active">
+                                                <div class="embed-responsive embed-responsive-16by9">
+                                                    <video controls>
+                                                        <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
+                                                    </video>
+                                                </div>
+                                            </div>
+                                        <!-- Something else? -->
+                                        {% else %}
+                                            <p>Error!</p> <!-- TODO: What to do here? -->
+                                        {% endif %}
+
                                     {% endif %}
 
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle" aria-hidden="true">
 
-                                <!-- Rest of list elements -->
-                                {% else %}
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                {% comment %} <div class="modal-header">
+                                                    <h5 class="modal-title" id="imageModalTitle">Modal title</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div> {% endcomment %}
 
-                                    <!-- Image -->
-                                    {% if media.is_video_or_image == "image" %}
+                                                <div class="modal-body">
+                                                    <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
+                                                </div>
 
-                                        <div class="carousel-item">
-                                            <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
-                                                <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
-                                            </a>
-                                        </div>
-
-                                    <!-- Video -->
-                                    {% elif media.is_video_or_image == "video" %}
-
-                                        <div class="carousel-item active">
-                                            <div class="embed-responsive embed-responsive-16by9">
-                                                <video controls>
-                                                    <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
-                                                </video>
-                                            </div>
-                                        </div>
-                                    <!-- Something else? -->
-                                    {% else %}
-                                        <p>Error!</p> <!-- TODO: What to do here? -->
-                                    {% endif %}
-
-                                {% endif %}
-
-                                <!-- Modal -->
-                                <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle" aria-hidden="true">
-
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            {% comment %} <div class="modal-header">
-                                                <h5 class="modal-title" id="imageModalTitle">Modal title</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div> {% endcomment %}
-
-                                            <div class="modal-body">
-                                                <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
+                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
                         </div>
-                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
                     </div>
-                </div>
+                    
                 
-            {% endif %}
-            
-        </div>
+                
+            </div>
 
-    </div>
+        </div>
+    {% endif %}
 
 
     <!-- Map section -->
