@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'django_filters',
     'bootstrapform',
     'django_celery_results',
-    'celery_progress'
+    'celery_progress',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [

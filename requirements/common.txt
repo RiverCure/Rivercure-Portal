@@ -67,3 +67,4 @@ wcwidth==0.2.5
 zope.event==4.5.0
 zope.interface==5.4.0
 django-fsm==2.8.1
+django-cleanup==8.1.0

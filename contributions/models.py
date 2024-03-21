@@ -10,6 +10,7 @@ from datetime import datetime
 from uuid import uuid4
 from mimetypes import guess_type
 
+from rivercureproject.settings import MEDIA_ROOT
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
@@ -32,7 +33,7 @@ class e_ContextContribution(models.Model):
     # Information provided by the user
     observationDate = models.DateField()
     observationPlace = models.PointField()
-    observationDescription = models.TextField() # TODO: Set max length?
+    observationDescription = models.TextField()
     situationObserved = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
 
     # TODO: Add extra information asked depending on SituationObserved
@@ -91,12 +92,23 @@ def create_media_file_name(instance, filename):
 # Attachment
 class e_ContributionAttachment(models.Model):
     file = models.FileField('Attachment', upload_to=create_media_file_name)
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.SET_NULL, null=True)
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete attachment from DB if parent contribution is deleted
 
     class Meta:
         verbose_name = 'Contribution\'s Attachment'
         verbose_name_plural = 'Contribution\'s Attachments'
-    
+
+    # def delete(self, *args, **kwargs):
+    #     # Delete file from file system
+
+    #     path = self.file.path
+    #     if os.path.exists(path):
+    #         os.remove(path)
+        
+    #     # self.file.delete(save=False)
+
+    #     return super(e_ContributionAttachment, self).delete(*args, **kwargs)
+
     def is_video_or_image(self):
         """
         Returns whether attachment is a video or an image

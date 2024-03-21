@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, CreateView, DetailView
-from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, CreateView, DetailView, DeleteView
+from django.urls import reverse, reverse_lazy
 from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
+from django.core.files.storage import FileSystemStorage
 
 from datetime import datetime
+import os
 
 from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
@@ -13,6 +15,7 @@ from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check
 from rivercureproject import settings
 from .filters import ContributionFilter, MyContributionsFilter
+from .authorization import author_of_contribution_check
 
 
 
@@ -141,6 +144,19 @@ class MyContributionsListView(LoginRequiredMixin, FilterView):
         context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context
+
+
+
+class ContributionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = e_ContextContribution
+    template_name = 'contributions/contribution_confirm_delete.html'
+    pk_url_kwarg = 'contributionId'
+    success_url = reverse_lazy('my-contributions')
+    context_object_name = 'contribution'
+
+    def test_func(self):
+        # Author is the only user who can delete the Contribution
+        return author_of_contribution_check(self.request.user, self.get_object())
 
 
 
