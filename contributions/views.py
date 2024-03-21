@@ -10,6 +10,7 @@ from datetime import datetime
 from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
 from context.models import e_Context
+from context.views.authorization import context_organization_edit_permission_check
 from rivercureproject import settings
 from .filters import ContributionFilter, MyContributionsFilter
 
@@ -107,8 +108,12 @@ class ContributionDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        user = self.request.user
+        org = self.get_object().context.organization
+
         context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=self.get_object().pk)
         context['MEDIA_URL'] = settings.MEDIA_URL
+        context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org) # TODO: Best way to do this?
         return context
 
 

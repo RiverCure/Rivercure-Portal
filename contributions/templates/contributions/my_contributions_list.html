@@ -38,7 +38,13 @@
                         <img src="" class="card-img-top" alt="Contribution image">
                         <div class="card-body">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                            <h6 class="card-text">By: {{ contribution.createdBy }}</h6>
+                            {% if contribution.state == 'PENDING' %}
+                                <h6 class="font-weight-light"><strong>State:</strong> <span class="text-warning">{{ contribution.state|title }}</span></h6>
+                            {% elif contribution.state == 'ACCEPTED' %}
+                                <h6 class="font-weight-light"><strong>State:</strong> <span class="text-success">{{ contribution.state|title }}</span></h6>
+                            {% else %} {# contribution.state == 'REJECTED' #}
+                                <h6 class="font-weight-light"><strong>State:</strong> <span class="text-danger">{{ contribution.state|title }}</span></h6>
+                            {% endif %}
                         </div>
                         <div class="card-footer">
                             <small class="text-body-secondary card-contributions">Posted on {{ contribution.creationDateTime }}</small>

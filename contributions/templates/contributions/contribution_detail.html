@@ -80,7 +80,7 @@
                     <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
                 {% endif %}
 
-                {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" %}
+                {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager %}
                     {% if contribution.state == 'PENDING' %}
                         <p class="font-weight-light"><strong>State:</strong> <span class="text-warning">{{ contribution.state|title }}</span></p>
                     {% elif contribution.state == 'ACCEPTED' %}

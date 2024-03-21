@@ -46,7 +46,7 @@ class e_Context(models.Model):
     hasMesh = models.BooleanField(default=False)
 
     # Picture
-    picture = models.ImageField(default='river.png', upload_to="images/contexts_pictures/") # TODO: Pôr uma default image melhor
+    picture = models.ImageField(default='river.png', upload_to="contexts_pictures/{organization}/{code}") # TODO: Pôr uma default image melhor TODO: Dar resize da foto TODO: Dar nome diferente à foto TODO: Permitir meter foto no form de criação + update
 
     # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)
