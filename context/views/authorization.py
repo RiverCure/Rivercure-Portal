@@ -14,22 +14,31 @@ def context_general_event_create_permission_check(user):
     except:
         return False
 
-# Checks if the user is a manager or contextManager of an organization
 def context_organization_edit_permission_check(user, organization):
+    """
+    Checks if the user is a manager or contextManager of an organization
+    """
+
     try:
         return Membership.objects.filter(user=user, organization=organization, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
     except:
         return False
 
-# Checks if the user is a manager or eventManager of an organization
 def context_organization_event_permission_check(user, organization):
+    """
+    Checks if the user is a manager or eventManager of an organization
+    """
+
     try:
         return Membership.objects.filter(user=user, organization=organization, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
     except:
         return False
 
-# Check if the user belongs to an organization
 def context_organization_belong_check(user, organization):
+    """
+    Check if the user belongs to an organization
+    """
+    
     try:
         return Membership.objects.filter(user=user, organization=organization).exists()
     except:

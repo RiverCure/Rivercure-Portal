@@ -138,7 +138,6 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
         context['belongsToOrg'] = context_organization_belong_check(user, organization) # Check if user belongs to this context's organization
-        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk) # Contributions that belong to this context
 
         return context
 
