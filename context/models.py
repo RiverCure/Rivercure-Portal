@@ -25,6 +25,8 @@ CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('Q', 'Discharge'), ('Z', 'Elevation'), (
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
+Permissions = (('context_eventManager', 'Context Event Manager'), ('context_moderator', 'Moderator'))
+
 
 class e_Context(models.Model):
     # Information/identification
@@ -34,10 +36,14 @@ class e_Context(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     create_date = models.DateTimeField()
     isPublic = models.BooleanField(default=False)
-    description = models.TextField(blank=True) # TODO: Change this to default (blank=False)
+    description = models.TextField(blank=True) # TODO: Change this to default (blank=False)!!!!
 
-    # Moderators
-    # moderators = models.ManyToManyField(User, through='ContextModerator', related_name='moderators')
+    # Members
+    # moderators = models.ManyToManyField(User, through='ModeratorMembership', related_name='moderators')
+    # eventManagers = models.ManyToManyField(User, through='EventManagerMembership', related_name='event_managers')
+
+    # Moderators or Event Managers (have permissions on a Context level)
+    members = models.ManyToManyField(User, through='ContextMembership', related_name='members')
 
     # Context detail
     hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=True)
@@ -73,10 +79,23 @@ class e_Context(models.Model):
     def __str__(self):
         return self.tag
 
-# To keep track of Moderators for a Context
-# class ContextModerator(models.Model):
+
+
+# Keep track of Moderators and Event Managers of a Context
+class ContextMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
+    permission = models.CharField(max_length=80, choices=Permissions, null=True)
+    grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
+
+    def __str__(self):
+        return f"{self.permission} {self.user} - {self.context}"
+
+
+# # To keep track of Moderators for a Context
+# class ModeratorMembership(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     context = models.ForeignKey(e_Context, on_delete=models.CASCADE) # TODO: Necessary?
+#     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
 #     access_grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
 
 #     class Meta:
@@ -84,7 +103,20 @@ class e_Context(models.Model):
 #         verbose_name_plural = 'Context Moderators'
     
 #     def __str__(self):
-#         return f"{self.user} - {self.context}"
+#         return f"Moderator {self.user} - {self.context}"
+
+# # To keep track of Event Managers for a Context (given that this is now a Context-level permission)
+# class EventManagerMembership(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
+#     access_grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
+
+#     class Meta:
+#         verbose_name = 'Context Event Manager'
+#         verbose_name_plural = 'Context Event Manger'
+    
+#     def __str__(self):
+#         return f"Event Manager {self.user} - {self.context}"
 
 
 class e_ContextDTM(models.Model):
