@@ -11,16 +11,17 @@ from context.views.helpers import get_context_folder_path, get_log_folder_path
 from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
-from ..models import e_Context, e_ContextSensor, e_ContextEvent
+from ..models import e_Context, e_ContextSensor, e_ContextEvent, ContextMembership
 from sensors.models import Sensor
 from rest_framework import viewsets
 from ..serializers import ContextSerializer
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter
+from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter
 from io import BytesIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from context.forms import ContextDetailsForm, ContextInitialForm
 from organization.models import Membership, Organization
@@ -137,7 +138,7 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
-        context['belongsToOrg'] = context_organization_belong_check(user, organization) # Check if user belongs to this context's organization
+        context['belongsToOrg'] = context_organization_belong_check(user, organization) # TODO: Substitute with belongs_to_organization from organization/authorization.py !!!
 
         return context
 
@@ -226,7 +227,114 @@ class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
     def test_func(self):
-        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
+        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization) # TODO: Remove self.context.isPublic ?
+
+
+class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/context/moderator_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name'] # TODO: Working?
+    pk_url_kwarg = 'contextCode'
+    filterset_class = ModeratorFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        members = ContextMembership.objects.filter(context=_context, permission='context_moderator')
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        context_code = self.kwargs['contextCode']
+        _context = e_Context.objects.get(pk=context_code)
+
+        context = super(ModeratorListView, self).get_context_data(**kwargs)
+        context['context'] = _context
+        context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
+        members = ContextMembership.objects.filter(context=context_code, permission='context_moderator')
+        context['filter'] = ModeratorFilter(self.request.GET, queryset=members)
+        return context
+    
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return belongs_to_organization(self.request.user, _context.organization)
+
+class ModeratorAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/context/moderator_add_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name'] # TODO: Working?
+    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+    filterset_class = ModeratorAddFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        # Only show organization members that are not already context moderator's for that context
+        moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
+        members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+
+        context = super(ModeratorAddListView, self).get_context_data(**kwargs)
+        context['context'] =  _context
+        # Only show organization members that are not already context moderator's for that context
+        moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
+        org_members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
+        # Filter
+        context['filter'] = ModeratorAddFilter(self.request.GET, queryset=org_members)
+
+        return context
+
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return context_organization_edit_permission_check(self.request.user, _context.organization)
+
+@login_required
+def contextModeratorAdd(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+    user = get_object_or_404(User, pk=userId)
+    organization = _context.organization
+
+    # Make sure only Organization Manager and Context Manager can do this
+    # And that the user belongs to the Org
+    if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    # Make sure user is not already a Moderator
+    if context_moderator_check(user, _context):
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    if user and _context:
+        member = ContextMembership(user=user, context=_context, permission='context_moderator')
+        member.save()
+
+        # TODO: Send notifs
+
+    return redirect('moderator-list', contextCode)
+
+
+@login_required
+def contextModeratorRemove(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+
+    # Make sure only Organization Manager and Context Manager can do this
+    if not context_organization_edit_permission_check(request.user, _context.organization.id):
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    user = get_object_or_404(User, pk=userId)
+    context_membership_user = get_object_or_404(ContextMembership, user=user, context=_context, permission='context_moderator')
+
+    if context_membership_user:
+        context_membership_user.delete()
+    
+    return redirect('moderator-list', contextCode)
+
+    
 
 
 def get_context_sensors(context_code):

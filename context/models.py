@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from sensors.models import Sensor
 from raster.models import RasterLayer
 from organization.models import Organization
+from django.contrib import admin
 
 EVENTKIND_CHOICES = (('flood', 'Flood'),  ('heavyPrecipitation', 'HeavyPrecipitation'),
                      ('hydrologicalDrought', 'Hydrological Drought'),  ('meteorological Drought', 'Meteorological Drought'),
@@ -88,8 +89,20 @@ class ContextMembership(models.Model):
     permission = models.CharField(max_length=80, choices=Permissions, null=True)
     grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
 
+    class Meta:
+        verbose_name = 'Context membership'
+        verbose_name_plural = 'Context\'s memberships'
+    
+    # @property
+    # def permission_name(self):
+    #     if self.permission == 'context_eventManager':
+    #         return 'Context Event Manager'
+    #     else:
+    #         return 'Moderator'
+
     def __str__(self):
-        return f"{self.permission} {self.user} - {self.context}"
+        # return f"{self.permission_name} {self.user} ({self.context})"
+        return f"{self.permission} {self.user} ({self.context})"
 
 
 # # To keep track of Moderators for a Context

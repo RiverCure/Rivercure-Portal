@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 
 
 def belongs_to_organization(user, organization):
+    """
+    Checks whether user belongs to a specific organization
+    """
     try:
         return Membership.objects.filter(user=user, organization=organization, access_granted=True).exists()
     except:

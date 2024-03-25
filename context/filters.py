@@ -1,5 +1,7 @@
 import django_filters
 from django.forms.widgets import TextInput
+from django.contrib.auth.models import User
+from django_filters.widgets import RangeWidget
 
 from .models import e_ContextEvent, e_ContextSensor, e_Context
 from rivercureportal.models import e_HydroFeature, HYDROFEATUREKIND_CHOICES
@@ -29,3 +31,39 @@ class ContextFilter(django_filters.FilterSet):
     class Meta:
         model = e_Context
         fields = ['Name', 'hydroFeature', 'organization']
+
+class ModeratorAddFilter(django_filters.FilterSet):
+    user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by username...',
+                                                    'type': 'search',
+                                                    'class': 'flex-fill mr-2 form-control',
+                                                }))
+
+    class Meta:
+        Model = User
+        fields = ['user__username']
+
+class ModeratorFilter(django_filters.FilterSet):
+    user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by username...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    user__email = django_filters.CharFilter(label='Email address', field_name='user__email', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by email address...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    grant_date = django_filters.DateFromToRangeFilter(label='Date granted',
+                                                        help_text='The permission was given in between the specified dates. Hint: You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+                                                        widget=RangeWidget(attrs={
+                                                            'placeholder': 'yyyy-mm-dd',
+                                                            'type': 'date'
+                                                        }))
+
+    class Meta:
+        Model = User
+        fields = ['user__username', 'user__email', 'grant_date']
