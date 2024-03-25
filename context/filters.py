@@ -13,6 +13,7 @@ class ContextSensorFilter(django_filters.FilterSet):
         model = e_ContextSensor
         fields = ['sensor__sensorClass__category', 'sensor__name']
 
+
 class EventFilter(django_filters.FilterSet):  
 
     Name = django_filters.CharFilter(label="Name", lookup_expr='icontains')
@@ -22,7 +23,8 @@ class EventFilter(django_filters.FilterSet):
     class Meta:
         model = e_ContextEvent
         fields = ['Name','type','date1', 'date2',]
-        
+
+
 class ContextFilter(django_filters.FilterSet):
     Name = django_filters.CharFilter(label='Context Name', lookup_expr='icontains')
     hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all())
@@ -32,6 +34,9 @@ class ContextFilter(django_filters.FilterSet):
         model = e_Context
         fields = ['Name', 'hydroFeature', 'organization']
 
+##############
+# Moderators #
+##############
 class ModeratorAddFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
@@ -43,6 +48,7 @@ class ModeratorAddFilter(django_filters.FilterSet):
     class Meta:
         Model = User
         fields = ['user__username']
+
 
 class ModeratorFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
@@ -67,3 +73,19 @@ class ModeratorFilter(django_filters.FilterSet):
     class Meta:
         Model = User
         fields = ['user__username', 'user__email', 'grant_date']
+
+
+class ModeratorContextFilter(django_filters.FilterSet):
+    Name = django_filters.CharFilter(label='Context Name',
+                                        field_name='context__Name',
+                                        lookup_expr='icontains',
+                                        widget=TextInput(attrs={
+                                                    'placeholder': 'Search by name...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all())
+
+    class Meta:
+        Model = e_Context
+        fields = ['Name', 'hydroFeature']

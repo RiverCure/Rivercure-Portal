@@ -47,6 +47,11 @@
                                         </div>
                                     </li>
                                 {% endif %}
+                                {% if user|is_mod %}
+                                    <div class="nav-item">
+                                        <a href="{% url 'moderator-context-list' %}" class="nav-link">My Contexts</a>
+                                    </div>
+                                {% endif %}
                                 <div class="nav-item">
                                     <a href="{% url 'my-contributions' %}" class="nav-link">My Contributions</a>
                                 </div>

@@ -16,7 +16,7 @@ from sensors.models import Sensor
 from rest_framework import viewsets
 from ..serializers import ContextSerializer
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter
+from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter
 from io import BytesIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -334,6 +334,29 @@ def contextModeratorRemove(request, contextCode, userId):
     
     return redirect('moderator-list', contextCode)
 
+class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_Context
+    template_name = 'context/context/moderator_my_context_list.html'
+    context_object_name = 'contexts'
+    filterset_class = ModeratorContextFilter
+    paginate_by = 6
+
+    def get_queryset(self):
+        # Get Contexts for which this user is a Moderator
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
+        return contexts
+
+    def get_context_data(self, **kwargs):
+        context = super(ModeratorContextsListView, self).get_context_data(**kwargs)
+        # Filter
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
+        context['filter'] = ModeratorContextFilter(self.request.GET, queryset=contexts)
+
+        return context
+
+    def test_func(self):
+        # User must be a Moderator (in some Context)
+        return general_moderator_check(self.request.user)
     
 
 

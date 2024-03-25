@@ -19,11 +19,13 @@ urlpatterns = [
     path('<str:contextCode>/request_preprocessing/', request_pre_processing, name='context-preprocessing-request'),
     path('<str:contextCode>/preprocessing_results/download/',
          download_preprocessing_results, name='context-preprocessing-results-download'),
+    path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
+    # Moderator
+    path('moderators/my-contexts/', ModeratorContextsListView.as_view(), name='moderator-context-list'),
     path('<str:contextCode>/moderators', ModeratorListView.as_view(), name='moderator-list'),
     path('<str:contextCode>/moderators/add/', ModeratorAddListView.as_view(), name='moderator-list-add'),
     path('<str:contextCode>/moderators/<int:userId>/add/', contextModeratorAdd, name='moderator-user-add'),
     path('<str:contextCode>/moderators/<int:userId>/remove/', contextModeratorRemove, name='moderator-remove'),
-    path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Mesh progress
     path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
     path('mesh-status/<str:contextCode>/progress', mesh_status_progress, name='mesh-status-progress'),
