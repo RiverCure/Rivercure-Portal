@@ -55,3 +55,10 @@ class ContributionInitialForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
         self.fields['observationPlace'].required = False
+
+class RejectionForm(forms.Form):
+    rejectionReason = forms.CharField(max_length=500,
+                                      widget=forms.Textarea(attrs={
+                                            'placeholder': 'Enter a reason for the rejection.',
+                                            'class': 'form-control',
+                                        }))

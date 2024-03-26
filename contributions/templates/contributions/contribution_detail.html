@@ -55,6 +55,18 @@
 
 {% block content %}
 
+<!-- TODO: Leave style tag here? -->
+<!-- Should probably move this custom CSS somewhere else -->
+<style>
+    .modal-header {
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #e8e8e8;
+    }
+</style>
+
 <!-- Header -->
 <div class="row">
     <div class="col">
@@ -83,37 +95,92 @@
                 {% endif %}
 
                 {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
+                    <hr>
                     <p class="font-weight-light"><strong>State:</strong> <span class="{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></p>
                     {% if contribution.validationDateTime %}<p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>{% endif %}
                     {% if contribution.validatedBy %}<p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>{% endif %}
+                    {% if contribution.rejectionReason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.rejectionReason }}</p>{% endif %}
                 {% endif %}
-
-                {% comment %} {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager %}
-                    {% if contribution.state == 'PENDING' %}
-                        <p class="font-weight-light"><strong>State:</strong> <span class="text-warning">{{ contribution.state|title }}</span></p>
-                    {% elif contribution.state == 'ACCEPTED' %}
-                        <p class="font-weight-light"><strong>State:</strong> <span class="text-success">{{ contribution.state|title }}</span></p>
-                        <p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>
-                        <p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>
-                    {% else %} {# contribution.state == 'REJECTED' #}
-                        <p class="font-weight-light"><strong>State:</strong> <span class="text-danger">{{ contribution.state|title }}</span></p>
-                        <p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>
-                        <p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>
-                    {% endif %}
-                {% endif %} {% endcomment %}
 
                 <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">Back to Context</a>
 
                 {% if isMod %}
                     <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
                     {% if contribution.state == 'PENDING' %}
-                        <a class="btn btn-success mb-2" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Accept</a>
-                        <a class="btn btn-danger mb-2" href="#">Reject</a>
+                        <!-- Accept Modal Button-->
+                        <button type="button" class="btn btn-success mb-2" data-toggle="modal" data-target="#acceptingModal">
+                            Accept
+                        </button>
+                        <!-- Accept Modal -->
+                        <div class="modal fade" id="acceptingModal" tabindex="-1" role="dialog" aria-labelledby="acceptingModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="acceptingModalLabel">Accept Contribution {{contribution.pk}}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="justify">Are you sure you want to mark this Contribution as <span class='text-success'>Accepted</span>?
+                                            <span class='font-weight-bold'>This action is irreversible!</span>
+                                        </p>
+                                        <p class="justify">
+                                            To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                        <a class="btn btn-success my-3 mr-3" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Confirm</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Reject Modal Button-->
+                        <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#rejectionModal">
+                            Reject
+                        </button>
+                        
+                        <!-- Reject Modal -->
+                        <div class="modal fade" id="rejectionModal" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="rejectionModalLabel">Reject Contribution {{contribution.pk}}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="justify">Are you sure you want to mark this Contribution as <span class='text-danger'>Rejected</span>?
+                                            <span class='font-weight-bold'>This action is irreversible!</span>
+                                        </p>
+                                        <p class="justify">
+                                            To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                        </p>
+                                        <!-- TODO: Add form here! -->
+                                        <hr>
+                                        {% include "contributions/rejection_reason.html" %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        {% comment %} <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                        <a class="btn btn-danger my-3 mr-3" href="#">Reject</a> {% endcomment %}
+
+                                        <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                        <!-- https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                                        <button type="submit" class="btn btn-danger my-3 mr-3" form="rejectionForm">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
                 {% endif %}
 
                 {% if user == contribution.createdBy %}
-                    <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete</a>
+                    <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
                 {% endif %}
             </div>
         </div>

@@ -26,9 +26,12 @@ class e_ContextContribution(models.Model):
     creationDateTime = models.DateTimeField(auto_now_add=True) # Date and time of creation of contribution
     context = models.ForeignKey('context.e_Context', on_delete=models.SET_NULL, null=True)
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Moderation
     state = FSMField(default=ContributionStatus.PENDING, choices=ContributionStatus.choices , protected=True) # protected=True prevents changing the state directly
     validatedBy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="validatedBy")
     validationDateTime =  models.DateTimeField(null=True, blank=True)
+    rejectionReason = models.TextField(blank=True)
 
     # Information provided by the user
     observationDate = models.DateField()

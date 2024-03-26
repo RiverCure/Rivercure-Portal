@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 import datetime
 
 from .models import e_ContextContribution, e_ContributionAttachment
-from .forms import ContributionInitialForm
+from .forms import ContributionInitialForm, RejectionForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
 from context.models import e_Context
@@ -118,9 +118,9 @@ class ContributionDetailView(DetailView):
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org) # TODO: Best way to do this?
         context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
+        context['form'] = RejectionForm()
         return context
-
-
+    
 
 class MyContributionsListView(LoginRequiredMixin, FilterView):
     model = e_ContextContribution
@@ -178,6 +178,28 @@ def contributionAccept(request, contributionId):
     
         # TODO: Send notifs
 
+    return redirect('contribution-detail', contributionId)
+
+@login_required
+def contributionReject(request, contributionId):
+    contribution = get_object_or_404(e_ContextContribution, pk=contributionId)
+
+    # Make sure only (Context) Moderator can do this
+    if not context_moderator_check(request.user, contribution.context):
+        return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
+    
+    # create a form instance and populate it with data from the request:
+    form = RejectionForm(request.POST)
+
+    if form.is_valid():
+        # Save rejection reason in Contribution
+        contribution.reject()
+        contribution.rejectionReason = form.cleaned_data['rejectionReason']
+        contribution.validatedBy = request.user
+        contribution.validationDateTime = datetime.datetime.now()
+        contribution.save()
+        return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
+    
     return redirect('contribution-detail', contributionId)
 
 
