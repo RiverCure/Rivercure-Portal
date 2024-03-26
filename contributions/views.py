@@ -11,11 +11,11 @@ import os
 
 from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
-from context.models import e_Context
-from context.views.authorization import context_organization_edit_permission_check
-from rivercureproject import settings
 from .filters import ContributionFilter, MyContributionsFilter
-from .authorization import author_of_contribution_check
+from .authorization import *
+from context.models import e_Context
+from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
+from rivercureproject import settings
 
 
 
@@ -117,6 +117,7 @@ class ContributionDetailView(DetailView):
         context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=self.get_object().pk)
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org) # TODO: Best way to do this?
+        context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
         return context
 
 

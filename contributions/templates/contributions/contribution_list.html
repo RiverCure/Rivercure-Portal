@@ -20,8 +20,7 @@
 <hr>
 
 <!-- Filter -->
-<!-- TODO: Apply Bootstrap's grid system -->
-<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter</button>
+<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 <div id="filter-menu" class="collapse card card-body">
     <form method="get">
         {{ filter.form |crispy }}
@@ -30,31 +29,28 @@
 </div>
 
 <!-- List of Contributions-->
-<div class="container">
-    <div class="row row-cols-3">
-        {% for contribution in contributions %}
-            <div class="col">
-                <a href="{% url 'contribution-detail' contribution.pk %}">
-                    <div class="card my-2" style="width: 18rem;">
-                        <img src="" class="card-img-top" alt="Contribution image">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                            <h6 class="card-text">By: {{ contribution.createdBy }}</h6>
-                        </div>
-                        <div class="card-footer">
-                            <small class="text-body-secondary card-contributions">Posted on {{ contribution.creationDateTime }}</small>
-                        </div>            
+<div class="row row-cols-3">
+    {% for contribution in contributions %}
+        <div class="col">
+            <a href="{% url 'contribution-detail' contribution.pk %}">
+                <div class="card my-2" style="width: 18rem;">
+                    <img src="" class="card-img-top" alt="Contribution image">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
+                        <h6 class="card-text">By: {{ contribution.createdBy }}</h6>
                     </div>
-                </a>
-            </div>
-        {% empty %}
-            <p class="font-weight-light">There are no contributions yet.</p>
-        {% endfor %}
-    </div>
+                    <div class="card-footer">
+                        <small class="text-body-secondary card-contributions">Posted on {{ contribution.creationDateTime }}</small>
+                    </div>            
+                </div>
+            </a>
+        </div>
+    {% empty %}
+        <p class="font-weight-light">There are no contributions yet.</p>
+    {% endfor %}
 </div>
 
 <!-- Pagination -->
-<!-- TODO: Apply Bootstrap's grid system -->
 <div class="row">
     <div class="col">
         {% if is_paginated %}

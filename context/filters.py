@@ -3,7 +3,8 @@ from django.forms.widgets import TextInput
 from django.contrib.auth.models import User
 from django_filters.widgets import RangeWidget
 
-from .models import e_ContextEvent, e_ContextSensor, e_Context
+from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
+from contributions.models import e_ContextContribution, ContributionStatus
 from rivercureportal.models import e_HydroFeature, HYDROFEATUREKIND_CHOICES
 
 
@@ -64,7 +65,7 @@ class ModeratorFilter(django_filters.FilterSet):
                                                     'type': 'search',
                                                 }))
     grant_date = django_filters.DateFromToRangeFilter(label='Date granted',
-                                                        help_text='The permission was given in between the specified dates. Hint: You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+                                                        help_text='The permission was given in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
                                                         widget=RangeWidget(attrs={
                                                             'placeholder': 'yyyy-mm-dd',
                                                             'type': 'date'
@@ -89,3 +90,34 @@ class ModeratorContextFilter(django_filters.FilterSet):
     class Meta:
         Model = e_Context
         fields = ['Name', 'hydroFeature']
+
+
+class ModeratorContextContributionFilter(django_filters.FilterSet):
+    state = django_filters.ChoiceFilter(label='Contribution State',
+                                        choices=ContributionStatus.choices)
+    situationObserved = django_filters.ChoiceFilter(choices=EVENTKIND_CHOICES, label='Situation Observed')
+    observationDate = django_filters.DateFromToRangeFilter(label='Observation date',
+                                                           help_text='The observation was made in between the specified dates. <i>Hint:</i> You may also just search for observations more recent than the date on the left, or older than the date on the right.',
+                                                           widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
+                                                                                     'type': 'date'}))
+    creationDateTime = django_filters.DateFromToRangeFilter(label='Submission date',
+                                                           help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for contributions more recent than the date on the left, or older than the date on the right.',
+                                                           widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
+                                                                                     'type': 'date'}))
+    context = django_filters.CharFilter(label='Context',
+                                        field_name='context__Name', lookup_expr='icontains',
+                                        widget=TextInput(attrs={
+                                                    'placeholder': 'Search by context name...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    createdBy__username = django_filters.CharFilter(label='Author', field_name='createdBy__username', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by author username...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+
+    class Meta:
+        Model = e_ContextContribution
+        fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'context', 'createdBy__username']

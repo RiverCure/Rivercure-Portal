@@ -1,42 +1,39 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} My Contexts {% endblock %}
+{% block title %} Contributions {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
 
 {% block scripts %}
-<!-- TODO: Fix styling of card list that is in here -->
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
-
 {% endblock %}
 
 
 
 {% block content %}
 
-<!-- TODO: Where to put style tag? -->
+<!-- TODO: Leave style tag here? -->
 <style>
-    .text-approved {
-        font-size: 14px;
-        font-weight: 600;
-        color: #444444;
+    td a { 
+        display: block;
+        color: #212529;
     }
-    
-    .text-pending {
-        color: #a5aec0;
+
+    td a:hover {
+        color: #212529;
     }
 </style>
 
 <!-- Header -->
-<h1> My Contexts </h1>
+<h1> {{context.Name}} Context - Contributions </h1>
 <hr>
 
 <p class="font-weight-light" align="justify">
-    On this page you can see the Contexts in which you have the permission to moderate.
-    For more information on moderators and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+    On this page you can see a Moderator-specific view of the Contributions of {{context.Name}}.
+    For more information on Moderators and Contributions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
-<!-- Filter -->
+<!-- Top buttons -->
 <div class="mb-3">
     <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 </div>
@@ -48,26 +45,34 @@
     </form>
 </div>
 
-<!-- List of Contexts-->
-<div class="row row-cols-3">
-    {% for context in contexts %}
-        <div class="col">
-            <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
-                <div class="card public-context-card" style="width: 18rem;">
-                    <img src={{ context.context.picture.url }} class="card-img-top" alt="Picture of Context">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ context.context.Name }}</h5>
-                        <h6 class="card-text"><em>{{ context.context.hydroFeature }}</em></h6>
-                        
-                        <div class="progress mt-3">
-                            <div class="progress-bar" role="progressbar" style="width: {{context.context.e_contextcontribution_set|get_progress}}%" aria-valuenow="{{context.context.e_contextcontribution_set|get_progress}}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="mt-3"><span class="text-approved">{{context.context.e_contextcontribution_set|get_validated}} validated <span class="text-pending">of {{context.context.e_contextcontribution_set.count}} total</span></span> </div>
-                    </div>
-                </div>
-            </a>
-        </div>
+<!-- Contribution list -->
+<table class="table table-hover">
+    <tr>
+        <th scope="col">Contribution ID</th>
+        <th scope="col">Situation</th>
+        <th scope="col">Date Submitted</th>
+        <th scope="col">Author</th>
+        <th scope="col">State</th>
+    </tr>
+    {% for contribution in contributions %}
+            <tr>
+                <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
+                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
+                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
+                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
+                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
+                <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+            </tr>
+
+        {% empty %}
+        <!-- TODO: Change this to something prettier eheh -->
+        <td><h2 class="text-secondary font-italic no-context-data">There are no Contributions.</h2></td>
     {% endfor %}
+</table>
+
+<!-- Bottom button -->
+<div class="w-100 mb-4">
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-context-list' %}">Back to Context list</a>
 </div>
 
 <!-- Pagination -->
@@ -98,5 +103,6 @@
         {% endif %}
     </div>
 </div>
+
 
 {% endblock content %}

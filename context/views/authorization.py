@@ -58,7 +58,7 @@ def context_event_manager_check(user, context):
 # TODO: Check if this works
 def context_moderator_check(user, context):
     """
-    Checks if the user is a moderator of a context
+    Checks if user is a moderator of a context
     """
     try:
         return ContextMembership.objects.filter(user=user, context=context, permission='context_moderator').exists()

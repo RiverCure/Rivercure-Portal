@@ -16,7 +16,7 @@ from sensors.models import Sensor
 from rest_framework import viewsets
 from ..serializers import ContextSerializer
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter
+from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
 from io import BytesIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -270,7 +270,7 @@ class ModeratorAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     paginate_by = 5
 
     def get_queryset(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
         # Only show organization members that are not already context moderator's for that context
         moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
         members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
@@ -334,6 +334,7 @@ def contextModeratorRemove(request, contextCode, userId):
     
     return redirect('moderator-list', contextCode)
 
+# TODO: Mudar nomes em que está ListView (e na verdade é uma FilterView) para FilterView
 class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_Context
     template_name = 'context/context/moderator_my_context_list.html'
@@ -357,6 +358,32 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     def test_func(self):
         # User must be a Moderator (in some Context)
         return general_moderator_check(self.request.user)
+
+class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_ContextContribution
+    template_name = 'context/context/moderator_context_contribution_list.html'
+    context_object_name = 'contributions'
+    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+    filterset_class = ModeratorContextContributionFilter
+    paginate_by = 10
+
+    def get_queryset(self):
+        # Get this Context's Contributions
+        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode'])
+        return contributions
+
+    def get_context_data(self, **kwargs):
+        context = super(ModeratorContextContributionListView, self).get_context_data(**kwargs)
+        context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        # Filter
+        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode'])
+        context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
+
+        return context
+
+    def test_func(self):
+        # User must be a Moderator of this Context
+        return context_moderator_check(self.request.user, self.kwargs['contextCode'])
     
 
 
