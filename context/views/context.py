@@ -331,6 +331,8 @@ def contextModeratorRemove(request, contextCode, userId):
 
     if context_membership_user:
         context_membership_user.delete()
+
+        # TODO: Send notifs
     
     return redirect('moderator-list', contextCode)
 
@@ -366,6 +368,8 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
     pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
     filterset_class = ModeratorContextContributionFilter
     paginate_by = 10
+
+    # TODO: Order list by date with PENDING coming first
 
     def get_queryset(self):
         # Get this Context's Contributions

@@ -48,11 +48,15 @@ class e_ContextContribution(models.Model):
     
     @transition(field=state, source=ContributionStatus.PENDING, target=ContributionStatus.ACCEPTED)
     def accept(self):
-        return
-    
+        """
+        Change the state of the Contribution from PENDING to ACCEPTED
+        """
+
     @transition(field=state, source=ContributionStatus.PENDING, target=ContributionStatus.REJECTED)
     def reject(self):
-        return
+        """
+        Change the state of the Contribution from PENDING to REJECTED
+        """
     
     def get_long(self):
         """

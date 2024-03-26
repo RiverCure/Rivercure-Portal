@@ -1,13 +1,13 @@
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, CreateView, DetailView, DeleteView
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, CreateView, DetailView, DeleteView
 from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
-from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponseRedirect
 
-from datetime import datetime
-import os
+import datetime
 
 from .models import e_ContextContribution, e_ContributionAttachment
 from .forms import ContributionInitialForm
@@ -159,6 +159,26 @@ class ContributionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
         # Author is the only user who can delete the Contribution
         return author_of_contribution_check(self.request.user, self.get_object())
 
+
+@login_required
+def contributionAccept(request, contributionId):
+    contribution = get_object_or_404(e_ContextContribution, pk=contributionId)
+
+    # Make sure only (Context) Moderator can do this
+    if not context_moderator_check(request.user, contribution.context):
+        return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
+    
+    # Change Contribution state to ACCEPTED
+    if contribution:
+        contribution.accept()
+        contribution.validatedBy = request.user
+        contribution.validationDateTime = datetime.datetime.now()
+
+        contribution.save()
+    
+        # TODO: Send notifs
+
+    return redirect('contribution-detail', contributionId)
 
 
 # Helper functions

@@ -82,7 +82,7 @@
                 <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
                 {% endif %}
 
-                {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager %}
+                {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
                     <p class="font-weight-light"><strong>State:</strong> <span class="{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></p>
                     {% if contribution.validationDateTime %}<p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>{% endif %}
                     {% if contribution.validatedBy %}<p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>{% endif %}
@@ -106,6 +106,10 @@
 
                 {% if isMod %}
                     <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
+                    {% if contribution.state == 'PENDING' %}
+                        <a class="btn btn-success mb-2" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Accept</a>
+                        <a class="btn btn-danger mb-2" href="#">Reject</a>
+                    {% endif %}
                 {% endif %}
 
                 {% if user == contribution.createdBy %}
