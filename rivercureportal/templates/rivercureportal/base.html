@@ -147,15 +147,17 @@
 
         <main role="main" class="container">
             <div class="container">
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                        <div class="alert alert-danger">{{ message }}</div>
-                    {% else %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% block show_messages %} {% comment %} TODO: MAKE SURE THIS DIDNT BREAK ANYTHING!! {% endcomment %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% else %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
-                {% endfor %}
-            {% endif %}
+                {% endblock show_messages %}
             
             {% block content %}{% endblock %}
             </div>

@@ -6,6 +6,7 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView
 from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 
 import datetime
 
@@ -70,6 +71,9 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         files = form.cleaned_data["file_field"]
         for f in files:
             handle_uploaded_file(new_contribution, f)
+        
+        # Send success message (to be shown in detail page)
+        messages.success(self.request, 'Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.')
 
         return super().form_valid(form)
 

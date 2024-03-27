@@ -242,7 +242,7 @@
     <hr>
 
     <!-- Form -->
-    <form method="POST" enctype="multipart/form-data" onsubmit="thankUser()" id="contributionForm">
+    <form method="POST" enctype="multipart/form-data" id="contributionForm">
         {% csrf_token %}
 
         {{ form|crispy }}
