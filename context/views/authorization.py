@@ -4,12 +4,18 @@ from django.db.models import Q
 from context.models import ContextMembership
 
 def context_general_create_permission_check(user):
+    """
+    Checks if the user is an org manager or a context manager of any organization?
+    """
     try:
         return Membership.objects.filter(user=user, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager')).exists()
     except:
         return False
 
 def context_general_event_create_permission_check(user):
+    """
+    Checks if the user is an org manager or a context manager or an event manager of any organization?
+    """
     try:
         return Membership.objects.filter(user=user, organization__is_active=True).filter(Q(permission='org_manager') | Q(permission='org_contextManager') | Q(permission='org_eventManager')).exists()
     except:

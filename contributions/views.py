@@ -1,3 +1,5 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -5,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, DetailView, DeleteView
 from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 
 import datetime
@@ -111,6 +113,22 @@ class ContributionDetailView(DetailView):
     template_name = 'contributions/contribution_detail.html'
     pk_url_kwarg = 'contributionId'
     context_object_name = 'contribution'
+
+    # We override this method because we want to control who gets to see this page
+    # As seen in: https://stackoverflow.com/a/42653231/12387341
+    def get_object(self, queryset=None):
+        contribution = super().get_object(queryset)
+
+        # If Contribution is PENDING or REJECTED
+        if contribution.state != ContributionStatus.ACCEPTED:
+            # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
+            if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization)):
+                # Then the user should not get access to the page
+                raise Http404()
+        
+        # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
+        return contribution
+                
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
