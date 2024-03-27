@@ -60,7 +60,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         context_code = self.kwargs['contextCode']
         _context = e_Context.objects.get(code=context_code)
         new_contribution.context = _context
-        new_contribution.creationDateTime = datetime.now()
+        new_contribution.creationDateTime = datetime.datetime.now()
         new_contribution.observationPlace = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
 
         # Save

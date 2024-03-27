@@ -7,7 +7,6 @@
 
 {% block scripts %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 
 <!-- Leaflet -->
 {% leaflet_js plugins="ALL" %}
@@ -16,7 +15,6 @@
 <script src="https://unpkg.com/proj4"></script>
 <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
 <script src="https://unpkg.com/chroma-js"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
 <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
 <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
@@ -25,6 +23,7 @@
 <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 
 <script>
 
@@ -54,19 +53,6 @@
 
 
 {% block content %}
-
-<!-- TODO: Leave style tag here? -->
-<!-- Should probably move this custom CSS somewhere else -->
-<style>
-    .modal-header {
-        border-bottom: 1px solid #e8e8e8;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #e8e8e8;
-    }
-</style>
-
 <!-- Header -->
 <div class="row">
     <div class="col">

@@ -170,3 +170,16 @@ a:hover {
   padding: 5px;
 }
 */
+
+/***********************************
+/* CONTRIBUTIONS
+/***********************************/
+
+/* For the modals in contribution_detail.html and contribution_form.html */
+.modal-header {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.modal-footer {
+  border-top: 1px solid #e8e8e8;
+}

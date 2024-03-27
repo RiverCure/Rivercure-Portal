@@ -8,6 +8,8 @@
 
 {% block scripts %}
 
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
 {% leaflet_js plugins="ALL" %}
 {% leaflet_css plugins="ALL" %}
 <script src="https://unpkg.com/georaster"></script>
@@ -34,6 +36,14 @@
     /* Silly fix for hiding the draw controls that were showing up by default on the map */
     .leaflet-draw-section {
         display: none;
+    }
+
+    .asteriskField {
+        color: #17a2b8;
+    }
+
+    .word-color {
+        color: #17a2b8;
     }
 </style>
 
@@ -214,34 +224,66 @@
 {% block content %}
 
 
-<h1>{{ context.Name }} context </h1>
+<h1>{{ context.Name }} Context </h1>
 <p>Organization: <em>{{ context.organization }}</em></p>
 <hr>
 
 
 <div class="content-section">
     <!-- Header -->
-    {% comment %} <h1>{{ context_name }}</h1> {% endcomment %}
     <p class="font-weight-light" align="justify">
         If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting
-        a <b>contribution</b>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
+        a <span class='word-color'>Contribution</span>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
         the date and place of this episode, and, optionally, any videos or images you have collected of the incident.
     </p>
     <p class="font-weight-light" align="justify">
-        For more information about RiverCure and contributions, please visit our <a href="{% url 'rivercure-about' %}">About</a> page.
+        For more information about RiverCure and Contributions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
     </p>
     <hr>
 
     <!-- Form -->
-    <form method="POST" enctype="multipart/form-data" onsubmit="thankUser()">
+    <form method="POST" enctype="multipart/form-data" onsubmit="thankUser()" id="contributionForm">
         {% csrf_token %}
 
         {{ form|crispy }}
 
-        <button class="btn btn-outline-info" type="submit">Submit</button>
+        <!-- Confirm Modal Button-->
+        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmModal">
+            Submit
+        </button>
+
         <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context.code %}">Cancel</a>
 
     </form>
+    
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Submit Contribution {{contribution.pk}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="justify">
+                        Are you sure you want to submit this Contribution? Make sure the information is <span class='word-color'>correct</span>!
+                    </p>
+                    <p class="justify">
+                        After submission, your Contribution will await <span class='word-color'>validation</span>, which will be performed by a RiverCure Moderator.
+                    </p>
+                    <p class="justify">
+                        To read more about Contributions and the Validation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-info my-3 mr-3" type="submit" form="contributionForm">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock content %}

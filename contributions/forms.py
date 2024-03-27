@@ -29,14 +29,14 @@ class ContributionInitialForm(forms.ModelForm):
                                               help_text='This is the date at which you have made your observation.',
                                               label='Observation Date')
     observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter a description of what you observed. Example: The water level reached 2 meters.'}),
-                                             help_text='This is a text description of the observation you have made.',
+                                             help_text='This is a text description of the observation you made.',
                                              label='Description')
     situationObserved = forms.ChoiceField(choices=EVENTKIND_CHOICES,
-                                          help_text='This is the situation you observed.',
+                                          help_text='This is the type of situation you observed.',
                                           label='Situation Observed')
-    lat = forms.FloatField(label='Latitude')
-    lng = forms.FloatField(label='Longitude')
-    file_field = MultipleFileField(help_text='Submit any photos or videos you have related to the situation you observed.',
+    lat = forms.FloatField(label='Latitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
+    lng = forms.FloatField(label='Longitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
+    file_field = MultipleFileField(help_text='Optional: Submit any photos or videos you have related to the situation you observed.',
                                    label='Images and videos',
                                    required=False)
 
@@ -47,7 +47,7 @@ class ContributionInitialForm(forms.ModelForm):
             'observationPlace': 'Observation Place',
         }
         help_texts = {
-            'observationPlace': 'Move the map around to pick the location. Alternatively, you can search for the desired position.'
+            'observationPlace': 'Move the map around to pick the location. Alternatively, you can text search for the desired position.'
         }
         widgets = {'observationPlace': LeafletWidget()}
     
@@ -55,6 +55,8 @@ class ContributionInitialForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
         self.fields['observationPlace'].required = False
+
+
 
 class RejectionForm(forms.Form):
     rejectionReason = forms.CharField(max_length=500,
