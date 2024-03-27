@@ -3,10 +3,12 @@ import shutil
 import zipfile
 import geojson
 import datetime
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
+
 from context.views.helpers import get_context_folder_path, get_log_folder_path
 from rivercureproject.settings import MEDIA_ROOT
 from ..forms import ContextForm, UploadContextForm
@@ -30,7 +32,7 @@ from .prepare_files import *
 from .upload import boundaryline_creation
 from context.views.upload import alignment_creation, context_creation, refinement_creation
 from organization.authorization import belongs_to_organization
-from contributions.models import e_ContextContribution
+from contributions.models import e_ContextContribution, ContributionStatus
 from django_filters.views import FilterView
 from django.db.models import Count
 
@@ -81,18 +83,27 @@ class PublicContextListView(FilterView):
     paginate_by = 9
 
     def get_queryset(self):
-        # Order by number of contributions belonging to this Context (from higher to lower)
+        # context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
         # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
-        context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
-        # context_list = e_Context.objects.exclude(isPublic=False).order_by('Name')
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context_list = e_Context.objects.exclude(isPublic=False).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
         return context_list
     
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['context_list'] = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions')
+        # context['context_list'] = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions')
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        # TODO: Filtering: Is this working well? Should I change context_list to public_contexts? Is it indifferent?
+        context['context_list'] = e_Context.objects.exclude(isPublic=False).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
+
         return context
 
 
@@ -154,7 +165,7 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk).order_by('creationDateTime') # Contributions that belong to this context
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('creationDateTime') # Contributions that belong to this context and are Accepted
         context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
         return context
     

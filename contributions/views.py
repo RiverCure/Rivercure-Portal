@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 
 import datetime
 
-from .models import e_ContextContribution, e_ContributionAttachment
+from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus
 from .forms import ContributionInitialForm, RejectionForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
@@ -86,7 +86,7 @@ class ContributionListView(FilterView):
     def get_queryset(self):
 
         context_code = self.kwargs['contextCode']
-        contribution_list = e_ContextContribution.objects.filter(context=context_code)
+        contribution_list = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED) # Only show Accepted Contributions
 
         return contribution_list
     
@@ -95,7 +95,7 @@ class ContributionListView(FilterView):
 
         context = super().get_context_data(**kwargs)
         context['context'] = get_object_or_404(e_Context, code=context_code)
-        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code)
+        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED) # Only show Accepted Contributions
         context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context
@@ -198,6 +198,9 @@ def contributionReject(request, contributionId):
         contribution.validatedBy = request.user
         contribution.validationDateTime = datetime.datetime.now()
         contribution.save()
+        
+        # TODO: Send notifs
+        
         return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
     
     return redirect('contribution-detail', contributionId)

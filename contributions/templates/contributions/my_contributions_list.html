@@ -20,13 +20,14 @@
 
 <!-- Filter -->
 <!-- TODO: Apply Bootstrap's grid system -->
-<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Filter</button>
+<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 <div id="filter-menu" class="collapse card card-body">
     <form method="get">
         {{ filter.form |crispy }}
         <button type="submit" class="btn btn-outline-info">Apply</button>
     </form>
 </div>
+<hr>
 
 <!-- List of Contributions-->
 <div class="container">
@@ -53,10 +54,14 @@
                 </a>
             </div>
         {% empty %}
-            <p class="font-weight-light">There are no contributions yet.</p>
+            {% comment %} <p class="font-weight-light">There are no contributions yet.</p> {% endcomment %}
         {% endfor %}
     </div>
 </div>
+<!-- If list empty -->
+{% if contributions.count == 0 %}
+    <p class="font-weight-light my-2 text-center">There are no contributions yet. Why don't you make some Contributions?</p>
+{% endif %}
 
 <!-- Pagination -->
 <!-- TODO: Apply Bootstrap's grid system -->

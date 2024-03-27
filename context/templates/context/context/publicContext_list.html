@@ -41,6 +41,7 @@
         <button type="submit" class="btn btn-outline-info">Apply</button>
     </form>
 </div>
+<hr>
 
 <!-- List of Public Contexts-->
 <!-- TODO: Apply Bootstrap's grid system -->
@@ -55,13 +56,17 @@
                         <h6 class="card-text"><em>{{ context.hydroFeature }}</em></h6>
                     </div>    
                     <ul class="list-group list-group-flush">
-                        <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set.count }}</p> <!-- TODO: Show only Accepted contributions-->
+                        <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set|get_accepted }}</p> <!-- TODO: Show only Accepted contributions-->
                     </ul>        
                 </div>
             </a>
         </div>
     {% endfor %}
 </div>
+<!-- If list is empty -->
+{% if public_contexts.count == 0 %}
+    <p class="font-weight-light my-2 text-center">There are no Public Contexts yet.</p>
+{% endif %}
 
 <!-- Pagination -->
 <!-- TODO: Apply Bootstrap's grid system -->

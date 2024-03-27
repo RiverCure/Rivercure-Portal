@@ -1,7 +1,7 @@
 # <app>/templatetags/my_tags.py
 from django import template
 
-from contributions.models import e_ContextContribution
+from contributions.models import e_ContextContribution, ContributionStatus
 
 register = template.Library()
 
@@ -35,9 +35,14 @@ def get_validated(contributions):
 # Return Bootstrap class for text color depending on contribution state
 @register.filter(name='get_state_color')
 def get_state_color(state):
-    if state == 'PENDING':
+    if state == 'PENDING': # TODO: Change this and others to use ContributionStatus
         return 'text-warning'
     elif state == 'ACCEPTED':
         return 'text-success'
     else:
         return 'text-danger'
+
+@register.filter(name='get_accepted')
+def get_accepted(contributions):
+    accepted = contributions.filter(state=ContributionStatus.ACCEPTED).count()
+    return accepted

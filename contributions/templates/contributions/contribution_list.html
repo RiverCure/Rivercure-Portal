@@ -27,6 +27,7 @@
         <button type="submit" class="btn btn-outline-info">Apply</button>
     </form>
 </div>
+<hr>
 
 <!-- List of Contributions-->
 <div class="row row-cols-3">
@@ -46,8 +47,17 @@
             </a>
         </div>
     {% empty %}
-        <p class="font-weight-light">There are no contributions yet.</p>
+        {% comment %} <p class="font-weight-light">There are no contributions yet. Why don't you contribute to this Context?</p> {% endcomment %}
     {% endfor %}
+</div>
+<!-- If list empty -->
+{% if contributions.count == 0 %}
+    <p class="font-weight-light my-2 text-center">There are no contributions yet. Why don't you <a href="{% url 'contribution-create' context.code %}">contribute</a> to this Context?</p>
+{% endif %}
+
+<!-- Bottom button -->
+<div class="w-100 mb-4">
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'public-context-detail' context.code %}">Back to Context</a>
 </div>
 
 <!-- Pagination -->

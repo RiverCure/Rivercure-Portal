@@ -161,16 +161,13 @@
                                         <p class="justify">
                                             To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                         </p>
-                                        <!-- TODO: Add form here! -->
+                                        <!-- Form -->
                                         <hr>
                                         {% include "contributions/rejection_reason.html" %}
                                     </div>
                                     <div class="modal-footer">
-                                        {% comment %} <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                        <a class="btn btn-danger my-3 mr-3" href="#">Reject</a> {% endcomment %}
-
                                         <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                        <!-- https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                                        <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
                                         <button type="submit" class="btn btn-danger my-3 mr-3" form="rejectionForm">Confirm</button>
                                     </div>
                                 </div>
