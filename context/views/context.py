@@ -34,7 +34,7 @@ from context.views.upload import alignment_creation, context_creation, refinemen
 from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution, ContributionStatus
 from django_filters.views import FilterView
-from django.db.models import Count
+from django.db.models import Count, Case, When, Value 
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -372,6 +372,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
         # User must be a Moderator (in some Context)
         return general_moderator_check(self.request.user)
 
+# TODO: Should I change this to be in /contributions app ?
 class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_ContextContribution
     template_name = 'context/context/moderator_context_contribution_list.html'
@@ -384,14 +385,20 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
 
     def get_queryset(self):
         # Get this Context's Contributions
-        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode'])
+        # PEDNING Contributions come first. Done as seen in: https://stackoverflow.com/questions/48569659/django-how-would-i-create-a-sort-for-a-query-to-put-one-specific-element-first
+        # TODO: Perhaps redo with: https://www.pixiebrix.com/blog/sort-django-queryset-by-custom-order/
+        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
+            When(state=ContributionStatus.PENDING, then=Value(True)))
+        ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
         return contributions
 
     def get_context_data(self, **kwargs):
         context = super(ModeratorContextContributionListView, self).get_context_data(**kwargs)
         context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
         # Filter
-        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode'])
+        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
+            When(state=ContributionStatus.PENDING, then=Value(True)))
+        ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
         context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
 
         return context

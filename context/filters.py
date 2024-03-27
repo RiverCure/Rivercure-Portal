@@ -104,13 +104,6 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
                                                            help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for contributions more recent than the date on the left, or older than the date on the right.',
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
-    context = django_filters.CharFilter(label='Context',
-                                        field_name='context__Name', lookup_expr='icontains',
-                                        widget=TextInput(attrs={
-                                                    'placeholder': 'Search by context name...',
-                                                    'class': 'form-control',
-                                                    'type': 'search',
-                                                }))
     createdBy__username = django_filters.CharFilter(label='Author', field_name='createdBy__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
                                                     'placeholder': 'Search by author username...',
@@ -120,4 +113,4 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
 
     class Meta:
         Model = e_ContextContribution
-        fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'context', 'createdBy__username']
+        fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'createdBy__username']
