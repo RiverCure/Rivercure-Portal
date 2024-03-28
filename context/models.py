@@ -87,7 +87,7 @@ class ContextMembership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
     permission = models.CharField(max_length=80, choices=Permissions, null=True)
-    grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
+    grant_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Context membership'

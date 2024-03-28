@@ -86,7 +86,6 @@
 
                 <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
                 <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
-                <p class="font-weight-light"><strong>Context:</strong> {{ contribution.context.Name }}</p>
                 {% comment %} {% if contribution.contextEvent is not Null %} {% endcomment %}
                 {% if contribution.contextEvent %}
                 <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
@@ -100,7 +99,7 @@
                     {% if contribution.rejectionReason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.rejectionReason }}</p>{% endif %}
                 {% endif %}
 
-                <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">Back to Context</a>
+                <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">See Context</a>
 
                 {% if isMod %}
                     <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>

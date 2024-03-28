@@ -129,6 +129,8 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     filterset_class = ModeratorContextFilter
     paginate_by = 6
 
+    # TODO: Mudar para ser só os Contextos da Organização atual?
+
     def get_queryset(self):
         # Get Contexts for which this user is a Moderator
         contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
