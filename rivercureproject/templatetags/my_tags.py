@@ -32,6 +32,12 @@ def get_validated(contributions):
     completed = contributions.exclude(state='PENDING').count()
     return str(completed)
 
+# Get number of pending contributions
+@register.filter(name='get_pending')
+def get_pending(contributions):
+    pending = contributions.filter(state='PENDING').count()
+    return str(pending)
+
 # Return Bootstrap class for text color depending on contribution state
 @register.filter(name='get_state_color')
 def get_state_color(state):
@@ -42,6 +48,7 @@ def get_state_color(state):
     else:
         return 'text-danger'
 
+# Get number of accepted contributions
 @register.filter(name='get_accepted')
 def get_accepted(contributions):
     accepted = contributions.filter(state=ContributionStatus.ACCEPTED).count()

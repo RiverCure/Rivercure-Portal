@@ -49,6 +49,8 @@
     </form>
 </div>
 
+
+
 <!-- List of Contexts-->
 <div class="row row-cols-3">
     {% for context in contexts %}
@@ -63,7 +65,7 @@
                         <div class="progress mt-3">
                             <div class="progress-bar" role="progressbar" style="width: {{context.context.e_contextcontribution_set|get_progress}}%" aria-valuenow="{{context.context.e_contextcontribution_set|get_progress}}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="mt-3"><span class="text-approved">{{context.context.e_contextcontribution_set|get_validated}} validated <span class="text-pending">of {{context.context.e_contextcontribution_set.count}} total</span></span> </div>
+                        <div class="mt-3"><span class="text-approved">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-pending">of {{context.context.e_contextcontribution_set.count}} total</span></span> </div>
                     </div>
                 </div>
             </a>

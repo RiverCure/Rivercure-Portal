@@ -1,19 +1,19 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
-from ..models import e_Context, ContextMembership
-from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from organization.models import Membership
+from django_filters.views import FilterView
+from django.db.models import Case, When, Value, Count
+
+from ..models import e_Context, ContextMembership
+from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
 from .authorization import *
 from .prepare_files import *
+from organization.models import Membership
 from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution, ContributionStatus
-from django_filters.views import FilterView
-from django.db.models import Case, When, Value 
 
 class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
@@ -129,17 +129,20 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     filterset_class = ModeratorContextFilter
     paginate_by = 6
 
-    # TODO: Mudar para ser só os Contextos da Organização atual?
-
     def get_queryset(self):
         # Get Contexts for which this user is a Moderator
-        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
+        # And order them by number of pending contributions (hight to low)
+        pendingContributions = Count("context__e_contextcontribution", filter=Q(context__e_contextcontribution__state=ContributionStatus.PENDING))
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
+        # contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
         return contexts
 
     def get_context_data(self, **kwargs):
         context = super(ModeratorContextsListView, self).get_context_data(**kwargs)
         # Filter
-        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
+        pendingContributions = Count("context__e_contextcontribution", filter=Q(context__e_contextcontribution__state=ContributionStatus.PENDING))
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
+        # contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
         context['filter'] = ModeratorContextFilter(self.request.GET, queryset=contexts)
 
         return context
@@ -148,7 +151,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
         # User must be a Moderator (in some Context)
         return general_moderator_check(self.request.user)
 
-# TODO: Should I change this to be in /contributions app ?
+# TODO: Should I change this to be in contributions app ?
 class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_ContextContribution
     template_name = 'context/moderator/moderator_context_contribution_list.html'
@@ -156,8 +159,6 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
     pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
     filterset_class = ModeratorContextContributionFilter
     paginate_by = 10
-
-    # TODO: Order list by date with PENDING coming first
 
     def get_queryset(self):
         # Get this Context's Contributions
