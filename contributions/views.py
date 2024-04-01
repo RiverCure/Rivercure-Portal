@@ -12,8 +12,8 @@ from django.contrib import messages
 
 import datetime
 
-from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus
-from .forms import ContributionInitialForm, RejectionForm
+from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport
+from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
 from context.models import e_Context
@@ -141,6 +141,7 @@ class ContributionDetailView(DetailView):
         context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org) # TODO: Best way to do this?
         context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
         context['form'] = RejectionForm()
+        context['report_form'] = ReportForm()
         return context
     
 
@@ -226,6 +227,33 @@ def contributionReject(request, contributionId):
         return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
     
     return redirect('contribution-detail', contributionId)
+
+
+@login_required
+def contributionReport(request, contributionId):
+    contribution = get_object_or_404(e_ContextContribution, pk=contributionId)
+
+    # Any logged-in user can do this
+    # Create a form instance and populate it with data from the request:
+    form = ReportForm(request.POST)
+
+    if form.is_valid():
+        # Report Contribution
+        contribution.report()
+
+        # Create e_ReportReason object
+        report = e_ContributionReport(contribution=contribution, reported_by=request.user, reason=form.cleaned_data['reason'])
+
+        # Save everything
+        contribution.save()
+        report.save()
+        
+        # TODO: Send notifs
+        
+        return HttpResponseRedirect(reverse('contribution-list', args=[contribution.context.code]))
+    
+    return redirect('contribution-list', args=[contribution.context.code])
+
 
 
 # Helper functions

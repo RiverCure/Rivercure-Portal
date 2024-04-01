@@ -161,6 +161,7 @@
                                 </p>
                                 <!-- Form -->
                                 <hr>
+                                <!-- TODO: Put form here, instead of doing this 'include' -->
                                 {% include "contributions/rejection_reason.html" %}
                             </div>
                             <div class="modal-footer">
@@ -282,7 +283,56 @@
 
         </div>
     </div>
+
+    {% if isMod %}
+        <!-- Reports section -->
+        <div class="content-section">
+        </div>
+    {% endif %}
     
+</div>
+
+
+<!-- Report Modal Button-->
+<button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#reportModal">
+    Report
+</button>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel"><span class='text-danger'>Report Contribution {{contribution.pk}}</span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
+                <p class="justify">Make sure you are following the <a href="#">Platform Guidelines</a>.</p>
+                <p class="justify">
+                    To read more about reporting Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                </p>
+                <hr>
+                <!-- Form -->
+                <form action="{% url 'contribution-report' contribution.pk %}" method="POST" id="reportForm">
+                    {% csrf_token %}
+                
+                    <div class="form-group m-2"> <!-- style="float: left;"-->
+                        <label for="id_reason">Please write the <span class='font-weight-bold'>reason</span> why you report this Contribution.</label>
+                        {{ report_form.reason }}
+                    </div>
+                
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                <button type="submit" class="btn btn-danger my-3 mr-3" form="reportForm">Confirm</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 

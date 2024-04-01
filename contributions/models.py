@@ -63,6 +63,12 @@ class e_ContextContribution(models.Model):
         Change the state of the Contribution from PENDING to REJECTED
         """
     
+    @transition(field=state, source=ContributionStatus.ACCEPTED, target=ContributionStatus.PENDING)
+    def report(self):
+        """
+        Report Contribution. This changes the state of the Contribution from ACCEPTED to PENDING
+        """
+    
     def get_long(self):
         """
         Returns the longitude for this contribution's location
@@ -165,3 +171,12 @@ class e_ContributionAttachment(models.Model):
         #         # Do nothing
         #         error = e.stderr.decode()
 
+class e_ContributionReport(models.Model):
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted
+    reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    report_datetime = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField()
+
+    class Meta:
+        verbose_name = 'Contribution\'s Report'
+        verbose_name_plural = 'Contribution\'s Reports'
