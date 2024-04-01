@@ -1,6 +1,6 @@
 {% extends "rivercureportal/base.html" %}
 {% block show_messages %}{% endblock %} <!-- As seen in: https://stackoverflow.com/questions/7768165/how-to-override-django-base-template -->
-{% block title %} Contribution {% endblock %}
+{% block title %} Contribution {{ contribution }} {% endblock %}
 {% load leaflet_tags %}
 {% load auth_extras %}
 {% load my_tags %}
@@ -55,6 +55,9 @@
 
 {% block content %}
 <style>
+    .my-report-modal-body {
+        padding: 16px;
+    }
 </style>
 
 
@@ -78,7 +81,6 @@
 {% endif %}
 
 
-<div class="container">
 
     <!-- Meta information section -->
     <div class="content-section">
@@ -179,6 +181,63 @@
             <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
         {% endif %}
     </div>
+
+    <!-- Reports section -->
+    {% if reports %}
+        <!-- Only Context Mod, Org or Contexts Managers, and Admin can see this section -->
+        {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
+            <div class="content-section">
+
+                <div class="container-fluid">
+
+                    <div class='mt-4'>
+                        <h2>Reports</h2>
+                        <p class="subtitle">Reports made by users.</p>
+                    </div>
+                
+                    <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+                        {% for report in reports %}
+                            <div class="col-4">
+                                <!-- Report Card -->
+                                <div class="card contribution-card" style="height: 100%;">
+                                    <div class="card-body d-flex flex-column">
+                                        <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
+                                        <div class="mt-auto">
+                                            <p class="card-text"><small class="text-muted">Reported by {{ report.reported_by }}</small></p>
+                                            <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">Read</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <!-- Read Report Modal -->
+                            <div class="modal fade" id="readReportModal" tabindex="-1" role="dialog" aria-labelledby="readReportModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="readReportModalLabel">Report by {{ report.reported_by }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body my-report-modal-body">
+                                            <p class="justify">{{report.reason}}</p>
+                                            <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+            </div>
+        {% endif %}
+    {% endif %}
 
     <!-- Photo section -->
     {% if contribution_media_list %}
@@ -284,56 +343,51 @@
         </div>
     </div>
 
-    {% if isMod %}
-        <!-- Reports section -->
-        <div class="content-section">
-        </div>
-    {% endif %}
     
-</div>
 
+{% if contribution.state != "PENDING" %}
+    <!-- Report Modal Button-->
+    <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#reportModal">
+        Report
+    </button>
 
-<!-- Report Modal Button-->
-<button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#reportModal">
-    Report
-</button>
-
-<!-- Report Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reportModalLabel"><span class='text-danger'>Report Contribution {{contribution.pk}}</span></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
-                <p class="justify">Make sure you are following the <a href="#">Platform Guidelines</a>.</p>
-                <p class="justify">
-                    To read more about reporting Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
-                </p>
-                <hr>
-                <!-- Form -->
-                <form action="{% url 'contribution-report' contribution.pk %}" method="POST" id="reportForm">
-                    {% csrf_token %}
-                
-                    <div class="form-group m-2"> <!-- style="float: left;"-->
-                        <label for="id_reason">Please write the <span class='font-weight-bold'>reason</span> why you report this Contribution.</label>
-                        {{ report_form.reason }}
-                    </div>
-                
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
-                <button type="submit" class="btn btn-danger my-3 mr-3" form="reportForm">Confirm</button>
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel"><span class='text-danger'>Report Contribution {{contribution.pk}}</span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
+                    <p class="justify">Make sure you are following the <a href="#">Platform Guidelines</a>.</p>
+                    <p class="justify">
+                        To read more about reporting Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                    </p>
+                    <hr>
+                    <!-- Form -->
+                    <form action="{% url 'contribution-report' contribution.pk %}" method="POST" id="reportForm">
+                        {% csrf_token %}
+                    
+                        <div class="form-group m-2"> <!-- style="float: left;"-->
+                            <label for="id_reason">Please write the <span class='font-weight-bold'>reason</span> why you report this Contribution.</label>
+                            {{ report_form.reason }}
+                        </div>
+                    
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                    <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                    <button type="submit" class="btn btn-danger my-3 mr-3" form="reportForm">Confirm</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% endif %}
 
 
 {% endblock content %}

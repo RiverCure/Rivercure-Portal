@@ -122,6 +122,7 @@ class ContributionDetailView(DetailView):
         # If Contribution is PENDING or REJECTED
         if contribution.state != ContributionStatus.ACCEPTED:
             # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
+            # TODO: OR IS ADMIN!!
             if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization)):
                 # Then the user should not get access to the page
                 raise Http404()
@@ -142,6 +143,7 @@ class ContributionDetailView(DetailView):
         context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
         context['form'] = RejectionForm()
         context['report_form'] = ReportForm()
+        context['reports'] = e_ContributionReport.objects.filter(contribution=self.get_object().pk).order_by('-report_datetime')
         return context
     
 
