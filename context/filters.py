@@ -5,7 +5,8 @@ from django_filters.widgets import RangeWidget
 
 from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
 from contributions.models import e_ContextContribution, ContributionStatus
-from rivercureportal.models import e_HydroFeature, HYDROFEATUREKIND_CHOICES
+from rivercureportal.models import e_HydroFeature
+from organization.models import Organization
 
 
 class ContextSensorFilter(django_filters.FilterSet):
@@ -81,15 +82,16 @@ class ModeratorContextFilter(django_filters.FilterSet):
                                         field_name='context__Name',
                                         lookup_expr='icontains',
                                         widget=TextInput(attrs={
-                                                    'placeholder': 'Search by name...',
+                                                    'placeholder': 'Search by Context name...',
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
-    hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all())
+    hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
+    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label='Organization', queryset=Organization.objects.all())
 
     class Meta:
         Model = e_Context
-        fields = ['Name', 'hydroFeature']
+        fields = ['Name', 'hydroFeature', 'organization']
 
 
 class ModeratorContextContributionFilter(django_filters.FilterSet):

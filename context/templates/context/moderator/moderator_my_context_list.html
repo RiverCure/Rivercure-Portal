@@ -72,6 +72,9 @@
         </div>
     {% endfor %}
 </div>
+{% if contexts.count == 0 %}
+    <p class="font-weight-light my-2 text-center">There are no Contexts.</p>
+{% endif %}
 
 <!-- Pagination -->
 <div class="row">
