@@ -13,6 +13,7 @@ def url_replace (request, field, value):
 
     return dict_.urlencode()  
 
+
 # Get progress (that is, how many contributions have been validated) in percentage
 @register.filter(name='get_progress')
 def get_progress(contributions):
@@ -26,6 +27,18 @@ def get_progress(contributions):
 
     return str(progress)
 
+@register.filter(name='get_pending_percentage')
+def get_pending_percentage(contributions):
+    total = contributions.count()
+    pending = contributions.filter(state='PENDING').count()
+
+    if total == 0:
+            return '0'
+        
+    pending_percentage = round((pending * 100) / total)
+
+    return str(pending_percentage)
+
 # Get number of validated contributions
 @register.filter(name='get_validated')
 def get_validated(contributions):
@@ -38,21 +51,26 @@ def get_pending(contributions):
     pending = contributions.filter(state='PENDING').count()
     return str(pending)
 
-# Return Bootstrap class for text color depending on contribution state
+# Get number of accepted contributions
+@register.filter(name='get_accepted')
+def get_accepted(contributions):
+    accepted = contributions.filter(state=ContributionStatus.ACCEPTED).count()
+    return accepted
+
+
 @register.filter(name='get_state_color')
 def get_state_color(state):
+    """
+    Returns Bootstrap class for text color depending on Contribution state
+
+    state: one of the following strings - PENDING, ACCEPTED or REJECTED
+    """
     if state == 'PENDING': # TODO: Change this and others to use ContributionStatus
         return 'text-warning'
     elif state == 'ACCEPTED':
         return 'text-success'
     else:
         return 'text-danger'
-
-# Get number of accepted contributions
-@register.filter(name='get_accepted')
-def get_accepted(contributions):
-    accepted = contributions.filter(state=ContributionStatus.ACCEPTED).count()
-    return accepted
 
 @register.filter(name='is_active')
 def is_active(isFirst):
