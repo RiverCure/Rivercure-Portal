@@ -46,3 +46,13 @@ def get_state_color(state):
 def get_accepted(contributions):
     accepted = contributions.filter(state=ContributionStatus.ACCEPTED).count()
     return accepted
+
+@register.filter(name='is_active')
+def is_active(isFirst):
+    """
+    Returns class 'active' if element is first in Bootstrap Carousel.
+
+    isFirst: bool that says whether this element is the first in a list
+    """
+    if isFirst:
+        return 'active'

@@ -6,9 +6,11 @@ from context.models import EVENTKIND_CHOICES
 from django_fsm import FSMField, transition
 
 import os
+import subprocess
 from datetime import datetime
 from uuid import uuid4
 from mimetypes import guess_type
+from PIL import Image
 
 from rivercureproject.settings import MEDIA_ROOT
 
@@ -100,21 +102,11 @@ def create_media_file_name(instance, filename):
 class e_ContributionAttachment(models.Model):
     file = models.FileField('Attachment', upload_to=create_media_file_name)
     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete attachment from DB if parent contribution is deleted
+    # video_thumbnail = models.ImageField(null=True, blank=True) # Only if attachment is a video
 
     class Meta:
         verbose_name = 'Contribution\'s Attachment'
         verbose_name_plural = 'Contribution\'s Attachments'
-
-    # def delete(self, *args, **kwargs):
-    #     # Delete file from file system
-
-    #     path = self.file.path
-    #     if os.path.exists(path):
-    #         os.remove(path)
-        
-    #     # self.file.delete(save=False)
-
-    #     return super(e_ContributionAttachment, self).delete(*args, **kwargs)
 
     def is_video_or_image(self):
         """
@@ -132,3 +124,44 @@ class e_ContributionAttachment(models.Model):
         """
         type_tuple = guess_type(self.file.url, strict=True)
         return type_tuple[0]
+    
+    def save(self, *args, **kwargs):
+        super().save()
+
+        file_path = self.file.path
+        output_size = (300,300) # TODO: Is this a good size? Should it be higher?
+
+        # If it's an image
+        if self.is_video_or_image() == 'image':
+            # We must resize it
+            img = Image.open(file_path)
+
+            if img.height > 300 or img.width > 300:
+                img.thumbnail(output_size)
+                img.save(file_path)
+        
+        # Video thumbnail
+        # # Else, since it's a video, we must save a thumbnail (with the same output size as image)
+        # else:
+        #     video_path = file_path.split('.')[0]
+        #     video_extension = file_path.split('.')[-1]
+        #     img_output_path = video_path + "_thumb"
+
+
+        #     # TODO: Do as subprocess instead?
+        #     # TODO: RESIZE IMG HERE OR IN ANOTHER FOLLOWING SUPROCESS USING PILLOW?
+        #     # subprocess.call(['ffmpeg', '-i', file_path, '-ss', '00:00:00.000', '-vframes', '1', img_output_path])
+
+        #     try:
+        #         (
+        #             ffmpeg
+        #             .input(in_filename, ss=time)
+        #             .filter('scale', width, -1)
+        #             .output(out_filename, vframes=1)
+        #             .overwrite_output()
+        #             .run(capture_stdout=True, capture_stderr=True)
+        #         )
+        #     except ffmpeg.Error as e:
+        #         # Do nothing
+        #         error = e.stderr.decode()
+

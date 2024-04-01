@@ -68,3 +68,4 @@ zope.event==4.5.0
 zope.interface==5.4.0
 django-fsm==2.8.1
 django-cleanup==8.1.0
+#pyffmpeg==2.4.2.18.1
