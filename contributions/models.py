@@ -70,6 +70,12 @@ class e_ContextContribution(models.Model):
         Report Contribution. This changes the state of the Contribution from ACCEPTED to PENDING
         """
     
+    def is_pending(self):
+        """
+        Returns whether Contribution is in state Pending
+        """
+        return self.state == ContributionStatus.PENDING
+    
     def get_long(self):
         """
         Returns the longitude for this contribution's location

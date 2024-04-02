@@ -27,6 +27,7 @@ urlpatterns = [
     path('<str:contextCode>/moderators/add/', ModeratorAddListView.as_view(), name='moderator-list-add'),
     path('<str:contextCode>/moderators/<int:userId>/add/', contextModeratorAdd, name='moderator-user-add'),
     path('<str:contextCode>/moderators/<int:userId>/remove/', contextModeratorRemove, name='moderator-remove'),
+    path('<str:contextCode>/moderators/batch-handle/', batchHandle, name='contribution-batch-handle'),
     # Mesh progress
     path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
     path('mesh-status/<str:contextCode>/progress', mesh_status_progress, name='mesh-status-progress'),

@@ -95,7 +95,7 @@ class ModeratorContextFilter(django_filters.FilterSet):
 
 
 class ModeratorContextContributionFilter(django_filters.FilterSet):
-    state = django_filters.ChoiceFilter(label='Contribution State',
+    state = django_filters.ChoiceFilter(label='State',
                                         choices=ContributionStatus.choices)
     situationObserved = django_filters.ChoiceFilter(choices=EVENTKIND_CHOICES, label='Situation Observed')
     observationDate = django_filters.DateFromToRangeFilter(label='Observation date',

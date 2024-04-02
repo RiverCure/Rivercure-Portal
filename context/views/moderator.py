@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 from django.db.models import Case, When, Value, Count
+from django.contrib import messages
 
 from ..models import e_Context, ContextMembership
 from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
@@ -14,6 +15,7 @@ from .prepare_files import *
 from organization.models import Membership
 from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution, ContributionStatus
+from contributions.views import accept_contribution, reject_contribution
 
 class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
@@ -183,4 +185,57 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
     def test_func(self):
         # User must be a Moderator of this Context
         return context_moderator_check(self.request.user, self.kwargs['contextCode'])
+
+
+@login_required
+def batchHandle(request, contextCode):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+
+    # Make sure only (Context) Moderator can do this
+    if not context_moderator_check(request.user, _context):
+        return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
     
+    
+    if request.method == "POST":
+
+        # Iterate through list of checked-Contribution IDs
+        contribution_id_list = request.POST.getlist('contribution-checkboxes')
+
+        # Accept Contributions
+        if 'batch-accept' in request.POST:
+            for contribution_id in contribution_id_list:
+                # Get Contribution
+                contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
+
+                ## Accept Contribution if it's Pending (TODO: What about Rejected?)
+                if contribution and contribution.is_pending():
+                    accept_contribution(contribution, request.user)
+
+                    # TODO: For each, send notifs
+            
+            # Send message
+            messages.success(request, 'The selected Pending Contributions have been accepted.')
+            return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
+        
+        # Reject Contributions
+        elif 'batch-reject' in request.POST:
+            for contribution_id in contribution_id_list:
+                # Get Contribution
+                contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
+
+                ## Reject Contribution if it's Pending (TODO: What about Accepted?)
+                if contribution and contribution.is_pending():
+                    reject_contribution(contribution, request.user, "BATCH REJECT")
+
+                    # TODO: For each, send notifs
+            
+            # Send message
+            messages.success(request, 'The selected Pending Contributions have been rejected.')
+            return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
+        
+        else:
+            # Do nothing, that is, redirect to 'moderator-context-contribution-list'
+            return redirect('moderator-context-contribution-list', contextCode)
+
+    else: # If it's not a POST request
+        return redirect('moderator-context-contribution-list', contextCode)

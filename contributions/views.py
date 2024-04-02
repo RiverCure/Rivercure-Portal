@@ -212,6 +212,26 @@ def contributionAccept(request, contributionId):
 
     return redirect('contribution-detail', contributionId)
 
+# TODO: Add to contributionAccept
+def accept_contribution(contribution, user):
+    """
+    Helper function that accepts a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
+
+    contribution: Contribution object
+    user: User object
+    """
+    # Save details of latest validation in Contribution
+    contribution.accept()
+    contribution.last_validated_by = user
+    contribution.last_validation_datetime = datetime.datetime.now()
+
+    # Create a e_ContributionValidation object
+    validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.ACCEPTED, validated_by=user)
+
+    # Save everything
+    contribution.save()
+    validation.save()
+
 @login_required
 def contributionReject(request, contributionId):
     contribution = get_object_or_404(e_ContextContribution, pk=contributionId)
@@ -242,6 +262,29 @@ def contributionReject(request, contributionId):
         return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
     
     return redirect('contribution-detail', contributionId)
+
+
+# TODO: Add to contributionReject
+def reject_contribution(contribution, user, rejection_reason):
+    """
+    Helper function that rejects a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
+
+    contribution: Contribution object
+    user: User object
+    rejection_reason: Reason why this Contribution is being rejected. Can be obtained through a form.
+    """
+    # Save details of latest validation in Contribution
+    contribution.reject()
+    contribution.last_rejection_reason = rejection_reason
+    contribution.last_validated_by = user
+    contribution.last_validation_datetime = datetime.datetime.now()
+
+    # Create a e_ContributionValidation object
+    validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.REJECTED, validated_by=user, rejection_reason=rejection_reason)
+
+    # Save everything
+    contribution.save()
+    validation.save()
 
 
 @login_required

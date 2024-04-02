@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% block show_messages %}{% endblock %} <!-- As seen in: https://stackoverflow.com/questions/7768165/how-to-override-django-base-template -->
 {% block title %} Contributions {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
@@ -11,7 +12,6 @@
 
 
 {% block content %}
-
 <!-- TODO: Leave style tag here? -->
 <style>
     td a { 
@@ -24,6 +24,15 @@
     }
 </style>
 
+<!-- See if there is a success message -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{message.tags}}" role="alert">
+            {{message}}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <!-- Header -->
 <h1> {{context.Name}} Context - Contributions </h1>
 <hr>
@@ -35,9 +44,34 @@
 
 <!-- Top buttons -->
 <div class="mb-3">
-    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <!-- Search and Filter -->
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+
+    <!-- TODO: Sort -->
+    <!-- Sort -->
+    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
+    <!-- Sort Menu-->
+    <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+    </div>
+
+    <div style="float: right;">
+        <!-- Validation Queue -->
+        <a class="btn btn-success" href="#">Validation Queue</a>
+        
+        <!-- Actions -->
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+        <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
+            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-accept">Accept Selected</button>
+            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-reject">Reject Selected</button>
+        </div>
+    </div>
+
 </div>
 
+<!-- Search and Filter Menu -->
 <div id="filter-menu" class="collapse card card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
@@ -45,30 +79,44 @@
     </form>
 </div>
 
-<!-- Contribution list -->
-<table class="table table-hover">
-    <tr>
-        <th scope="col">Contribution ID</th>
-        <th scope="col">Situation</th>
-        <th scope="col">Date Submitted</th>
-        <th scope="col">Author</th>
-        <th scope="col">State</th>
-    </tr>
-    {% for contribution in contributions %}
-            <tr>
-                <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
-                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
-                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
-                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
-                <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
-                <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
-            </tr>
+<!-- Batch Accept Form -->
+<form action="{% url 'contribution-batch-handle' context.code %}" method="POST" id="batchHandleForm">
+    {% csrf_token %}
 
-        {% empty %}
-        <!-- TODO: Change this to something prettier eheh -->
-        <td><h2 class="text-secondary font-italic no-context-data">There are no Contributions.</h2></td>
-    {% endfor %}
-</table>
+    <!-- Contribution list -->
+    <table class="table table-hover">
+        <tr>
+            <th scope="col">Contribution ID</th>
+            <th scope="col">Situation</th>
+            <th scope="col">Date Submitted</th>
+            <th scope="col">Author</th>
+            <th scope="col">State</th>
+            <th scope="col">Select</th>
+        </tr>
+        {% for contribution in contributions %}
+                <tr>
+                    <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">
+                        </div>
+                        {% comment %} <input type="checkbox" class="form-check-input mx-auto contribution-select" id="select-{{contribution.pk}}">
+                        <label class="form-check-label" for="check-{{contribution.pk}}"></label> {% endcomment %}
+                    </td>
+                </tr>
+
+            {% empty %}
+            <!-- TODO: Change this to something prettier eheh -->
+            <td><h2 class="text-secondary font-italic no-context-data">There are no Contributions.</h2></td>
+        {% endfor %}
+    </table>
+
+</form>
 
 <!-- Bottom button -->
 <div class="w-100 mb-4">
