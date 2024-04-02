@@ -233,6 +233,7 @@
                                     <p class="font-weight-light"><strong>State:</strong> <span class="text-{{validation.state|get_state_color}}">{{ validation.state|title }}</span></p>
                                     <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
                                     <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
+                                    {% if validation.rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ validation.rejection_reason }}</p>{% endif %}
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
