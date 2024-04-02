@@ -58,6 +58,15 @@
     .my-report-modal-body {
         padding: 16px;
     }
+
+    .validation-card {
+        border: 0px;
+    }
+
+    .validation-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
 </style>
 
 
@@ -82,270 +91,326 @@
 
 
 
-    <!-- Meta information section -->
-    <div class="content-section">
-        <!-- Information about user and location -->
-        <h2 class="mt-2">Contribution {{ contribution }}</h2>
+<!-- Meta information section -->
+<div class="content-section">
+    <!-- Information about user and location -->
+    <h2 class="mt-2">Contribution {{ contribution }}</h2>
+    <hr>
+
+    <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
+    <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
+    {% comment %} {% if contribution.contextEvent is not Null %} {% endcomment %}
+    {% if contribution.contextEvent %}
+    <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
+    {% endif %}
+
+    {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
         <hr>
+        <p class="font-weight-light"><strong>State:</strong> <span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></p>
+        {% if contribution.last_validation_datetime %}<p class="font-weight-light"><strong>Last validated on:</strong> {{ contribution.last_validation_datetime }}</p>{% endif %}
+        {% if contribution.last_validated_by %}<p class="font-weight-light"><strong>Last validated by:</strong> {{ contribution.last_validated_by }}</p>{% endif %}
+        {% if contribution.last_rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.last_rejection_reason }}</p>{% endif %}
+    {% endif %}
 
-        <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
-        <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
-        {% comment %} {% if contribution.contextEvent is not Null %} {% endcomment %}
-        {% if contribution.contextEvent %}
-        <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
-        {% endif %}
+    <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">See Context</a>
 
-        {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
-            <hr>
-            <p class="font-weight-light"><strong>State:</strong> <span class="{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></p>
-            {% if contribution.validationDateTime %}<p class="font-weight-light"><strong>Validated on:</strong> {{ contribution.validationDateTime }}</p>{% endif %}
-            {% if contribution.validatedBy %}<p class="font-weight-light"><strong>Validated by:</strong> {{ contribution.validatedBy }}</p>{% endif %}
-            {% if contribution.rejectionReason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.rejectionReason }}</p>{% endif %}
-        {% endif %}
-
-        <a class="btn btn-secondary mb-2" href="{% url 'public-context-detail' contribution.context.code %}">See Context</a>
-
-        <!-- For Moderators only-->
-        {% if isMod %}
-            <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
-            {% if contribution.state == 'PENDING' %}
-                <!-- Accept Modal Button-->
-                <button type="button" class="btn btn-success mb-2" data-toggle="modal" data-target="#acceptingModal">
-                    Accept
-                </button>
-                <!-- Accept Modal -->
-                <div class="modal fade" id="acceptingModal" tabindex="-1" role="dialog" aria-labelledby="acceptingModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="acceptingModalLabel">Accept Contribution {{contribution.pk}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="justify">Are you sure you want to mark this Contribution as <span class='text-success'>Accepted</span>?
-                                    <span class='font-weight-bold'>This action is irreversible!</span>
-                                </p>
-                                <p class="justify">
-                                    To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-success my-3 mr-3" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Confirm</a>
-                            </div>
+    <!-- For Moderators only-->
+    {% if isMod %}
+        <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
+        {% if contribution.state == 'PENDING' %}
+            <!-- Accept Modal Button-->
+            <button type="button" class="btn btn-success mb-2" data-toggle="modal" data-target="#acceptingModal">
+                Accept
+            </button>
+            <!-- Accept Modal -->
+            <div class="modal fade" id="acceptingModal" tabindex="-1" role="dialog" aria-labelledby="acceptingModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="acceptingModalLabel">Accept Contribution {{contribution.pk}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="justify">Are you sure you want to mark this Contribution as <span class='text-success'>Accepted</span>?
+                                <span class='font-weight-bold'>This action is irreversible!</span>
+                            </p>
+                            <p class="justify">
+                                To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                            <a class="btn btn-success my-3 mr-3" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Confirm</a>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Reject Modal Button-->
-                <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#rejectionModal">
-                    Reject
-                </button>
-                
-                <!-- Reject Modal -->
-                <div class="modal fade" id="rejectionModal" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="rejectionModalLabel">Reject Contribution {{contribution.pk}}</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="justify">Are you sure you want to mark this Contribution as <span class='text-danger'>Rejected</span>?
-                                    <span class='font-weight-bold'>This action is irreversible!</span>
-                                </p>
-                                <p class="justify">
-                                    To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
-                                </p>
-                                <!-- Form -->
-                                <hr>
-                                <!-- TODO: Put form here, instead of doing this 'include' -->
-                                {% include "contributions/rejection_reason.html" %}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
-                                <button type="submit" class="btn btn-danger my-3 mr-3" form="rejectionForm">Confirm</button>
-                            </div>
+            <!-- Reject Modal Button-->
+            <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#rejectionModal">
+                Reject
+            </button>
+            
+            <!-- Reject Modal -->
+            <div class="modal fade" id="rejectionModal" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="rejectionModalLabel">Reject Contribution {{contribution.pk}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="justify">Are you sure you want to mark this Contribution as <span class='text-danger'>Rejected</span>?
+                                <span class='font-weight-bold'>This action is irreversible!</span>
+                            </p>
+                            <p class="justify">
+                                To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                            </p>
+                            <!-- Form -->
+                            <hr>
+                            <!-- TODO: Put form here, instead of doing this 'include' -->
+                            {% include "contributions/rejection_reason.html" %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                            <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                            <button type="submit" class="btn btn-danger my-3 mr-3" form="rejectionForm">Confirm</button>
                         </div>
                     </div>
                 </div>
-            {% endif %}
-        {% endif %}
-
-        {% if user == contribution.createdBy %}
-            <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
-        {% endif %}
-    </div>
-
-    <!-- Reports section -->
-    {% if reports %}
-        <!-- Only Context Mod, Org or Contexts Managers, and Admin can see this section -->
-        {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
-            <div class="content-section">
-
-                <div class="container-fluid">
-
-                    <div class='mt-4'>
-                        <h2>Reports</h2>
-                        <p class="subtitle">Reports made by users.</p>
-                    </div>
-                
-                    <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
-                        {% for report in reports %}
-                            <div class="col-4">
-                                <!-- Report Card -->
-                                <div class="card contribution-card" style="height: 100%;">
-                                    <div class="card-body d-flex flex-column">
-                                        <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
-                                        <div class="mt-auto">
-                                            <p class="card-text"><small class="text-muted">Reported by {{ report.reported_by }}</small></p>
-                                            <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
-                                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">Read</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
-                            <!-- Read Report Modal -->
-                            <div class="modal fade" id="readReportModal" tabindex="-1" role="dialog" aria-labelledby="readReportModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="readReportModalLabel">Report by {{ report.reported_by }}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body my-report-modal-body">
-                                            <p class="justify">{{report.reason}}</p>
-                                            <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                
             </div>
         {% endif %}
     {% endif %}
 
-    <!-- Photo section -->
-    {% if contribution_media_list %}
-        <div class="content-section">        
-            <!-- Image slideshow -->
-            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
-                <div class="carousel-inner">
-                    {% for media in contribution_media_list %}
+    {% if user == contribution.createdBy %}
+        <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
+    {% endif %}
+</div>
 
-                        <!-- Image -->
-                        {% if media.is_video_or_image == "image" %}
+<!-- Validation history section -->
+{% if validations %}
+    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
+        <div class="content-section">
+            <div class='mt-2'>
+                <h2>Validation History</h2>
+                <hr>
+            </div>
 
-                            <div class="carousel-item {{forloop.first|is_active}}">
-                                <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
-                                    <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
-                                </a>
+            <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+                {% for validation in validations %}
+                    <div class="col-4">
+                        <!-- Validation Card -->
+                        <div class="card validation-card" style="height: 100%;">
+                            <div class="card-body d-flex flex-column">
+                                <button type="button" class="btn btn-outline-{{contribution.state|get_state_color}} mx-auto w-25" data-toggle="modal" data-target="#validationModal">
+                                    {% if contribution.state == 'PENDING' %}
+                                        ?
+                                    {% elif contribution.state == 'ACCEPTED' %}
+                                        <span>&#10003;</span>
+                                    {% else %}
+                                        <span>&#10539;</span>
+                                    {% endif %}
+                                </button>
+                                <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }}</small></p>
                             </div>
-
-                        <!-- Video -->
-                        {% elif media.is_video_or_image == "video" %}
-
-                            <div class="carousel-item {{forloop.first|is_active}}">
-                                <div class="embed-responsive embed-responsive-16by9">
-                                    <video controls>
-                                        <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
-                                    </video>
+                        </div>
+                    </div>
+                    <!-- Read Validation Modal -->
+                    <div class="modal fade" id="validationModal" tabindex="-1" role="dialog" aria-labelledby="validationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="validationModalLabel">Contribution {{contribution.id}} - {{validation.state|title}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body my-report-modal-body">
+                                    <p class="font-weight-light"><strong>State:</strong> <span class="text-{{validation.state|get_state_color}}">{{ validation.state|title }}</span></p>
+                                    <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
+                                    <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
 
-                        <!-- Something else? -->
-                        {% else %}
-                            <p>Error!</p> <!-- TODO: What to do here? -->
-                        {% endif %}
+<!-- Reports section -->
+{% if reports %}
+    <!-- Only Context Mod, Org or Contexts Managers, and Admin can see this section -->
+    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
+        <div class="content-section">
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle" aria-hidden="true">
+            <div class="container-fluid">
 
+                <div class='mt-4'>
+                    <h2>Reports</h2>
+                    <p class="subtitle">Reports made by users.</p>
+                </div>
+            
+                <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+                    {% for report in reports %}
+                        <div class="col-4">
+                            <!-- Report Card -->
+                            <div class="card contribution-card" style="height: 100%;">
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
+                                    <div class="mt-auto">
+                                        <p class="card-text"><small class="text-muted">Reported by {{ report.reported_by }}</small></p>
+                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">Read</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Read Report Modal -->
+                        <div class="modal fade" id="readReportModal" tabindex="-1" role="dialog" aria-labelledby="readReportModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
-                                    {% comment %} <div class="modal-header">
-                                        <h5 class="modal-title" id="imageModalTitle">Modal title</h5>
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="readReportModalLabel">Report by {{ report.reported_by }}</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&times;</span>
                                         </button>
-                                    </div> {% endcomment %}
-
-                                    <div class="modal-body">
-                                        <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
                                     </div>
-
+                                    <div class="modal-body my-report-modal-body">
+                                        <p class="justify">{{report.reason}}</p>
+                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                    </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     {% endfor %}
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
             </div>
-                    
+            
         </div>
     {% endif %}
+{% endif %}
 
 
-    <!-- Map section -->
-    <div class="content-section">
-        
-        
-        <div class="row">
-            
-            <!-- Map -->
-            <div class="col-8 border-right">
-                <div id="map-container" class="container">
-                    {% leaflet_map "my_map" %}
-                </div>
+<!-- Photo section -->
+{% if contribution_media_list %}
+    <div class="content-section">        
+        <!-- Image slideshow -->
+        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
+            <div class="carousel-inner">
+                {% for media in contribution_media_list %}
+
+                    <!-- Image -->
+                    {% if media.is_video_or_image == "image" %}
+
+                        <div class="carousel-item {{forloop.first|is_active}}">
+                            <a data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
+                            </a>
+                        </div>
+
+                    <!-- Video -->
+                    {% elif media.is_video_or_image == "video" %}
+
+                        <div class="carousel-item {{forloop.first|is_active}}">
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <video controls>
+                                    <source src="{{MEDIA_URL}}{{media.file}}" type="{{media.get_type}}">
+                                </video>
+                            </div>
+                        </div>
+
+                    <!-- Something else? -->
+                    {% else %}
+                        <p>Error!</p> <!-- TODO: What to do here? -->
+                    {% endif %}
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle" aria-hidden="true">
+
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                {% comment %} <div class="modal-header">
+                                    <h5 class="modal-title" id="imageModalTitle">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div> {% endcomment %}
+
+                                <div class="modal-body">
+                                    <img src="{{MEDIA_URL}}{{ media.file }}" class="d-block w-100">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
             </div>
-            
-            <!-- Information about contribution itself -->
-            <div class="col-4">
-                <h3 class="mt-2">Details</h3>
-                <hr>
+            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
                 
-                <p class="font-weight-light"><strong>Observed on:</strong> {{ contribution.observationDate }}</p>
-                <p class="font-weight-light"><strong>Situation:</strong> {{ contribution.situationObserved|title }}</p>
-                <p class="font-weight-light" align="justify"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
+    </div>
+{% endif %}
 
-                <hr>
-                <p class="font-weight-light"><strong>Address:</strong></p>
-                <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
-                <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
 
+<!-- Map section -->
+<div class="content-section">
+    
+    
+    <div class="row">
+        
+        <!-- Map -->
+        <div class="col-8 border-right">
+            <div id="map-container" class="container">
+                {% leaflet_map "my_map" %}
             </div>
+        </div>
+        
+        <!-- Information about contribution itself -->
+        <div class="col-4">
+            <h3 class="mt-2">Details</h3>
+            <hr>
+            
+            <p class="font-weight-light"><strong>Observed on:</strong> {{ contribution.observationDate }}</p>
+            <p class="font-weight-light"><strong>Situation:</strong> {{ contribution.situationObserved|title }}</p>
+            <p class="font-weight-light" align="justify"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
+
+            <hr>
+            <p class="font-weight-light"><strong>Address:</strong></p>
+            <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
+            <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
 
         </div>
+
     </div>
+</div>
 
     
 
-{% if contribution.state != "PENDING" %}
+{% if contribution.state == "ACCEPTED" %}
     <!-- Report Modal Button-->
     <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#reportModal">
         Report

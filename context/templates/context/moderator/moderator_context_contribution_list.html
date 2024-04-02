@@ -61,7 +61,7 @@
                 <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
                 <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
                 <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
-                <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
             </tr>
 
         {% empty %}

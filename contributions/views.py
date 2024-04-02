@@ -12,7 +12,7 @@ from django.contrib import messages
 
 import datetime
 
-from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport
+from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
@@ -144,6 +144,7 @@ class ContributionDetailView(DetailView):
         context['form'] = RejectionForm()
         context['report_form'] = ReportForm()
         context['reports'] = e_ContributionReport.objects.filter(contribution=self.get_object().pk).order_by('-report_datetime')
+        context['validations'] = e_ContributionValidation.objects.filter(contribution=self.get_object().pk).order_by('-validation_datetime')
         return context
     
 
@@ -195,11 +196,17 @@ def contributionAccept(request, contributionId):
     
     # Change Contribution state to ACCEPTED
     if contribution:
+        # Save details of latest validation in Contribution
         contribution.accept()
-        contribution.validatedBy = request.user
-        contribution.validationDateTime = datetime.datetime.now()
+        contribution.last_validated_by = request.user
+        contribution.last_validation_datetime = datetime.datetime.now()
 
+        # Create a e_ContributionValidation object
+        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.ACCEPTED, validated_by=request.user)
+
+        # Save everything
         contribution.save()
+        validation.save()
     
         # TODO: Send notifs
 
@@ -217,12 +224,18 @@ def contributionReject(request, contributionId):
     form = RejectionForm(request.POST)
 
     if form.is_valid():
-        # Save rejection reason in Contribution
+        # Save details of latest validation in Contribution
         contribution.reject()
-        contribution.rejectionReason = form.cleaned_data['rejectionReason']
-        contribution.validatedBy = request.user
-        contribution.validationDateTime = datetime.datetime.now()
+        contribution.last_rejection_reason = form.cleaned_data['last_rejection_reason']
+        contribution.last_validated_by = request.user
+        contribution.last_validation_datetime = datetime.datetime.now()
+
+        # Create a e_ContributionValidation object
+        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.REJECTED, validated_by=request.user, rejection_reason=form.cleaned_data['last_rejection_reason'])
+
+        # Save everything
         contribution.save()
+        validation.save()
         
         # TODO: Send notifs
         

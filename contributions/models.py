@@ -31,9 +31,10 @@ class e_ContextContribution(models.Model):
 
     # Moderation
     state = FSMField(default=ContributionStatus.PENDING, choices=ContributionStatus.choices , protected=True) # protected=True prevents changing the state directly
-    validatedBy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="validatedBy")
-    validationDateTime =  models.DateTimeField(null=True, blank=True)
-    rejectionReason = models.TextField(blank=True)
+    # TODO: Change these according to Domain Model
+    last_validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="last_validated_by")
+    last_validation_datetime =  models.DateTimeField(null=True, blank=True)
+    last_rejection_reason = models.TextField(blank=True)
 
     # Information provided by the user
     observationDate = models.DateField()
@@ -171,8 +172,22 @@ class e_ContributionAttachment(models.Model):
         #         # Do nothing
         #         error = e.stderr.decode()
 
+class e_ContributionValidation(models.Model):
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true right ?
+    state = models.CharField(max_length=30, choices=ContributionStatus.choices)
+    validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="validated_by")
+    validation_datetime =  models.DateTimeField(auto_now_add=True)
+    rejection_reason = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Contribution\'s Validation'
+        verbose_name_plural = 'Contribution\'s Validations'
+    
+    def __str__(self):
+        return "Contribution " + str(self.contribution.id) + " - " + self.state
+
 class e_ContributionReport(models.Model):
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted TODO: Delete null=true right ?
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     report_datetime = models.DateTimeField(auto_now_add=True)
     reason = models.TextField()
@@ -180,3 +195,24 @@ class e_ContributionReport(models.Model):
     class Meta:
         verbose_name = 'Contribution\'s Report'
         verbose_name_plural = 'Contribution\'s Reports'
+    
+    def __str__(self):
+        return "Contribution " + str(self.contribution.id)
+
+
+# class e_ContributionValidationHistory(models.Model):
+#     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true right ?
+#     state = models.CharField(max_length=30, choices=ContributionStatus.choices)
+#     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="contribution_validated_by")
+#     creation_datetime =  models.DateTimeField(auto_now_add=True)
+#     # Validation
+#     rejection_reason = models.TextField(blank=True)
+#     # Report
+#     report_reason = models.TextField()
+
+#     class Meta:
+#         verbose_name = 'Contribution\'s Validation'
+#         verbose_name_plural = 'Contribution\'s Validation History'
+    
+#     def __str__(self):
+#         return "Contribution " + str(self.contribution.id) + " - " + self.state

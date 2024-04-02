@@ -61,16 +61,16 @@ def get_accepted(contributions):
 @register.filter(name='get_state_color')
 def get_state_color(state):
     """
-    Returns Bootstrap class for text color depending on Contribution state
+    Returns Bootstrap class for color depending on Contribution state
 
     state: one of the following strings - PENDING, ACCEPTED or REJECTED
     """
     if state == 'PENDING': # TODO: Change this and others to use ContributionStatus
-        return 'text-warning'
+        return 'warning'
     elif state == 'ACCEPTED':
-        return 'text-success'
+        return 'success'
     else:
-        return 'text-danger'
+        return 'danger'
 
 @register.filter(name='is_active')
 def is_active(isFirst):
