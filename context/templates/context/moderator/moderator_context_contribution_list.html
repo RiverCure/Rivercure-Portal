@@ -52,17 +52,16 @@
     <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
     <!-- Sort Menu-->
     <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <a class="dropdown-item" href="#">Something else here</a>
+        <a class="dropdown-item" href="#"><i class="bi bi-sort-up"></i> Ascending Date</a>
+        <a class="dropdown-item" href="#"><i class="bi bi-sort-down"></i> Descending Date</a>
     </div>
 
     <div style="float: right;">
         <!-- Actions -->
         <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
         <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
-            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-accept">Accept Selected</button>
-            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-reject">Reject Selected</button>
+            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> Accept Selected</button>
+            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> Reject Selected</button>
         </div>
     </div>
 
@@ -72,7 +71,7 @@
 <div id="filter-menu" class="collapse card card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info">Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
     </form>
 </div>
 
