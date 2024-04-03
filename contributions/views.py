@@ -74,8 +74,14 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         for f in files:
             handle_uploaded_file(new_contribution, f)
         
+        # Create and save e_ContributionValidation object
+        validation = e_ContributionValidation(contribution=new_contribution, state=ContributionStatus.PENDING, validated_by=self.request.user)
+        validation.save()
+        
         # Send success message (to be shown in detail page)
         messages.success(self.request, 'Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.')
+
+        # TODO: Send confirmation email to user
 
         return super().form_valid(form)
 
@@ -197,23 +203,13 @@ def contributionAccept(request, contributionId):
     
     # Change Contribution state to ACCEPTED
     if contribution:
-        # Save details of latest validation in Contribution
-        contribution.accept()
-        contribution.last_validated_by = request.user
-        contribution.last_validation_datetime = datetime.datetime.now()
 
-        # Create a e_ContributionValidation object
-        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.ACCEPTED, validated_by=request.user)
-
-        # Save everything
-        contribution.save()
-        validation.save()
+        accept_contribution(contribution, request.user)
     
         # TODO: Send notifs
 
     return redirect('contribution-detail', contributionId)
 
-# TODO: Add to contributionAccept
 def accept_contribution(contribution, user):
     """
     Helper function that accepts a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
@@ -245,18 +241,8 @@ def contributionReject(request, contributionId):
     form = RejectionForm(request.POST)
 
     if form.is_valid():
-        # Save details of latest validation in Contribution
-        contribution.reject()
-        contribution.last_rejection_reason = form.cleaned_data['last_rejection_reason']
-        contribution.last_validated_by = request.user
-        contribution.last_validation_datetime = datetime.datetime.now()
 
-        # Create a e_ContributionValidation object
-        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.REJECTED, validated_by=request.user, rejection_reason=form.cleaned_data['last_rejection_reason'])
-
-        # Save everything
-        contribution.save()
-        validation.save()
+        reject_contribution(contribution, request.user, form.cleaned_data['last_rejection_reason'])
         
         # TODO: Send notifs
         
@@ -265,7 +251,6 @@ def contributionReject(request, contributionId):
     return redirect('contribution-detail', contributionId)
 
 
-# TODO: Add to contributionReject
 def reject_contribution(contribution, user, rejection_reason):
     """
     Helper function that rejects a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
@@ -303,9 +288,13 @@ def contributionReport(request, contributionId):
         # Create e_ReportReason object
         report = e_ContributionReport(contribution=contribution, reported_by=request.user, reason=form.cleaned_data['reason'])
 
+        # TODO: Create e_ContributionValidation
+        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.PENDING, validated_by=request.user)
+
         # Save everything
         contribution.save()
         report.save()
+        validation.save()
         
         # TODO: Send notifs
         

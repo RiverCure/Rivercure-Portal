@@ -67,6 +67,11 @@
         transform: none;
         box-shadow: none;
     }
+
+    /* For the horizontal scroll carousel */
+    .scrolling-wrapper{
+        overflow-x: auto;
+    }
 </style>
 
 
@@ -196,119 +201,6 @@
     {% endif %}
 </div>
 
-<!-- Validation history section -->
-{% if validations %}
-    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
-        <div class="content-section">
-            <div class='mt-2'>
-                <h2>Validation History</h2>
-                <hr>
-            </div>
-
-            <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
-                {% for validation in validations %}
-                    <div class="col-4">
-                        <!-- Validation Card -->
-                        <div class="card validation-card" style="height: 100%;">
-                            <div class="card-body d-flex flex-column">
-                                <button type="button" class="btn btn-outline-{{contribution.state|get_state_color}} mx-auto w-25" data-toggle="modal" data-target="#validationModal">
-                                    {% if contribution.state == 'PENDING' %}
-                                        ?
-                                    {% elif contribution.state == 'ACCEPTED' %}
-                                        <span>&#10003;</span>
-                                    {% else %}
-                                        <span>&#10539;</span>
-                                    {% endif %}
-                                </button>
-                                <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }}</small></p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Read Validation Modal -->
-                    <div class="modal fade" id="validationModal" tabindex="-1" role="dialog" aria-labelledby="validationModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="validationModalLabel">Contribution {{contribution.id}} - {{validation.state|title}}</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body my-report-modal-body">
-                                    <p class="font-weight-light"><strong>State:</strong> <span class="text-{{validation.state|get_state_color}}">{{ validation.state|title }}</span></p>
-                                    <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
-                                    <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
-                                    {% if validation.rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ validation.rejection_reason }}</p>{% endif %}
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-{% endif %}
-
-<!-- Reports section -->
-{% if reports %}
-    <!-- Only Context Mod, Org or Contexts Managers, and Admin can see this section -->
-    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
-        <div class="content-section">
-
-            <div class="container-fluid">
-
-                <div class='mt-4'>
-                    <h2>Reports</h2>
-                    <p class="subtitle">Reports made by users.</p>
-                </div>
-            
-                <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
-                    {% for report in reports %}
-                        <div class="col-4">
-                            <!-- Report Card -->
-                            <div class="card contribution-card" style="height: 100%;">
-                                <div class="card-body d-flex flex-column">
-                                    <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
-                                    <div class="mt-auto">
-                                        <p class="card-text"><small class="text-muted">Reported by {{ report.reported_by }}</small></p>
-                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
-                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">Read</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <!-- Read Report Modal -->
-                        <div class="modal fade" id="readReportModal" tabindex="-1" role="dialog" aria-labelledby="readReportModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="readReportModalLabel">Report by {{ report.reported_by }}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body my-report-modal-body">
-                                        <p class="justify">{{report.reason}}</p>
-                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-        </div>
-    {% endif %}
-{% endif %}
-
 
 <!-- Photo section -->
 {% if contribution_media_list %}
@@ -397,7 +289,7 @@
         
         <!-- Information about contribution itself -->
         <div class="col-4">
-            <h3 class="mt-2">Details</h3>
+            <h3 class="mt-2">Observation Details</h3>
             <hr>
             
             <p class="font-weight-light"><strong>Observed on:</strong> {{ contribution.observationDate }}</p>
@@ -405,7 +297,8 @@
             <p class="font-weight-light" align="justify"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
 
             <hr>
-            <p class="font-weight-light"><strong>Address:</strong></p>
+            {% comment %} <p class="font-weight-light"><strong>Address:</strong></p> {% endcomment %}
+            <h4 class="mt-2">Location</h4>
             <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
             <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
 
@@ -458,6 +351,133 @@
             </div>
         </div>
     </div>
+{% endif %}
+
+
+<!-- Validation history section -->
+{% if validations %}
+    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
+        <div class="content-section">
+            <div class="container-fluid">
+                <div class='mt-2'>
+                    <h2>Validation History</h2>
+                    <p class="subtitle">This is the history of the states this Contribution has been in, from most recent to oldest. Scroll to see more, and click on one to see details.</p>
+                    <hr>
+                </div>
+
+                <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+                    {% for validation in validations %}
+                        <div class="col-4">
+                            <!-- Validation Card -->
+                            <div class="card validation-card" style="height: 100%;">
+                                <div class="card-body d-flex flex-column">
+                                    <button type="button" class="btn btn-{{validation.state|get_state_color}} mx-auto w-25" data-toggle="modal" data-target="#validationModal-{{ forloop.counter }}">
+                                        {% if validation.state == 'PENDING' %}
+                                            ?
+                                        {% elif validation.state == 'ACCEPTED' %}
+                                            <span>&#10003;</span>
+                                        {% else %}
+                                            <span>&#10539;</span>
+                                        {% endif %}
+                                    </button>
+                                    <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }}</small></p>
+                                    {% if forloop.first %}
+                                        <p class="card-text mx-auto mt-2 font-weight-bold">Latest Validation</p>
+                                    {% endif %}
+                                    {% if forloop.last %}
+                                        <p class="card-text mx-auto mt-2 font-weight-bold">User Submission</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Read Validation Modal -->
+                        <div class="modal fade" id="validationModal-{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="validationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="validationModalLabel">Contribution {{contribution.id}} -  <span class="text-{{validation.state|get_state_color}}">{{validation.state|title}}</span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body my-report-modal-body">
+                                        <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
+                                        <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
+                                        {% if validation.rejection_reason %}
+                                            <hr>
+                                            <p class="font-weight-light"><strong>Rejection reason:</strong></p>
+                                            <p class="font-weight-light">{{ validation.rejection_reason }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+
+<!-- Reports section -->
+{% if reports %}
+    <!-- Only Context Mod, Org or Contexts Managers, and Admin can see this section -->
+    {% if isMod or isContextOrOrgManager or user|has_group:"Admin" %}
+        <div class="content-section">
+            <div class="container-fluid">
+                <div class='mt-2'>
+                    <h2>Reports</h2>
+                    <p class="subtitle">Reports made by users. Scroll to see more, and click on one to see details.</p>
+                    <hr>
+                </div>
+            
+                <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
+                    {% for report in reports %}
+                        <div class="col-4">
+                            <!-- Report Card -->
+                            <div class="card contribution-card" style="height: 100%;">
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
+                                    <div class="mt-auto">
+                                        <p class="card-text"><small class="text-muted">Reported by {{ report.reported_by }}</small></p>
+                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">Read</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <!-- Read Report Modal -->
+                        <div class="modal fade" id="readReportModal" tabindex="-1" role="dialog" aria-labelledby="readReportModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="readReportModalLabel">Reported by {{ report.reported_by }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body my-report-modal-body">
+                                        <p class="justify">{{report.reason}}</p>
+                                        <p class="card-text"><small class="text-muted">Reported on {{ report.report_datetime }}</small></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>
+    {% endif %}
 {% endif %}
 
 

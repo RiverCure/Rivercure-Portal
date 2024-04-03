@@ -208,13 +208,7 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
         # Filter
         context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
 
-        context['request'] = self.request
-
-        url = self.request.get_full_path()
-        question_mark = "?"
-        url_split = url.split(question_mark, 1)
-        if len(url_split) == 2:
-            context['params'] = url_split[1]
+        # context['request'] = self.request
 
         return context
 
