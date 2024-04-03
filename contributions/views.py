@@ -145,6 +145,7 @@ class ContributionDetailView(DetailView):
         context['report_form'] = ReportForm()
         context['reports'] = e_ContributionReport.objects.filter(contribution=self.get_object().pk).order_by('-report_datetime')
         context['validations'] = e_ContributionValidation.objects.filter(contribution=self.get_object().pk).order_by('-validation_datetime')
+        context['nextContribution'] = e_ContextContribution.objects.filter(context=self.get_object().context.code, state=ContributionStatus.PENDING).order_by('creationDateTime').first()
         return context
     
 

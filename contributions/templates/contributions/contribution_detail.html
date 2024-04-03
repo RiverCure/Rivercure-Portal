@@ -183,6 +183,11 @@
                     </div>
                 </div>
             </div>
+        <!-- If it's a validated Contribution, see if there is another Contribution waiting in queue to be validated -->
+        {% else %}
+            {% if nextContribution %}
+                <a class="btn btn-warning mb-2" href="{% url 'contribution-detail' nextContribution.pk %}" style="float: right;">Validate Next Contribution</a>
+            {% endif %}
         {% endif %}
     {% endif %}
 
