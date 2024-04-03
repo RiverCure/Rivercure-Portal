@@ -47,21 +47,22 @@
     <!-- Search and Filter -->
     <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 
-    <!-- TODO: Sort -->
     <!-- Sort -->
     <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
     <!-- Sort Menu-->
     <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
-        <a class="dropdown-item" href="#"><i class="bi bi-sort-up"></i> Ascending Date</a>
-        <a class="dropdown-item" href="#"><i class="bi bi-sort-down"></i> Descending Date</a>
+        {% comment %} <a class="dropdown-item" href="?sort=date_asc&{{params}}"><i class="bi bi-sort-up"></i> Ascending Date</a> {% endcomment %}
+        {% comment %} <a class="dropdown-item" href="?sort=date_desc&{{params}}"><i class="bi bi-sort-down"></i> Descending Date</a> {% endcomment %}
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> Ascending Date</a>
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> Descending Date</a>
     </div>
 
     <div style="float: right;">
         <!-- Actions -->
         <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
         <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
-            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> Accept Selected</button>
-            <button class="dropdown-item" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> Reject Selected</button>
+            <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> Accept Selected</button>
+            <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> Reject Selected</button>
         </div>
     </div>
 

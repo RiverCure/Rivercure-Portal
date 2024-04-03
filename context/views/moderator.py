@@ -153,6 +153,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
         # User must be a Moderator (in some Context)
         return general_moderator_check(self.request.user)
 
+
 # TODO: Should I change this to be in contributions app ?
 class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_ContextContribution
@@ -163,22 +164,57 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
     paginate_by = 10
 
     def get_queryset(self):
-        # Get this Context's Contributions
-        # PEDNING Contributions come first. Done as seen in: https://stackoverflow.com/questions/48569659/django-how-would-i-create-a-sort-for-a-query-to-put-one-specific-element-first
-        # TODO: Perhaps redo with: https://www.pixiebrix.com/blog/sort-django-queryset-by-custom-order/
+        # # Get this Context's Contributions
+        # # PEDNING Contributions come first. Done as seen in: https://stackoverflow.com/questions/48569659/django-how-would-i-create-a-sort-for-a-query-to-put-one-specific-element-first
+        # # TODO: Perhaps redo with: https://www.pixiebrix.com/blog/sort-django-queryset-by-custom-order/
+        # contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
+        #     When(state=ContributionStatus.PENDING, then=Value(True)))
+        # ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
+
+        # Get Contributions
         contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
             When(state=ContributionStatus.PENDING, then=Value(True)))
         ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
+
+        # Sort / Order
+        sort_field = self.request.GET.get('sort') # Get sort from URL (so like: base_url?sort=sort_field)
+        # If there IS a sort field in the URL, then get new ordered queryset
+        if sort_field:
+            if sort_field == 'date_asc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('creationDateTime')
+            elif sort_field == 'date_desc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('-creationDateTime')
+
         return contributions
 
     def get_context_data(self, **kwargs):
         context = super(ModeratorContextContributionListView, self).get_context_data(**kwargs)
         context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
-        # Filter
+
+        # Get Contributions
         contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
             When(state=ContributionStatus.PENDING, then=Value(True)))
         ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
+
+        # Sort / Order
+        sort_field = self.request.GET.get('sort') # Get sort from URL (so like: base_url?sort=sort_field)
+        # If there IS a sort field in the URL, then get new ordered queryset
+        if sort_field:
+            if sort_field == 'date_asc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('creationDateTime')
+            elif sort_field == 'date_desc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('-creationDateTime')
+
+        # Filter
         context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
+
+        context['request'] = self.request
+
+        url = self.request.get_full_path()
+        question_mark = "?"
+        url_split = url.split(question_mark, 1)
+        if len(url_split) == 2:
+            context['params'] = url_split[1]
 
         return context
 
