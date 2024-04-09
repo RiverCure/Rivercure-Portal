@@ -39,6 +39,9 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarToggle">
                         <div class="navbar-nav mr-auto">
+                            <div class="nav-item">
+                                <a href="{% url 'rivercure-home' %}" class="nav-link">Home</a>
+                            </div>
                             {% if user.is_authenticated %}
                                 {% if user|has_org %}
                                     <li class="nav-item dropdown">
