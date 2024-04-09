@@ -54,6 +54,9 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
     #         return self.form_valid(form)
     #     else:
     #         return self.form_invalid(form)
+    def form_invalid(self, form):
+        messages.error(self.request, 'There is an error in the submission form. Please check what field(s) need to be adjusted.')
+        return super().form_invalid(form)
 
     def form_valid(self, form):
         # Set metadata

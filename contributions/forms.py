@@ -37,7 +37,7 @@ class ContributionInitialForm(forms.ModelForm):
                                           label='Situation Observed')
     lat = forms.FloatField(label='Latitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
     lng = forms.FloatField(label='Longitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
-    file_field = MultipleFileField(help_text='Optional: Submit any photos or videos you have related to the situation you observed.',
+    file_field = MultipleFileField(help_text='Optional: Submit any photos or videos you have related to the situation you observed. Only submit up to 10 files, with a total size of 10mb.',
                                    label='Images and videos',
                                    required=False)
 
@@ -60,14 +60,18 @@ class ContributionInitialForm(forms.ModelForm):
     def clean_file_field(self):
         files = self.files.getlist('file_field')
 
-        total_size = 0
+        # Only accept up to 10 files
+        if len(files) > 10:
+            raise ValidationError("Too many files submitted. Only submit up to 10 files.")
 
+        total_size = 0
         for file in files:
             if file:
                 total_size = total_size + file.size
             else:
                 raise forms.ValidationError("Could not read uploaded file.")
         
+        # Only accept a total size of 10mb
         if total_size > 10485760:
             raise ValidationError("Total size of files is too large ( > 10mb ).")
         
