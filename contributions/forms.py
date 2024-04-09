@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import ValidationError
 
 from datetime import datetime
 
@@ -55,6 +56,22 @@ class ContributionInitialForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
         self.fields['observationPlace'].required = False
+    
+    def clean_file_field(self):
+        files = self.files.getlist('file_field')
+
+        total_size = 0
+
+        for file in files:
+            if file:
+                total_size = total_size + file.size
+            else:
+                raise forms.ValidationError("Could not read uploaded file.")
+        
+        if total_size > 10485760:
+            raise ValidationError("Total size of files is too large ( > 10mb ).")
+        
+        return files
 
 
 
