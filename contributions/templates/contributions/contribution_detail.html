@@ -381,7 +381,7 @@
                                         {% endif %}
                                     </button>
                                     <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }}</small></p>
-                                    {% if forloop.first %}
+                                    {% if forloop.first and validations.count > 1%}
                                         <p class="card-text mx-auto mt-2 font-weight-bold">Latest Validation</p>
                                     {% endif %}
                                     {% if forloop.last %}
@@ -402,8 +402,10 @@
                                         </button>
                                     </div>
                                     <div class="modal-body my-report-modal-body">
-                                        <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
-                                        <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
+                                        {% if not validation.state == 'PENDING' %}
+                                            <p class="font-weight-light"><strong>Validated on:</strong> {{ validation.validation_datetime }}</p>
+                                            <p class="font-weight-light"><strong>Validated by:</strong> {{ validation.validated_by }}</p>
+                                        {% endif %}
                                         {% if validation.rejection_reason %}
                                             <hr>
                                             <p class="font-weight-light"><strong>Rejection reason:</strong></p>

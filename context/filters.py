@@ -28,7 +28,11 @@ class EventFilter(django_filters.FilterSet):
 
 
 class ContextFilter(django_filters.FilterSet):
-    Name = django_filters.CharFilter(label='Context Name', lookup_expr='icontains')
+    Name = django_filters.CharFilter(label='Context Name', lookup_expr='icontains',
+                                     widget=TextInput(attrs={
+                                                    'placeholder': 'Search by Context name...',
+                                                    'type': 'search',
+                                                }))
     hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all())
     # hydroFeatureType = django_filters.ChoiceFilter(label='HydroFeature Type', choices=HYDROFEATUREKIND_CHOICES)
 

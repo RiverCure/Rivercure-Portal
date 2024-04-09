@@ -23,7 +23,7 @@ class ContextDetailsForm(forms.ModelForm):
 
     class Meta:
         model = e_Context
-        fields = ['Name', 'hydroFeature', 'isPublic', 'description']
+        fields = ['Name', 'hydroFeature', 'isPublic', 'description', 'picture']
 
 
 class ContextInitialForm(forms.ModelForm):
