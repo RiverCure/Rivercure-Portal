@@ -196,7 +196,7 @@
         {% endif %}
     {% endif %}
 
-    {% if user == contribution.createdBy %}
+    {% if user == contribution.createdBy or isMod or isContextOrOrgManager %}
         <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
     {% endif %}
 </div>

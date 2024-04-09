@@ -145,7 +145,7 @@ class ContributionDetailView(DetailView):
 
         context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=self.get_object().pk)
         context['MEDIA_URL'] = settings.MEDIA_URL
-        context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org) # TODO: Best way to do this?
+        context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org)
         context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
         context['form'] = RejectionForm()
         context['report_form'] = ReportForm()
@@ -190,7 +190,7 @@ class ContributionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
 
     def test_func(self):
         # Author is the only user who can delete the Contribution
-        return author_of_contribution_check(self.request.user, self.get_object())
+        return author_of_contribution_check(self.request.user, self.get_object()) or context_organization_edit_permission_check(self.request.user, self.get_object().context.organization)
 
 
 @login_required

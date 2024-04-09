@@ -51,7 +51,6 @@ def context_organization_belong_check(user, organization):
     except:
         return False
 
-# TODO: Check if this works
 def context_event_manager_check(user, context):
     """
     Checks if the user is an event manager of a context
@@ -61,7 +60,6 @@ def context_event_manager_check(user, context):
     except:
         return False
 
-# TODO: Check if this works
 def context_moderator_check(user, context):
     """
     Checks if user is a moderator of a context
