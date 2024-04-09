@@ -61,7 +61,7 @@ def get_pending_percentage(contributions):
 # Get number of validated contributions
 @register.filter(name='get_validated')
 def get_validated(contributions):
-    completed = contributions.exclude(state='PENDING').count()
+    completed = contributions.exclude(state='PENDING').count()  # TODO: Change this and others to use ContributionStatus
     return str(completed)
 
 # Get number of pending contributions
@@ -84,9 +84,9 @@ def get_state_color(state):
 
     state: one of the following strings - PENDING, ACCEPTED or REJECTED
     """
-    if state == 'PENDING': # TODO: Change this and others to use ContributionStatus
+    if state == ContributionStatus.PENDING:
         return 'warning'
-    elif state == 'ACCEPTED':
+    elif state == ContributionStatus.ACCEPTED:
         return 'success'
     else:
         return 'danger'

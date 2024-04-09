@@ -237,14 +237,14 @@ def batchHandle(request, contextCode):
                 # Get Contribution
                 contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
 
-                ## Accept Contribution if it's Pending (TODO: What about Rejected?)
-                if contribution and contribution.is_pending():
+                # Accept Contribution if it's PENDING or REJECTED
+                if contribution and contribution.can_accept():
                     accept_contribution(contribution, request.user)
 
                     # TODO: For each, send notifs
             
             # Send message
-            messages.success(request, 'The selected Pending Contributions have been accepted.')
+            messages.success(request, 'The selected Contributions have been accepted.')
             return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
         
         # Reject Contributions
@@ -253,14 +253,14 @@ def batchHandle(request, contextCode):
                 # Get Contribution
                 contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
 
-                ## Reject Contribution if it's Pending (TODO: What about Accepted?)
-                if contribution and contribution.is_pending():
+                ## Reject Contribution if it's PENDING or ACCEPTED
+                if contribution and contribution.can_reject():
                     reject_contribution(contribution, request.user, "BATCH REJECT")
 
                     # TODO: For each, send notifs
             
             # Send message
-            messages.success(request, 'The selected Pending Contributions have been rejected.')
+            messages.success(request, 'The selected Contributions have been rejected.')
             return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
         
         else:

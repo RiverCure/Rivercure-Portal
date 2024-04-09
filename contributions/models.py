@@ -19,6 +19,7 @@ class ContributionStatus(models.TextChoices):
     PENDING = "PENDING", "Pending"
     ACCEPTED = "ACCEPTED", "Accepted"
     REJECTED = "REJECTED", "Rejected"
+    REPORTED = "REPORTED", "Reported"
 
 # Contribution
 class e_ContextContribution(models.Model):
@@ -52,19 +53,19 @@ class e_ContextContribution(models.Model):
     def __str__(self):
         return str(self.id)
     
-    @transition(field=state, source=ContributionStatus.PENDING, target=ContributionStatus.ACCEPTED)
+    @transition(field=state, source=[ContributionStatus.PENDING, ContributionStatus.REJECTED, ContributionStatus.REPORTED], target=ContributionStatus.ACCEPTED)
     def accept(self):
         """
-        Change the state of the Contribution from PENDING to ACCEPTED
+        Change the state of the Contribution from PENDING/REJECTED to ACCEPTED
         """
 
-    @transition(field=state, source=ContributionStatus.PENDING, target=ContributionStatus.REJECTED)
+    @transition(field=state, source=[ContributionStatus.PENDING, ContributionStatus.ACCEPTED], target=ContributionStatus.REJECTED)
     def reject(self):
         """
-        Change the state of the Contribution from PENDING to REJECTED
+        Change the state of the Contribution from PENDING/ACCEPTED to REJECTED
         """
     
-    @transition(field=state, source=ContributionStatus.ACCEPTED, target=ContributionStatus.PENDING)
+    @transition(field=state, source=ContributionStatus.ACCEPTED, target=ContributionStatus.REPORTED)
     def report(self):
         """
         Report Contribution. This changes the state of the Contribution from ACCEPTED to PENDING
@@ -75,6 +76,18 @@ class e_ContextContribution(models.Model):
         Returns whether Contribution is in state Pending
         """
         return self.state == ContributionStatus.PENDING
+    
+    def can_accept(self):
+        """
+        Returns whether Contribution can be accepted (aka if it's in state PENDING or REJECTED or REPORTED)
+        """
+        return (self.state == ContributionStatus.PENDING) or (self.state == ContributionStatus.REJECTED) or (self.state == ContributionStatus.REPORTED)
+    
+    def can_reject(self):
+        """
+        Returns whether Contribution can be rejected (aka if it's in state PENDING or ACCEPTED)
+        """
+        return (self.state == ContributionStatus.PENDING) or (self.state == ContributionStatus.ACCEPTED)
     
     def get_long(self):
         """
@@ -178,6 +191,10 @@ class e_ContributionAttachment(models.Model):
         #         # Do nothing
         #         error = e.stderr.decode()
 
+
+
+# For Validation History
+# Keep a record of every validation state the Contribution has been in
 class e_ContributionValidation(models.Model):
     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true right ?
     state = models.CharField(max_length=30, choices=ContributionStatus.choices)
@@ -192,6 +209,7 @@ class e_ContributionValidation(models.Model):
     def __str__(self):
         return "Contribution " + str(self.contribution.id) + " - " + self.state
 
+# Keep a record of every report made to a Contribution
 class e_ContributionReport(models.Model):
     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted TODO: Delete null=true right ?
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

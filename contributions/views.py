@@ -201,8 +201,8 @@ def contributionAccept(request, contributionId):
     if not context_moderator_check(request.user, contribution.context):
         return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
     
-    # Change Contribution state to ACCEPTED
-    if contribution:
+    # Change Contribution state to ACCEPTED if we are allowed to
+    if contribution and contribution.can_accept():
 
         accept_contribution(contribution, request.user)
     
@@ -212,11 +212,19 @@ def contributionAccept(request, contributionId):
 
 def accept_contribution(contribution, user):
     """
-    Helper function that accepts a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
+    Helper function that accepts a Contribution.
+    (1) If Contribution was REPORTED, clears all reports (ONLY do this for accept, not reject)
+    (2) Saves the details of latest validation in the Contribution object
+    (3) Creates an e_ContributionValidation object
 
     contribution: Contribution object
     user: User object
     """
+    # If Contribution was REPORTED
+    if contribution.state == ContributionStatus.REPORTED:
+        # Clear all reports made to this Contribution
+        deleted_reports = e_ContributionReport.objects.filter(contribution=contribution).delete()
+
     # Save details of latest validation in Contribution
     contribution.accept()
     contribution.last_validated_by = user
@@ -240,7 +248,7 @@ def contributionReject(request, contributionId):
     # create a form instance and populate it with data from the request:
     form = RejectionForm(request.POST)
 
-    if form.is_valid():
+    if form.is_valid() and contribution and contribution.can_reject():
 
         reject_contribution(contribution, request.user, form.cleaned_data['last_rejection_reason'])
         
@@ -253,7 +261,9 @@ def contributionReject(request, contributionId):
 
 def reject_contribution(contribution, user, rejection_reason):
     """
-    Helper function that rejects a Contribution. It (1) saves the details of latest validation in the Contribution object and (2) creates an e_ContributionValidation object
+    Helper function that rejects a Contribution.
+    (1) Saves details of latest validation in the Contribution object
+    (2) Creates an e_ContributionValidation object
 
     contribution: Contribution object
     user: User object
@@ -281,20 +291,26 @@ def contributionReport(request, contributionId):
     # Create a form instance and populate it with data from the request:
     form = ReportForm(request.POST)
 
-    if form.is_valid():
-        # Report Contribution
-        contribution.report()
+    if form.is_valid() and contribution and (contribution.state == ContributionStatus.ACCEPTED):
 
         # Create e_ReportReason object
         report = e_ContributionReport(contribution=contribution, reported_by=request.user, reason=form.cleaned_data['reason'])
 
-        # TODO: Create e_ContributionValidation
-        validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.PENDING, validated_by=request.user)
+        # If the condition/threshold is met, actually change the state of the Contribution to REPORTED.
+        # Otherwise we're only saving a record of a Report
+        if report_contribution_condition(contribution):
+            # Report Contribution
+            contribution.report()
 
-        # Save everything
-        contribution.save()
+            # Create e_ContributionValidation with state REPORTED and no validated_by user
+            validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.REPORTED, validated_by=None)
+
+            # Save
+            contribution.save()
+            validation.save()
+
+        # Save
         report.save()
-        validation.save()
         
         # TODO: Send notifs
         
@@ -302,7 +318,17 @@ def contributionReport(request, contributionId):
     
     return redirect('contribution-list', args=[contribution.context.code])
 
+# TODO: CHANGE THIS TO A BETTER CONDITION!!!
+def report_contribution_condition(contribution):
+    """
+    Check whether this Contribution can change to state REPORTED
+    """
+    all_reports = e_ContributionReport.objects.filter(contribution=contribution)
 
+    # TODO: CHANGE THIS TO A BETTER CONDITION!!!
+    if not all_reports:
+        return True
+    return all_reports.count() > 0
 
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):
