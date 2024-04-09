@@ -22,6 +22,10 @@
     td a:hover {
         color: #212529;
     }
+
+    {% comment %} main {
+        background: #F1F2EB;
+    } {% endcomment %}
 </style>
 
 <!-- See if there is a success message -->
@@ -88,6 +92,7 @@
             <th scope="col">Date Submitted</th>
             <th scope="col">Author</th>
             <th scope="col">State</th>
+            <th scope="col">File(s) Size</th>
             <th scope="col">Select</th>
         </tr>
         {% for contribution in contributions %}
@@ -98,6 +103,7 @@
                     <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
                     <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
                     <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.total_file_size|floatformat:3 }} Mb</a></td>
                     <td>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">

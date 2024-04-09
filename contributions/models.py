@@ -29,6 +29,7 @@ class e_ContextContribution(models.Model):
     creationDateTime = models.DateTimeField(auto_now_add=True) # Date and time of creation of contribution
     context = models.ForeignKey('context.e_Context', on_delete=models.SET_NULL, null=True)
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
+    total_file_size = models.FloatField(default=0.000)
 
     # Moderation
     state = FSMField(default=ContributionStatus.PENDING, choices=ContributionStatus.choices , protected=True) # protected=True prevents changing the state directly
@@ -128,12 +129,13 @@ def create_media_file_name(instance, filename):
 class e_ContributionAttachment(models.Model):
     file = models.FileField('Attachment', upload_to=create_media_file_name)
     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete attachment from DB if parent contribution is deleted
+    file_size = models.FloatField(null=True, blank=True)
     # video_thumbnail = models.ImageField(null=True, blank=True) # Only if attachment is a video
 
     class Meta:
         verbose_name = 'Contribution\'s Attachment'
         verbose_name_plural = 'Contribution\'s Attachments'
-
+    
     def is_video_or_image(self):
         """
         Returns whether attachment is a video or an image
@@ -151,9 +153,12 @@ class e_ContributionAttachment(models.Model):
         type_tuple = guess_type(self.file.url, strict=True)
         return type_tuple[0]
     
+    #SAVE ALWAYS RUNS BUT WE'RE ADDING THE RESIZE FUNCTION
     def save(self, *args, **kwargs):
+        # Save
         super().save()
 
+        # Resize image
         file_path = self.file.path
         output_size = (300,300) # TODO: Is this a good size? Should it be higher?
 

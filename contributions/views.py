@@ -72,6 +72,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         # Deal with files
         files = form.cleaned_data["file_field"]
         for f in files:
+            # TODO: Check if file size is good. Only handle_uploaded_file if it is.
             handle_uploaded_file(new_contribution, f)
         
         # Create and save e_ContributionValidation object
@@ -332,6 +333,27 @@ def report_contribution_condition(contribution):
 
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):
+    # Create e_ContributionAttachment object
     attachment = e_ContributionAttachment.objects.create(file=uploaded_file, contribution=contribution)
-
+    # Save
     attachment.save()
+
+    # Save file size
+    file_size = bytes_to_megabytes(attachment.file.size)
+    attachment.file_size = file_size
+    # Add to total size of Contribution
+    contribution.total_file_size = contribution.total_file_size + file_size
+    # Save everything
+    attachment.save()
+    contribution.save()
+
+def bytes_to_megabytes(bytes):
+    """
+    Convert Bytes to Megabytes
+
+    bytes: int to be converted
+    """
+    kbytes = bytes / 1024
+    mbytes = kbytes / 1024
+    converted_value = round(mbytes, 3)
+    return converted_value
