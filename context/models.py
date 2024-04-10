@@ -3,6 +3,8 @@ from django.utils import timezone
 from datetime import datetime, date
 from rivercureportal.models import e_HydroFeature
 from datetime import date
+from uuid import uuid4
+import os
 from django.contrib.auth.models import User
 from sensors.models import Sensor
 from raster.models import RasterLayer
@@ -29,6 +31,22 @@ TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 Permissions = (('context_eventManager', 'Context Event Manager'), ('context_moderator', 'Moderator'))
 
 
+def create_picture_file_name(instance, filename):
+    """
+    Callable that saves the file with the path and name: contexts_pictures/organization_name/context_code/uuid4.ext
+    """
+    organization = instance.organization
+    context_code = instance.code
+
+    # Path is: contexts_pictures/organization_name/context_code
+    path = "contexts_pictures/{}/{}".format(organization, context_code)
+
+    # File name is: uuid4.ext
+    extension = "." + filename.split('.')[-1]
+    file_name = "picture" + extension
+
+    return os.path.join(path, file_name)
+
 class e_Context(models.Model):
     # Information/identification
     code = models.CharField(primary_key=True, max_length=100, unique=True)
@@ -53,7 +71,7 @@ class e_Context(models.Model):
     hasMesh = models.BooleanField(default=False)
 
     # Picture
-    picture = models.ImageField(default='river.png', upload_to="contexts_pictures/{organization}/{code}") # TODO: Pôr uma default image melhor TODO: Dar resize da foto TODO: Dar nome diferente à foto TODO: Permitir meter foto no form de criação + update
+    picture = models.ImageField(default='river.png', upload_to=create_picture_file_name) # TODO: Pôr uma default image melhor TODO: Dar resize da foto TODO: Permitir meter foto no form de criação + update
 
     # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)

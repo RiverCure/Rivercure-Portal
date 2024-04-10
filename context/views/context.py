@@ -18,7 +18,7 @@ from sensors.models import Sensor
 from rest_framework import viewsets
 from ..serializers import ContextSerializer
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter, ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
+from ..filters import ContextFilter, ContextSensorFilter
 from io import BytesIO
 from zipfile import ZipFile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin

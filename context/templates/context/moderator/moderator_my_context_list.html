@@ -16,14 +16,21 @@
 
 <!-- TODO: Where to put style tag? -->
 <style>
-    .text-approved {
+    .text-pending {
         font-size: 14px;
         font-weight: 600;
-        color: #444444;
     }
     
-    .text-pending {
+    .text-total {
         color: #a5aec0;
+    }
+
+    .card img {
+        height: 300px;
+    }
+
+    .my-card-img {
+        object-fit: cover;
     }
 
     {% comment %} .progress {
@@ -40,45 +47,59 @@
     For more information on moderators and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
-<!-- Filter -->
 <div class="mb-3">
-    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <!-- Search and Filter Button -->
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    
+    {% comment %} <!-- Sort Button -->
+    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
+    <!-- Sort Menu-->
+    <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> Ascending Pending Contributions</a>
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> Descending Pending Contributions</a>
+    </div> {% endcomment %}
 </div>
-<hr>
 
+<!-- Search and Filter Menu -->
 <div id="filter-menu" class="collapse card card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info">Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
     </form>
 </div>
 
+<hr>
 
 
 <!-- List of Contexts-->
-<div class="row row-cols-3">
+<div class="d-flex flex-row flex-wrap justify-content-between">
     {% for context in contexts %}
-        <div class="col">
-            <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
-                <div class="card public-context-card" style="width: 18rem;">
-                    <img src={{ context.context.picture.url }} class="card-img-top" alt="Picture of Context">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ context.context.Name }}</h5>
+        <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
+            <div class="card mb-3" style="width: 21rem;">
+                <img src={{ context.context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+                <div class="card-body">
+                    <h5 class="card-title">{{ context.context.Name }}</h5>
+                    {% if context.context.hydroFeature %}
                         <h6 class="card-text"><em>{{ context.context.hydroFeature }}</em></h6>
-                        
-                        <div class="progress mt-3">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{context.context.e_contextcontribution_set|get_pending_percentage}}%" aria-valuenow="{{context.context.e_contextcontribution_set|get_pending_percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="mt-3"><span class="text-approved">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-pending">of {{context.context.e_contextcontribution_set.count}} total</span></span> </div>
-                    </div>
+                    {% else %}
+                        <h6 class="card-text"><em>None</em></h6>
+                    {% endif %}
+                    {% comment %} <div class="progress mt-3">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{context.context.e_contextcontribution_set|get_pending_percentage}}%" aria-valuenow="{{context.context.e_contextcontribution_set|get_pending_percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div> {% endcomment %}
+                    <div class="mt-3"><span class="text-pending text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} total contributions</span></span> </div>
                 </div>
-            </a>
-        </div>
+                {% comment %} <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><span class="text-pending text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} total</span></span></li>
+                </ul> {% endcomment %}
+            </div>
+        </a>
     {% endfor %}
 </div>
 {% if contexts.count == 0 %}
     <p class="font-weight-light my-2 text-center">There are no Contexts.</p>
 {% endif %}
+
 
 <!-- Pagination -->
 <div class="row">
