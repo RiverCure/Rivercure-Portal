@@ -28,26 +28,18 @@
 <p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
-<div class="media content-section">
-    <div class="col-4">
-        <div class="media-left">
-            <img src="{{ context.picture.url }}" class="media-object img-fluid" alt="Context Picture"> <!-- TODO: Resize -->
-        </div>
-    </div>
-    <div class="col-8">
-        <div class="media-body">
-            
-            {% if context.description %}
-                <p align="justify">{{ context.description }}</p>
+<div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
+    <img src="{{ context.picture.url }}" class="card-img-top my-card-context-detail-img" alt="Context Picture">
+    <div class="card-body">
+        <p class="card-text">{{ context.description }}</p>
+        {% if context.hydroFeature %}<h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>{% endif %}
+        <hr>
+        <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}">Contribute</a>
+        <div class="float-right">
+            <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
+            {% if context.hydroFeature %}
+                <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
             {% endif %}
-            <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}">Contribute</a>
-            <div class="float-right">
-                <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
-                {% if context.hydroFeature %}
-                    <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
-                {% endif %}
-            </div>
-
         </div>
     </div>
 </div>
@@ -70,7 +62,7 @@
         {% for contribution in contributions|slice:":5" %}
             <div class="col-4">
                 <a href="{% url 'contribution-detail' contribution.pk %}">
-                    <div class="card contribution-card">
+                    <div class="card my-card-hover contribution-card">
                         <img src="" class="card-img-top" alt="Contribution image">
                         <div class="card-body">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
@@ -105,7 +97,7 @@
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
         {% for event in events|slice:":5" %}
             <div class="col-4">
-                <div class="card contribution-card">
+                <div class="card my-card-hover contribution-card">
                     {% comment %} <img src="" class="card-img-top" alt="Contribution image"> {% endcomment %}
                     <div class="card-body">
                         <h5 class="card-title">{{ event.Name }}</h5>

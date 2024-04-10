@@ -5,7 +5,6 @@
 {% load static %}
 
 {% block scripts %}
-<!-- TODO: Fix styling of card list that is in here -->
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 
 {% endblock %}
@@ -54,7 +53,7 @@
 </div>
 
 <!-- Search and Filter Menu -->
-<div id="filter-menu" class="collapse card card-body mb-3">
+<div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
         <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
@@ -68,7 +67,7 @@
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for context in contexts %}
         <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
-            <div class="card mb-3 my-context-card">
+            <div class="card my-card-hover mb-3 my-context-card">
                 <img src={{ context.context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
                 <div class="card-body">
                     <h5 class="card-title">{{ context.context.Name }}</h5>

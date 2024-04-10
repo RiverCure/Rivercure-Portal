@@ -21,7 +21,7 @@
 
 <!-- Filter -->
 <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
-<div id="filter-menu" class="collapse card card-body">
+<div id="filter-menu" class="collapse card my-card-hover card-body">
     <form method="get">
         {{ filter.form |crispy }}
         <button type="submit" class="btn btn-outline-info">Apply</button>
@@ -34,7 +34,7 @@
     {% for contribution in contributions %}
         <div class="col">
             <a href="{% url 'contribution-detail' contribution.pk %}">
-                <div class="card my-2" style="width: 18rem;">
+                <div class="card my-card-hover my-2" style="width: 18rem;">
                     <img src="" class="card-img-top" alt="Contribution image">
                     <div class="card-body">
                         <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>

@@ -129,7 +129,12 @@
   object-fit: cover;
 }
 
-.card:hover {
+.my-card-context-detail-img {
+  height: 400px;
+  object-fit: cover;
+}
+
+.my-card-hover:hover {
   transform: scale(1.02);
   box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
 }
