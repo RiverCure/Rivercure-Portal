@@ -25,13 +25,6 @@
         color: #a5aec0;
     }
 
-    .card img {
-        height: 300px;
-    }
-
-    .my-card-img {
-        object-fit: cover;
-    }
 
     {% comment %} .progress {
         background-color: #28a444;
@@ -75,19 +68,18 @@
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for context in contexts %}
         <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
-            <div class="card mb-3" style="width: 21rem;">
+            <div class="card mb-3 my-context-card">
                 <img src={{ context.context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
                 <div class="card-body">
                     <h5 class="card-title">{{ context.context.Name }}</h5>
-                    {% if context.context.hydroFeature %}
-                        <h6 class="card-text"><em>{{ context.context.hydroFeature }}</em></h6>
-                    {% else %}
-                        <h6 class="card-text"><em>None</em></h6>
-                    {% endif %}
+                    <h6 class="card-text text-muted"><em>{{ context.context.hydroFeature }}</em></h6>
                     {% comment %} <div class="progress mt-3">
                         <div class="progress-bar bg-warning" role="progressbar" style="width: {{context.context.e_contextcontribution_set|get_pending_percentage}}%" aria-valuenow="{{context.context.e_contextcontribution_set|get_pending_percentage}}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div> {% endcomment %}
-                    <div class="mt-3"><span class="text-pending text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} total contributions</span></span> </div>
+                    {% comment %} <div class="mt-3"><span class="text-pending text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} total contributions</span></span> </div> {% endcomment %}
+                </div>
+                <div class="card-footer">
+                    <span class="text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} contributions</span></span>
                 </div>
                 {% comment %} <ul class="list-group list-group-flush">
                     <li class="list-group-item"><span class="text-pending text-warning">{{context.context.e_contextcontribution_set|get_pending}} pending <span class="text-total">of {{context.context.e_contextcontribution_set.count}} total</span></span></li>

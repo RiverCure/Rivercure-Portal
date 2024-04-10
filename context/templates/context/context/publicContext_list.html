@@ -28,9 +28,9 @@
 </style>
 
 <!-- Header -->
-<h1>Public contexts</h1>
-<h5 class="font-weight-light">Here are the contexts that are publicly available.</h5>
+<h1>Public Contexts</h1>
 <hr>
+<h5 class="font-weight-light mb-3" align="justify">Search for the public Contexts available in the RiverCure Portal. Click on one to see details.</h5>
 
 <div>
     <!-- Search and Filter -->
@@ -56,23 +56,24 @@
 
 
 <!-- List of Public Contexts-->
-<!-- TODO: Apply Bootstrap's grid system -->
-<div class="row row-cols-3">
+<div class="d-flex flex-row flex-wrap justify-content-between">
     {% for context in public_contexts %} <!-- TODO: Not filter.qs (instead of public_contexts)? -->
-        <div class="col">
-            <a href="{% url 'public-context-detail' context.code %}">
-                <div class="card public-context-card" style="width: 18rem;">
-                    <img src={{ context.picture.url }} class="card-img-top" alt="Picture of Context">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ context.Name }}</h5>
-                        <h6 class="card-text"><em>{{ context.hydroFeature }}</em></h6>
-                    </div>    
-                    <ul class="list-group list-group-flush">
-                        <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set|get_accepted }}</p>
-                    </ul>        
+        <a href="{% url 'public-context-detail' context.code %}">
+            <div class="card mb-3 my-context-card">
+                <img src={{ context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+                <div class="card-body">
+                    <h5 class="card-title">{{ context.Name }}</h5>
+                    <h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>
+                </div>    
+                {% comment %} <ul class="list-group list-group-flush">
+                    <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set|get_accepted }}</p>
+                </ul> {% endcomment %}
+                <div class="card-footer text-muted">
+                    {% comment %} Contributions: {{ context.e_contextcontribution_set|get_accepted }} {% endcomment %}
+                    <span class="text-info">{{ context.e_contextcontribution_set|get_accepted }}</span> contributions
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
     {% endfor %}
 </div>
 <!-- If list is empty -->
