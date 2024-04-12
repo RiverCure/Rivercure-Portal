@@ -147,6 +147,7 @@ class ContributionListView(FilterView):
         context_code = self.kwargs['contextCode']
 
         context = super().get_context_data(**kwargs)
+        context['MEDIA_URL'] = settings.MEDIA_URL
         context['context'] = get_object_or_404(e_Context, code=context_code)
         context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED) # Only show Accepted Contributions
         context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])

@@ -8,11 +8,11 @@ from context.models import EVENTKIND_CHOICES
 class ContributionFilter(django_filters.FilterSet):
     situationObserved = django_filters.ChoiceFilter(choices=EVENTKIND_CHOICES, label='Situation Observed')
     observationDate = django_filters.DateFromToRangeFilter(label='Observation date',
-                                                           help_text='The observation was made in between the specified dates. Hint: You may also just search for observations more recent than the date on the left, or older than the date on the right.',
+                                                           help_text='The observation was made in between the specified dates. <i>Hint:</i> You may also just search for observations more recent than the date on the left, or older than the date on the right.',
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
     creationDateTime = django_filters.DateFromToRangeFilter(label='Submission date',
-                                                           help_text='The contribution was submitted in between the specified dates. Hint: You may also just search for contributions more recent than the date on the left, or older than the date on the right.',
+                                                           help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for contributions more recent than the date on the left, or older than the date on the right.',
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
 
@@ -25,11 +25,11 @@ class ContributionFilter(django_filters.FilterSet):
 class MyContributionsFilter(django_filters.FilterSet):
     situationObserved = django_filters.ChoiceFilter(choices=EVENTKIND_CHOICES, label='Situation Observed')
     observationDate = django_filters.DateFromToRangeFilter(label='Observation date',
-                                                           help_text='The observation was made in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+                                                           help_text='The observation was made in between the specified dates. <i>Hint:</i> You may also just search for dates more recent than the date on the left, or older than the date on the right.',
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
     creationDateTime = django_filters.DateFromToRangeFilter(label='Submission date',
-                                                           help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+                                                           help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for dates more recent than the date on the left, or older than the date on the right.',
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
     context = django_filters.CharFilter(label='Context',
