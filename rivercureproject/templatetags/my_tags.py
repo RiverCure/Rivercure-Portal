@@ -110,3 +110,22 @@ def get_state_icon(state):
         return 'check-circle'
     else:
         return 'x-circle'
+
+# TODO: what am i even doing
+# TODO: this is a very temporary solution
+@register.filter(name='get_situation_default_image')
+def get_situation_default_image(situation):
+    if situation == 'flood':
+        return 'flood-kelly_sikkema-unsplash.jpg'
+    elif situation == 'heavyPrecipitation':
+        return 'heavy_precipitation-atilla_bingol-unsplash.jpg'
+    elif situation == 'hurricane':
+        return 'hurricane-nasa-unsplash.jpg'
+    elif situation == 'tsunami':
+        return 'tsunami-ray_harrington-unsplash.jpg'
+    elif situation == 'storm':
+        return 'storm-felipe_palacio-unsplash.jpg'
+    elif situation == 'landslide':
+        return 'landslide-timo_volz-unsplash.jpg'
+    else:
+        return 'drought-markus_spiske-unsplash.jpg'

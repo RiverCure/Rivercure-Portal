@@ -139,6 +139,11 @@
   object-fit: cover;
 }
 
+.my-card-contribution-no-thumbnail-img {
+  height: 200px;
+  background: #eee;
+}
+
 .my-card-user-image {
   position: relative;
   display: block;

@@ -15,7 +15,7 @@
 {% block content %}
 
 <h1 class="mt-2">{{ context.Name }} context </h1>
-<p><strong>Organization: <em>{{ context.organization }}</em></p>
+<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
 <p class="font-weight-light" align="justify">On this page you can see the Contributions that other users have submitted to {{ context.Name }}.</p>
 <hr>
 
@@ -34,7 +34,16 @@
     {% for contribution in contributions %}
         <a href="{% url 'contribution-detail' contribution.pk %}">
             <div class="card my-card-hover my-2 my-context-card">
-                <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                {% if contribution.thumbnail %}
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                {% else %}
+                    <div class="my-card-contribution-no-thumbnail-img"></div>
+                {% endif %}
+                {% comment %} {% if contribution.thumbnail %}
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                {% else %}
+                    <img src="{{MEDIA_URL}}/contributions/situation_default_imgs/{{contribution.situationObserved|get_situation_default_image}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                {% endif %} {% endcomment %}
                 <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                 <div class="card-body pt-0" style="margin-top: -10px;">
                     <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>

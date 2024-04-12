@@ -66,7 +66,11 @@
             <div class="col-4">
                 <a href="{% url 'contribution-detail' contribution.pk %}">
                     <div class="card my-card-hover contribution-card">
-                        <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                        {% if contribution.thumbnail %}
+                            <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                        {% else %}
+                            <div class="my-card-contribution-no-thumbnail-img"></div>
+                        {% endif %}
                         <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                         <div class="card-body pt-0" style="margin-top: -10px;">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
@@ -93,7 +97,7 @@
             <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">See more</a>
         </div>
     </div>
-    <p class="subtitle">Most recent events.</p>
+    <p class="subtitle">Most recent events</p>
     {% if events.count == 0 %}
         <p class="font-weight-light my-2 text-center">There are no Events for this Context.</p>
     {% endif %}

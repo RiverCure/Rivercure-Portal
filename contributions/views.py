@@ -107,11 +107,15 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
                 new_contribution.save()
         
-        # TODO: If there are no files, add thumbnail depending on situationObserved
-        if len(files) == 0:
-            print("No files")
-            # new_contribution.situationObserved
-            # if (new_contribution.situationObserved == 'flood'):
+        # # TODO: If there are no files, add thumbnail depending on situationObserved
+        # if len(files) == 0:
+        #     situation = new_contribution.situationObserved
+        #     default_img_path = "media/contributions/situation_default_imgs/{}.jpg".format(situation)
+        #     thumb = open(default_img_path, "rb")
+        #     thumb_django_file = File(thumb)
+        #     new_contribution.thumbnail = thumb_django_file
+        #     # new_contribution.situationObserved
+        #     # if (new_contribution.situationObserved == 'flood'):
 
 
         
