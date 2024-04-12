@@ -21,6 +21,27 @@ class ContributionStatus(models.TextChoices):
     REJECTED = "REJECTED", "Rejected"
     REPORTED = "REPORTED", "Reported"
 
+# TODO: Repeated code in here!
+def create_contribution_thumbnail_name(instance, filename):
+    """
+    Callable that saves the file with the path and name: contributions/uploaded_files/organization_name/context_code/year/month/day/thumb_uuid4.ext
+    """
+
+    organization = instance.context.organization
+    _context = instance.context.code
+    year = datetime.now().strftime('%Y')
+    month = datetime.now().strftime('%m')
+    day = datetime.now().strftime('%d')
+    # Path is: contributions/uploaded_files/organization_name/context_code/year/month/day
+    path = "contributions/uploaded_files/{}/{}/{}/{}/{}".format(organization, _context, year, month, day)
+    extension = "." + filename.split('.')[-1]
+    
+    # Filename is: thumb_uuid4.ext
+    format = "thumb-" + str(uuid4()) + extension
+
+    return os.path.join(path, format)
+
+
 # Contribution
 class e_ContextContribution(models.Model):
     # Metadata
@@ -30,10 +51,10 @@ class e_ContextContribution(models.Model):
     context = models.ForeignKey('context.e_Context', on_delete=models.SET_NULL, null=True)
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
     total_file_size = models.FloatField(default=0.000)
+    thumbnail = models.ImageField(upload_to=create_contribution_thumbnail_name, blank=True, null=True)
 
     # Moderation
     state = FSMField(default=ContributionStatus.PENDING, choices=ContributionStatus.choices , protected=True) # protected=True prevents changing the state directly
-    # TODO: Change these according to Domain Model
     last_validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="last_validated_by")
     last_validation_datetime =  models.DateTimeField(null=True, blank=True)
     last_rejection_reason = models.TextField(blank=True)
@@ -50,6 +71,22 @@ class e_ContextContribution(models.Model):
         verbose_name = 'Contribution'
         verbose_name_plural = 'Contributions'
         ordering = ['creationDateTime']
+    
+    def save(self, *args, **kwargs):
+        # Save runs first
+        super().save()
+
+        # Re-size thumbnail (if it exists)
+        if self.thumbnail:
+            file_path = self.thumbnail.path
+
+            output_size = (200,200)
+            img = Image.open(file_path)
+
+            if img.height > 200 or img.width > 200:
+                img.thumbnail(output_size)
+                img.save(file_path)
+            
     
     def __str__(self):
         return str(self.id)
@@ -108,7 +145,7 @@ def create_media_file_name(instance, filename):
     """
     Callable that saves the file with the path and name: contributions/uploaded_files/organization_name/context_code/year/month/day/uuid4.ext
 
-    As indicated in: https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.FileField.upload_to
+    As indicated in: https://docs.djangoproject.com/en/4.2/ref/models/fields/#django.db.models.FileField.upload_to
     """
 
     organization = instance.contribution.context.organization
@@ -227,21 +264,3 @@ class e_ContributionReport(models.Model):
     
     def __str__(self):
         return "Contribution " + str(self.contribution.id)
-
-
-# class e_ContributionValidationHistory(models.Model):
-#     contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true right ?
-#     state = models.CharField(max_length=30, choices=ContributionStatus.choices)
-#     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="contribution_validated_by")
-#     creation_datetime =  models.DateTimeField(auto_now_add=True)
-#     # Validation
-#     rejection_reason = models.TextField(blank=True)
-#     # Report
-#     report_reason = models.TextField()
-
-#     class Meta:
-#         verbose_name = 'Contribution\'s Validation'
-#         verbose_name_plural = 'Contribution\'s Validation History'
-    
-#     def __str__(self):
-#         return "Contribution " + str(self.contribution.id) + " - " + self.state

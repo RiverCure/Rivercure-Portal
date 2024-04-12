@@ -29,7 +29,7 @@
 <hr>
 
 <div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
-    <img src="{{ context.picture.url }}" class="card-img-top my-card-context-detail-img" alt="Context Picture">
+    <img src="{{ context.picture.url }}" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
     <div class="card-body">
         <p class="card-text">{{ context.description }}</p>
         {% if context.hydroFeature %}<h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>{% endif %}
@@ -47,30 +47,34 @@
 
 <!-- Contribution list -->
 <!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
-<div class="container-fluid">
-    <div class="row mt-5">
+<div class="container-fluid pt-3 mt-4">
+    <div class="row">
         <div class="col-10">
-            <h2 class="">Contributions</h2>
+            <h1 class="">Contributions</h1>
         </div>
-        <div class="col-2 text-center my-auto">
+        <div class="col-2 text-right my-auto">
             <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">See more</a>
         </div>
     </div>
-    <p class="subtitle">Most recent contributions.</p>
+    <p class="subtitle">Most recent Contributions</p>
+    {% if contributions.count == 0 %}
+        <p class="font-weight-light my-2 text-center">There are no Contributions for this Context yet. Why don't you make one?</p>
+    {% endif %}
 
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
         {% for contribution in contributions|slice:":5" %}
             <div class="col-4">
                 <a href="{% url 'contribution-detail' contribution.pk %}">
                     <div class="card my-card-hover contribution-card">
-                        <img src="" class="card-img-top" alt="Contribution image">
-                        <div class="card-body">
+                        <!-- TODO: Remove the if. It's only temporary -->
+                        {% if contribution.thumbnail %}
+                            <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                        {% endif %}
+                        <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
+                        <div class="card-body pt-0" style="margin-top: -10px;">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                            <h6 class="card-text">By: {{ contribution.createdBy }}</h6>
+                            <small class="text-body-secondary card-contributions text-muted">Posted on {{ contribution.creationDateTime }}</small>
                         </div>
-                        <div class="card-footer">
-                            <small class="text-body-secondary card-contributions">Posted on {{ contribution.creationDateTime }}</small>
-                        </div>            
                     </div>
                 </a>
             </div>
@@ -86,13 +90,16 @@
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col-10">
-            <h2 class="">Events</h2>
+            <h1 class="">Events</h1>
         </div>
         <div class="col-2 text-center my-auto">
             <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">See more</a>
         </div>
     </div>
     <p class="subtitle">Most recent events.</p>
+    {% if events.count == 0 %}
+        <p class="font-weight-light my-2 text-center">There are no Events for this Context.</p>
+    {% endif %}
 
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
         {% for event in events|slice:":5" %}
@@ -115,8 +122,6 @@
 
 
 <!-- Bottom button -->
-<div class="w-100 mb-4">
-    <a class="btn btn-secondary" style="float: right;" href="{% url 'public-contexts' %}">Back to Public Context list</a>
-</div>
+<a class="btn btn-secondary mb-3" style="float: right;" href="{% url 'public-contexts' %}">Back to Public Context list</a>
 
 {% endblock content %}

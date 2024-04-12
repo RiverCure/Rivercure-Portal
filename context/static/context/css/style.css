@@ -129,9 +129,28 @@
   object-fit: cover;
 }
 
-.my-card-context-detail-img {
+.my-card-public-context-detail-img {
   height: 400px;
   object-fit: cover;
+}
+
+.my-card-contribution-thumbnail-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.my-card-user-image {
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: 1em;
+  margin-top: -40px;
+  z-index: 1;
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid white;
 }
 
 .my-card-hover:hover {

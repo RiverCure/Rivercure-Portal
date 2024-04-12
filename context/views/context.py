@@ -35,6 +35,7 @@ from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution, ContributionStatus
 from django_filters.views import FilterView
 from django.db.models import Count, Case, When, Value 
+from rivercureproject import settings
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -167,6 +168,7 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('creationDateTime') # Contributions that belong to this context and are Accepted
         context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
+        context['MEDIA_URL'] = settings.MEDIA_URL
         return context
     
     def test_func(self, *args, **kwargs):

@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 
 import datetime
+from PIL import Image
 
 from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
@@ -74,9 +75,25 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
         # Deal with files
         files = form.cleaned_data["file_field"]
+        is_first_file = True
         for f in files:
-            # TODO: Check if file size is good. Only handle_uploaded_file if it is.
-            handle_uploaded_file(new_contribution, f)
+            new_attachment = handle_uploaded_file(new_contribution, f)
+            
+            # If it's the first file, also save as thumbnail of Contribution
+            if is_first_file:
+                is_first_file = False
+
+                # If is image, simply save
+                if new_attachment.is_video_or_image() == 'image':
+                    new_contribution.thumbnail = f
+                # TODO: Else, If f is video, first get thumbnail from it and then save
+
+                new_contribution.save()
+        
+        # TODO: If there are no files, add thumbnail depending on situationObserved
+        if len(files) == 0:
+            print("No files")
+
         
         # Create and save e_ContributionValidation object
         validation = e_ContributionValidation(contribution=new_contribution, state=ContributionStatus.PENDING, validated_by=self.request.user)
@@ -336,12 +353,23 @@ def report_contribution_condition(contribution):
 
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):
+    """
+    Helper function that saves attachment and updates total_file_size of Contribution
+
+    (1) Creates and saves e_ContributionAttachment object
+    
+    (2) Saves this file's size in its e_ContributionAttachment object
+    
+    (3) Adds to and saves the total size of the Contribution
+    """
     # Create e_ContributionAttachment object
     attachment = e_ContributionAttachment.objects.create(file=uploaded_file, contribution=contribution)
     # Save
     attachment.save()
 
     # Save file size
+    # Only do this after creating and saving the e_ContributionAttachment object for the first time because of the resizing we do on save
+    # Only after doing that resizing do we get and save the image's size
     file_size = bytes_to_megabytes(attachment.file.size)
     attachment.file_size = file_size
     # Add to total size of Contribution
@@ -349,6 +377,10 @@ def handle_uploaded_file(contribution, uploaded_file):
     # Save everything
     attachment.save()
     contribution.save()
+
+    return attachment
+
+
 
 def bytes_to_megabytes(bytes):
     """
@@ -360,3 +392,31 @@ def bytes_to_megabytes(bytes):
     mbytes = kbytes / 1024
     converted_value = round(mbytes, 3)
     return converted_value
+
+
+
+def make_thumbnail(contribution, attachment):
+
+    file_path = attachment.file.path
+
+    ## Image
+    if attachment.is_video_or_image() == 'image':
+        
+        # Make even smaller
+        output_size = (150, 150)
+        
+        original_img = Image.open(file_path)
+        thumb = original_img.copy()
+
+        if thumb.height > 150 or thumb.width > 150:
+            thumb.thumbnail(output_size)
+            contribution.thumbnail = thumb
+            contribution.save()
+            # thumb.save(file_path)
+            # TODO: HOW TO SAVE THIS TO contribution.thumbnail ???
+
+        # Save as thumbnail
+    
+
+    ## Video
+    # TODO
