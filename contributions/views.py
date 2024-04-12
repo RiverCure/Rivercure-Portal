@@ -110,6 +110,9 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         # TODO: If there are no files, add thumbnail depending on situationObserved
         if len(files) == 0:
             print("No files")
+            # new_contribution.situationObserved
+            # if (new_contribution.situationObserved == 'flood'):
+
 
         
         # Create and save e_ContributionValidation object
@@ -212,6 +215,7 @@ class MyContributionsListView(LoginRequiredMixin, FilterView):
         user = self.request.user
 
         context = super().get_context_data(**kwargs)
+        context['MEDIA_URL'] = settings.MEDIA_URL
         context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user)
         context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
         

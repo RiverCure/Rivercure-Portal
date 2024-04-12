@@ -81,8 +81,6 @@ def get_accepted(contributions):
 def get_state_color(state):
     """
     Returns Bootstrap class for color depending on Contribution state
-
-    state: one of the following strings - PENDING, ACCEPTED or REJECTED
     """
     if state == ContributionStatus.PENDING:
         return 'warning'
@@ -100,3 +98,15 @@ def is_active(isFirst):
     """
     if isFirst:
         return 'active'
+
+@register.filter(name='get_state_icon')
+def get_state_icon(state):
+    """
+    Returns Bootstrap class for icon depending on Contribution state
+    """
+    if state == ContributionStatus.PENDING:
+        return 'hourglass-split'
+    elif state == ContributionStatus.ACCEPTED:
+        return 'check-circle'
+    else:
+        return 'x-circle'
