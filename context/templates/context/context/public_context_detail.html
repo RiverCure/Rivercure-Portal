@@ -66,10 +66,7 @@
             <div class="col-4">
                 <a href="{% url 'contribution-detail' contribution.pk %}">
                     <div class="card my-card-hover contribution-card">
-                        <!-- TODO: Remove the if. It's only temporary -->
-                        {% if contribution.thumbnail %}
-                            <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                        {% endif %}
+                        <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
                         <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                         <div class="card-body pt-0" style="margin-top: -10px;">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>

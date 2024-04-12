@@ -80,10 +80,10 @@ class e_ContextContribution(models.Model):
         if self.thumbnail:
             file_path = self.thumbnail.path
 
-            output_size = (200,200)
+            output_size = (300,300)
             img = Image.open(file_path)
 
-            if img.height > 200 or img.width > 200:
+            if img.height > 300 or img.width > 300:
                 img.thumbnail(output_size)
                 img.save(file_path)
             
@@ -197,41 +197,16 @@ class e_ContributionAttachment(models.Model):
 
         # Resize image
         file_path = self.file.path
-        output_size = (300,300) # TODO: Is this a good size? Should it be higher?
+        output_size = (600,600) # TODO: Is this a good size? Should it be higher?
 
         # If it's an image
         if self.is_video_or_image() == 'image':
             # We must resize it
             img = Image.open(file_path)
 
-            if img.height > 300 or img.width > 300:
+            if img.height > 600 or img.width > 600:
                 img.thumbnail(output_size)
                 img.save(file_path)
-        
-        # Video thumbnail
-        # # Else, since it's a video, we must save a thumbnail (with the same output size as image)
-        # else:
-        #     video_path = file_path.split('.')[0]
-        #     video_extension = file_path.split('.')[-1]
-        #     img_output_path = video_path + "_thumb"
-
-
-        #     # TODO: Do as subprocess instead?
-        #     # TODO: RESIZE IMG HERE OR IN ANOTHER FOLLOWING SUPROCESS USING PILLOW?
-        #     # subprocess.call(['ffmpeg', '-i', file_path, '-ss', '00:00:00.000', '-vframes', '1', img_output_path])
-
-        #     try:
-        #         (
-        #             ffmpeg
-        #             .input(in_filename, ss=time)
-        #             .filter('scale', width, -1)
-        #             .output(out_filename, vframes=1)
-        #             .overwrite_output()
-        #             .run(capture_stdout=True, capture_stderr=True)
-        #         )
-        #     except ffmpeg.Error as e:
-        #         # Do nothing
-        #         error = e.stderr.decode()
 
 
 

@@ -9,9 +9,11 @@ from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
+from django.core.files import File
 
 import datetime
 from PIL import Image
+from pyffmpeg import FFmpeg
 
 from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
@@ -86,7 +88,22 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
                 # If is image, simply save
                 if new_attachment.is_video_or_image() == 'image':
                     new_contribution.thumbnail = f
-                # TODO: Else, If f is video, first get thumbnail from it and then save
+                # If is video, first get thumbnail and then save
+                else:
+                    try:
+                        ff = FFmpeg()
+
+                        # oh god
+                        input_path = new_attachment.file.path
+                        input_path_no_extension = input_path.split('.')[0] 
+                        output_path = input_path_no_extension + ".jpg"
+                        ff.options("-i {} -ss 00:00:01.000 -vframes 1 {}".format(input_path, output_path))
+                        thumb = open(output_path, "rb")
+                        thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
+
+                        new_contribution.thumbnail = thumb_django_file
+                    except:
+                        raise Exception("Video needs to be longer than 1 second in order to have a thumbnail.")
 
                 new_contribution.save()
         
