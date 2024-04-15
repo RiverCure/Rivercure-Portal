@@ -17,12 +17,11 @@
 <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
 <script src="https://unpkg.com/chroma-js"></script>
 <script type='text/javascript' src={% static 'context/js/context.js' %}></script>
-<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
 <script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 
@@ -68,9 +67,33 @@
         box-shadow: none;
     }
 
-    /* For the horizontal scroll carousel */
+    /* (Validation) Horizontal scroll carousel */
     .scrolling-wrapper{
         overflow-x: auto;
+    }
+
+    /* Map */
+    #my_map {
+        margin: 0;
+        border-radius: 0 1rem 0 0;
+        {% comment %} border-radius: 1rem;
+        border: 2px solid rgb(221, 221, 221); {% endcomment %}
+    }
+
+    /* Media carousel */
+    .carousel {
+        height: 300px;
+        width: 400px;
+        overflow: hidden;
+        text-align: center;
+        position: relative;
+        padding: 0;
+        list-style: none;
+    }
+
+    .carousel__controls,
+    .carousel__activator {
+        display: none;
     }
 </style>
 
@@ -95,8 +118,8 @@
 {% endif %}
 
 
-
-<!-- Meta information section -->
+<!-- OLD META-DATA SECTION -->
+{% comment %} <!-- Meta information section -->
 <div class="content-section">
     <!-- Information about user and location -->
     <h2 class="mt-2">Contribution {{ contribution }}</h2>
@@ -104,7 +127,6 @@
 
     <p class="font-weight-light"><strong>Posted on:</strong> {{ contribution.creationDateTime }}</p>
     <p class="font-weight-light"><strong>Posted by:</strong> {{ contribution.createdBy }}</p>
-    {% comment %} {% if contribution.contextEvent is not Null %} {% endcomment %}
     {% if contribution.contextEvent %}
     <p class="font-weight-light"><strong>Event:</strong> {{ contribution.contextEvent.Name }}</p>
     {% endif %}
@@ -199,7 +221,7 @@
     {% if user == contribution.createdBy or isMod or isContextOrOrgManager %}
         <a class="btn btn-danger mb-2" href="{% url 'contribution-delete' contribution.pk %}">Delete Contribution</a>
     {% endif %}
-</div>
+</div> {% endcomment %}
 
 
 <!-- Photo section -->
@@ -273,8 +295,8 @@
     </div>
 {% endif %}
 
-
-<!-- Map section -->
+<!-- OLD MAP SECTION -->
+{% comment %} <!-- Map section -->
 <div class="content-section">
     
     
@@ -297,7 +319,7 @@
             <p class="font-weight-light" align="justify"><strong>Description:</strong> {{ contribution.observationDescription }}</p>
 
             <hr>
-            {% comment %} <p class="font-weight-light"><strong>Address:</strong></p> {% endcomment %}
+            <p class="font-weight-light"><strong>Address:</strong></p>
             <h4 class="mt-2">Location</h4>
             <p class="font-weight-light"><strong>Latitude:</strong> {{ contribution.get_lat }}</p>
             <p id="id_long" class="font-weight-light"><strong>Longitude:</strong> {{ contribution.get_long }}</p>
@@ -305,10 +327,10 @@
         </div>
 
     </div>
-</div>
+</div> {% endcomment %}
 
-    
-<!-- Report button -->
+<!-- OLD REPORT BUTTON -->
+{% comment %} <!-- Report button -->
 {% if contribution.state == "ACCEPTED" %}
     <!-- Report Modal Button-->
     <button type="button" class="btn btn-danger mb-2" data-toggle="modal" data-target="#reportModal">
@@ -351,7 +373,7 @@
             </div>
         </div>
     </div>
-{% endif %}
+{% endif %} {% endcomment %}
 
 
 <!-- Validation history section -->
@@ -482,5 +504,283 @@
     {% endif %}
 {% endif %}
 
+
+
+
+<!-- Meta-data -->
+<div class="my-3">
+    <!-- Basic info -->
+    {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %} <!-- This is a bit of a 'creative' solution -->
+    <div class="row mx-0 my-contribution-detail-meta-info-card-top">
+    {% else %}
+    <div class="row mx-0 my-contribution-detail-meta-info-card">
+    {% endif %}
+        <div class="col">
+            <h2 class="mt-3">Contribution {{ contribution }}</h2>
+            <hr>
+            <p class="font-weight-light"><strong>Submitted on:</strong> {{ contribution.creationDateTime }}</p>
+        </div>
+        <div class="col-md-auto text-center">
+            <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
+            <p class="font-weight-light pt-2"> {{ contribution.createdBy }}</p>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
+        <div class="py-3 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
+            <!-- Validation info -->
+            {% if contribution.last_validation_datetime %}<p class="font-weight-light justify">Last <span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span> on {{ contribution.last_validation_datetime }} by <span class="text-info">{{ contribution.last_validated_by }}</span></p>{% endif %}
+            {% if contribution.last_rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.last_rejection_reason }}</p>{% endif %}
+            {% if contribution.last_validation_datetime %}<hr>{% endif %}
+        
+            <!-- Buttons -->
+            <!-- For Moderators -->
+            {% if isMod %}
+                <a class="btn btn-secondary" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
+                {% if contribution.can_accept %}
+                    <!-- Accept Modal Button-->
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#acceptingModal">
+                        <i class="bi bi-check-circle"></i> Accept
+                    </button>
+                    <!-- Accept Modal -->
+                    <div class="modal fade" id="acceptingModal" tabindex="-1" role="dialog" aria-labelledby="acceptingModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="acceptingModalLabel">Accept Contribution {{contribution.pk}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="justify">Are you sure you want to mark this Contribution as <span class='text-success'>Accepted</span>?
+                                        <span class='font-weight-bold'>This action is irreversible!</span>
+                                    </p>
+                                    <p class="justify">
+                                        To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                    <a class="btn btn-success my-3 mr-3" href="{% url 'moderator-contribution-accept' contributionId=contribution.pk %}">Confirm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if contribution.can_reject %}
+                    <!-- Reject Modal Button-->
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectionModal">
+                        <i class="bi bi-x-circle"></i> Reject
+                    </button>
+                    
+                    <!-- Reject Modal -->
+                    <div class="modal fade" id="rejectionModal" tabindex="-1" role="dialog" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="rejectionModalLabel">Reject Contribution {{contribution.pk}}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="justify">Are you sure you want to mark this Contribution as <span class='text-danger'>Rejected</span>?
+                                        <span class='font-weight-bold'>This action is irreversible!</span>
+                                    </p>
+                                    <p class="justify">
+                                        To read more about Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    </p>
+                                    <!-- Form -->
+                                    <hr>
+                                    <!-- TODO: Put form here, instead of doing this 'include' -->
+                                    {% include "contributions/rejection_reason.html" %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                    <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                                    <button type="submit" class="btn btn-danger my-3 mr-3" form="rejectionForm">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- If it's a validated Contribution, see if there is another Contribution waiting in queue to be validated -->
+                {% if contribution.state != "PENDING" and nextContribution %}
+                    <a class="btn btn-warning" href="{% url 'contribution-detail' nextContribution.pk %}">Validate Next Contribution</a>
+                {% endif %}
+            {% endif %}
+        
+            <!-- Delete -->
+            {% if user == contribution.createdBy or isMod or isContextOrOrgManager %}
+                <a class="btn btn-danger" href="{% url 'contribution-delete' contribution.pk %}" style="float: right;"><i class="bi bi-trash"></i> Delete Contribution</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+
+<!-- Media -->
+{% if contribution_media_list %}
+<div class="row my-3 mx-0 my-contribution-detail-meta-info-card">
+
+    <style>
+        .carousel__activator:nth-of-type(1):checked ~ .carousel__track {
+            transform: translateX(0%);
+          }
+          .carousel__activator:nth-of-type(1):checked ~ .carousel__slide:nth-of-type(1) {
+            transition: opacity 0.5s, transform 0.5s;
+            top: 0;
+            left: 0;
+            right: 0;
+            opacity: 1;
+            transform: scale(1);
+          }
+          .carousel__activator:nth-of-type(1):checked ~ .carousel__controls:nth-of-type(1) {
+            display: block;
+            opacity: 1;
+          }
+          .carousel__activator:nth-of-type(1):checked ~ .carousel__indicators .carousel__indicator:nth-of-type(1) {
+            opacity: 1;
+          }
+    </style>
+
+
+    <div class="carousel-container">
+        <ul class="carousel my-carousel carousel--thumb"><input class="carousel__activator" type="radio" id="K" name="thumb" checked="checked" /><input class="carousel__activator" type="radio" id="L" name="thumb" /><input class="carousel__activator" type="radio" id="M" name="thumb" /><input class="carousel__activator" type="radio" id="N" name="thumb" /><input class="carousel__activator" type="radio" id="O" name="thumb" />
+            <div class="carousel__controls"><label class="carousel__control carousel__control--backward" for="O"></label><label class="carousel__control carousel__control--forward" for="L"></label></div>
+            <div class="carousel__controls"><label class="carousel__control carousel__control--backward" for="K"></label><label class="carousel__control carousel__control--forward" for="M"></label></div>
+            <div class="carousel__controls"><label class="carousel__control carousel__control--backward" for="L"></label><label class="carousel__control carousel__control--forward" for="N"></label></div>
+            <div class="carousel__controls"><label class="carousel__control carousel__control--backward" for="M"></label><label class="carousel__control carousel__control--forward" for="O"></label></div>
+            <div class="carousel__controls"><label class="carousel__control carousel__control--backward" for="N"></label><label class="carousel__control carousel__control--forward" for="K"></label></div>
+            <li class="carousel__slide">
+                <h1>K</h1>
+            </li>
+            <li class="carousel__slide">
+                <h1>L</h1>
+            </li>
+            <li class="carousel__slide">
+                <h1>M</h1>
+            </li>
+            <li class="carousel__slide">
+                <h1>N</h1>
+            </li>
+            <li class="carousel__slide">
+                <h1>O</h1>
+            </li>
+            <div class="carousel__indicators"><label class="carousel__indicator" for="K"></label><label class="carousel__indicator" for="L"></label><label class="carousel__indicator" for="M"></label><label class="carousel__indicator" for="N"></label><label class="carousel__indicator" for="O"></label></div>
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- Observation information -->
+<div class="row my-3 mx-0 my-contribution-detail-meta-info-card">
+    <!-- Details -->
+    <div class="col p-0 d-flex flex-column border-right">
+
+        <div class="px-3">
+            <h3 class="mt-3">Observation Details</h3>
+            <hr>
+        </div>
+
+        <div class="px-3 d-flex">
+            <img src="" class="rounded-circle" alt="Situation type">
+            <p class="font-weight-light">{{ contribution.situationObserved|title }}</p>
+        </div>
+
+        <div class="px-3">
+            <p class="font-weight-light" align="justify">{{ contribution.observationDescription }}</p>
+        </div>
+
+        <div class="mt-auto my-border-top my-contribution-detail-footer my-border-radius-bottom-left">
+            <p class="font-weight-light mx-3 my-2"><strong>Observed on:</strong> {{ contribution.observationDate }}</p>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div class="col p-0">
+        <div id="map-container">
+            {% leaflet_map "my_map" %}
+        </div>
+        <div class="d-flex justify-content-between my-border-top my-contribution-detail-footer my-border-radius-bottom-right">
+            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> PUT Address here</p> <!-- TODO: Put address here -->
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-info" type="button" id="dropdownMapDetails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Details</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMapDetails" style="background-color: #f8f8f8;">
+                    <div class="p-2 text-center">
+                        <h6>Latitude</h6>
+                        <p class="font-weight-light m-0">{{ contribution.get_lat }}</p>
+                        <div class="dropdown-divider"></div>
+                        <h6>Longitude</h6>
+                        <p class="font-weight-light m-0">{{ contribution.get_long }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+</div>
+
+
+
+
+
+<!-- Bottom Buttons -->
+<div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
+    <div class="col">
+
+        <!-- See Context -->
+        <a class="btn btn-secondary my-3" href="{% url 'public-context-detail' contribution.context.code %}">See Context</a>
+
+        <!-- Report -->
+        {% if contribution.state == "ACCEPTED" %}
+            <!-- Report Modal Button-->
+            <button type="button" class="btn btn-danger my-3" data-toggle="modal" data-target="#reportModal" style="float: right;">
+                <i class="bi bi-exclamation-triangle"></i> Report
+            </button>
+
+            <!-- Report Modal -->
+            <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportModalLabel"><span class='text-danger'>Report Contribution {{contribution.pk}}</span></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
+                            <p class="justify">Make sure you are following the <a href="#">Platform Guidelines</a>.</p>
+                            <p class="justify">
+                                To read more about reporting Contributions and the Moderation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                            </p>
+                            <hr>
+                            <!-- Form -->
+                            <form action="{% url 'contribution-report' contribution.pk %}" method="POST" id="reportForm">
+                                {% csrf_token %}
+                            
+                                <div class="form-group m-2"> <!-- style="float: left;"-->
+                                    <label for="id_reason">Please write the <span class='font-weight-bold'>reason</span> for reporting this Contribution.</label>
+                                    {{ report_form.reason }}
+                                </div>
+                            
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                            <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                            <button type="submit" class="btn btn-danger my-3 mr-3" form="reportForm">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
 
 {% endblock content %}

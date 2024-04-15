@@ -119,6 +119,8 @@
 
 /*# sourceMappingURL=style.css.map */
 
+/* CSS classes with 'my-' prefix are custom (made by Maf) */
+
 /* Context cards */
 .my-context-card {
   width: 21rem;
@@ -169,6 +171,48 @@ a:hover {
 
 .card-contributions {
   color: #333333;
+}
+
+.my-contribution-detail-user-img {
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.my-contribution-detail-meta-info-card {
+  border-radius: 1rem;
+  border: 2px solid rgb(221, 221, 221);
+}
+.my-contribution-detail-meta-info-card-top {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 2px 2px 2px 2px;
+  border-radius: 1em 1em 0 0;
+}
+
+.my-contribution-detail-bottom {
+  /* border: 2px solid rgb(221, 221, 221); */
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0px 2px 2px 2px;
+  border-radius: 0 0 1em 1em;
+}
+
+.my-border-top {
+  border-top: 2px solid rgb(221, 221, 221);
+}
+
+.my-border-radius-bottom-left {
+  border-radius: 0 0 0 1rem;
+}
+
+.my-border-radius-bottom-right {
+  border-radius: 0 0 1rem 0;
+}
+
+.my-contribution-detail-footer {
+  background-color: #f8f8f8;
 }
 
 
