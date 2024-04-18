@@ -180,6 +180,13 @@ a:hover {
   border-radius: 50%;
 }
 
+.my-contribution-detail-situation-img {
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 .my-contribution-detail-meta-info-card {
   border-radius: 1rem;
   border: 2px solid rgb(221, 221, 221);
@@ -211,12 +218,42 @@ a:hover {
   border-radius: 0 0 1rem 0;
 }
 
+.my-border-radius-bottom {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
 .my-contribution-detail-footer {
   background-color: #f8f8f8;
 }
 
+.my-contribution-detail-situation-card {
+  border: 2px solid rgb(221, 221, 221);
+}
 
-/* Filter TODO: Substitute this for mt-5 */ 
+/* (Contribution detail) Media carousel */
+.my-image-carousel-thumbnail {
+  height: 300px;
+  object-fit: cover;
+}
+
+.my-video {
+  object-fit: cover;
+  height: 300px;
+  width: 336px;
+}
+
+.my-video-carousel-thumbnail {
+  position: relative;
+}
+
+.my-video-carousel-thumbnail-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Filter TODO: Substitute this for mt-? */ 
 #filter-menu {
   margin-top: 5px;
 }

@@ -34,7 +34,7 @@
         <p class="card-text">{{ context.description }}</p>
         {% if context.hydroFeature %}<h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>{% endif %}
         <hr>
-        <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}">Contribute</a>
+        <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}"><i class="bi bi-upload"></i> Contribute</a>
         <div class="float-right">
             <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
             {% if context.hydroFeature %}

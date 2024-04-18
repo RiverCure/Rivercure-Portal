@@ -107,15 +107,16 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
                 new_contribution.save()
         
-        # # TODO: If there are no files, add thumbnail depending on situationObserved
-        # if len(files) == 0:
-        #     situation = new_contribution.situationObserved
-        #     default_img_path = "media/contributions/situation_default_imgs/{}.jpg".format(situation)
-        #     thumb = open(default_img_path, "rb")
-        #     thumb_django_file = File(thumb)
-        #     new_contribution.thumbnail = thumb_django_file
-        #     # new_contribution.situationObserved
-        #     # if (new_contribution.situationObserved == 'flood'):
+        # TODO: If there are no files, add thumbnail depending on situationObserved
+        if len(files) == 0:
+            situation = str(new_contribution.situationObserved).lower()
+            # default_img_path = "{}contributions/situation_icons/{}.png".format(settings.MEDIA_URL, situation)
+            default_img_path = "media/contributions/situation_icons/{}.png".format(situation)
+            thumb = open(default_img_path, "rb")
+            thumb_django_file = File(thumb)
+            new_contribution.thumbnail = thumb_django_file
+            # new_contribution.situationObserved
+            # if (new_contribution.situationObserved == 'flood'):
 
 
         
@@ -212,7 +213,7 @@ class MyContributionsListView(LoginRequiredMixin, FilterView):
 
         user = self.request.user
 
-        contribution_list = e_ContextContribution.objects.filter(createdBy=user)
+        contribution_list = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
 
         return contribution_list
     
@@ -221,7 +222,7 @@ class MyContributionsListView(LoginRequiredMixin, FilterView):
 
         context = super().get_context_data(**kwargs)
         context['MEDIA_URL'] = settings.MEDIA_URL
-        context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user)
+        context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
         context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context

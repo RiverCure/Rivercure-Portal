@@ -36,7 +36,7 @@ def create_contribution_thumbnail_name(instance, filename):
     path = "contributions/uploaded_files/{}/{}/{}/{}/{}".format(organization, _context, year, month, day)
     extension = "." + filename.split('.')[-1]
     
-    # Filename is: thumb_uuid4.ext
+    # Filename is: thumb-uuid4.ext
     format = "thumb-" + str(uuid4()) + extension
 
     return os.path.join(path, format)
@@ -197,14 +197,14 @@ class e_ContributionAttachment(models.Model):
 
         # Resize image
         file_path = self.file.path
-        output_size = (600,600) # TODO: Is this a good size? Should it be higher?
+        output_size = (1024,768) # TODO: Is this a good size? Should it be higher?
 
         # If it's an image
         if self.is_video_or_image() == 'image':
             # We must resize it
             img = Image.open(file_path)
 
-            if img.height > 600 or img.width > 600:
+            if img.height > 1024 or img.width > 768:
                 img.thumbnail(output_size)
                 img.save(file_path)
 
