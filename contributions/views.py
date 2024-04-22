@@ -11,9 +11,12 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core.files import File
 
+import requests
 import datetime
 from PIL import Image
 from pyffmpeg import FFmpeg
+from dotenv import load_dotenv
+import os
 
 from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
@@ -23,6 +26,8 @@ from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
 
+
+load_dotenv()
 
 
 class AllContributionsListView(LoginRequiredMixin, ListView):
@@ -65,12 +70,24 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         # Set metadata
         new_contribution = form.save(commit=False)
 
+        lat = form.cleaned_data["lat"]
+        long = form.cleaned_data["lng"]
+
         new_contribution.createdBy = self.request.user
         context_code = self.kwargs['contextCode']
         _context = e_Context.objects.get(code=context_code)
         new_contribution.context = _context
         new_contribution.creationDateTime = datetime.datetime.now()
-        new_contribution.observationPlace = Point(form.cleaned_data["lng"], form.cleaned_data["lat"])
+        new_contribution.observationPlace = Point(long, lat)
+
+        # Reverse geocode to get address
+        print(os.getenv('REVGEO_API_KEY'))
+        api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
+        response = requests.get(api_url)
+        # TODO: Do some verification here
+        response_parsed = response.json()
+        address = response_parsed['display_name']
+        new_contribution.observationAddress = address
 
         # Save
         new_contribution.save()

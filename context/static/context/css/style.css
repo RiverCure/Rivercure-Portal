@@ -173,6 +173,8 @@ a:hover {
   color: #333333;
 }
 
+/* Contribution Detail page */
+/* these are a mess */
 .my-contribution-detail-user-img {
   height: 70px;
   width: 70px;
@@ -196,6 +198,18 @@ a:hover {
   border-color: rgb(221, 221, 221);
   border-width: 2px 2px 2px 2px;
   border-radius: 1em 1em 0 0;
+}
+
+.my-contribution-detail-meta-info-card-footer-left {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0 0 2px 2px;
+}
+
+.my-contribution-detail-meta-info-card-footer-right {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0 2px 2px 0;
 }
 
 .my-contribution-detail-bottom {
