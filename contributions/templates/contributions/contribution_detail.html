@@ -125,7 +125,7 @@
     
     <!-- Footer -->
     {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
-        <div class="py-3 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
+        <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
             <!-- Validation info -->
             {% if contribution.last_validation_datetime %}<p class="font-weight-light justify">Last <span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span> on {{ contribution.last_validation_datetime }} by <span class="text-info">{{ contribution.last_validated_by }}</span></p>{% endif %}
             {% if contribution.last_rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.last_rejection_reason }}</p>{% endif %}
@@ -134,10 +134,10 @@
             <!-- Buttons -->
             <!-- For Moderators -->
             {% if isMod %}
-                <a class="btn btn-secondary" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
+                <a class="my-2 btn btn-secondary" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">Back to Contribution list</a>
                 {% if contribution.can_accept %}
                     <!-- Accept Modal Button-->
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#acceptingModal">
+                    <button type="button" class="my-2 btn btn-success" data-toggle="modal" data-target="#acceptingModal">
                         <i class="bi bi-check-circle"></i> Accept
                     </button>
                     <!-- Accept Modal -->
@@ -168,7 +168,7 @@
                 {% endif %}
                 {% if contribution.can_reject %}
                     <!-- Reject Modal Button-->
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectionModal">
+                    <button type="button" class="my-2 btn btn-danger" data-toggle="modal" data-target="#rejectionModal">
                         <i class="bi bi-x-circle"></i> Reject
                     </button>
                     
@@ -211,7 +211,7 @@
         
             <!-- Delete -->
             {% if user == contribution.createdBy or isMod or isContextOrOrgManager %}
-                <a class="btn btn-danger" href="{% url 'contribution-delete' contribution.pk %}" ><i class="bi bi-trash"></i> Delete Contribution</a>
+                <a class="my-2 btn btn-danger" href="{% url 'contribution-delete' contribution.pk %}" ><i class="bi bi-trash"></i> Delete Contribution</a>
             {% endif %}
         </div>
     {% endif %}
@@ -224,15 +224,16 @@
 
     <div class="col">
         <div class="">
-            <h3 class="mt-3">Uploaded Media</h3>
+            <h3 class="mt-3"><i class="bi bi-images"></i> Uploaded Media</h3>
+            {% comment %} <p class="subtitle">Scroll to see more</p> {% endcomment %}
             <hr>
         </div>
 
-        <div class="scrolling-wrapper row flex-row flex-nowrap my-4 px-3">
+        <div class="scrolling-wrapper row flex-row flex-nowrap my-4 mx-0">
             {% for media in contribution_media_list %}
-    
+
                 <!-- Media (in carousel) -->
-                <div class="col-4 p-0 ml-2">
+                <div class="col-4 p-0 {% if not forloop.first %}ml-2{% endif %} my-fade-out">
                     <a data-toggle="modal" data-target="#mediaModal{{ forloop.counter }}">
 
                         <!-- Image -->
@@ -290,8 +291,14 @@
     
             {% endfor %}
         </div>
-    </div>
 
+        <div class="mb-3 text-center">
+            <i class="bi bi-chevron-left"></i>
+            <p class="d-inline font-weight-lighter">Scroll to see more</p>
+            <i class="bi bi-chevron-right"></i>
+        </div>
+
+    </div>
 
 </div>
 {% endif %}
