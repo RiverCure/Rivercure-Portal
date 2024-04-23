@@ -1,0 +1,90 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Hydrofeature - Contexts {% endblock %}
+{% load auth_extras %}
+{% load crispy_forms_tags %}
+{% load my_tags %}
+{% load static %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<h1>{{ hydrofeature.Name }}</h1>
+<p class="font-weight-light" align="justify">On this page you can consult the Public Contexts that belong to this Hydrofeature.</p>
+<hr>
+
+<div>
+    <!-- Search and Filter -->
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+
+    <!-- TODO: Add sort -->
+    <!-- Sort -->
+    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
+    <!-- Sort Menu-->
+    <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+        <a class="dropdown-item" href="#"><i class="bi bi-sort-up"></i> Ascending Contributions</a>
+        <a class="dropdown-item" href="#"><i class="bi bi-sort-down"></i> Descending Contributions</a>
+    </div>
+</div>
+<!-- Search and Filter Menu -->
+<div id="filter-menu" class="collapse card my-card-hover card-body">
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+    </form>
+</div>
+<hr>
+
+
+<!-- List of Contexts-->
+<div class="d-flex flex-row flex-wrap justify-content-between">
+    {% for context in hydrofeature_contexts %}
+        <a href="{% url 'public-context-detail' context.code %}">
+            <div class="card my-card-hover mb-3 my-context-card">
+                <img src={{ context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">{{ context.Name }}</h5>
+                </div>
+                <div class="card-footer text-muted">
+                    <span class="text-info">{{ context.e_contextcontribution_set|get_accepted }}</span> contributions
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+<!-- If list is empty -->
+{% if hydrofeature_contexts.count == 0 %}
+    <p class="font-weight-light my-2 text-center">There are no Contexts in this Hydrofeature yet.</p>
+{% endif %}
+
+<!-- Pagination -->
+{% if is_paginated %}
+    <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
+        <ul class="pagination">
+            {% if page_obj.has_previous and page_obj.number != 2 %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+            {% endif %}
+
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+            {% endif %}
+            
+            <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+            {% endif %}
+
+            {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% endblock content %}

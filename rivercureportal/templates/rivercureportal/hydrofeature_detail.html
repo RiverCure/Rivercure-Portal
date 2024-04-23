@@ -1,13 +1,17 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Hydrofeature detail {% endblock %}
 {% load leaflet_tags %}
+{% load my_tags %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load auth_extras %}
 
 
 {% block scripts %}
-    {% leaflet_js plugins="ALL" %}
+
+	<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+    
+	{% leaflet_js plugins="ALL" %}
 	{% leaflet_css plugins="ALL" %}
 	<script type='text/javascript' src={% static 'context/js/hydrofeature.js' %}></script>
 	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
@@ -61,12 +65,17 @@
 			box-sizing: border-box;
 			background-color: whitesmoke;
 		}
+
+		/* For the horizontal scroll carousel */
+		.scrolling-wrapper{
+			overflow-x: auto;
+		}
 	</style>               
 {% endblock  %}
 
 {% block content %}
 
-<article class="media content-section">
+{% comment %} <article class="media content-section">
     <div class="media-body">
     <div class="article-metadata">
         <h1>{{ object.Name }}</h1>
@@ -83,6 +92,84 @@
 	{% endif %}
     <a class="btn btn-secondary btn  mt-4 mb-1" style="float:right" href="{% url 'hydrofeature-list' %}">Back to hydrofeature list</a>
     </div>
-</article>
+</article> {% endcomment %}
+
+
+
+<!-- Header -->
+<h1>{{ object.Name }}</h1>
+<hr>
+
+<!-- Details -->
+<div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
+    <div class="card-body">
+
+		<div id="map-container" class="container px-0">
+			{% leaflet_map "my_map" %}
+		</div>
+
+        <h6 class="card-text text-muted"><em>{{ object.type|title }}</em></h6>
+        <hr>
+
+		{% if request.user|has_group:"Admin" or request.user|has_group:"Manager" %}
+			<a class="btn btn-secondary" href="{% url 'hydrofeature-update' object.id %}" >Edit</a>
+			<a class="btn btn-danger" href="{% url 'hydrofeature-delete' object.id %}" > Delete</a>
+		{% endif %}
+		<a class="btn btn-secondary btn" style="float:right" href="{% url 'hydrofeature-list' %}">Back to hydrofeature list</a>
+
+    </div>
+</div>
+
+<hr class="my-4">
+
+<!-- Context list -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-10 pl-0">
+            <h1 class="">Contexts</h1>
+        </div>
+        <div class="col-2 text-right my-auto pr-0">
+            <a class="btn btn-secondary" href="{% url 'hydrofeature-contexts-list' object.pk %}">See more <i class="bi bi-chevron-right"></i></a>
+        </div>
+    </div>
+    {% if contexts.count == 0 %}
+        <p class="font-weight-light my-2 text-center">There are no Contexts in this Hydrofeature yet.</p>
+    {% endif %}
+
+    <div class="scrolling-wrapper row flex-row flex-nowrap p-2 mt-2">
+        {% for context in contexts|slice:":5" %}
+            <div class="col-4 p-0">
+                <a href="{% url 'public-context-detail' context.code %}">
+                    <div class="card my-card-hover mb-3 my-context-card">
+						<img src={{ context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+						<div class="card-body">
+							<h5 class="card-title">{{ context.Name }}</h5>
+							<h6 class="card-text text-muted"><em>{{ object.Name }}</em></h6>
+						</div>    
+						<div class="card-footer text-muted">
+							<span class="text-info">{{ context.e_contextcontribution_set|get_accepted }}</span> contributions
+						</div>
+					</div>
+                </a>
+            </div>
+        {% endfor %}
+		
+    </div>
+	<div class="mb-3 text-center">
+		<p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> Scroll horizontally to see more</p>
+	</div>
+
+</div>
+
+{% comment %} <hr>
+
+<!-- Map -->
+<div class="pt-3 mt-4">
+	<h1 class="">Map</h1>
+	<div id="map-container" class="container mt-4 px-0">
+		{% leaflet_map "my_map" %}
+	</div>
+</div> {% endcomment %}
+
 
 {% endblock content %}

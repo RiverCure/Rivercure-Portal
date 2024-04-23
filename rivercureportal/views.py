@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from leaflet.forms.widgets import LeafletWidget
@@ -8,12 +8,15 @@ from users.models import User
 from context.models import e_Context
 from .models import e_HydroFeature
 from sensors.models import Sensor
-from .filters import UserFilter, HydroFeatureFilter
+from .filters import UserFilter, HydroFeatureFilter, HydrofeatureContextsFilter
+from context.filters import ContextFilter
 from django.urls import reverse, reverse_lazy
 from notifications.models import Notification
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
+from django.db.models import Count, Q
+from contributions.models import ContributionStatus
 
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -110,6 +113,49 @@ class HydroFeatureDetailView(DetailView):
     model = e_HydroFeature
     context_object_name = 'Hydrofeatures'
     template_name = 'rivercureportal/hydrofeature_detail.html'
+
+    def get_context_data(self, **kwargs):
+        hydrofeature = self.get_object()
+
+        context = super().get_context_data(**kwargs)
+        context['contexts'] = e_Context.objects.filter(hydroFeature=hydrofeature)
+        
+        return context
+
+class HydroFeatureContextsListView(ListView):
+    model = e_Context
+    template_name = 'rivercureportal/hydrofeature_context_list.html'
+    filterset_class = HydrofeatureContextsFilter
+    context_object_name = 'hydrofeature_contexts'
+    pk_url_kwarg = 'hydrofeaturePk'
+    paginate_by = 9
+
+    def get_queryset(self):
+        hydrofeature_pk = self.kwargs['pk']
+        hydrofeature = get_object_or_404(e_HydroFeature, pk=hydrofeature_pk)
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context_list = e_Context.objects.filter(isPublic=True, hydroFeature=hydrofeature).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
+        return context_list
+    
+
+    # TODO: Filtering not working?
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        hydrofeature_pk = self.kwargs['pk']
+        hydrofeature = get_object_or_404(e_HydroFeature, pk=hydrofeature_pk)
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context['context_list'] = e_Context.objects.filter(isPublic=True, hydroFeature=hydrofeature).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
+        context['filter'] = HydrofeatureContextsFilter(self.request.GET, queryset=context['context_list'])
+        context['hydrofeature'] = hydrofeature
+
+        return context
 
 
 class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
