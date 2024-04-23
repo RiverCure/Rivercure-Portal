@@ -45,6 +45,9 @@
 </div>
 
 
+<hr>
+
+
 <!-- Contribution list -->
 <!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
 <div class="container-fluid pt-3 mt-4">
@@ -53,7 +56,7 @@
             <h1 class="">Contributions</h1>
         </div>
         <div class="col-2 text-right my-auto">
-            <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">See more</a>
+            <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">See more <i class="bi bi-chevron-right"></i></a>
         </div>
     </div>
     <p class="subtitle">Most recent Contributions</p>
@@ -65,7 +68,7 @@
         {% for contribution in contributions|slice:":5" %}
             <div class="col-4">
                 <a href="{% url 'contribution-detail' contribution.pk %}">
-                    <div class="card my-card-hover contribution-card">
+                    <div class="card my-card-hover">
                         {% if contribution.thumbnail %}
                             <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
                         {% else %}
@@ -84,7 +87,6 @@
 
 </div>
 
-<!-- TODO: Line or no line? -->
 <hr>
 
 <!-- Event list -->
@@ -94,7 +96,7 @@
             <h1 class="">Events</h1>
         </div>
         <div class="col-2 text-center my-auto">
-            <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">See more</a>
+            <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">See more <i class="bi bi-chevron-right"></i></a>
         </div>
     </div>
     <p class="subtitle">Most recent events</p>
@@ -105,7 +107,7 @@
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
         {% for event in events|slice:":5" %}
             <div class="col-4">
-                <div class="card my-card-hover contribution-card">
+                <div class="card my-card-hover">
                     {% comment %} <img src="" class="card-img-top" alt="Contribution image"> {% endcomment %}
                     <div class="card-body">
                         <h5 class="card-title">{{ event.Name }}</h5>
@@ -120,6 +122,9 @@
     </div>
 
 </div>
+
+
+<hr>
 
 
 <!-- Bottom button -->

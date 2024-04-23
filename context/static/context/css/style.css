@@ -165,13 +165,13 @@
   box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
 }
 
-.my-fade-in {
-  opacity:0.75;
+.my-fade-out {
+  opacity:1;
   transition: 1s ease;
 }
 
-.my-fade-in:hover {
-  opacity:1;
+.my-fade-out:hover {
+  opacity:0.75;
   transition: 1s ease;
 }
 
