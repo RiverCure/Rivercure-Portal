@@ -198,14 +198,14 @@ class e_ContributionAttachment(models.Model):
 
         # Resize image
         file_path = self.file.path
-        output_size = (1024,768) # TODO: Is this a good size? Should it be higher?
+        output_size = (800,800) # TODO: Is this a good size? Should it be higher?
 
         # If it's an image
         if self.is_video_or_image() == 'image':
             # We must resize it
             img = Image.open(file_path)
 
-            if img.height > 1024 or img.width > 768:
+            if img.height > 800 or img.width > 800:
                 img.thumbnail(output_size)
                 img.save(file_path)
 

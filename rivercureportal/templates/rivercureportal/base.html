@@ -43,6 +43,9 @@
                                 <a href="{% url 'rivercure-home' %}" class="nav-link">Home</a>
                             </div>
                             {% if user.is_authenticated %}
+                                <div class="nav-item">
+                                    <a href="{% url 'my-contributions' %}" class="nav-link">My Contributions</a>
+                                </div>
                                 {% if user|has_org %}
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -55,13 +58,18 @@
                                     </li>
                                 {% endif %}
                                 {% if user|is_mod %}
-                                    <div class="nav-item">
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Moderation
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="{% url 'moderator-context-list' %}">My Contexts</a>
+                                        </div>
+                                    </li>
+                                    {% comment %} <div class="nav-item">
                                         <a href="{% url 'moderator-context-list' %}" class="nav-link">My Contexts</a>
-                                    </div>
+                                    </div> {% endcomment %}
                                 {% endif %}
-                                <div class="nav-item">
-                                    <a href="{% url 'my-contributions' %}" class="nav-link">My Contributions</a>
-                                </div>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Portal

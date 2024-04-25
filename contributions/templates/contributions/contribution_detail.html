@@ -127,7 +127,7 @@
     {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
         <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
             <!-- Validation info -->
-            {% if contribution.last_validation_datetime %}<p class="font-weight-light justify">Last <span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span> on {{ contribution.last_validation_datetime }} by <span class="text-info">{{ contribution.last_validated_by }}</span></p>{% endif %}
+            {% if contribution.last_validation_datetime %}<p class="font-weight-light justify mt-2">Last <span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span> on {{ contribution.last_validation_datetime }} by <span class="text-info">{{ contribution.last_validated_by }}</span></p>{% endif %}
             {% if contribution.last_rejection_reason %}<p class="font-weight-light"><strong>Rejection reason:</strong> {{ contribution.last_rejection_reason }}</p>{% endif %}
             {% if contribution.last_validation_datetime %}<hr>{% endif %}
         
@@ -268,7 +268,7 @@
                                 </button>
                             </div>
 
-                            <div class="modal-body p-0 text-center">
+                            <div class="modal-body p-0 text-center my-contribution-detail-footer">
 
                                 <!-- Image -->
                                 {% if media.is_video_or_image == "image" %}
