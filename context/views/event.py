@@ -166,10 +166,10 @@ class EventCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         context = get_object_or_404(e_Context, pk=self.kwargs['pk'])
         self.context = context
-        if context.e_contextevent_set.count() >= 1:
-            messages.error(
-                request, 'There already exists an event for this context. Currently, RiverCure only allows one event per context.')
-            return redirect('event-list', contextCode=context.pk)
+        # if context.e_contextevent_set.count() >= 1:
+        #     messages.error(
+        #         request, 'There already exists an event for this context. Currently, RiverCure only allows one event per context.')
+        #     return redirect('event-list', contextCode=context.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
