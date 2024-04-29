@@ -11,23 +11,20 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core.files import File
 
-import requests
 import datetime
 from PIL import Image
 from pyffmpeg import FFmpeg
-from dotenv import load_dotenv
-import os
 
 from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
+from .tasks import lat_long_to_address
 from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
+from context.views.mesh import check_celery
 
-
-load_dotenv()
 
 
 class AllContributionsListView(LoginRequiredMixin, ListView):
@@ -79,15 +76,6 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution.context = _context
         new_contribution.creationDateTime = datetime.datetime.now()
         new_contribution.observationPlace = Point(long, lat)
-
-        # Reverse geocode to get address
-        print(os.getenv('REVGEO_API_KEY'))
-        api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
-        response = requests.get(api_url)
-        # TODO: Do some verification here
-        response_parsed = response.json()
-        address = response_parsed['display_name']
-        new_contribution.observationAddress = address
 
         # Save
         new_contribution.save()
@@ -269,13 +257,13 @@ def contributionAccept(request, contributionId):
     # Change Contribution state to ACCEPTED if we are allowed to
     if contribution and contribution.can_accept():
 
-        accept_contribution(contribution, request.user)
+        accept_contribution(contribution, request.user, request)
     
         # TODO: Send notifs
 
     return redirect('contribution-detail', contributionId)
 
-def accept_contribution(contribution, user):
+def accept_contribution(contribution, user, request):
     """
     Helper function that accepts a Contribution.
     (1) If Contribution was REPORTED, clears all reports (ONLY do this for accept, not reject)
@@ -287,13 +275,14 @@ def accept_contribution(contribution, user):
     """
     # If Contribution was REPORTED
     if contribution.state == ContributionStatus.REPORTED:
-        # Clear all reports made to this Contribution
+        # Clear all reports made to this Contribution # TODO: One day, stop doing this and just keep every report ever made
         deleted_reports = e_ContributionReport.objects.filter(contribution=contribution).delete()
 
-    # Save details of latest validation in Contribution
+    # Put details of latest validation in Contribution
     contribution.accept()
     contribution.last_validated_by = user
     contribution.last_validation_datetime = datetime.datetime.now()
+
 
     # Create a e_ContributionValidation object
     validation = e_ContributionValidation(contribution=contribution, state=ContributionStatus.ACCEPTED, validated_by=user)
@@ -301,6 +290,14 @@ def accept_contribution(contribution, user):
     # Save everything
     contribution.save()
     validation.save()
+
+    # If Contribution has an empty address
+    if contribution.observationAddress == '':
+        # Reverse geocode to get address -> Send this task to Celery
+        if check_celery():
+            task = lat_long_to_address.delay(contribution.pk)
+        else:  # Celery offline
+            messages.error(request, 'Background process offline: Contact admin.')
 
 @login_required
 def contributionReject(request, contributionId):

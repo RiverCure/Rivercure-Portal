@@ -62,7 +62,7 @@ class e_ContextContribution(models.Model):
     # Information provided by the user
     observationDate = models.DateField()
     observationPlace = models.PointField()
-    observationAddress = models.CharField(max_length=300)
+    observationAddress = models.CharField(max_length=300, blank=True)
     observationDescription = models.TextField()
     situationObserved = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
 

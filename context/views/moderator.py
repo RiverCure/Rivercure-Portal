@@ -239,7 +239,7 @@ def batchHandle(request, contextCode):
 
                 # Accept Contribution if it's PENDING or REJECTED
                 if contribution and contribution.can_accept():
-                    accept_contribution(contribution, request.user)
+                    accept_contribution(contribution, request.user, request)
 
                     # TODO: For each, send notifs
             

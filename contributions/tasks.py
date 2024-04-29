@@ -1,0 +1,39 @@
+from dotenv import load_dotenv
+from celery import shared_task
+
+from .models import e_ContextContribution
+
+import os
+import requests
+
+load_dotenv()
+
+
+@shared_task
+def lat_long_to_address(contribution_id):
+
+    contribution = e_ContextContribution.objects.get(id=contribution_id)
+
+    if contribution:
+        lat = contribution.get_lat()
+        long = contribution.get_long()
+
+        # Call API
+        print(os.getenv('REVGEO_API_KEY'))
+
+        # We are using LocationIQ API
+        # TODO: Make sure we are following all the directives of the free plan
+        api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
+        headers = {"accept": "application/json"}
+
+        response = requests.get(api_url, headers, timeout=10.0) # TODO: Is this enough time out time?
+
+        if response.status_code == 200:
+            # Request went well, we can save the address
+            response_parsed = response.json()
+            address = response_parsed['display_name']
+            contribution.observationAddress = address
+            contribution.save()
+        else:
+            # Oops, something went wrong
+            print("Reverse Geocoding API Error:", response.status_code, response.text)

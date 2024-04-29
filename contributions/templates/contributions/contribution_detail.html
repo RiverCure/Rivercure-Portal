@@ -373,7 +373,7 @@
     <div class="col p-0 my-contribution-detail-footer my-border-radius-bottom-right my-contribution-detail-meta-info-card-footer-right">
         <!-- Map Footer -->
         <div class="d-flex justify-content-between">
-            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {{contribution.observationAddress}}</p>
+            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}}{% else %}Address will be available shortly after Contribution is accepted. In the meantime, check Details to see the Lat and Long.{% endif %}</p>
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-info" type="button" id="dropdownMapDetails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Details</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMapDetails" style="background-color: #f8f8f8;">
