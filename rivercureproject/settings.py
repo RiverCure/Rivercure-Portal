@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
     'contributions.apps.ContributionsConfig',
+    'challenges.apps.ChallengesConfig',
     'crispy_forms',
     'rest_framework',
     'corsheaders',
