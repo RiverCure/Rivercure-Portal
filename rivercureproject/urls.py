@@ -45,6 +45,7 @@ urlpatterns = [
     path('context/raster/', include('raster.urls')),
     path('organization/', include('organization.urls')),
     path('contributions/', include('contributions.urls')),
+    path('challenges/', include('challenges.urls')),
 
     re_path(r'^inbox/notifications/',
         include(notifications.urls, namespace='notifications')),

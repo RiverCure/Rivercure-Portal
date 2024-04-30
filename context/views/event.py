@@ -27,6 +27,8 @@ from organization.authorization import belongs_to_organization
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
+from challenges.models import e_Challenge
+
 
 class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'events'
@@ -76,6 +78,10 @@ class EventDetailView(LoginRequiredMixin, DetailView):
                 rasters[key] = None
 
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
+
+        # Challenges
+        context['challenges'] = e_Challenge.objects.filter(event=event).order_by('-creation_datetime')
+
         return context
 
 

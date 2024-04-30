@@ -15,7 +15,7 @@ class e_Challenge(models.Model):
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    context_event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True)
+    event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True)
 
     # Information
     title = models.CharField(max_length=100)
