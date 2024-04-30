@@ -1,33 +1,38 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from context.models import e_Context, e_ContextEvent, e_ContextEventResult
-from context.views.context import zip_file
-from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
-from context.views.mesh import Status, get_status, tail, check_celery
-from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
-from context.filters import EventFilter
-from sensors.models import Sensor
-import os
-from django.contrib import messages
 from django.urls import reverse
-import requests
-from io import BytesIO
-from zipfile import ZipFile
-from rivercureproject import settings
+from django.contrib import messages
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
-from context.forms import EventForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from .prepare_files import *
+from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
+from django_filters.views import FilterView
+
+from context.models import e_Context, e_ContextEvent, e_ContextEventResult
+from context.forms import EventForm
+from context.filters import EventFilter, EventManagerFilter, EventManagerAddFilter
 from context.tasks import simulate_task
+from context.views.context import zip_file
+from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
+from context.views.mesh import Status, get_status, tail, check_celery
+
+from sensors.models import Sensor
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
-import json
-from django.core.serializers.json import DjangoJSONEncoder
-
 from challenges.models import e_Challenge
+
+from .authorization import *
+from .prepare_files import *
+from rivercureproject import settings
+
+import os
+import requests
+from io import BytesIO
+from zipfile import ZipFile
+import json
 
 
 class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -222,6 +227,116 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
+
+# TODO: Change to FilterView
+class ContextEventManagersListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/event/event_manager_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name'] # TODO: Change to something else?
+    pk_url_kwarg = 'contextCode'
+    filterset_class = EventManagerFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        members = ContextMembership.objects.filter(context=_context, permission='context_eventManager')
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        context_code = self.kwargs['contextCode']
+        _context = e_Context.objects.get(pk=context_code)
+
+        context = super(ContextEventManagersListView, self).get_context_data(**kwargs)
+        context['context'] = _context
+        context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
+        members = ContextMembership.objects.filter(context=context_code, permission='context_eventManager')
+        context['filter'] = EventManagerFilter(self.request.GET, queryset=members)
+        return context
+
+    # Only users who belong to this Organization can see this
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return belongs_to_organization(self.request.user, _context.organization)
+
+
+class ContextEventManagerAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/event/event_manager_add_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name'] # TODO: Working?
+    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+    filterset_class = EventManagerAddFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
+
+        # Only show organization members that are not already event managers for that context
+        event_managers = ContextMembership.objects.filter(context=_context, permission='context_eventManager').values('user')
+        members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=event_managers)
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+
+        context = super(ContextEventManagerAddListView, self).get_context_data(**kwargs)
+        context['context'] =  _context
+
+        # Only show organization members that are not already event managers for that context
+        event_managers = ContextMembership.objects.filter(context=_context, permission='context_eventManager').values('user')
+        org_members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=event_managers)
+        # Filter
+        context['filter'] = EventManagerAddFilter(self.request.GET, queryset=org_members)
+
+        return context
+
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return context_organization_edit_permission_check(self.request.user, _context.organization)
+
+@login_required
+def contextEventManagerAdd(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+    user = get_object_or_404(User, pk=userId)
+    organization = _context.organization
+
+    # Make sure only Organization Manager and Context Manager can do this
+    # And that the user belongs to the Org
+    if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
+        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+    
+    # Make sure user is not already an Event Manager
+    if context_event_manager_check(user, _context):
+        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+    
+    if user and _context:
+        member = ContextMembership(user=user, context=_context, permission='context_eventManager')
+        member.save()
+
+        # TODO: Send notifs
+
+    return redirect('event-manager-list', contextCode)
+
+@login_required
+def contextEventManagerRemove(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+
+    # Make sure only Organization Manager and Context Manager can do this
+    if not context_organization_edit_permission_check(request.user, _context.organization.id):
+        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+    
+    user = get_object_or_404(User, pk=userId)
+    context_membership_user = get_object_or_404(ContextMembership, user=user, context=_context, permission='context_eventManager')
+
+    if context_membership_user:
+        context_membership_user.delete()
+
+        # TODO: Send notifs
+    
+    return redirect('event-manager-list', contextCode)
 
 
 def request_simulation(request, pk, event_id):

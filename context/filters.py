@@ -41,7 +41,7 @@ class ContextFilter(django_filters.FilterSet):
         fields = ['Name', 'hydroFeature', 'organization']
 
 ##############
-# Moderators #
+# Moderators 
 ##############
 class ModeratorAddFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
@@ -120,3 +120,43 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
     class Meta:
         Model = e_ContextContribution
         fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'createdBy__username']
+
+##############
+# Event Managers 
+##############
+class EventManagerFilter(django_filters.FilterSet): # TODO: Since this is repeated code from ManagerFilter, maybe let's combine both into one single MemberFilter filter instead?
+    user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by username...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    user__email = django_filters.CharFilter(label='Email address', field_name='user__email', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by email address...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    grant_date = django_filters.DateFromToRangeFilter(label='Date granted',
+                                                        help_text='The permission was given in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+                                                        widget=RangeWidget(attrs={
+                                                            'placeholder': 'yyyy-mm-dd',
+                                                            'type': 'date'
+                                                        }))
+
+    class Meta:
+        Model = User
+        fields = ['user__username', 'user__email', 'grant_date']
+        
+        
+class EventManagerAddFilter(django_filters.FilterSet):
+    user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
+                                               widget=TextInput(attrs={
+                                                    'placeholder': 'Search by username...',
+                                                    'type': 'search',
+                                                    'class': 'flex-fill mr-2 form-control',
+                                                }))
+
+    class Meta:
+        Model = User
+        fields = ['user__username']
