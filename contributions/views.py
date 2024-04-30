@@ -122,6 +122,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
             new_contribution.thumbnail = thumb_django_file
             # new_contribution.situationObserved
             # if (new_contribution.situationObserved == 'flood'):
+            
+            # TODO: why am i not doing new_contribution.save() here?
 
 
         

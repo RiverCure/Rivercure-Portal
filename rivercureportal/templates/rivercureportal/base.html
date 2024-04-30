@@ -54,6 +54,10 @@
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
                                             <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                            {% if user|is_event_manag %}
+                                                <a class="dropdown-item" href="#">Events (from My Contexts?)</a>
+                                                <a class="dropdown-item" href="#">Challenges</a>
+                                            {% endif %}
                                         </div>
                                     </li>
                                 {% endif %}
