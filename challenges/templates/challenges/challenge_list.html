@@ -10,7 +10,7 @@
 
 {% endblock %}
 
-
+<!-- TODO: Should this page be in event instead? -->
 
 {% block content %}
 
@@ -32,7 +32,7 @@
 <!-- List of Challenges-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for challenge in challenges %}
-        <a href="#">
+        <a href="{% url 'challenge-detail' challenge.id %}">
             <div class="card my-card-hover my-2 my-context-card">
                 {% comment %} {% if contribution.thumbnail %}
                     <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">

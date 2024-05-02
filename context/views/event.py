@@ -22,7 +22,7 @@ from context.views.mesh import Status, get_status, tail, check_celery
 from sensors.models import Sensor
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
-from challenges.models import e_Challenge
+from challenges.models import e_Challenge, ChallengeState
 
 from .authorization import *
 from .prepare_files import *
@@ -85,7 +85,8 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
 
         # Challenges
-        context['challenges'] = e_Challenge.objects.filter(event=event).order_by('-creation_datetime')
+        context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        context['isEventManager'] = context_event_manager_check(self.request.user, event.context)
 
         return context
 

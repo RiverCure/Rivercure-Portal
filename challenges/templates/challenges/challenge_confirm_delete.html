@@ -1,0 +1,38 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Delete Challenge {% endblock %}
+{% load static %}
+
+
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- Header -->
+<div class="row">
+    <div class="col">
+        <h1 class="mt-2">{{ challenge.event.context.Name }} context </h1>
+        <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
+        <hr>
+    </div>
+</div>
+
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Delete Challenge "{{challenge.title|title}}"</legend>
+            <h2>Are you sure you want to delete this Challenge?</h2>
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete</button>
+            <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
