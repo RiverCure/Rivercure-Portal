@@ -78,3 +78,13 @@ def general_moderator_check(user):
         return ContextMembership.objects.filter(user=user, permission='context_moderator').exists()
     except:
         return False
+
+
+def general_event_manager_check(user):
+    """
+    Checks if the user is a (Context) Event Manager
+    """
+    try:
+        return ContextMembership.objects.filter(user=user, permission='context_eventManager').exists()
+    except:
+        return False

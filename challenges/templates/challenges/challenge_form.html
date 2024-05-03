@@ -1,5 +1,5 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Create Challenge {% endblock %}
+{% block title %} Event {{ event.context.Name }} - Create Challenge {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -19,7 +19,9 @@
 
 {% endblock scripts %}
 
-
+<!-- TODO: This page is linked to the concept of Event from RCP.
+     This means it isn't independent, and, so, this 'Challenges'
+     package isn't either. This means I should change this idea here. -->
 
 
 {% block content %}
@@ -52,7 +54,7 @@
             Create
         </button>
 
-        <a class="btn btn-outline-secondary" href="{% url 'event-challenge-list' event.id %}">Cancel</a>
+        <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.id %}">Cancel</a>
 
     </form>
     

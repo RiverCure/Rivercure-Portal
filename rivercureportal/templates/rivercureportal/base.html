@@ -52,16 +52,24 @@
                                             Management
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item disabled" href="#">Organization</a>
                                             <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
                                             <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
                                             {% if user|is_event_manag %}
-                                                <a class="dropdown-item" href="#">Events (from My Contexts?)</a>
-                                                <a class="dropdown-item" href="#">Challenges</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item disabled" href="#">Event Manager</a>
+                                                <a class="dropdown-item" href="#">Events</a>
+                                                <a class="dropdown-item" href="{% url 'my-contexts-challenges-list' %}">Challenges</a>
+                                            {% endif %}
+                                            {% if user|is_mod %}
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item disabled" href="#">Moderator</a>
+                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}">My Contexts</a>
                                             {% endif %}
                                         </div>
                                     </li>
                                 {% endif %}
-                                {% if user|is_mod %}
+                                {% comment %} {% if user|is_mod %}
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Moderation
@@ -70,10 +78,7 @@
                                             <a class="dropdown-item" href="{% url 'moderator-context-list' %}">My Contexts</a>
                                         </div>
                                     </li>
-                                    {% comment %} <div class="nav-item">
-                                        <a href="{% url 'moderator-context-list' %}" class="nav-link">My Contexts</a>
-                                    </div> {% endcomment %}
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Portal

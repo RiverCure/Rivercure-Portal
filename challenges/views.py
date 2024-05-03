@@ -1,17 +1,54 @@
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import Http404, HttpResponse
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
-from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
 from django_filters.views import FilterView
+
+from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from rivercureportal.authorization import is_platform_admin
 from context.models import e_ContextEvent
-from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check
+from context.models import ContextMembership
+from rivercureportal.authorization import is_platform_admin
+
+from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check
 
 from .models import e_Challenge, ChallengeState
 from .forms import ChallengeInitialForm
+from .filters import MyContextsChallengesFilter
+
+
+class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_Challenge
+    template_name = 'challenges/my_challenges_list.html'
+    filterset_class = MyContextsChallengesFilter
+    # pk_url_kwarg = 'contextCode'
+    context_object_name = 'challenges'
+    paginate_by = 9
+
+    def get_queryset(self):
+
+        # Show Challenges from this user's Contexts
+        # TODO: Also only show Challenges created by this user?
+        user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
+        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+
+        return challenge_list
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        
+        user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
+        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+        context['filter'] = MyContextsChallengesFilter(self.request.GET, queryset=context['challenge_list'])
+        
+        return context
+
+    def test_func(self):
+        # Only Event Manager gets access to this page
+        return general_event_manager_check(self.request.user)
 
 
 class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -22,8 +59,9 @@ class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     pk_url_kwarg = 'event_id'
 
     def test_func(self):
+        event = e_ContextEvent.objects.get(pk=self.kwargs['event_id'])
         # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+        return context_event_manager_check(self.request.user, event.context) or is_platform_admin(self.request.user)
 
     def get_success_url(self):
         return reverse('challenge-detail', args=(self.object.id, ))
@@ -95,6 +133,7 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'challenges/challenge_confirm_delete.html'
     context_object_name = 'challenge'
     pk_url_kwarg = 'challenge_id'
+    success_url = reverse_lazy('my-contexts-challenges-list')
 
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
@@ -104,10 +143,6 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(self.request, "The Challenge was deleted successfully.")
         return super(ChallengeDeleteView,self).form_valid(form)
     
-    
-    def get_success_url(self):
-        return reverse('event-challenge-list', args=(self.object.event.id, ))
-
 
 # class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 #     model = e_Challenge
