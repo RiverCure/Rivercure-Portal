@@ -8,5 +8,6 @@ urlpatterns = [
     path('detail/<int:challenge_id>/', ChallengeDetailView.as_view(), name='challenge-detail'),
     path('update/<int:challenge_id>/', ChallengeUpdateView.as_view(), name='challenge-update'),
     path('delete/<int:challenge_id>/', ChallengeDeleteView.as_view(), name='challenge-delete'),
-    # path('update/<int:pk>', ChallengeUpdateView.as_view(), name='challenge-update'),
+    path('manage/<int:challenge_id>/', ChallengeManageView.as_view(), name='challenge-manage'),
+    # path('participate/<int:challenge_id>/', ?, name='challenge-participate'),
 ]

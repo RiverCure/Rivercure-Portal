@@ -13,6 +13,8 @@ class ChallengeState(models.TextChoices):
 
 DIFFICULTY_LEVEL = (('easy', 'Easy'), ('intermediate', 'Intermediate'), ('hard', 'Hard'))
 
+QUESTION_TYPE = (('short_text', 'Short Text'))
+
 class e_Challenge(models.Model):
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -75,3 +77,42 @@ class e_Challenge(models.Model):
     @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED)
     def to_archive(self):
         """Change state of Challenge from PUBLISHED to ARCHIVED"""
+
+
+class e_Question(models.Model):
+    # Meta-data
+    challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_by')
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='last_edited_by', blank=True)
+    last_edit_datetime = models.DateTimeField(null=True, blank=True)
+    # type = models.CharField(choices=QUESTION_TYPE)
+
+    # Question
+    content = models.CharField(max_length=500) # Question itself
+    explanation = models.CharField(max_length=500) # Explanation of correct answer
+
+    # Meta
+    class Meta:
+        verbose_name = 'Question'
+        verbose_name_plural = 'Questions'
+        ordering = ['creation_datetime']
+    
+    def __str__(self):
+        return "Question " + str(self.id) + ' - Challenge ' + str(self.challenge.id)
+
+
+class e_ShortText_Question(e_Question):
+    expected_answer = models.CharField(max_length=1000)
+    # type = models.CharField(choices=QUESTION_TYPE, default='short_text')
+
+    def get_type(self):
+        return "Short Text"
+
+    # Meta
+    class Meta:
+        verbose_name = 'Question - Short Text'
+        verbose_name_plural = 'Questions - Short Text'
+    
+    def __str__(self):
+        return "Short Answer Question " + str(self.id) + ' - Challenge ' + str(self.challenge.id)

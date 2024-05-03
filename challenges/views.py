@@ -15,7 +15,7 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
-from .models import e_Challenge, ChallengeState
+from .models import e_Challenge, ChallengeState, e_ShortText_Question, e_Question
 from .forms import ChallengeForm
 from .filters import MyContextsChallengesFilter
 
@@ -110,6 +110,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     context_object_name = 'challenge'
 
     # We override this method because we want to control who gets to see this page
+    # TODO: Don't I just have to use the UserPassesTestMixin ??? I'm also doing this somewhere else in the project -> See where and fix
     def get_object(self, queryset=None):
         challenge = super().get_object(queryset)
 
@@ -177,4 +178,26 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
         # TODO: Only author (or Platform Admin) of this Challenge can do this?
+        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+
+
+
+class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = e_Challenge
+    template_name = 'challenges/challenge_manage.html'
+    pk_url_kwarg = 'challenge_id'
+    context_object_name = 'challenge'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        challenge_id = self.kwargs['challenge_id']
+
+        context['questions'] = e_Question.objects.filter(challenge=challenge_id)
+
+        return context
+
+    def test_func(self):
+        challenge = self.get_object()
+        # Only Event Manager or Platform Admin can do this
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)

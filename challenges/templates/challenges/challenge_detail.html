@@ -55,7 +55,10 @@
 
             <!-- Edit -->
             <a class="btn btn-info" href="{% url 'challenge-update' challenge.id %}" role="button"><i class="bi bi-pencil"></i> Edit</a>
-
+            <!-- Questions -->
+            <a class="btn btn-info" href="{% url 'challenge-manage' challenge.id %}"><i class="bi bi-pencil"></i> Manage Questions</a>
+            <!-- Participations -->
+            <a class="btn btn-info" href="#"><i class="bi bi-clipboard-data"></i> See Participations</a>
 
             <!-- Publish -->
             {% if challenge.can_publish %}
@@ -140,22 +143,9 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col my-3">
 
-            <div class="d-flex flex-column">
-                <div>
-                    <a class="btn btn-info" href="#"><i class="bi bi-controller"></i> Participate</a>
-                    <a class="btn btn-info" href="#"><i class="bi bi-activity"></i> My Participation(s)</a>
-                </div>
-
-                {% if canManage %}
-                <div>
-                    <hr>
-                </div>
-
-                <div>
-                    <a class="btn btn-info" href="#"><i class="bi bi-pencil"></i> Manage Questions</a>
-                    <a class="btn btn-info" href="#"><i class="bi bi-clipboard-data"></i> See Participations</a>
-                </div>
-                {% endif %}
+            <div>
+                <a class="btn btn-info" href="#"><i class="bi bi-controller"></i> Participate</a>
+                <a class="btn btn-info" href="#"><i class="bi bi-activity"></i> My Participation(s)</a>
             </div>
 
         </div>
