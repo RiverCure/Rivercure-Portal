@@ -19,14 +19,13 @@ class e_Challenge(models.Model):
     creation_datetime = models.DateTimeField(auto_now_add=True)
     event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True)
     nr_questions = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    state = FSMField(choices=ChallengeState.choices, default=ChallengeState.DRAFT, protected=True) # When first created, the Challenge is in Draft state
 
     # Information
     title = models.CharField(max_length=100)
     difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL)
     # TODO: Add score concept
 
-    # When first created, the Challenge is in Draft state
-    state = FSMField(choices=ChallengeState.choices, default=ChallengeState.DRAFT, protected=True) # protected=True prevents changing the state directly
 
     # Meta
     class Meta:

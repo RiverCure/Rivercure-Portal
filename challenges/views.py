@@ -14,31 +14,16 @@ from .models import e_Challenge, ChallengeState
 from .forms import ChallengeInitialForm
 
 
-# TODO: Change to FilterView
-class EventChallengesListView(ListView):
-    model = e_Challenge
-    template_name = 'challenges/challenge_list.html'
-    # filterset_class = ContributionFilter
-    pk_url_kwarg = 'event_id'
-    context_object_name = 'challenges'
-    # paginate_by = 9
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        event_id = self.kwargs['event_id']
-
-        context['event'] = e_ContextEvent.objects.get(pk=event_id)
-        
-        return context
-
-
-class ChallengeCreateView(LoginRequiredMixin, CreateView):
+class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Challenge
     form_class = ChallengeInitialForm
     template_name = 'challenges/challenge_form.html'
     context_object_name = 'challenge'
     pk_url_kwarg = 'event_id'
+
+    def test_func(self):
+        # Only Event Manager or Platform Admin can do this
+        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
     def get_success_url(self):
         return reverse('challenge-detail', args=(self.object.id, ))
@@ -75,7 +60,7 @@ class ChallengeCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
-class ChallengeDetailView(DetailView):
+class ChallengeDetailView(LoginRequiredMixin, DetailView):
     model = e_Challenge
     template_name = 'challenges/challenge_detail.html'
     pk_url_kwarg = 'challenge_id'

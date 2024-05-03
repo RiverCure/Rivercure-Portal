@@ -13,7 +13,7 @@ from django_filters.views import FilterView
 
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.forms import EventForm
-from context.filters import EventFilter, EventManagerFilter, EventManagerAddFilter
+from context.filters import EventFilter, EventManagerFilter, EventManagerAddFilter, EventChallengeListFilter
 from context.tasks import simulate_task
 from context.views.context import zip_file
 from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
@@ -88,6 +88,35 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
         context['isEventManager'] = context_event_manager_check(self.request.user, event.context)
 
+        return context
+
+
+# TODO: See if this is working
+class EventChallengesFilterView(LoginRequiredMixin, FilterView):
+    model = e_Challenge
+    template_name = 'context/event/challenge_list.html'
+    filterset_class = EventChallengeListFilter
+    pk_url_kwarg = 'event_id'
+    context_object_name = 'challenges'
+    paginate_by = 9
+
+    def get_queryset(self):
+
+        event_id = self.kwargs['event_id']
+        challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
+
+        return challenge_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        event_id = self.kwargs['event_id']
+
+        context['event'] = e_ContextEvent.objects.get(pk=event_id)
+
+        context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
+        context['filter'] = EventChallengeListFilter(self.request.GET, queryset=context['challenge_list'])
+        
         return context
 
 

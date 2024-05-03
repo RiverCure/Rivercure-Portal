@@ -41,7 +41,9 @@ urlpatterns = [
     path('simulation/results/handle/<int:event_id>', handle_simulation_results, name='handle-simulation-results'),
     path('api/', include(router.urls)),
     path('<str:contextCode>/sensors/', ContextSensorListView.as_view(), name='context-sensor-list'),
+    # Events
     path('<str:pk>/events/<int:event_id>', EventDetailView.as_view(), name='event-detail'),
+    path('<str:pk>/events/<int:event_id>/challenges/', EventChallengesFilterView.as_view(), name='event-challenge-list'),
     path('<str:pk>/events/<int:event_id>/run/', request_simulation, name='event-run'),
     path('<str:contextCode>/events/', ContextEventListView.as_view(), name='event-list'),
     path('<str:contextCode>/events/managers/', ContextEventManagersListView.as_view(), name='event-manager-list'),

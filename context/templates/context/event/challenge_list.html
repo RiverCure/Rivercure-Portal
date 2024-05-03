@@ -15,14 +15,14 @@
 {% block content %}
 
 <h1 class="mt-2">{{ event.context.Name }} event '{{ event.Name }}' - Challenges </h1>
-<p class="font-weight-light" align="justify">On this page you can see the Challenges available in this Event.</p>
+<p class="font-weight-light" align="justify">On this page you can see the Challenges published in this Event.</p>
 <hr>
 
 <!-- Filter -->
 <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 <div id="filter-menu" class="collapse card my-card-hover card-body">
     <form method="get">
-        {% comment %} {{ filter.form |crispy }} {% endcomment %}
+        {{ filter.form |crispy }}
         <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
     </form>
 </div>
@@ -55,14 +55,15 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Challenges yet.</p>
+    <p class="font-weight-light my-2 text-center">There are no published Challenges in this Event yet.</p>
 {% endif %}
 
 <!-- Bottom button -->
 <a class="btn btn-secondary my-3" style="float: right;" href="{% url 'event-detail' event.context.code event.id %}">Back to Event</a>
 
 <!-- Pagination -->
-{% comment %} <div class="row">
+<!-- TODO: See if pagination is working well -->
+<div class="row">
     <div class="col">
         {% if is_paginated %}
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
@@ -88,6 +89,6 @@
             </nav>
         {% endif %}
     </div>
-</div> {% endcomment %}
+</div>
 
 {% endblock content %}

@@ -1,12 +1,17 @@
 import django_filters
-from django.forms.widgets import TextInput
-from django.contrib.auth.models import User
+
 from django_filters.widgets import RangeWidget
 
+from django.forms.widgets import TextInput
+
+from django.contrib.auth.models import User
+
 from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
-from contributions.models import e_ContextContribution, ContributionStatus
-from rivercureportal.models import e_HydroFeature
+
 from organization.models import Organization
+from rivercureportal.models import e_HydroFeature
+from contributions.models import e_ContextContribution, ContributionStatus
+from challenges.models import e_Challenge, DIFFICULTY_LEVEL
 
 
 class ContextSensorFilter(django_filters.FilterSet):
@@ -160,3 +165,20 @@ class EventManagerAddFilter(django_filters.FilterSet):
     class Meta:
         Model = User
         fields = ['user__username']
+
+############
+# Challenges
+############
+class EventChallengeListFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(label='Challenge Title',
+                                      lookup_expr='icontains',
+                                      widget=TextInput(attrs={
+                                                    'placeholder': 'Search by title...',
+                                                    'type': 'search',
+                                                    'class': 'form-control',
+                                                    }))
+    difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL, label='Difficulty Level')
+
+    class Meta:
+        Model = e_Challenge
+        fields = ['title', 'difficulty_level']
