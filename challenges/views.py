@@ -15,8 +15,9 @@ from rivercureportal.authorization import is_platform_admin
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check
 
 from .models import e_Challenge, ChallengeState
-from .forms import ChallengeInitialForm
+from .forms import ChallengeForm
 from .filters import MyContextsChallengesFilter
+
 
 
 class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
@@ -51,9 +52,10 @@ class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, Fi
         return general_event_manager_check(self.request.user)
 
 
+
 class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Challenge
-    form_class = ChallengeInitialForm
+    form_class = ChallengeForm
     template_name = 'challenges/challenge_form.html'
     context_object_name = 'challenge'
     pk_url_kwarg = 'event_id'
@@ -98,6 +100,8 @@ class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
         return super().form_valid(form)
 
+
+
 class ChallengeDetailView(LoginRequiredMixin, DetailView):
     model = e_Challenge
     template_name = 'challenges/challenge_detail.html'
@@ -128,6 +132,30 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
+
+
+class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = e_Challenge
+    template_name = 'challenges/challenge_form.html'
+    form_class = ChallengeForm
+    pk_url_kwarg = 'challenge_id'
+    context_object_name = 'challenge'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
+    #     return context
+
+    def get_success_url(self):
+        return reverse('challenge-detail', args=(self.get_object().id, ))
+
+    def test_func(self):
+        # Only Event Manager or Platform Admin can do this
+        # TODO: Only author (or Platform Admin) of this Challenge can do this?
+        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+
+
+
 class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_Challenge
     template_name = 'challenges/challenge_confirm_delete.html'
@@ -135,29 +163,11 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     pk_url_kwarg = 'challenge_id'
     success_url = reverse_lazy('my-contexts-challenges-list')
 
-    def test_func(self):
-        # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
-    
     def form_valid(self, form):
         messages.success(self.request, "The Challenge was deleted successfully.")
         return super(ChallengeDeleteView,self).form_valid(form)
     
-
-# class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-#     model = e_Challenge
-
-
-
-
-    # model = e_Context
-    # form_class = ContextDetailsForm
-    # context_object_name = 'context'
-    # template_name = 'context/context/form.html'
-    # pk_url_kwarg = 'contextCode'
-
-    # def get_success_url(self):
-    #     return reverse('context-detail', args=(self.object.code,))
-
-    # def test_func(self):
-    #     return context_organization_edit_permission_check(self.request.user, self.get_object().organization)
+    def test_func(self):
+        # Only Event Manager or Platform Admin can do this
+        # TODO: Only author (or Platform Admin) of this Challenge can do this?
+        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)

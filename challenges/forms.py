@@ -2,7 +2,7 @@ from django import forms
 
 from .models import e_Challenge, DIFFICULTY_LEVEL
 
-class ChallengeInitialForm(forms.ModelForm):
+class ChallengeForm(forms.ModelForm):
     title = forms.CharField(max_length=100,
                             widget=forms.Textarea(attrs={
                                             'placeholder': 'Enter a title for the Challenge. Maximum of 100 characters.',

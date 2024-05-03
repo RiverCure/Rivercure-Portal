@@ -27,17 +27,20 @@
 {% block content %}
 
 
-<h1>{{ event.context.Name }} Context </h1>
-<h2>'{{ event.Name }}' Event</h2>
-<p><strong>Organization:</strong> <em>{{ event.context.organization }}</em></p>
+{% if event %}
+    <h1>{{ event.context.Name }} Context </h1>
+    <h2>'{{ event.Name }}' Event</h2>
+    <p><strong>Organization:</strong> <em>{{ event.context.organization }}</em></p>
+{% else %}
+    <h1>{{ challenge.event.context.Name }} Context </h1>
+    <h2>'{{ challenge.event.Name }}' Event</h2>
+    <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
+{% endif %}
 <hr>
 
 
 <div class="content-section">
     <!-- Header -->
-    <p class="font-weight-light" align="justify">
-        Create a Challenge for this Event. After doing so, you can add questions to it.
-    </p>
     <p class="font-weight-light" align="justify">
         For more information about RiverCure and Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
     </p>
@@ -51,10 +54,14 @@
 
         <!-- Confirm Modal Button-->
         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmModal">
-            Create
+            Submit
         </button>
 
-        <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.id %}">Cancel</a>
+        {% if event %}
+            <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.id %}">Cancel</a>
+        {% else %}
+            <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">Cancel</a>
+        {% endif %}
 
     </form>
     
