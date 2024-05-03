@@ -33,6 +33,7 @@
             <hr>
             <p class="font-weight-light"><strong>Event:</strong> {{ challenge.event.Name|title }} </p>
             <p class="font-weight-light"><strong>State:</strong> {{ challenge.state|title }} </p>
+            <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Public{% else %}Organization{% endif %} </p>
             <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
         </div>
     </div>
@@ -134,6 +135,32 @@
     </div>
 </div>
 
+<!-- Participate + Questions -->
+<div class="my-3">
+    <div class="row mx-0 my-contribution-detail-meta-info-card">
+        <div class="col my-3">
+
+            <div class="d-flex flex-column">
+                <div>
+                    <a class="btn btn-info" href="#"><i class="bi bi-controller"></i> Participate</a>
+                    <a class="btn btn-info" href="#"><i class="bi bi-activity"></i> My Participation(s)</a>
+                </div>
+
+                {% if canManage %}
+                <div>
+                    <hr>
+                </div>
+
+                <div>
+                    <a class="btn btn-info" href="#"><i class="bi bi-pencil"></i> Manage Questions</a>
+                    <a class="btn btn-info" href="#"><i class="bi bi-clipboard-data"></i> See Participations</a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <!-- Footer (Bottom Buttons) -->
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">

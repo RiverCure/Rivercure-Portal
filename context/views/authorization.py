@@ -47,7 +47,7 @@ def context_organization_belong_check(user, organization):
     """
     
     try:
-        return Membership.objects.filter(user=user, organization=organization).exists()
+        return Membership.objects.filter(user=user, organization=organization, access_granted=True).exists() # TODO: Is this working?
     except:
         return False
 

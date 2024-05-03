@@ -20,10 +20,12 @@ class e_Challenge(models.Model):
     event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True)
     nr_questions = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     state = FSMField(choices=ChallengeState.choices, default=ChallengeState.DRAFT, protected=True) # When first created, the Challenge is in Draft state
+    publish_datetime = models.DateTimeField(null=True, blank=True)
 
     # Information
     title = models.CharField(max_length=100)
     difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL)
+    is_public = models.BooleanField(default=False) # If false, only members of Org can see. If True, every logged-in user can see
     # TODO: Add score concept
 
 

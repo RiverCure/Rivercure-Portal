@@ -10,9 +10,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from context.models import e_ContextEvent
 from context.models import ContextMembership
+from organization.models import Membership
 from rivercureportal.authorization import is_platform_admin
 
-from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check
+from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
 from .models import e_Challenge, ChallengeState
 from .forms import ChallengeForm
@@ -102,7 +103,7 @@ class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 
-class ChallengeDetailView(LoginRequiredMixin, DetailView):
+class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_Challenge
     template_name = 'challenges/challenge_detail.html'
     pk_url_kwarg = 'challenge_id'
@@ -131,6 +132,12 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
         context['canManage'] = context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
 
         return context
+    
+    def test_func(self):
+        challenge = self.get_object()
+        # Either Challenge is Public
+        # Or user is part of its Organization
+        return challenge.is_public or context_organization_belong_check(self.request.user, challenge.event.context.organization)
 
 
 

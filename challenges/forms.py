@@ -13,7 +13,10 @@ class ChallengeForm(forms.ModelForm):
     difficulty_level = forms.ChoiceField(choices=DIFFICULTY_LEVEL,
                                          help_text='This serves as information to participants.',
                                          label='Difficulty Level')
+    is_public = forms.BooleanField(label='Is Public',
+                                   help_text='If Challenge is Public, every logged-in user can participate in it. If it isn\'t, only members of the Organization can.',
+                                   required=False)
 
     class Meta:
         model = e_Challenge
-        fields = ['id', 'title', 'difficulty_level']
+        fields = ['id', 'title', 'difficulty_level', 'is_public']

@@ -85,7 +85,14 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
 
         # Challenges
-        context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        is_user_in_org = context_organization_belong_check(self.request.user, event.context.organization)
+        if is_user_in_org:
+            # Then show every Challenge of this event
+            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        else:
+            # Otherwise, only show Public Challenges
+            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
+        # context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
         context['isEventManager'] = context_event_manager_check(self.request.user, event.context)
 
         return context
@@ -103,7 +110,16 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
     def get_queryset(self):
 
         event_id = self.kwargs['event_id']
-        challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
+        event = e_ContextEvent.objects.get(pk=event_id)
+
+        is_user_in_org = context_organization_belong_check(self.request.user, event.context.organization)
+        if is_user_in_org:
+            # Then show every Challenge of this event
+            challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        else:
+            # Otherwise, only show Public Challenges
+            challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
+        # challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
 
         return challenge_list
 
@@ -114,7 +130,14 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
 
         context['event'] = e_ContextEvent.objects.get(pk=event_id)
 
-        context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
+        is_user_in_org = context_organization_belong_check(self.request.user, context['event'].context.organization)
+        if is_user_in_org:
+            # Then show every Challenge of this event
+            context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        else:
+            # Otherwise, only show Public Challenges
+            context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
+        # context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
         context['filter'] = EventChallengeListFilter(self.request.GET, queryset=context['challenge_list'])
         
         return context
