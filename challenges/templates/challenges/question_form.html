@@ -1,0 +1,57 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Challenge {{ challenge.id }} - Add Question {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+<style>
+    .asteriskField {
+        color: #17a2b8;
+    }
+
+    .word-color {
+        color: #17a2b8;
+    }
+</style>
+
+{% endblock scripts %}
+
+{% block content %}
+
+
+{% comment %} {% if event %}
+    <h1>{{ event.context.Name }} Context </h1>
+    <h2>'{{ event.Name }}' Event</h2>
+    <p><strong>Organization:</strong> <em>{{ event.context.organization }}</em></p>
+{% else %}
+    <h1>{{ challenge.event.context.Name }} Context </h1>
+    <h2>'{{ challenge.event.Name }}' Event</h2>
+    <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
+{% endif %}
+<hr> {% endcomment %}
+
+
+<div class="content-section">
+    <!-- Header -->
+    {% comment %} <p class="font-weight-light" align="justify">
+        For more information about RiverCure and Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+    </p>
+    <hr> {% endcomment %}
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" id="challengeForm">
+        {% csrf_token %}
+
+        {{ form|crispy }}
+
+        <button type="submit" class="btn btn-outline-info">Submit</button>
+        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
+
+    </form>
+    
+</div>
+
+{% endblock content %}

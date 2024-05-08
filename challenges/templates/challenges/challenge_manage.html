@@ -31,7 +31,7 @@
         <div class="col">
             <h2 class="my-3">Challenge "{{ challenge.title|title }}" - Questions</h2>
             <hr>
-            <a class="btn btn-info mb-3" href="#"><i class="bi bi-plus"></i> Add Question</a>
+            <a class="btn btn-info mb-3" href="{% url 'question-add' challenge.id %}"><i class="bi bi-plus"></i> Add Question</a>
         </div>
     </div>
 
@@ -45,11 +45,68 @@
 
                     <h3>Q: {{question.content}}</h3>
                     <hr>
-                    <p>Answer: {{question.expected_answer}}</p>
-                    <p>Explanation: {{question.explanation}}</p>
+
+                    <!-- Short Text -->
+                    {% if question.is_short_text %}
+                        <h5>Correct Answer:</h5>
+                        <p class="font-weight-light my-3">{{ question.short_text_question.correct_text }}</p>
+                    <!-- Multiple Choice -->
+
+                    <!-- True or False -->
+                    {% endif %}
+
                     <hr>
-                    <a class="btn btn-info" href="#"><i class="bi bi-pencil"></i> Edit</a>
-                    <a class="btn btn-danger" href="#"><i class="bi bi-trash"></i> Delete</a>
+                    <!-- Buttons -->
+                    <a class="btn btn-outline-info" href="{% url 'question-update' question.id %}"><i class="bi bi-pencil"></i> Edit Question</a>
+
+                    <!-- Short Text -->
+                    {% if question.is_short_text %}
+                        <!-- Button -->
+                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#shortTextModal{{ forloop.counter }}">
+                            <i class="bi bi-pencil"></i> Edit Correct Answer
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="shortTextModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="shortTextModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="shortTextModalLabel"><span class='text-primary'>Edit Correct Answer</span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% comment %} <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
+                                        <hr> {% endcomment %}
+                                        <!-- Form -->
+                                        <form action="{% url 'question-short-text-add' question.id %}" method="POST" id="shortTextForm{{ forloop.counter }}">
+                                            {% csrf_token %}
+                                        
+                                            <div class="form-group m-2"> <!-- style="float: left;"-->
+                                                <label for="id_correct_text">Please write the <span class='font-weight-bold'>correct answer</span> for this Question.</label>
+                                                {{ short_text_question_form.correct_text }}
+                                            </div>
+                                        
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                        <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
+                                        <button type="submit" class="btn btn-primary my-3 mr-3" form="shortTextForm{{ forloop.counter }}">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Multiple Choice -->
+                    {% if question.is_multiple_choice %}<a class="btn btn-outline-primary" href="#"><i class="bi bi-plus"></i> Add Choice</a>{% endif %}
+
+                    <!-- True or False -->
+                    {% if question.is_true_false %}<a class="btn btn-outline-primary" href="#"><i class="bi bi-plus"></i> Add Option</a>{% endif %}
+
+                    <a class="btn btn-outline-danger" href="#"><i class="bi bi-trash"></i> Delete</a>
 
             </div>
         </div>

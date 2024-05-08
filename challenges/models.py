@@ -1,20 +1,33 @@
 # from django.db import models
+from django.core.validators import MinValueValidator
+
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
 
 from django_fsm import FSMField, transition
 
+
+
+## Choices
 class ChallengeState(models.TextChoices):
     DRAFT = "DRAFT", "Draft"
     DELETED = "DELETED", "Deleted"
     PUBLISHED = "PUBLISHED", "Published"
     ARCHIVED = "ARCHIVED", "Archived"
 
+
+# TODO: Turn this into a TextChoice
 DIFFICULTY_LEVEL = (('easy', 'Easy'), ('intermediate', 'Intermediate'), ('hard', 'Hard'))
 
-QUESTION_TYPE = (('short_text', 'Short Text'))
 
+class Question_Type(models.TextChoices):
+    SHORT_TEXT = "SHORT_TEXT", "Short Text"
+    MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Multiple Choice"
+    TRUE_FALSE = "TRUE_FALSE", "True or False"
+
+
+
+## Models
 class e_Challenge(models.Model):
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -65,6 +78,14 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.PUBLISHED
     
+    def can_manage_questions(self):
+        """
+        Returns whether Challenge can have its Questions managed
+        
+        Conditions: Challenge is a DRAFT
+        """
+        return self.state == ChallengeState.DRAFT
+    
     # State transitions
     @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED)
     def to_delete(self):
@@ -79,6 +100,9 @@ class e_Challenge(models.Model):
         """Change state of Challenge from PUBLISHED to ARCHIVED"""
 
 
+# We are not using neither of Django's options for inheritance (Abstract model or Multi-table)
+# This is the Question model
+# The other objects that follow act as complementary information to this object
 class e_Question(models.Model):
     # Meta-data
     challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
@@ -86,28 +110,38 @@ class e_Question(models.Model):
     creation_datetime = models.DateTimeField(auto_now_add=True)
     last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='last_edited_by', blank=True)
     last_edit_datetime = models.DateTimeField(null=True, blank=True)
-    # type = models.CharField(choices=QUESTION_TYPE)
+    type = models.CharField(choices=Question_Type.choices)
 
     # Question
     content = models.CharField(max_length=500) # Question itself
-    explanation = models.CharField(max_length=500) # Explanation of correct answer
+    # explanation = models.CharField(max_length=500) # Explanation of correct answer
+
+    # Model methods
+    def is_short_text(self):
+        return self.type == Question_Type.SHORT_TEXT
+    
+    def is_multiple_choice(self):
+        return self.type == Question_Type.MULTIPLE_CHOICE
+    
+    def is_true_false(self):
+        return self.type == Question_Type.TRUE_FALSE
 
     # Meta
+    # class Meta:
+    #     abstract = True
+
     class Meta:
         verbose_name = 'Question'
         verbose_name_plural = 'Questions'
         ordering = ['creation_datetime']
     
     def __str__(self):
-        return "Question " + str(self.id) + ' - Challenge ' + str(self.challenge.id)
+        return "Question " + str(self.id) + ' (Challenge ' + str(self.challenge.id) + ")"
 
 
-class e_ShortText_Question(e_Question):
-    expected_answer = models.CharField(max_length=1000)
-    # type = models.CharField(choices=QUESTION_TYPE, default='short_text')
-
-    def get_type(self):
-        return "Short Text"
+class e_ShortText_Question(models.Model):
+    question = models.OneToOneField(e_Question, on_delete=models.CASCADE, related_name='short_text_question')
+    correct_text = models.CharField(max_length=1000)
 
     # Meta
     class Meta:
@@ -115,4 +149,41 @@ class e_ShortText_Question(e_Question):
         verbose_name_plural = 'Questions - Short Text'
     
     def __str__(self):
-        return "Short Answer Question " + str(self.id) + ' - Challenge ' + str(self.challenge.id)
+        return "Short Text " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
+
+
+# class e_MultipleChoiceOption_Question(models.Model):
+#     question = models.ForeignKey(e_Question, on_delete=models.CASCADE, related_name='multiple_choice_options')
+#     content = models.CharField(max_length=500) # Option content
+#     is_correct = models.BooleanField()
+    
+#     # Meta
+#     class Meta:
+#         verbose_name = 'Question - Multiple Choice Option'
+#         verbose_name_plural = 'Questions - Multiple Choice Options'
+    
+#     def __str__(self):
+#         return "Multiple Choice Option " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
+
+
+
+
+# True or False
+
+
+
+
+
+# class e_ShortText_Question(e_Question):
+#     expected_answer = models.CharField(max_length=1000)
+
+#     def get_type(self):
+#         return Question_Type.SHORT_TEXT
+
+#     # Meta
+#     class Meta:
+#         verbose_name = 'Question - Short Text'
+#         verbose_name_plural = 'Questions - Short Text'
+    
+#     def __str__(self):
+#         return "Short Text " + str(self.id) + ' (Challenge ' + str(self.challenge.id) + ")"

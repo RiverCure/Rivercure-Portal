@@ -33,7 +33,7 @@
             <hr>
             <p class="font-weight-light"><strong>Event:</strong> {{ challenge.event.Name|title }} </p>
             <p class="font-weight-light"><strong>State:</strong> {{ challenge.state|title }} </p>
-            <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Public{% else %}Organization{% endif %} </p>
+            <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>
             <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
         </div>
     </div>
