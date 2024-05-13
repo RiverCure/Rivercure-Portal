@@ -202,7 +202,7 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
 
-
+# Not being used
 class QuestionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Question
     form_class = QuestionForm
@@ -251,6 +251,8 @@ class QuestionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 @login_required
 def question_create(request, challenge_id):
 
+    # TODO: Only allow Context EM and Platform Admin to do this
+
     if request.method == 'POST':
         challenge = e_Challenge.objects.get(pk=challenge_id)
 
@@ -269,7 +271,7 @@ def question_create(request, challenge_id):
             # Handle type
             question_type = question_form.cleaned_data['type']
             # Depending on type, check for different forms and do stuff with them
-            if question_type == Question_Type.SHORT_TEXT:
+            if question_type == Question_Type.SHORT_TEXT: # TODO: Change to: question.is_short_text
                 if short_text_form.is_valid():
                     short_text = e_ShortText_Question(question=new_question, correct_text=short_text_form.cleaned_data['correct_text'])
                     short_text.save()
@@ -287,6 +289,20 @@ def question_create(request, challenge_id):
         'short_text_form': short_text_form,
     })
 
+@login_required
+def question_delete(request, question_id):
+    # question = get_object_or_404(e_Question, pk=question_id)
+    question = e_Question.objects.get(pk=question_id)
+
+    # Only Event Manager or Platform Admin can do this
+    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+        return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
+    
+
+    # Simply delete (models related to it will be automatically deleted)
+    question.delete()
+    
+    return redirect('challenge-manage', question.challenge.id)
 
 
 

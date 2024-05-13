@@ -13,6 +13,7 @@ urlpatterns = [
     # Questions
     # path('questions/<int:challenge_id>/new/', QuestionCreateView.as_view(), name='question-add'), # TODO: <int:challenge_id>/questions/new/
     path('questions/<int:challenge_id>/new/', question_create, name='question-add'), # TODO: <int:challenge_id>/questions/new/
+    path('questions/<int:question_id>/delete/', question_delete, name='question-delete'),
     path('questions/<int:question_id>/update/', QuestionUpdateView.as_view(), name='question-update'),
     path('questions/<int:question_id>/short-text/new', questionShortTextCreate, name='question-short-text-add'),
 
