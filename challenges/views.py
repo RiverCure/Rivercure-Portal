@@ -16,7 +16,7 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
-from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question
+from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm
 from .filters import MyContextsChallengesFilter
 
@@ -160,7 +160,6 @@ class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
-        # TODO: Only author (or Platform Admin) of this Challenge can do this?
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
 
@@ -178,7 +177,6 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
-        # TODO: Only author (or Platform Admin) of this Challenge can do this?
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
 
@@ -200,7 +198,6 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context
 
     def test_func(self):
-        challenge = self.get_object()
         # Only Event Manager or Platform Admin can do this
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
@@ -249,8 +246,47 @@ class QuestionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         # Only Event Manager or Platform Admin can do this
-        # TODO: So, any EM can edit a Challenge, regardless of if theyre the author?
         return context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
+
+@login_required
+def question_create(request, challenge_id):
+
+    if request.method == 'POST':
+        challenge = e_Challenge.objects.get(pk=challenge_id)
+
+        question_form = QuestionForm(request.POST)
+        short_text_form = QuestionShortTextForm(request.POST)
+
+        if question_form.is_valid():
+
+            new_question = question_form.save(commit=False)
+
+            # Set question metadata
+            new_question.challenge = challenge
+            new_question.created_by = request.user
+            new_question.save()
+
+            # Handle type
+            question_type = question_form.cleaned_data['type']
+            # Depending on type, check for different forms and do stuff with them
+            if question_type == Question_Type.SHORT_TEXT:
+                if short_text_form.is_valid():
+                    short_text = e_ShortText_Question(question=new_question, correct_text=short_text_form.cleaned_data['correct_text'])
+                    short_text.save()
+            
+             # Send success message (to be shown in Challenge detail page)
+            messages.success(request, 'Your Question has been created successfully.')
+
+            return HttpResponseRedirect(reverse('challenge-manage', args=(challenge_id, )) )
+    else:
+        question_form = QuestionForm()
+        short_text_form = QuestionShortTextForm()
+    
+    return render(request, 'challenges/question_form.html', {
+        'question_form': question_form,
+        'short_text_form': short_text_form,
+    })
+
 
 
 
@@ -267,7 +303,6 @@ class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         question = e_Question.objects.get(pk=self.kwargs['question_id'])
         # Only Event Manager or Platform Admin can do this
-        # TODO: So, any EM can edit a Challenge's Question, regardless of if theyre the Challenge's author?
         return context_event_manager_check(self.request.user, question.challenge.event.context) or is_platform_admin(self.request.user)
 
 
@@ -279,22 +314,28 @@ def questionShortTextCreate(request, question_id):
     # if not question:
 
     # Only Event Manager or Platform Admin can do this
-    # TODO: So, any EM can edit a Challenge's Question, regardless of if theyre the Challenge's author?
     if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
         return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
     
     # Create a form instance and populate it with data from the request:
     form = QuestionShortTextForm(request.POST)
 
-    if form.is_valid() and question.challenge.can_manage_questions():
-        # If object doesn't exist already, create Short Text Question object
-        if not question.short_text_question:
-            short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
-            short_text.save()
-        else:
-            # If it does, then simply edit
+    if form.is_valid() and question.challenge.can_manage_questions(): # TODO: AND TYPE == SHORT_TEXT
+        # # If object doesn't exist already, create Short Text Question object
+        # if not question.short_text_question:
+        #     short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
+        #     short_text.save()
+        # else:
+        #     # If it does, then simply edit
+        #     question.short_text_question.correct_text = form.cleaned_data['correct_text']
+        #     question.short_text_question.save()
+        
+        try:
             question.short_text_question.correct_text = form.cleaned_data['correct_text']
             question.short_text_question.save()
+        except:
+            short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
+            short_text.save()
 
         return HttpResponseRedirect(reverse('challenge-manage', args=[question.challenge.id]))
     

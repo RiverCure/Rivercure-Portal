@@ -87,7 +87,7 @@ class e_Challenge(models.Model):
         return self.state == ChallengeState.DRAFT
     
     # State transitions
-    @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED)
+    @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED) # TODO: Add condition
     def to_delete(self):
         """Change state of Challenge from DRAFT to DELETED"""
     
@@ -95,7 +95,7 @@ class e_Challenge(models.Model):
     def to_publish(self):
         """Change state of Challenge from DRAFT to PUBLISHED"""
     
-    @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED)
+    @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED) # TODO: Add condition
     def to_archive(self):
         """Change state of Challenge from PUBLISHED to ARCHIVED"""
 

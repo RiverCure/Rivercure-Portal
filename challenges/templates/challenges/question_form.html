@@ -15,23 +15,66 @@
     .word-color {
         color: #17a2b8;
     }
+
+    .hidden {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
 </style>
+
+<script>
+
+    function showDiv(divToShow, divsToHide) {
+        for (let div of divsToHide) {
+            div.classList.add("hidden");
+        }
+        divToShow.classList.remove("hidden");
+    }
+
+    // When DOM content is loaded
+    window.addEventListener("DOMContentLoaded", (event) => {
+
+        // Get divs that are initially hidden
+        var shortTextDiv = document.getElementById("short-text");
+        var multipleChoiceDiv = document.getElementById("multiple-choice");
+        var trueFalseDiv = document.getElementById("true-false");
+    
+        // Listen for changes on the question type choice
+        document.getElementById("id_type").addEventListener("change", (event) => {
+
+            questionType = event.target.value;
+
+            // Depending on question type, show different divs
+            if (questionType == "SHORT_TEXT") {
+                /*
+                multipleChoiceDiv.classList.add("hidden");
+                trueFalseDiv.classList.add("hidden");
+                shortTextDiv.classList.remove("hidden");
+                */
+                let divs = [multipleChoiceDiv, trueFalseDiv];
+                showDiv(shortTextDiv, divs);
+            } else if (questionType == "MULTIPLE_CHOICE") {
+                let divs = [shortTextDiv, trueFalseDiv];
+                showDiv(multipleChoiceDiv, divs);
+            } else if (questionType == "TRUE_FALSE") {
+                let divs = [shortTextDiv, multipleChoiceDiv];
+                showDiv(trueFalseDiv, divs);
+            } else { // Hide all
+                let divs = [shortTextDiv, multipleChoiceDiv, trueFalseDiv];
+                showDiv(null, divs);
+            }
+        });
+    });
+
+
+</script>
 
 {% endblock scripts %}
 
 {% block content %}
-
-
-{% comment %} {% if event %}
-    <h1>{{ event.context.Name }} Context </h1>
-    <h2>'{{ event.Name }}' Event</h2>
-    <p><strong>Organization:</strong> <em>{{ event.context.organization }}</em></p>
-{% else %}
-    <h1>{{ challenge.event.context.Name }} Context </h1>
-    <h2>'{{ challenge.event.Name }}' Event</h2>
-    <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
-{% endif %}
-<hr> {% endcomment %}
 
 
 <div class="content-section">
@@ -41,16 +84,40 @@
     </p>
     <hr> {% endcomment %}
 
-    <!-- Form -->
-    <form method="POST" enctype="multipart/form-data" id="challengeForm">
+    <!-- Question Form -->
+    <form method="POST" enctype="multipart/form-data" id="questionForm">
         {% csrf_token %}
 
-        {{ form|crispy }}
+        {{ question_form|crispy }}
+
+        <!-- Short Text -->
+        <div id="short-text" class="hidden">
+            {{ short_text_form|crispy }}
+        </div>
 
         <button type="submit" class="btn btn-outline-info">Submit</button>
         <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
-
     </form>
+
+    <!-- Short Text -->
+    {% comment %} <div id="short-text" class="hidden">
+        <form method="POST" enctype="multipart/form-data" id="shortTextForm">
+            {% csrf_token %}
+    
+            {{ short_text_form|crispy }}
+    
+            <button type="submit" class="btn btn-outline-info">Submit</button>
+            <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
+        </form>
+    </div> {% endcomment %}
+
+    <div id="multiple-choice" class="hidden">
+        MC!
+    </div>
+
+    <div id="true-false" class="hidden">
+        TF!
+    </div>
     
 </div>
 
