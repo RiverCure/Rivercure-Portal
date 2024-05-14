@@ -398,7 +398,29 @@ def question_delete(request, question_id):
     return redirect('challenge-manage', question.challenge.id)
 
 
+@login_required
+def multiple_choice_option_delete(request, option_id):
+    try:
+        option = e_MultipleChoiceOption_Question.objects.get(pk=option_id)
+    except:
+        messages.error(request, 'Multiple Choice Option does not exist')
+        return redirect('challenge-manage', option.question.challenge.id) # TODO: Change to public challenges list
+    
+    # Only Event Manager or Platform Admin can do this
+    if not context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user):
+        return HttpResponseRedirect(reverse('challenge-manage', args=[option.question.challenge.id])) # TODO: Change to public challenges list
+    
+    # Delete
+    question_id = option.question.id
+    option.delete()
 
+    return redirect('question-update', question_id)
+
+
+
+
+
+# TODO: I don't think I'm using this anymore
 class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Question
     template_name = 'challenges/question_form.html'

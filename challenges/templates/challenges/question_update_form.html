@@ -52,10 +52,16 @@
                     <hr>
                     <div class="mc-form">
                         {{mc_form|crispy}}
+                        <p>{{mc_form.instance.id}}</p>
+                        {% if mc_form.instance.id %}
+                            <a id="delete-mc-option" href="{% url 'multiple-choice-option-delete' option_id=mc_form.instance.id %}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
+                        {% endif %}
                     </div>
                 {% endfor %}
                 <button id="add-mc-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
             </div>
+
+
         {% elif question.is_true_false %}
             <!-- True or False -->
             <div id="true-false" class="tf-form-container my-2">

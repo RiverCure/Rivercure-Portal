@@ -17,6 +17,7 @@ urlpatterns = [
     # path('questions/<int:question_id>/update/', QuestionUpdateView.as_view(), name='question-update'),
     path('questions/<int:question_id>/update/', question_update, name='question-update'),
     path('questions/<int:question_id>/short-text/new', questionShortTextCreate, name='question-short-text-add'),
+    path('questions/<int:option_id>/multiple-choice-option/delete', multiple_choice_option_delete, name='multiple-choice-option-delete'),
 
     # path('participate/<int:challenge_id>/', ?, name='challenge-participate'),
 ]
