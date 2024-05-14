@@ -152,23 +152,32 @@ class e_ShortText_Question(models.Model):
         return "Short Text " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
 
 
-# class e_MultipleChoiceOption_Question(models.Model):
-#     question = models.ForeignKey(e_Question, on_delete=models.CASCADE, related_name='multiple_choice_options')
-#     content = models.CharField(max_length=500) # Option content
-#     is_correct = models.BooleanField()
+class e_MultipleChoiceOption_Question(models.Model):
+    question = models.ForeignKey(e_Question, on_delete=models.CASCADE, related_name='multiple_choice_option_question')
+    content = models.CharField(max_length=500) # Option content
+    is_correct = models.BooleanField()
     
-#     # Meta
-#     class Meta:
-#         verbose_name = 'Question - Multiple Choice Option'
-#         verbose_name_plural = 'Questions - Multiple Choice Options'
+    # Meta
+    class Meta:
+        verbose_name = 'Question - Multiple Choice Option'
+        verbose_name_plural = 'Questions - Multiple Choice Options'
     
-#     def __str__(self):
-#         return "Multiple Choice Option " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
+    def __str__(self):
+        return "Multiple Choice Option " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
 
 
+class e_TrueFalse_Question(models.Model):
+    question = models.ForeignKey(e_Question, on_delete=models.CASCADE, related_name='true_false_question')
+    content = models.CharField(max_length=500) # Option content
+    value = models.BooleanField() # If is True or False
 
-
-# True or False
+    # Meta
+    class Meta:
+        verbose_name = 'Question - True or False Option'
+        verbose_name_plural = 'Questions - True or False Options'
+    
+    def __str__(self):
+        return "True or False Option " + str(self.id) + ' (Question ' + str(self.question.id) + " - Challenge " + str(self.question.challenge.id) + ")"
 
 
 

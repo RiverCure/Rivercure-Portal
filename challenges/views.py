@@ -1,5 +1,6 @@
 from django.urls import reverse, reverse_lazy
 from django.http import Http404, HttpResponse
+from django.forms import modelformset_factory, Textarea
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect
 from django_filters.views import FilterView
@@ -16,8 +17,8 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
-from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type
-from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm
+from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question
+from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
 from .filters import MyContextsChallengesFilter
 
 
@@ -258,6 +259,8 @@ def question_create(request, challenge_id):
 
         question_form = QuestionForm(request.POST)
         short_text_form = QuestionShortTextForm(request.POST)
+        multiple_choice_formset = QuestionMultipleChoiceFormSet(data=request.POST)
+        true_false_formset = QuestionTrueFalseFormSet(data=request.POST)
 
         if question_form.is_valid():
 
@@ -269,12 +272,23 @@ def question_create(request, challenge_id):
             new_question.save()
 
             # Handle type
-            question_type = question_form.cleaned_data['type']
             # Depending on type, check for different forms and do stuff with them
-            if question_type == Question_Type.SHORT_TEXT: # TODO: Change to: question.is_short_text
+            if new_question.is_short_text():
                 if short_text_form.is_valid():
                     short_text = e_ShortText_Question(question=new_question, correct_text=short_text_form.cleaned_data['correct_text'])
                     short_text.save()
+            elif new_question.is_multiple_choice():
+                if multiple_choice_formset.is_valid():
+                    options = multiple_choice_formset.save(commit=False)
+                    for option in options:
+                        new_option = e_MultipleChoiceOption_Question(question=new_question, content=option.content, is_correct=option.is_correct)
+                        new_option.save()
+            elif new_question.is_true_false():
+                if true_false_formset.is_valid():
+                    options = true_false_formset.save(commit=False)
+                    for option in options:
+                        new_option = e_TrueFalse_Question(question=new_question, content=option.content, value=option.value)
+                        new_option.save()
             
              # Send success message (to be shown in Challenge detail page)
             messages.success(request, 'Your Question has been created successfully.')
@@ -283,10 +297,14 @@ def question_create(request, challenge_id):
     else:
         question_form = QuestionForm()
         short_text_form = QuestionShortTextForm()
+        multiple_choice_formset = QuestionMultipleChoiceFormSet(queryset=e_MultipleChoiceOption_Question.objects.none())
+        true_false_formset = QuestionTrueFalseFormSet(queryset=e_TrueFalse_Question.objects.none())
     
     return render(request, 'challenges/question_form.html', {
         'question_form': question_form,
         'short_text_form': short_text_form,
+        'multiple_choice_formset': multiple_choice_formset,
+        'true_false_formset': true_false_formset,
     })
 
 @login_required
@@ -322,6 +340,8 @@ class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context_event_manager_check(self.request.user, question.challenge.event.context) or is_platform_admin(self.request.user)
 
 
+
+# TODO: I don't think I'm using this anymore
 @login_required
 def questionShortTextCreate(request, question_id):
     question = get_object_or_404(e_Question, pk=question_id)

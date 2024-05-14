@@ -27,6 +27,12 @@
 
 <script>
 
+    /**
+    * Removes and adds class "hidden" to divToShow and divsToHide, respectively.
+    *
+    * @param {Element} divToShow - The element to remove class "hidden" from
+    * @param {Array} divsToHide - List of elements to add class "hidden" to
+    */
     function showDiv(divToShow, divsToHide) {
         for (let div of divsToHide) {
             div.classList.add("hidden");
@@ -37,6 +43,9 @@
     // When DOM content is loaded
     window.addEventListener("DOMContentLoaded", (event) => {
 
+        /*
+        * Insert/remove forms depending on Question type
+        */
         // Get divs that are initially hidden
         var shortTextDiv = document.getElementById("short-text");
         var multipleChoiceDiv = document.getElementById("multiple-choice");
@@ -46,27 +55,115 @@
         document.getElementById("id_type").addEventListener("change", (event) => {
 
             questionType = event.target.value;
+            parentDivId = "question-type-form-section";
 
             // Depending on question type, show different divs
             if (questionType == "SHORT_TEXT") {
+                switchFormTo(parentDivId, "short-text");
                 /*
-                multipleChoiceDiv.classList.add("hidden");
-                trueFalseDiv.classList.add("hidden");
-                shortTextDiv.classList.remove("hidden");
-                */
                 let divs = [multipleChoiceDiv, trueFalseDiv];
                 showDiv(shortTextDiv, divs);
+                */
             } else if (questionType == "MULTIPLE_CHOICE") {
-                let divs = [shortTextDiv, trueFalseDiv];
-                showDiv(multipleChoiceDiv, divs);
+                switchFormTo(parentDivId, "multiple-choice");
+                // As seen in: https://www.brennantymrak.com/articles/django-dynamic-formsets-javascript
+                let multipleChoiceForm = document.querySelectorAll(".mc-form")
+                let container = document.querySelector(".mc-form-container")
+                let addButton = document.querySelector("#add-mc-option")
+                let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+                let formNum = multipleChoiceForm.length-1 // Get the number of the last form on the page with zero-based indexing
+                addButton.addEventListener('click', addForm)
+                
+                function addForm(e) {
+                    e.preventDefault()
+                
+                    let newForm = multipleChoiceForm[0].cloneNode(true) //Clone the multiple choice form
+                    let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
+                
+                    formNum++ //Increment the form number
+                    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`) //Update the new form to have the correct form number
+                    container.insertBefore(newForm, addButton) //Insert the new form at the end of the list of forms
+                
+                    totalForms.setAttribute('value', `${formNum+1}`) //Increment the number of total forms in the management form
+                }
             } else if (questionType == "TRUE_FALSE") {
-                let divs = [shortTextDiv, multipleChoiceDiv];
-                showDiv(trueFalseDiv, divs);
+                switchFormTo(parentDivId, "true-false");
+                // As seen in: https://www.brennantymrak.com/articles/django-dynamic-formsets-javascript
+                let trueFalseForm = document.querySelectorAll(".tf-form")
+                let container2 = document.querySelector(".tf-form-container")
+                let addButton2 = document.querySelector("#add-tf-option")
+                let totalForms2 = document.querySelector("#id_form-TOTAL_FORMS")
+                let formNum2 = trueFalseForm.length-1 // Get the number of the last form on the page with zero-based indexing
+                addButton2.addEventListener('click', addForm2)
+                
+                function addForm2(e) {
+                    e.preventDefault()
+                
+                    let newForm = trueFalseForm[0].cloneNode(true) //Clone the multiple choice form
+                    let formRegex = RegExp(`form-(\\d){1}-`,'g') //Regex to find all instances of the form number
+                
+                    formNum2++ //Increment the form number
+                    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum2}-`) //Update the new form to have the correct form number
+                    container2.insertBefore(newForm, addButton2) //Insert the new form at the end of the list of forms
+                
+                    totalForms2.setAttribute('value', `${formNum2+1}`) //Increment the number of total forms in the management form
+                }
             } else { // Hide all
-                let divs = [shortTextDiv, multipleChoiceDiv, trueFalseDiv];
-                showDiv(null, divs);
+                removeChildDiv(parentDivId);
             }
         });
+
+        /**
+        * Insert appropriate form in parentDiv
+        *
+        * @param {String} parentDivId - CSS id of div in which we will insert the form
+        * @param {String} formId - CSS id of form to insert
+        */
+        function switchFormTo(parentDivId, formId) {
+            removeChildDiv(parentDivId); // 1. Remove child from parentDiv
+            addDiv(parentDivId, formId); // 2. Add appropriate form to parentDiv
+            changeIdOfChild(parentDivId, "cur-type-form"); // 3. Change id of form inside section
+            removeHiddenClass("cur-type-form"); // 4. Remove "hidden" class from it
+        }
+        
+        /**
+        * Remove first child from div
+        *
+        * @param {String} divId - CSS id of div whose first child will be removed
+        */
+        function removeChildDiv(divId) {
+            let div = document.getElementById(divId);
+            if (div.hasChildNodes()) {
+                div.removeChild(div.children[0]);
+            }
+        }
+
+        /**
+        * Add form to div
+        */
+        function addDiv(divId, formId) {
+            let form = document.getElementById(formId)
+            let clone = form.cloneNode(true);
+            document.getElementById(divId).appendChild(clone);
+        }
+
+        /**
+        * Change id of first child in element
+        */
+        function changeIdOfChild(parentDivId, newId) {
+            let parentDiv = document.getElementById(parentDivId);
+            parentDiv.firstChild.id = newId;
+        }
+
+        /**
+        * Remove custom CSS "hidden" class from div
+        */
+        function removeHiddenClass(divId) {
+            let div = document.getElementById(divId);
+            div.classList.remove("hidden");
+        }
+
+        
     });
 
 
@@ -88,37 +185,46 @@
     <form method="POST" enctype="multipart/form-data" id="questionForm">
         {% csrf_token %}
 
+        <!-- Question -->
         {{ question_form|crispy }}
 
-        <!-- Short Text -->
-        <div id="short-text" class="hidden">
-            {{ short_text_form|crispy }}
-        </div>
+        <!-- This is where the type-specific form will be inserted -->
+        <div id="question-type-form-section"></div>
 
         <button type="submit" class="btn btn-outline-info">Submit</button>
         <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
     </form>
 
-    <!-- Short Text -->
-    {% comment %} <div id="short-text" class="hidden">
-        <form method="POST" enctype="multipart/form-data" id="shortTextForm">
-            {% csrf_token %}
     
-            {{ short_text_form|crispy }}
-    
-            <button type="submit" class="btn btn-outline-info">Submit</button>
-            <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
-        </form>
-    </div> {% endcomment %}
+</div>
 
-    <div id="multiple-choice" class="hidden">
-        MC!
-    </div>
+<!-- Short Text -->
+<div id="short-text" class="hidden">
+    {{ short_text_form|crispy }}
+</div>
 
-    <div id="true-false" class="hidden">
-        TF!
-    </div>
-    
+<!-- Multiple Choice -->
+<div id="multiple-choice" class="mc-form-container hidden my-2">
+    {{multiple_choice_formset.management_form|crispy}}
+    {% for mc_form in multiple_choice_formset %}
+        <hr>
+        <div class="mc-form">
+            {{mc_form|crispy}}
+        </div>
+    {% endfor %}
+    <button id="add-mc-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
+</div>
+
+<!-- True or False -->
+<div id="true-false" class="tf-form-container hidden my-2">
+    {{true_false_formset.management_form|crispy}}
+    {% for tf_form in true_false_formset %}
+        <hr>
+        <div class="tf-form">
+            {{tf_form|crispy}}
+        </div>
+    {% endfor %}
+    <button id="add-tf-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
 </div>
 
 {% endblock content %}
