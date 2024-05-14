@@ -2,7 +2,7 @@ from django import forms
 
 from django.forms import modelformset_factory
 
-from .models import e_Challenge, e_Question, DIFFICULTY_LEVEL, e_MultipleChoiceOption_Question, e_TrueFalse_Question
+from .models import e_Challenge, e_Question, DIFFICULTY_LEVEL, e_ShortText_Question, e_MultipleChoiceOption_Question, e_TrueFalse_Question
 
 class ChallengeForm(forms.ModelForm):
     title = forms.CharField(max_length=100,
@@ -52,13 +52,17 @@ class QuestionUpdateForm(forms.ModelForm):
         fields = ['id', 'content']
 
 
-class QuestionShortTextForm(forms.Form):
+class QuestionShortTextForm(forms.ModelForm):
     correct_text = forms.CharField(max_length=1000,
                             widget=forms.Textarea(attrs={
                                             'placeholder': 'Enter the correct answer for this Question. Maximum of 1000 characters.',
                                             'class': 'form-control',
                                         }),
                             label='Correct Answer')
+    
+    class Meta:
+        model = e_ShortText_Question
+        exclude = ('question',)
 
 
 class QuestionMultipleChoiceForm(forms.ModelForm):

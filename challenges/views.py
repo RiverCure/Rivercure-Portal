@@ -308,6 +308,81 @@ def question_create(request, challenge_id):
     })
 
 @login_required
+def question_update(request, question_id):
+    question = e_Question.objects.get(pk=question_id)
+
+    # Only Event Manager or Platform Admin can do this
+    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+        return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
+    
+    context = {'question': question,}
+
+    if request.method == 'POST':
+        question_form = QuestionUpdateForm(request.POST)
+        short_text_form = QuestionShortTextForm(request.POST)
+        multiple_choice_formset = QuestionMultipleChoiceFormSet(data=request.POST)
+        true_false_formset = QuestionTrueFalseFormSet(data=request.POST)
+
+        if question_form.is_valid():
+
+            # Handle question
+            question.content = question_form.cleaned_data['content']
+            question.save()
+
+            # Handle type
+            if question.is_short_text() and short_text_form.is_valid():
+                short_text = e_ShortText_Question.objects.get(question=question)
+                short_text.correct_text = short_text_form.cleaned_data['correct_text']
+                short_text.save()
+            elif question.is_multiple_choice() and multiple_choice_formset.is_valid():
+                form_options = multiple_choice_formset.save(commit=False)
+                for form_option in form_options:
+                    try:
+                        # If option exists, update
+                        option = e_MultipleChoiceOption_Question.objects.get(pk=form_option.id)
+                        option.content = form_option.content
+                        option.is_correct = form_option.is_correct
+                        option.save()
+                    except:
+                        # If it doesn't, create a new one
+                        new_option = e_MultipleChoiceOption_Question(question=question, content=form_option.content, is_correct=form_option.is_correct)
+                        new_option.save()
+            elif question.is_true_false() and true_false_formset.is_valid():
+                form_options = true_false_formset.save(commit=False)
+                for form_option in form_options:
+                    try:
+                        # If option exists, update
+                        option = e_TrueFalse_Question.objects.get(pk=form_option.id)
+                        option.content = form_option.content
+                        option.value = form_option.value
+                        option.save()
+                    except:
+                        # If it doesn't, create a new one
+                        new_option = e_TrueFalse_Question(question=question, content=form_option.content, value=form_option.value)
+                        new_option.save()
+            
+            # Send success message (to be shown in Challenge detail page)
+            messages.success(request, 'Your Question has been updated successfully.')
+
+            return HttpResponseRedirect(reverse('challenge-manage', args=(question.challenge.id, )) )
+    else:
+        question_form = QuestionUpdateForm(instance=question)
+        context['question_form'] = question_form
+        # Add form to context depending on question type
+        if question.is_short_text():
+            short_text_form = QuestionShortTextForm(instance=question.short_text_question)
+            context['short_text_form'] = short_text_form
+        elif question.is_multiple_choice():
+            multiple_choice_formset = QuestionMultipleChoiceFormSet(queryset=e_MultipleChoiceOption_Question.objects.filter(question=question))
+            context['multiple_choice_formset'] = multiple_choice_formset
+        elif question.is_true_false():
+            true_false_formset = QuestionTrueFalseFormSet(queryset=e_TrueFalse_Question.objects.filter(question=question))
+            context['true_false_formset'] = true_false_formset
+
+    return render(request, 'challenges/question_update_form.html', context)
+    
+
+@login_required
 def question_delete(request, question_id):
     # question = get_object_or_404(e_Question, pk=question_id)
     question = e_Question.objects.get(pk=question_id)

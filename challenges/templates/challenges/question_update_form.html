@@ -1,0 +1,80 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Challenge {{ question.challenge.id }} - Update Question {% endblock %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+<style>
+    .asteriskField {
+        color: #17a2b8;
+    }
+
+    .word-color {
+        color: #17a2b8;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
+</style>
+
+{% endblock scripts %}
+
+{% block content %}
+
+
+<div class="content-section">
+
+    <!-- Question Form -->
+    <form method="POST" enctype="multipart/form-data" id="questionForm">
+        {% csrf_token %}
+
+        <!-- Question -->
+        {{ question_form|crispy }}
+
+        {% if question.is_short_text %}
+            <!-- Short Text -->
+            <div id="short-text">
+                {{ short_text_form|crispy }}
+            </div>
+        {% elif question.is_multiple_choice %}
+            <!-- Multiple Choice -->
+            <div id="multiple-choice" class="mc-form-container my-2">
+                {{multiple_choice_formset.management_form|crispy}}
+                {% for mc_form in multiple_choice_formset %}
+                    <hr>
+                    <div class="mc-form">
+                        {{mc_form|crispy}}
+                    </div>
+                {% endfor %}
+                <button id="add-mc-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
+            </div>
+        {% elif question.is_true_false %}
+            <!-- True or False -->
+            <div id="true-false" class="tf-form-container my-2">
+                {{true_false_formset.management_form|crispy}}
+                {% for tf_form in true_false_formset %}
+                    <hr>
+                    <div class="tf-form">
+                        {{tf_form|crispy}}
+                    </div>
+                {% endfor %}
+                <button id="add-tf-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-outline-info">Submit</button>
+        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
+    </form>
+
+    
+</div>
+
+{% endblock content %}

@@ -70,48 +70,6 @@
                     <!-- Buttons -->
                     <a class="btn btn-outline-info" href="{% url 'question-update' question.id %}"><i class="bi bi-pencil"></i> Edit Question</a>
 
-                    <!-- Short Text -->
-                    {% if question.is_short_text %}
-                        <!-- Button -->
-                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#shortTextModal{{ forloop.counter }}">
-                            <i class="bi bi-pencil"></i> Edit Correct Answer
-                        </button>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="shortTextModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="shortTextModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="shortTextModalLabel"><span class='text-primary'>Edit Correct Answer</span></h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {% comment %} <p class="justify">Are you sure you want to <span class='text-danger'>report</span> this Contribution?</p>
-                                        <hr> {% endcomment %}
-                                        <!-- Form -->
-                                        <form action="{% url 'question-short-text-add' question.id %}" method="POST" id="shortTextForm{{ forloop.counter }}">
-                                            {% csrf_token %}
-                                        
-                                            <div class="form-group m-2"> <!-- style="float: left;"-->
-                                                <label for="id_correct_text">Please write the <span class='font-weight-bold'>correct answer</span> for this Question.</label>
-                                                {{ short_text_question_form.correct_text }}
-                                            </div>
-                                        
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                        <!-- As seen in: https://dev.to/dailydevtips1/submit-button-outside-the-form-2m6f -->
-                                        <button type="submit" class="btn btn-primary my-3 mr-3" form="shortTextForm{{ forloop.counter }}">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
-
                     <!-- Delete Modal Button -->
                     <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal{{ forloop.counter }}">
                         <i class="bi bi-trash"></i> Delete
