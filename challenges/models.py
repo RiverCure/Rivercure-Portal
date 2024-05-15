@@ -53,7 +53,7 @@ class e_Challenge(models.Model):
     def __str__(self):
         return "Challenge " + str(self.id)
     
-    # Functions
+    # Methods
     def can_publish(self):
         """
         Returns whether Challenge can be published
@@ -137,13 +137,10 @@ class e_Question(models.Model):
             return Question_Type.TRUE_FALSE.label
 
     # Meta
-    # class Meta:
-    #     abstract = True
-
     class Meta:
         verbose_name = 'Question'
         verbose_name_plural = 'Questions'
-        ordering = ['creation_datetime']
+        ordering = ['position']
     
     def __str__(self):
         return "Question " + str(self.id) + ' (Challenge ' + str(self.challenge.id) + ")"
@@ -151,7 +148,7 @@ class e_Question(models.Model):
 
 class e_ShortText_Question(models.Model):
     question = models.OneToOneField(e_Question, on_delete=models.CASCADE, related_name='short_text_question')
-    correct_text = models.CharField(max_length=1000)
+    correct_text = models.CharField(max_length=500)
 
     # Meta
     class Meta:
@@ -192,17 +189,33 @@ class e_TrueFalse_Question(models.Model):
 
 
 
+class e_ChallengeAnswer(models.Model):
+    challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
 
-# class e_ShortText_Question(e_Question):
-#     expected_answer = models.CharField(max_length=1000)
-
-#     def get_type(self):
-#         return Question_Type.SHORT_TEXT
-
-#     # Meta
-#     class Meta:
-#         verbose_name = 'Question - Short Text'
-#         verbose_name_plural = 'Questions - Short Text'
+    # Meta
+    class Meta:
+        verbose_name = 'Challenge Answer'
+        verbose_name_plural = 'Challenge Answers'
+        ordering = ['creation_datetime']
     
-#     def __str__(self):
-#         return "Short Text " + str(self.id) + ' (Challenge ' + str(self.challenge.id) + ")"
+    def __str__(self):
+        return "Challenge Answer " + str(self.id)
+    
+
+class e_QuestionAnswer(models.Model):
+    challenge_answer = models.ForeignKey(e_ChallengeAnswer, on_delete=models.CASCADE, related_name='question_answer')
+    question = models.ForeignKey(e_Question, on_delete=models.CASCADE, related_name='question')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    creation_datetime = models.DateTimeField(auto_now_add=True)
+    answer = models.CharField(max_length=500)
+
+    # Meta
+    class Meta:
+        verbose_name = 'Question Answer'
+        verbose_name_plural = 'Question Answers'
+        ordering = ['creation_datetime']
+    
+    def __str__(self):
+        return "Answer " + str(self.id) + ' (Question ' + str(self.question.id) + ")"

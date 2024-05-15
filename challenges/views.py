@@ -17,8 +17,8 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
-from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question
-from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
+from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer
+from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet, e_QuestionAnswer
 from .filters import MyContextsChallengesFilter
 
 
@@ -193,8 +193,7 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         challenge_id = self.kwargs['challenge_id']
 
-        context['questions'] = e_Question.objects.filter(challenge=challenge_id).order_by('position')
-        context['short_text_question_form'] = QuestionShortTextForm()
+        context['questions'] = e_Question.objects.filter(challenge=challenge_id)
 
         return context
 
@@ -203,7 +202,7 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
 
 
-# Not being used
+# TODO: Not being used
 class QuestionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = e_Question
     form_class = QuestionForm
@@ -296,7 +295,7 @@ def question_create(request, challenge_id):
                         new_option = e_TrueFalse_Question(question=new_question, content=option.content, value=option.value)
                         new_option.save()
             
-             # Send success message (to be shown in Challenge detail page)
+            # Send success message (to be shown in Challenge detail page)
             messages.success(request, 'Your Question has been created successfully.')
 
             return HttpResponseRedirect(reverse('challenge-manage', args=(challenge_id, )) )
@@ -318,7 +317,7 @@ def question_update(request, question_id):
     question = e_Question.objects.get(pk=question_id)
 
     # Only Event Manager or Platform Admin can do this
-    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
     
     context = {'question': question,}
@@ -394,7 +393,7 @@ def question_delete(request, question_id):
     question = e_Question.objects.get(pk=question_id)
 
     # Only Event Manager or Platform Admin can do this
-    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
     
     # Update challenge
@@ -416,7 +415,7 @@ def multiple_choice_option_delete(request, option_id):
         return redirect('challenge-manage', option.question.challenge.id) # TODO: Change to public challenges list
     
     # Only Event Manager or Platform Admin can do this
-    if not context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-manage', args=[option.question.challenge.id])) # TODO: Change to public challenges list
     
     # Delete
@@ -435,7 +434,7 @@ def true_false_option_delete(request, option_id):
         return redirect('challenge-manage', option.question.challenge.id) # TODO: Change to public challenges list
     
     # Only Event Manager or Platform Admin can do this
-    if not context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-manage', args=[option.question.challenge.id])) # TODO: Change to public challenges list
     
     # Delete
@@ -443,7 +442,6 @@ def true_false_option_delete(request, option_id):
     option.delete()
 
     return redirect('question-update', question_id)
-
 
 @login_required
 def question_position_up(request, question_id):
@@ -459,11 +457,10 @@ def question_position_up(request, question_id):
         return redirect('challenge-manage', question.challenge.id)
 
     # Only allow Context EM and Platform Admin to do this
-    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
     
     # 1. Get question before this one
-    # TODO: Use filter instead?
     question2 = e_Question.objects.get(challenge=question.challenge, position=question.position-1)
     # 2. Save question's current position
     question_pos = question.position
@@ -475,7 +472,6 @@ def question_position_up(request, question_id):
     question2.save()
 
     return redirect('challenge-manage', question.challenge.id)
-
 
 # TODO: Fuse this with question_position_up? Like have 1 URL with question_id and up/down
 @login_required
@@ -491,12 +487,11 @@ def question_position_down(request, question_id):
         return redirect('challenge-manage', question.challenge.id)
 
     # Only allow Context EM and Platform Admin to do this
-    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
     
 
     # 1. Get next question
-    # TODO: Use filter instead?
     question2 = e_Question.objects.get(challenge=question.challenge, position=question.position+1)
     # 2. Save question's current position
     question_pos = question.position
@@ -509,8 +504,80 @@ def question_position_down(request, question_id):
 
     return redirect('challenge-manage', question.challenge.id)
 
+@login_required
+def challenge_participate(request, challenge_id):
+    try:
+        challenge = e_Challenge.objects.get(pk=challenge_id)
+    except:
+        messages.error(request, 'Challenge does not exist')
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
 
-# TODO: I don't think I'm using this anymore
+    # Check Challenge visibility and only allow user to participate on it depending on that
+    if (not challenge.is_public) and (not context_organization_belong_check(request.user, challenge.event.context)):
+        messages.error(request, 'You can\'t participate in this Challenge!')
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+    
+    # TODO: Uncomment
+    # TODO: Merge with previous check
+    # If Challenge is not Published, don't let users participate in it
+    # if not challenge.state == ChallengeState.PUBLISHED:
+    #     messages.error(request, 'You can\'t participate in this Challenge!')
+    #     return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+
+
+    questions = e_Question.objects.filter(challenge=challenge) # TODO: Perhaps get this directly from challenge object?
+
+    context = {'challenge': challenge,
+               'questions': questions}
+
+    if request.method == 'POST':
+        # Create a Challenge Answer which will have multiple Question Answers
+        challenge_answer = e_ChallengeAnswer(challenge=challenge, created_by=request.user)
+        challenge_answer.save()
+
+        answers = request.POST.getlist('question-answer')
+        print(answers)
+
+        # For each question
+        for question in questions:
+            # Get corresponding answer in form
+            answer = request.POST.getlist(f'question-{question.id}-answer')
+
+            # Handle depending on question type
+            if question.is_short_text():
+                user_answer = e_QuestionAnswer(challenge_answer=challenge_answer, question=question, created_by=request.user, answer=answer[0])
+                user_answer.save()
+            # elif question.is_multiple_choice():
+            else:
+                # For each selected option
+                for selected_answer in answer:
+                    # Get option
+                    if question.is_multiple_choice():
+                        option = e_MultipleChoiceOption_Question.objects.get(pk=selected_answer)
+                    else:
+                        # It's T or F
+                        option = e_TrueFalse_Question.objects.get(pk=selected_answer)
+                    # Save user answer
+                    user_answer = e_QuestionAnswer(challenge_answer=challenge_answer, question=question, created_by=request.user, answer=option.content)
+                    user_answer.save()
+
+        # Send success message (to be shown in Challenge detail page)
+        messages.success(request, 'Your participation has been submitted successfully.')
+
+        return HttpResponseRedirect(reverse('challenge-detail', args=(challenge_id, )) )
+    else:
+        print("GOTTEN")
+    
+    return render(request, 'challenges/challenge_participate.html', context)
+    
+    
+
+
+
+
+
+
+# TODO: check but I don't think I'm using this anymore
 class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = e_Question
     template_name = 'challenges/question_form.html'

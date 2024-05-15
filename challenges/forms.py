@@ -26,7 +26,7 @@ class ChallengeForm(forms.ModelForm):
 
 
 class QuestionForm(forms.ModelForm):
-    content = forms.CharField(max_length=100,
+    content = forms.CharField(max_length=500,
                             widget=forms.Textarea(attrs={
                                             'placeholder': 'Enter the question. Maximum of 500 characters.',
                                             'class': 'form-control',
@@ -38,7 +38,7 @@ class QuestionForm(forms.ModelForm):
         fields = ['id', 'content', 'type']
 
 
-
+# TODO: Am i using this?
 class QuestionUpdateForm(forms.ModelForm):
     content = forms.CharField(max_length=100,
                             widget=forms.Textarea(attrs={
@@ -53,9 +53,9 @@ class QuestionUpdateForm(forms.ModelForm):
 
 
 class QuestionShortTextForm(forms.ModelForm):
-    correct_text = forms.CharField(max_length=1000,
+    correct_text = forms.CharField(max_length=500,
                             widget=forms.Textarea(attrs={
-                                            'placeholder': 'Enter the correct answer for this Question. Maximum of 1000 characters.',
+                                            'placeholder': 'Enter the correct answer for this Question. Maximum of 500 characters.',
                                             'class': 'form-control',
                                         }),
                             label='Correct Answer')

@@ -10,6 +10,7 @@ urlpatterns = [
     path('update/<int:challenge_id>/', ChallengeUpdateView.as_view(), name='challenge-update'),
     path('delete/<int:challenge_id>/', ChallengeDeleteView.as_view(), name='challenge-delete'),
     path('manage/<int:challenge_id>/', ChallengeManageView.as_view(), name='challenge-manage'),
+    path('participate/<int:challenge_id>/', challenge_participate, name='challenge-participate'),
     # Questions
     # path('questions/<int:challenge_id>/new/', QuestionCreateView.as_view(), name='question-add'), # TODO: <int:challenge_id>/questions/new/
     path('questions/<int:challenge_id>/new/', question_create, name='question-add'), # TODO: <int:challenge_id>/questions/new/

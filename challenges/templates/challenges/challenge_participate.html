@@ -1,0 +1,105 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Challenge "{{ challenge.title }}" {% endblock %}
+{% load auth_extras %}
+{% load my_tags %}
+{% load static %}
+
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock scripts %}
+
+
+
+
+
+{% block content %}
+
+<!-- Header -->
+<div class="row">
+    <div class="col">
+        <h1 class="mt-2">{{ challenge.event.context.Name }} context </h1>
+        <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
+        <hr>
+    </div>
+</div>
+
+<!-- Challenge Header -->
+<div class="my-3">
+
+    <div class="row mx-0 my-contribution-detail-meta-info-card">
+        <div class="col">
+            <h2 class="my-3">Challenge "{{ challenge.title|title }}"</h2>
+        </div>
+    </div>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data" id="challengeAnswerForm">
+    {% csrf_token %}
+    {% for question in questions %}
+        <div class="my-3">
+            <!-- Header -->
+            <div class="py-2 px-4 my-contribution-detail-meta-info-card-top my-contribution-detail-footer">
+                <h5 class="mx-0 my-2">Question {{question.position}}</h5>
+            </div>
+
+            <!-- Content -->
+            <div class="py-2 px-4 my-contribution-detail-bottom">
+                <p class="my-2 font-weight-normal">Question</p>
+                <div class="question-box">
+                    <p class="font-weight-light m-2">{{question.content}}</p>
+                </div>
+
+                <!-- Short Text -->
+                {% if question.is_short_text %}
+                    <div class="form-group my-2">
+                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer</label>
+                        <input name="question-{{question.id}}-answer" type="text" class="form-control" id="answer-{{question.id}}" placeholder="Enter answer" required>
+                    </div>
+                    
+                <!-- Multiple Choice -->
+                {% elif question.is_multiple_choice %}
+                    <div class="form-group my-2">
+                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer(s)</label>
+                        <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
+                            {% for mc_option in question.multiple_choice_option_question.all %}
+                                <div class="question-box mb-2">
+                                    <option class="font-weight-lighter m-2" value="{{mc_option.id}}">{{mc_option.content}}</option>
+                                </div>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                <!-- True or False -->
+                {% elif question.is_true_false %}
+                    <div class="form-group my-2">
+                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer(s)</label>
+                        <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
+                            {% for tf_option in question.true_false_question.all %}
+                                <div class="question-box mb-2">
+                                    <option class="font-weight-lighter m-2" value="{{tf_option.id}}">{{tf_option.content}}</option>
+                                </div>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-outline-info">Submit</button>
+</form>
+
+
+<!-- Footer (Bottom Buttons) -->
+<div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
+    <div class="col">
+        <!-- See Challenge -->
+        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}">See Challenge</a>
+        
+    </div>
+</div>
+
+
+{% endblock content %}
