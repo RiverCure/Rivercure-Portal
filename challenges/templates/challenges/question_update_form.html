@@ -70,6 +70,9 @@
                     <hr>
                     <div class="tf-form">
                         {{tf_form|crispy}}
+                        {% if tf_form.instance.id %}
+                            <a id="delete-tf-option" href="{% url 'true-false-option-delete' option_id=tf_form.instance.id %}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
+                        {% endif %}
                     </div>
                 {% endfor %}
                 <button id="add-tf-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
