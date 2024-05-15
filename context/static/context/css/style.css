@@ -222,6 +222,12 @@ a:hover {
   border-width: 0 2px 2px 0;
 }
 
+.my-contribution-detail-middle {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0px 2px 2px 2px;
+}
+
 .my-contribution-detail-bottom {
   /* border: 2px solid rgb(221, 221, 221); */
   border-style: solid;
@@ -316,4 +322,12 @@ a:hover {
 
 .modal-footer {
   border-top: 1px solid #e8e8e8;
+}
+
+/***********************************
+/* CHALLENGE
+/***********************************/
+.question-box {
+  border-radius: 0.5rem;
+  border: 1px solid rgb(221, 221, 221);
 }

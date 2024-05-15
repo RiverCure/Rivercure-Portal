@@ -108,9 +108,10 @@ class e_Question(models.Model):
     challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_by')
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='last_edited_by', blank=True)
-    last_edit_datetime = models.DateTimeField(null=True, blank=True)
+    last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='last_edited_by', blank=True) # TODO: Delete?
+    last_edit_datetime = models.DateTimeField(null=True, blank=True) # TODO: Delete?
     type = models.CharField(choices=Question_Type.choices)
+    position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     # Question
     content = models.CharField(max_length=500) # Question itself
@@ -125,6 +126,15 @@ class e_Question(models.Model):
     
     def is_true_false(self):
         return self.type == Question_Type.TRUE_FALSE
+    
+    # TODO: What is a better way to do this?
+    def get_type(self):
+        if self.is_short_text():
+            return Question_Type.SHORT_TEXT.label
+        elif self.is_multiple_choice():
+            return Question_Type.MULTIPLE_CHOICE.label
+        else:
+            return Question_Type.TRUE_FALSE.label
 
     # Meta
     # class Meta:

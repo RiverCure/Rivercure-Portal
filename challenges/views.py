@@ -266,10 +266,15 @@ def question_create(request, challenge_id):
 
             new_question = question_form.save(commit=False)
 
+            # Update challenge
+            challenge.nr_questions += 1
+            challenge.save()
+
             # Set question metadata
             new_question.challenge = challenge
             new_question.created_by = request.user
             new_question.save()
+
 
             # Handle type
             # Depending on type, check for different forms and do stuff with them
@@ -391,6 +396,9 @@ def question_delete(request, question_id):
     if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
         return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
     
+    # Update challenge
+    question.challenge.nr_questions -= 1
+    question.challenge.save()
 
     # Simply delete (models related to it will be automatically deleted)
     question.delete()

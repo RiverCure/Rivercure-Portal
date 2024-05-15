@@ -35,6 +35,7 @@
             <p class="font-weight-light"><strong>State:</strong> {{ challenge.state|title }} </p>
             <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>
             <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
+            <p class="font-weight-light"><strong>Number of questions:</strong> {{ challenge.nr_questions }} </p>
         </div>
     </div>
 
