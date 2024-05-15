@@ -193,7 +193,7 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         challenge_id = self.kwargs['challenge_id']
 
-        context['questions'] = e_Question.objects.filter(challenge=challenge_id)
+        context['questions'] = e_Question.objects.filter(challenge=challenge_id).order_by('position')
         context['short_text_question_form'] = QuestionShortTextForm()
 
         return context
@@ -273,6 +273,7 @@ def question_create(request, challenge_id):
             # Set question metadata
             new_question.challenge = challenge
             new_question.created_by = request.user
+            new_question.position = challenge.nr_questions
             new_question.save()
 
 
@@ -444,7 +445,69 @@ def true_false_option_delete(request, option_id):
     return redirect('question-update', question_id)
 
 
+@login_required
+def question_position_up(request, question_id):
 
+    try:
+        question = e_Question.objects.get(pk=question_id)
+    except:
+        messages.error(request, 'Question does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # Don't allow if this is the 1st Question in the Challenge (question.position == 1)
+    if question.position == 1:
+        return redirect('challenge-manage', question.challenge.id)
+
+    # Only allow Context EM and Platform Admin to do this
+    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
+    
+    # 1. Get question before this one
+    # TODO: Use filter instead?
+    question2 = e_Question.objects.get(challenge=question.challenge, position=question.position-1)
+    # 2. Save question's current position
+    question_pos = question.position
+    # 3. Swap
+    question.position = question2.position
+    question2.position = question_pos
+    # 4. Save
+    question.save()
+    question2.save()
+
+    return redirect('challenge-manage', question.challenge.id)
+
+
+# TODO: Fuse this with question_position_up? Like have 1 URL with question_id and up/down
+@login_required
+def question_position_down(request, question_id):
+    try:
+        question = e_Question.objects.get(pk=question_id)
+    except:
+        messages.error(request, 'Question does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # Don't allow if this is the last Question in the Challenge (question.position == challenge.nr_questions)
+    if question.position == question.challenge.nr_questions:
+        return redirect('challenge-manage', question.challenge.id)
+
+    # Only allow Context EM and Platform Admin to do this
+    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
+    
+
+    # 1. Get next question
+    # TODO: Use filter instead?
+    question2 = e_Question.objects.get(challenge=question.challenge, position=question.position+1)
+    # 2. Save question's current position
+    question_pos = question.position
+    # 3. Swap
+    question.position = question2.position
+    question2.position = question_pos
+    # 4. Save
+    question.save()
+    question2.save()
+
+    return redirect('challenge-manage', question.challenge.id)
 
 
 # TODO: I don't think I'm using this anymore

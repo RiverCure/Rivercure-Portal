@@ -16,7 +16,9 @@ urlpatterns = [
     path('questions/<int:question_id>/delete/', question_delete, name='question-delete'),
     # path('questions/<int:question_id>/update/', QuestionUpdateView.as_view(), name='question-update'),
     path('questions/<int:question_id>/update/', question_update, name='question-update'),
-    path('questions/<int:question_id>/short-text/new', questionShortTextCreate, name='question-short-text-add'),
+    path('questions/<int:question_id>/short-text/new', questionShortTextCreate, name='question-short-text-add'), # TODO: DELETE
+    path('questions/<int:question_id>/position-up/', question_position_up, name='question-position-up'),
+    path('questions/<int:question_id>/position-down/', question_position_down, name='question-position-down'),
     path('questions/<int:option_id>/multiple-choice-option/delete', multiple_choice_option_delete, name='multiple-choice-option-delete'),
     path('questions/<int:option_id>/true-false-option/delete', true_false_option_delete, name='true-false-option-delete'),
 
