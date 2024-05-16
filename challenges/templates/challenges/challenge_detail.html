@@ -37,6 +37,7 @@
             <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>
             <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
             <p class="font-weight-light"><strong>Number of questions:</strong> {{ challenge.nr_questions }} </p>
+            <p class="font-weight-light"><strong>Max Score:</strong> <span class="text-info">{{ challenge.max_score }}</span></p>
         </div>
     </div>
 

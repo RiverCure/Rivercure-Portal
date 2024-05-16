@@ -41,7 +41,7 @@ class e_Challenge(models.Model):
     title = models.CharField(max_length=100)
     difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL)
     is_public = models.BooleanField(default=False) # If false, only members of Org can see. If True, every logged-in user can see
-    # TODO: Add score concept
+    max_score = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
 
     # Meta
@@ -115,6 +115,7 @@ class e_Question(models.Model):
 
     # Question
     content = models.CharField(max_length=500) # Question itself
+    score = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     # explanation = models.CharField(max_length=500) # Explanation of correct answer
 
     # Model methods
@@ -127,7 +128,7 @@ class e_Question(models.Model):
     def is_true_false(self):
         return self.type == Question_Type.TRUE_FALSE
     
-    # TODO: What is a better way to do this?
+    # TODO: Use |title instead of this and DELETE this
     def get_type(self):
         if self.is_short_text():
             return Question_Type.SHORT_TEXT.label

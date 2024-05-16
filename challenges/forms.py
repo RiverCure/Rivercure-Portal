@@ -35,10 +35,9 @@ class QuestionForm(forms.ModelForm):
     
     class Meta:
         model = e_Question
-        fields = ['id', 'content', 'type']
+        fields = ['id', 'content', 'type', 'score']
 
 
-# TODO: Am i using this?
 class QuestionUpdateForm(forms.ModelForm):
     content = forms.CharField(max_length=100,
                             widget=forms.Textarea(attrs={
@@ -49,7 +48,7 @@ class QuestionUpdateForm(forms.ModelForm):
     
     class Meta:
         model = e_Question
-        fields = ['id', 'content']
+        fields = ['id', 'content', 'score']
 
 
 class QuestionShortTextForm(forms.ModelForm):

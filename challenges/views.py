@@ -267,6 +267,7 @@ def question_create(request, challenge_id):
 
             # Update challenge
             challenge.nr_questions += 1
+            challenge.max_score += question_form.cleaned_data['score']
             challenge.save()
 
             # Set question metadata
@@ -330,8 +331,14 @@ def question_update(request, question_id):
 
         if question_form.is_valid():
 
+            # Update Challenge score
+            score_to_add = question_form.cleaned_data['score'] - question.score 
+            question.challenge.max_score += score_to_add
+            question.challenge.save()
+
             # Handle question
             question.content = question_form.cleaned_data['content']
+            question.score = question_form.cleaned_data['score']
             question.save()
 
             # Handle type
@@ -398,6 +405,7 @@ def question_delete(request, question_id):
     
     # Update challenge
     question.challenge.nr_questions -= 1
+    question.challenge.max_score -= question.score
     question.challenge.save()
 
     # Update order of questions that come after this one
