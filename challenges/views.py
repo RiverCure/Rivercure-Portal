@@ -17,8 +17,8 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_organization_edit_permission_check, context_event_manager_check, general_event_manager_check, context_organization_belong_check
 
-from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer
-from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet, e_QuestionAnswer
+from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
+from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
 from .filters import MyContextsChallengesFilter
 
 
@@ -399,6 +399,13 @@ def question_delete(request, question_id):
     # Update challenge
     question.challenge.nr_questions -= 1
     question.challenge.save()
+
+    # Update order of questions that come after this one
+    questions = e_Question.objects.filter(challenge=question.challenge)
+    for next_question in questions:
+        if next_question.position > question.position:
+            next_question.position -= 1
+            next_question.save()
 
     # Simply delete (models related to it will be automatically deleted)
     question.delete()
