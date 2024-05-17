@@ -97,6 +97,22 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.DRAFT
     
+    def can_open(self):
+        """
+        Returns whether Challenge can be opened
+
+        Conditions: Challenge is CLOSED
+        """
+        return self.publish_state == ChallengePublishState.CLOSED
+    
+    def can_close(self):
+        """
+        Returns whether Challenge can be closed
+
+        Conditions: Challenge is OPEN
+        """
+        return self.publish_state == ChallengePublishState.OPEN
+    
     def hide_correct_answers(self):
         pass
         # TODO!!
@@ -122,18 +138,19 @@ class e_Challenge(models.Model):
             self.to_close()
     
     # Publish sub-state transitions
-    @transition(field=publish_state, source=ChallengePublishState.CLOSED, target=ChallengePublishState.OPEN)
+    @transition(field=publish_state, source=ChallengePublishState.CLOSED, target=ChallengePublishState.OPEN, conditions=[can_open])
     def to_open(self):
         """Change PUBLISHED sub-state of Challenge from CLOSED to OPEN"""
         # TODO!!
         # if self.when_close_show_correct_answers():
         #     self.hide_correct_answers()
     
-    @transition(field=publish_state, source=ChallengePublishState.OPEN, target=ChallengePublishState.CLOSED)
+    @transition(field=publish_state, source=ChallengePublishState.OPEN, target=ChallengePublishState.CLOSED, conditions=[can_close])
     def to_close(self):
         """Change PUBLISHED sub-state of Challenge from OPEN to CLOSED"""
-        if self.when_close_show_correct_answers:
-            self.show_correct_answers()
+        # TODO!!
+        # if self.when_close_show_correct_answers:
+        #     self.show_correct_answers()
 
 
 # We are not using neither of Django's options for inheritance (Abstract model or Multi-table)

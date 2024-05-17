@@ -98,6 +98,71 @@
                 </div>
             {% endif %}
 
+            <!-- Close -->
+            {% if challenge.can_close %}
+                <!-- Close Modal Button-->
+                <button type="button" class="my-2 btn btn-outline-info" data-toggle="modal" data-target="#closeModal">
+                    <i class="bi bi-door-closed"></i> Close
+                </button>
+                <!-- Close Modal -->
+                <div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="closeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="closeModalLabel">Close Challenge "{{challenge.title}}"</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="justify">
+                                    Are you sure you want to <span class="text-info">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.
+                                </p>
+                                <p class="justify">
+                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                <a class="btn btn-info my-3 mr-3" href="{% url 'challenge-close' challenge.id %}">Confirm</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Open -->
+            {% if challenge.can_open %}
+                <!-- Open Modal Button-->
+                <button type="button" class="my-2 btn btn-outline-info" data-toggle="modal" data-target="#openModal">
+                    <i class="bi bi-door-open"></i> Open
+                </button>
+                <!-- Open Modal -->
+                <div class="modal fade" id="openModal" tabindex="-1" role="dialog" aria-labelledby="openModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="openModalLabel">Open Challenge "{{challenge.title}}"</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="justify">
+                                    Are you sure you want to <span class="text-info">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.
+                                </p>
+                                <p class="justify">
+                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                <a class="btn btn-info my-3 mr-3" href="{% url 'challenge-open' challenge.id %}">Confirm</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
 
             <!-- Archive -->
             {% if challenge.can_archive %}
