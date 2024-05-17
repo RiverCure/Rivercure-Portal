@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django import forms
 
 from django.forms import modelformset_factory
@@ -18,10 +20,19 @@ class ChallengeForm(forms.ModelForm):
     is_public = forms.BooleanField(label='Is Public',
                                    help_text='If Challenge is Public, every logged-in user can participate in it. If it isn\'t, only members of the Organization can.',
                                    required=False)
+    automatic_close_datetime = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','min': datetime.now().date()}),
+                                              help_text='If specified, the Challenge will be automatically closed on this date.',
+                                              label='Automatic Closing Date',
+                                              required=False)
+    when_close_show_correct_answers = forms.BooleanField(help_text='If yes, correct answers will only be shown to participating users when the Challenge is closed.',
+                                                         label='Only show correct answers when closed?',
+                                                         required=False)
+    max_participations = forms.IntegerField(help_text='Number of times a user can submit a participation.',
+                                            label='Max Number of Participations (per user)')
 
     class Meta:
         model = e_Challenge
-        fields = ['id', 'title', 'difficulty_level', 'is_public']
+        fields = ['id', 'title', 'difficulty_level', 'is_public', 'automatic_close_datetime', 'when_close_show_correct_answers', 'max_participations']
 
 
 

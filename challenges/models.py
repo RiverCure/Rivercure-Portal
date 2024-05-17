@@ -15,6 +15,10 @@ class ChallengeState(models.TextChoices):
     PUBLISHED = "PUBLISHED", "Published"
     ARCHIVED = "ARCHIVED", "Archived"
 
+class ChallengePublishState(models.TextChoices):
+    OPEN = "OPEN", "Open"
+    CLOSED = "CLOSED", "Closed"
+
 
 # TODO: Turn this into a TextChoice
 DIFFICULTY_LEVEL = (('easy', 'Easy'), ('intermediate', 'Intermediate'), ('hard', 'Hard'))
@@ -35,13 +39,20 @@ class e_Challenge(models.Model):
     event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True)
     nr_questions = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     state = FSMField(choices=ChallengeState.choices, default=ChallengeState.DRAFT, protected=True) # When first created, the Challenge is in Draft state
-    publish_datetime = models.DateTimeField(null=True, blank=True)
+
+    # Publish-related metadata
+    publish_state = FSMField(choices=ChallengePublishState.choices, default=ChallengePublishState.CLOSED, protected=True) # Sub-state related to PUBLISHED state
+    open_datetime = models.DateTimeField(null=True, blank=True) # Date when Challenge was opened (aka published)
+    close_datetime = models.DateTimeField(null=True, blank=True) # Date when Challenge was closed
+    automatic_close_datetime = models.DateTimeField(null=True, blank=True) # If this exists, then Challenge will become automatically closed on this date
+    when_close_show_correct_answers = models.BooleanField(default=False) # If True, only show correct answers to users when Challenge is in sub-state CLOSED
 
     # Information
     title = models.CharField(max_length=100)
     difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL)
     is_public = models.BooleanField(default=False) # If false, only members of Org can see. If True, every logged-in user can see
     max_score = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    max_participations = models.IntegerField(default=1, validators=[MinValueValidator(1)]) # How many times users can participate
 
 
     # Meta
@@ -86,6 +97,14 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.DRAFT
     
+    def hide_correct_answers(self):
+        pass
+        # TODO!!
+    
+    def show_correct_answers(self):
+        pass
+        # TODO!!
+    
     # State transitions
     @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED) # TODO: Add condition
     def to_delete(self):
@@ -94,10 +113,26 @@ class e_Challenge(models.Model):
     @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.PUBLISHED, conditions=[can_publish])
     def to_publish(self):
         """Change state of Challenge from DRAFT to PUBLISHED"""
+        self.to_open() # Also change sub-state to OPEN
     
     @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED) # TODO: Add condition
     def to_archive(self):
         """Change state of Challenge from PUBLISHED to ARCHIVED"""
+        if self.publish_state == ChallengePublishState.OPEN: # If Challenge is being suddenly ARCHIVED, make sure its sub-state is CLOSED
+            self.to_close()
+    
+    # Publish sub-state transitions
+    @transition(field=publish_state, source=ChallengePublishState.CLOSED, target=ChallengePublishState.OPEN)
+    def to_open(self):
+        """Change PUBLISHED sub-state of Challenge from CLOSED to OPEN"""
+        if self.when_close_show_correct_answers():
+            self.hide_correct_answers()
+    
+    @transition(field=publish_state, source=ChallengePublishState.OPEN, target=ChallengePublishState.CLOSED)
+    def to_close(self):
+        """Change PUBLISHED sub-state of Challenge from OPEN to CLOSED"""
+        if self.when_close_show_correct_answers:
+            self.show_correct_answers()
 
 
 # We are not using neither of Django's options for inheritance (Abstract model or Multi-table)
@@ -128,7 +163,7 @@ class e_Question(models.Model):
     def is_true_false(self):
         return self.type == Question_Type.TRUE_FALSE
     
-    # TODO: Use |title instead of this and DELETE this
+    # TODO: Use |title instead of this and delete this
     def get_type(self):
         if self.is_short_text():
             return Question_Type.SHORT_TEXT.label

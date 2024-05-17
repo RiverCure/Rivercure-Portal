@@ -38,6 +38,10 @@
             <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
             <p class="font-weight-light"><strong>Number of questions:</strong> {{ challenge.nr_questions }} </p>
             <p class="font-weight-light"><strong>Max Score:</strong> <span class="text-info">{{ challenge.max_score }}</span></p>
+            <p class="font-weight-light"><strong>Publish Sub-State:</strong> <span class="text-muted">{{ challenge.publish_state|title }}</span></p>
+            {% if challenge.open_datetime %}<p class="font-weight-light">Last opened on {{ challenge.open_datetime }}{% if challenge.close_datetime %} and closed on {{challenge.close_datetime}}{% endif %}.</p>{% endif %}
+            {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Automatically closes on {{ challenge.automatic_close_datetime }}.</p>{% endif %}
+            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Answers will only be published when Challenge is closed.</p>{% endif %}
         </div>
     </div>
 
@@ -144,8 +148,11 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col my-3">
 
+            <p class="font-weight-light">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been made by users.</p>
+            <hr>
+
             <div>
-                <a class="btn btn-info" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
+                <a class="btn btn-primary" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
                 <a class="btn btn-info" href="#"><i class="bi bi-activity"></i> My Participation(s)</a>
                 <a class="btn btn-info" href="#"><i class="bi bi-clipboard-data"></i> See Participations</a>
             </div>
