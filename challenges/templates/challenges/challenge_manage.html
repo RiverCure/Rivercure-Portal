@@ -30,8 +30,11 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col">
             <h2 class="my-3">Challenge "{{ challenge.title|title }}" - Questions</h2>
-            <hr>
-            <a class="btn btn-info mb-3" href="{% url 'question-add' challenge.id %}"><i class="bi bi-plus"></i> Add Question</a>
+
+            {% if challenge.can_manage_questions %}
+                <hr>
+                <a class="btn btn-info mb-3" href="{% url 'question-add' challenge.id %}"><i class="bi bi-plus"></i> Add Question</a>
+            {% endif %}
         </div>
     </div>
 
@@ -45,33 +48,35 @@
             <h5 class="m-0">Question {{question.position}}</h5>
         </div>
         <div class="q-header-right d-flex">
-            <a class="btn btn-outline-secondary ml-2 {% if question.position == 1 %}disabled{% endif %}" href="{% url 'question-position-up' question.id %}"><i class="bi bi-arrow-up"></i></a>
-            <a class="btn btn-outline-secondary ml-2 {% if question.position == question.challenge.nr_questions %}disabled{% endif %}" href="{% url 'question-position-down' question.id %}"><i class="bi bi-arrow-down"></i></a>
+            {% if challenge.can_manage_questions %}
+                <a class="btn btn-outline-secondary ml-2 {% if question.position == 1 %}disabled{% endif %}" href="{% url 'question-position-up' question.id %}"><i class="bi bi-arrow-up"></i></a>
+                <a class="btn btn-outline-secondary ml-2 {% if question.position == question.challenge.nr_questions %}disabled{% endif %}" href="{% url 'question-position-down' question.id %}"><i class="bi bi-arrow-down"></i></a>
 
-            <a class="btn btn-outline-info ml-2" href="{% url 'question-update' question.id %}"><i class="bi bi-pencil"></i></a>
-            <!-- Delete Modal Button -->
-            <button type="button" class="btn btn-outline-danger ml-2" data-toggle="modal" data-target="#deleteModal{{ forloop.counter }}"><i class="bi bi-trash"></i></button>
+                <a class="btn btn-outline-info ml-2" href="{% url 'question-update' question.id %}"><i class="bi bi-pencil"></i></a>
+                <!-- Delete Modal Button -->
+                <button type="button" class="btn btn-outline-danger ml-2" data-toggle="modal" data-target="#deleteModal{{ forloop.counter }}"><i class="bi bi-trash"></i></button>
 
-            <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="deleteModal{{ forloop.counter }}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModal{{ forloop.counter }}"><span class='text-danger'>Delete Question</span></h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body p-3">
-                            <p class="justify m-0">Are you sure you want to <span class='text-danger'>delete</span> this Question?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                            <a class="btn btn-danger my-3 mr-3" href="{% url 'question-delete' question_id=question.id %}"><i class="bi bi-trash"></i> Delete</a>
+                <!-- Delete Modal -->
+                <div class="modal fade" id="deleteModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="deleteModal{{ forloop.counter }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModal{{ forloop.counter }}"><span class='text-danger'>Delete Question</span></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body p-3">
+                                <p class="justify m-0">Are you sure you want to <span class='text-danger'>delete</span> this Question?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
+                                <a class="btn btn-danger my-3 mr-3" href="{% url 'question-delete' question_id=question.id %}"><i class="bi bi-trash"></i> Delete</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 

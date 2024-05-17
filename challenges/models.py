@@ -89,7 +89,7 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.PUBLISHED
     
-    def can_manage_questions(self):
+    def can_manage_questions(self): # TODO: Substitute this for more general is_draft() method?
         """
         Returns whether Challenge can have its Questions managed
         
@@ -125,8 +125,9 @@ class e_Challenge(models.Model):
     @transition(field=publish_state, source=ChallengePublishState.CLOSED, target=ChallengePublishState.OPEN)
     def to_open(self):
         """Change PUBLISHED sub-state of Challenge from CLOSED to OPEN"""
-        if self.when_close_show_correct_answers():
-            self.hide_correct_answers()
+        # TODO!!
+        # if self.when_close_show_correct_answers():
+        #     self.hide_correct_answers()
     
     @transition(field=publish_state, source=ChallengePublishState.OPEN, target=ChallengePublishState.CLOSED)
     def to_close(self):

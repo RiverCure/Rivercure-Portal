@@ -250,11 +250,23 @@ class QuestionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 @login_required
 def question_create(request, challenge_id):
+    try:
+        challenge = e_Challenge.objects.get(pk=challenge_id)
+    except:
+        messages.error(request, 'Challenge does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # If Challenge is not a draft, don't allow!
+    if not challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', challenge.id)
 
-    # TODO: Only allow Context EM and Platform Admin to do this
+    # Only Context EM and Platform Admin can do this
+    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
 
     if request.method == 'POST':
-        challenge = e_Challenge.objects.get(pk=challenge_id)
+        # challenge = e_Challenge.objects.get(pk=challenge_id)
 
         question_form = QuestionForm(request.POST)
         short_text_form = QuestionShortTextForm(request.POST)
@@ -315,12 +327,22 @@ def question_create(request, challenge_id):
 
 @login_required
 def question_update(request, question_id):
-    question = e_Question.objects.get(pk=question_id)
 
-    # Only Event Manager or Platform Admin can do this
-    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
-        return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
+    try:
+        question = e_Question.objects.get(pk=question_id)
+    except:
+        messages.error(request, 'Question does not exist')
+        return redirect('my-contexts-challenges-list')
     
+    # If Challenge is not a draft, don't allow!
+    if not question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', question.challenge.id)
+
+    # Only Context EM and Platform Admin can do this
+    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
+        return redirect('my-contexts-challenges-list')
+
     context = {'question': question,}
 
     if request.method == 'POST':
@@ -396,12 +418,21 @@ def question_update(request, question_id):
 
 @login_required
 def question_delete(request, question_id):
-    # question = get_object_or_404(e_Question, pk=question_id)
-    question = e_Question.objects.get(pk=question_id)
 
-    # Only Event Manager or Platform Admin can do this
+    try:
+        question = e_Question.objects.get(pk=question_id)
+    except:
+        messages.error(request, 'Question does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # If Challenge is not a draft, don't allow!
+    if not question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', question.challenge.id)
+
+    # Only Context EM and Platform Admin can do this
     if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
-        return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
+        return redirect('my-contexts-challenges-list')
     
     # Update challenge
     question.challenge.nr_questions -= 1
@@ -429,6 +460,11 @@ def multiple_choice_option_delete(request, option_id):
         messages.error(request, 'Multiple Choice Option does not exist')
         return redirect('challenge-manage', option.question.challenge.id) # TODO: Change to public challenges list
     
+    # If Challenge is not a draft, don't allow!
+    if not option.question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', option.question.challenge.id)
+    
     # Only Event Manager or Platform Admin can do this
     if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-manage', args=[option.question.challenge.id])) # TODO: Change to public challenges list
@@ -448,6 +484,11 @@ def true_false_option_delete(request, option_id):
         messages.error(request, 'True or False Option does not exist')
         return redirect('challenge-manage', option.question.challenge.id) # TODO: Change to public challenges list
     
+    # If Challenge is not a draft, don't allow!
+    if not option.question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', option.question.challenge.id)
+    
     # Only Event Manager or Platform Admin can do this
     if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
         return HttpResponseRedirect(reverse('challenge-manage', args=[option.question.challenge.id])) # TODO: Change to public challenges list
@@ -466,6 +507,11 @@ def question_position_up(request, question_id):
     except:
         messages.error(request, 'Question does not exist')
         return redirect('my-contexts-challenges-list')
+    
+    # If Challenge is not a draft, don't allow!
+    if not question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', question.challenge.id)
     
     # Don't allow if this is the 1st Question in the Challenge (question.position == 1)
     if question.position == 1:
@@ -496,6 +542,11 @@ def question_position_down(request, question_id):
     except:
         messages.error(request, 'Question does not exist')
         return redirect('my-contexts-challenges-list')
+    
+    # If Challenge is not a draft, don't allow!
+    if not question.challenge.state == ChallengeState.DRAFT:
+        messages.error(request, 'Challenge is not a Draft')
+        return redirect('challenge-detail', question.challenge.id)
     
     # Don't allow if this is the last Question in the Challenge (question.position == challenge.nr_questions)
     if question.position == question.challenge.nr_questions:
@@ -532,12 +583,10 @@ def challenge_participate(request, challenge_id):
         messages.error(request, 'You can\'t participate in this Challenge!')
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
     
-    # TODO: Uncomment
-    # TODO: Merge with previous check
     # If Challenge is not Published, don't let users participate in it
-    # if not challenge.state == ChallengeState.PUBLISHED:
-    #     messages.error(request, 'You can\'t participate in this Challenge!')
-    #     return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+    if not challenge.state == ChallengeState.PUBLISHED:
+        messages.error(request, 'You can\'t participate in this Challenge!')
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
 
 
     questions = e_Question.objects.filter(challenge=challenge) # TODO: Perhaps get this directly from challenge object?
@@ -584,7 +633,28 @@ def challenge_participate(request, challenge_id):
         print("GOTTEN")
     
     return render(request, 'challenges/challenge_participate.html', context)
+
+@login_required
+def challenge_publish(request, challenge_id):
     
+    try:
+        challenge = e_Challenge.objects.get(pk=challenge_id)
+    except:
+        messages.error(request, 'Challenge does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # Only allow Context EM and Platform Admin to do this
+    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
+    
+    try:
+        challenge.to_publish()
+        challenge.save()
+    except:
+        messages.error(request, 'Challenge cannot be published')
+        return redirect('my-contexts-challenges-list')
+    
+    return redirect('challenge-detail', challenge_id)
     
 
 

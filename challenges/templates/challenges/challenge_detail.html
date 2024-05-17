@@ -83,7 +83,7 @@
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-success">publish</span> this Challenge? Once published, the Challenge will be available for <span class='font-weight-bold'>everyone</span> to see!
+                                    Are you sure you want to <span class="text-success">publish</span> this Challenge? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!
                                 </p>
                                 <p class="justify">
                                     To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -91,7 +91,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-success my-3 mr-3" href="#">Confirm</a>
+                                <a class="btn btn-success my-3 mr-3" href="{% url 'challenge-publish' challenge.id %}">Confirm</a>
                             </div>
                         </div>
                     </div>
@@ -149,6 +149,7 @@
         <div class="col my-3">
 
             <p class="font-weight-light">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been made by users.</p>
+            <p class="font-weight-light">You can participate in this Challenge a total of <span class="text-info">{{ challenge.max_participations }}</span> time(s).</p>
             <hr>
 
             <div>
