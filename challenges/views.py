@@ -19,41 +19,6 @@ from context.views.authorization import context_organization_edit_permission_che
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
-from .filters import MyContextsChallengesFilter
-
-
-
-class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = e_Challenge
-    template_name = 'challenges/my_challenges_list.html'
-    filterset_class = MyContextsChallengesFilter
-    # pk_url_kwarg = 'contextCode'
-    context_object_name = 'challenges'
-    paginate_by = 9
-
-    def get_queryset(self):
-
-        # Show Challenges from this user's Contexts
-        # TODO: Also only show Challenges created by this user?
-        user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
-
-        return challenge_list
-    
-    def get_context_data(self, **kwargs):
-
-        context = super().get_context_data(**kwargs)
-        
-        user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
-        context['filter'] = MyContextsChallengesFilter(self.request.GET, queryset=context['challenge_list'])
-        
-        return context
-
-    def test_func(self):
-        # Only Event Manager gets access to this page
-        return general_event_manager_check(self.request.user)
-
 
 
 class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

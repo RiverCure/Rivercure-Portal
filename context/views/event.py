@@ -24,7 +24,7 @@ from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 from challenges.models import e_Challenge, ChallengeState
 
-from ..filters import EventManagerContextFilter
+from ..filters import EventManagerContextFilter, MyContextsChallengesFilter
 
 from .authorization import *
 from .prepare_files import *
@@ -514,4 +514,34 @@ class EventManagerContextsListView(LoginRequiredMixin, UserPassesTestMixin, Filt
 
     def test_func(self):
         # User must be an Event Manager (in some Context)
+        return general_event_manager_check(self.request.user)
+    
+    
+class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_Challenge
+    template_name = 'challenges/my_challenges_list.html'
+    filterset_class = MyContextsChallengesFilter
+    context_object_name = 'challenges'
+    paginate_by = 9
+
+    def get_queryset(self):
+
+        # Show Challenges from this user's Contexts
+        user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
+        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+
+        return challenge_list
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        
+        user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
+        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+        context['filter'] = MyContextsChallengesFilter(self.request.GET, queryset=context['challenge_list'])
+        
+        return context
+
+    def test_func(self):
+        # Only Event Manager gets access to this page
         return general_event_manager_check(self.request.user)
