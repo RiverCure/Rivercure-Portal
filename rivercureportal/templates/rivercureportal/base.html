@@ -58,7 +58,7 @@
                                             {% if user|is_event_manag %}
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item disabled" href="#">Event Manager</a>
-                                                <a class="dropdown-item" href="#">Events</a>
+                                                <a class="dropdown-item" href="{% url 'event-manager-context-list' %}">My Contexts</a>
                                                 <a class="dropdown-item" href="{% url 'my-contexts-challenges-list' %}">Challenges</a>
                                             {% endif %}
                                             {% if user|is_mod %}

@@ -1,19 +1,25 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+
+from django.db.models import Case, When, Value, Count
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
 from django_filters.views import FilterView
-from django.db.models import Case, When, Value, Count
-from django.contrib import messages
+
+from .authorization import *
+from .prepare_files import *
 
 from ..models import e_Context, ContextMembership
 from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
-from .authorization import *
-from .prepare_files import *
+
 from organization.models import Membership
 from organization.authorization import belongs_to_organization
+
 from contributions.models import e_ContextContribution, ContributionStatus
 from contributions.views import accept_contribution, reject_contribution
 

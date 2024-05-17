@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     # Challenges
-    path('mine/', MyContextsChallengesFilterView.as_view(), name='my-contexts-challenges-list'),
+    path('mine/', MyContextsChallengesFilterView.as_view(), name='my-contexts-challenges-list'), # TODO: MOVE THIS TO CONTEXT APP!
     path('event/<int:event_id>/new/', ChallengeCreateView.as_view(), name='challenge-create'),
     path('detail/<int:challenge_id>/', ChallengeDetailView.as_view(), name='challenge-detail'),
     path('update/<int:challenge_id>/', ChallengeUpdateView.as_view(), name='challenge-update'),

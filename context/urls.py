@@ -59,4 +59,6 @@ urlpatterns = [
     path('event-status/<str:event_id>/regenerate-confirm', regenerate_event_confirm, name='event-regenerate-confirm'),
     path('event-status/<str:event_id>/cancel-confirm', cancel_event_confirm, name='event-cancel-confirm'),
     path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
+    # Event Managers
+    path('event-managers/my-contexts/', EventManagerContextsListView.as_view(), name='event-manager-context-list'),
 ]

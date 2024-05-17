@@ -166,6 +166,23 @@ class EventManagerAddFilter(django_filters.FilterSet):
         Model = User
         fields = ['user__username']
 
+# TODO: This is the same as ModeratorContextFilter. Merge
+class EventManagerContextFilter(django_filters.FilterSet):
+    Name = django_filters.CharFilter(label='Context Name',
+                                        field_name='context__Name',
+                                        lookup_expr='icontains',
+                                        widget=TextInput(attrs={
+                                                    'placeholder': 'Search by Context name...',
+                                                    'class': 'form-control',
+                                                    'type': 'search',
+                                                }))
+    hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
+    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label='Organization', queryset=Organization.objects.all())
+
+    class Meta:
+        Model = e_Context
+        fields = ['Name', 'hydroFeature', 'organization']
+
 ############
 # Challenges
 ############

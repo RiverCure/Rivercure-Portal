@@ -24,6 +24,8 @@ from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 from challenges.models import e_Challenge, ChallengeState
 
+from ..filters import EventManagerContextFilter
+
 from .authorization import *
 from .prepare_files import *
 from rivercureproject import settings
@@ -487,3 +489,29 @@ def cancel_simulation(request, pk, event_id):
     messages.success(request, 'Simulation stopped successfully')
 
     return redirect('event-detail', pk=pk, event_id=event.id)
+
+
+
+class EventManagerContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_Context
+    template_name = 'context/event/event_manager_my_context_list.html'
+    context_object_name = 'contexts'
+    filterset_class = EventManagerContextFilter
+    paginate_by = 6
+
+    def get_queryset(self):
+        # Get Contexts for which this user is an Event Manager
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager')
+        return contexts
+
+    def get_context_data(self, **kwargs):
+        context = super(EventManagerContextsListView, self).get_context_data(**kwargs)
+        # Filter
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager')
+        context['filter'] = EventManagerContextFilter(self.request.GET, queryset=contexts)
+
+        return context
+
+    def test_func(self):
+        # User must be an Event Manager (in some Context)
+        return general_event_manager_check(self.request.user)
