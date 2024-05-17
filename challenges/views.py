@@ -649,10 +649,13 @@ def challenge_publish(request, challenge_id):
     
     try:
         challenge.to_publish()
+        challenge.to_open()
         challenge.save()
     except:
         messages.error(request, 'Challenge cannot be published')
-        return redirect('my-contexts-challenges-list')
+        return redirect('challenge-detail', challenge_id)
+    
+    messages.success(request, 'Challenge is now published')
     
     return redirect('challenge-detail', challenge_id)
 
@@ -699,6 +702,29 @@ def challenge_open(request, challenge_id):
         return redirect('challenge-detail', challenge_id)
     
     messages.success(request, 'Challenge is now open')
+    
+    return redirect('challenge-detail', challenge_id)
+
+@login_required
+def challenge_archive(request, challenge_id):
+    try:
+        challenge = e_Challenge.objects.get(pk=challenge_id)
+    except:
+        messages.error(request, 'Challenge does not exist')
+        return redirect('my-contexts-challenges-list')
+    
+    # Only allow Context EM and Platform Admin to do this
+    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
+        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES
+    
+    try:
+        challenge.to_archive()
+        challenge.save()
+    except:
+        messages.error(request, 'Challenge cannot be archived')
+        return redirect('challenge-detail', challenge_id)
+    
+    messages.success(request, 'Challenge is now archived')
     
     return redirect('challenge-detail', challenge_id)
 

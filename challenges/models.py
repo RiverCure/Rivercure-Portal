@@ -77,9 +77,9 @@ class e_Challenge(models.Model):
         """
         Returns whether Challenge can be deleted
 
-        Conditions: Challenge is a DRAFT
+        Conditions: Challenge is a DRAFT or ARCHIVED
         """
-        return self.state == ChallengeState.DRAFT
+        return (self.state == ChallengeState.DRAFT) or (self.state == ChallengeState.ARCHIVED)
     
     def can_archive(self):
         """
@@ -103,7 +103,7 @@ class e_Challenge(models.Model):
 
         Conditions: Challenge is CLOSED
         """
-        return self.publish_state == ChallengePublishState.CLOSED
+        return (self.state == ChallengeState.PUBLISHED) and (self.publish_state == ChallengePublishState.CLOSED)
     
     def can_close(self):
         """
@@ -122,16 +122,15 @@ class e_Challenge(models.Model):
         # TODO!!
     
     # State transitions
-    @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED) # TODO: Add condition
-    def to_delete(self):
-        """Change state of Challenge from DRAFT to DELETED"""
+    # @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED) # TODO: Add condition
+    # def to_delete(self):
+    #     """Change state of Challenge from DRAFT to DELETED"""
     
     @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.PUBLISHED, conditions=[can_publish])
     def to_publish(self):
         """Change state of Challenge from DRAFT to PUBLISHED"""
-        self.to_open() # Also change sub-state to OPEN
     
-    @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED) # TODO: Add condition
+    @transition(field=state, source=ChallengeState.PUBLISHED, target=ChallengeState.ARCHIVED, conditions=[can_archive])
     def to_archive(self):
         """Change state of Challenge from PUBLISHED to ARCHIVED"""
         if self.publish_state == ChallengePublishState.OPEN: # If Challenge is being suddenly ARCHIVED, make sure its sub-state is CLOSED

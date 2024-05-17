@@ -14,6 +14,7 @@ urlpatterns = [
     path('publish/<int:challenge_id>/', challenge_publish, name='challenge-publish'),
     path('open/<int:challenge_id>/', challenge_open, name='challenge-open'),
     path('close/<int:challenge_id>/', challenge_close, name='challenge-close'),
+    path('archive/<int:challenge_id>/', challenge_archive, name='challenge-archive'),
     # Questions
     # path('questions/<int:challenge_id>/new/', QuestionCreateView.as_view(), name='question-add'), # TODO: <int:challenge_id>/questions/new/
     path('questions/<int:challenge_id>/new/', question_create, name='question-add'), # TODO: <int:challenge_id>/questions/new/
