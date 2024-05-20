@@ -1,0 +1,113 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Challenge "{{ challenge.title }}" {% endblock %}
+{% load auth_extras %}
+{% load my_tags %}
+{% load static %}
+
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock scripts %}
+
+
+
+
+
+{% block content %}
+
+<!-- Header -->
+<div class="row">
+    <div class="col">
+        <h1 class="mt-2">{{ participation.challenge.event.context.Name }} context </h1>
+        <p><strong>Organization:</strong> <em>{{ participation.challenge.event.context.organization }}</em></p>
+        <hr>
+    </div>
+</div>
+
+<!-- Challenge Header -->
+<div class="my-3">
+
+    <div class="row mx-0 my-contribution-detail-meta-info-card">
+        <div class="col">
+            <h2 class="my-3">Challenge "{{ participation.challenge.title|title }}" - Participation</h2>
+        </div>
+    </div>
+
+</div>
+
+{% for question in challenge_questions %}
+    <div class="my-3">
+        <!-- Header -->
+        <div class="py-2 px-4 d-flex justify-content-between align-items-center my-contribution-detail-meta-info-card-top my-contribution-detail-footer">
+            <div class="q-header-left">
+                <h5 class="m-0">Question {{question.position}}</h5>
+            </div>
+            <div class="q-header-right d-flex">
+                
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="py-2 px-4 my-contribution-detail-middle">
+            <p class="my-2 font-weight-normal">Question</p>
+            <div class="question-box">
+                <p class="font-weight-light m-2">{{question.content}}</p>
+            </div>
+
+            <p class="mb-2 mt-3 font-weight-normal">Your Answer</p>
+
+
+            {% for answer in participation.question_answer.all %}
+
+                <!-- Short Text -->
+                {% if question.is_short_text %}
+                    {% if answer.question == question %}
+                        <div class="question-box mb-2">
+                            <p class="font-weight-light m-2">{{ answer.answer }}</p>
+                        </div>
+                    {% endif %}
+                    
+                <!-- Multiple Choice -->
+                {% elif question.is_multiple_choice %}
+                    {% if answer.question == question %}
+                        <div class="question-box mb-2">
+                            <p class="font-weight-light m-2">{{ answer.answer }}</p>
+                        </div>
+                    {% endif %}
+
+                <!-- True or False -->
+                {% elif question.is_true_false %}
+                    {% if answer.question == question %}
+                        <div class="question-box mb-2">
+                            <p class="font-weight-light m-2">{{ answer.answer }}</p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+            {% endfor %}
+
+
+            <p class="mb-2 mt-3 font-weight-normal">Correct Answer</p>
+            <p>TODO: Highlight according to whether it's marked as correct or not</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="py-2 px-4 d-flex justify-content-between my-contribution-detail-bottom my-contribution-detail-footer">
+            <p class="m-0 font-weight-lighter text-muted">Score: <span class="text-info">{{question.score}}</span></p>
+            <p class="m-0 font-weight-lighter text-muted">ID: {{question.id}}</p>
+        </div>
+    </div>
+{% endfor %}
+
+
+<!-- Footer (Bottom Buttons) -->
+<div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
+    <div class="col">
+        <!-- See Challenge -->
+        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' participation.challenge.id %}">See Challenge</a>
+        
+    </div>
+</div>
+
+
+{% endblock content %}

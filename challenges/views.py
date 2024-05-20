@@ -19,6 +19,7 @@ from context.views.authorization import context_organization_edit_permission_che
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
+from .filters import MyChallengeParticipationsFilter
 
 
 class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -699,55 +700,116 @@ def challenge_archive(request, challenge_id):
 
 
 # TODO: check but I don't think I'm using this anymore
-class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = e_Question
-    template_name = 'challenges/question_form.html'
-    form_class = QuestionUpdateForm
-    pk_url_kwarg = 'question_id'
-    context_object_name = 'question'
+# class QuestionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+#     model = e_Question
+#     template_name = 'challenges/question_form.html'
+#     form_class = QuestionUpdateForm
+#     pk_url_kwarg = 'question_id'
+#     context_object_name = 'question'
 
-    def get_success_url(self):
-        return reverse('challenge-manage', args=(self.get_object().challenge.id, ))
+#     def get_success_url(self):
+#         return reverse('challenge-manage', args=(self.get_object().challenge.id, ))
 
-    def test_func(self):
-        question = e_Question.objects.get(pk=self.kwargs['question_id'])
-        # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, question.challenge.event.context) or is_platform_admin(self.request.user)
+#     def test_func(self):
+#         question = e_Question.objects.get(pk=self.kwargs['question_id'])
+#         # Only Event Manager or Platform Admin can do this
+#         return context_event_manager_check(self.request.user, question.challenge.event.context) or is_platform_admin(self.request.user)
 
 
 
 # TODO: I don't think I'm using this anymore
-@login_required
-def questionShortTextCreate(request, question_id):
-    question = get_object_or_404(e_Question, pk=question_id)
+# @login_required
+# def questionShortTextCreate(request, question_id):
+#     question = get_object_or_404(e_Question, pk=question_id)
 
-    # TODO:
-    # if not question:
+#     # TODO:
+#     # if not question:
 
-    # Only Event Manager or Platform Admin can do this
-    if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
-        return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
+#     # Only Event Manager or Platform Admin can do this
+#     if not context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user):
+#         return HttpResponseRedirect(reverse('challenge-detail', args=[question.challenge.id]))
     
-    # Create a form instance and populate it with data from the request:
-    form = QuestionShortTextForm(request.POST)
+#     # Create a form instance and populate it with data from the request:
+#     form = QuestionShortTextForm(request.POST)
 
-    if form.is_valid() and question.challenge.can_manage_questions(): # TODO: AND TYPE == SHORT_TEXT
-        # # If object doesn't exist already, create Short Text Question object
-        # if not question.short_text_question:
-        #     short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
-        #     short_text.save()
-        # else:
-        #     # If it does, then simply edit
-        #     question.short_text_question.correct_text = form.cleaned_data['correct_text']
-        #     question.short_text_question.save()
+#     if form.is_valid() and question.challenge.can_manage_questions(): # TODO: AND TYPE == SHORT_TEXT
+#         # # If object doesn't exist already, create Short Text Question object
+#         # if not question.short_text_question:
+#         #     short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
+#         #     short_text.save()
+#         # else:
+#         #     # If it does, then simply edit
+#         #     question.short_text_question.correct_text = form.cleaned_data['correct_text']
+#         #     question.short_text_question.save()
         
-        try:
-            question.short_text_question.correct_text = form.cleaned_data['correct_text']
-            question.short_text_question.save()
-        except:
-            short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
-            short_text.save()
+#         try:
+#             question.short_text_question.correct_text = form.cleaned_data['correct_text']
+#             question.short_text_question.save()
+#         except:
+#             short_text = e_ShortText_Question(question=question, correct_text=form.cleaned_data['correct_text'])
+#             short_text.save()
 
-        return HttpResponseRedirect(reverse('challenge-manage', args=[question.challenge.id]))
+#         return HttpResponseRedirect(reverse('challenge-manage', args=[question.challenge.id]))
     
-    return redirect('challenge-manage', args=[question.challenge.id])
+#     return redirect('challenge-manage', args=[question.challenge.id])
+
+
+
+
+class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
+    model = e_ChallengeAnswer
+    template_name = 'challenges/my_challenge_participations_list.html'
+    filterset_class = MyChallengeParticipationsFilter
+    context_object_name = 'participations'
+    pk_url_kwarg = 'challenge_id'
+    paginate_by = 9
+
+    # TODO: Only show if 1. Challenge is Published 2. Challenge is Public OR user is in Challenge's organization
+
+    def get_queryset(self):
+
+        try:
+            challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
+        except:
+            messages.error(self.request, 'Challenge does not exist')
+            return redirect('my-contexts-challenges-list') # TODO: Change to public challenges list
+
+        # Show participations of this user for this Challenge
+        participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
+
+        return participations
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        try:
+            challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
+        except:
+            messages.error(self.request, 'Challenge does not exist')
+            return redirect('my-contexts-challenges-list') # TODO: Change to public challenges list
+
+        context['challenge'] = challenge
+        # Show participations of this user for this Challenge
+        context['participations'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
+        context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
+        
+        return context
+
+
+class ParticipationDetailView(LoginRequiredMixin, DetailView):
+    model = e_ChallengeAnswer
+    template_name = 'challenges/challenge_participation_detail.html'
+    pk_url_kwarg = 'participation_id'
+    context_object_name = 'participation'
+
+    # TODO: Who can see this page???
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # TODO: Needs a try? Do we need a try in these CBVs?
+        participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
+        context['challenge_questions'] = e_Question.objects.filter(challenge=participation.challenge)
+
+        return context

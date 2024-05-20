@@ -15,6 +15,8 @@ urlpatterns = [
     path('<int:challenge_id>/archive/', challenge_archive, name='challenge-archive'),
     # Participations
     path('<int:challenge_id>/participate/', challenge_participate, name='challenge-participate'),
+    path('<int:challenge_id>/participations/mine/', MyChallengeParticipationsFilterView.as_view(), name='challenge-my-participations'),
+    path('participations/<int:participation_id>/', ParticipationDetailView.as_view(), name='participation-detail'),
     # Questions
     path('<int:challenge_id>/questions/new/', question_create, name='question-add'),
     path('questions/<int:question_id>/delete/', question_delete, name='question-delete'),
