@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.urls import reverse, reverse_lazy
 from django.http import Http404, HttpResponse
 from django.forms import modelformset_factory, Textarea
@@ -583,18 +585,19 @@ def challenge_participate(request, challenge_id):
             if question.is_short_text():
                 user_answer = e_QuestionAnswer(challenge_answer=challenge_answer, question=question, created_by=request.user, answer=answer[0])
                 user_answer.save()
-            # elif question.is_multiple_choice():
             else:
                 # For each selected option
                 for selected_answer in answer:
                     # Get option
                     if question.is_multiple_choice():
                         option = e_MultipleChoiceOption_Question.objects.get(pk=selected_answer)
+                        is_correct = option.is_correct
                     else:
                         # It's T or F
                         option = e_TrueFalse_Question.objects.get(pk=selected_answer)
-                    # Save user answer
-                    user_answer = e_QuestionAnswer(challenge_answer=challenge_answer, question=question, created_by=request.user, answer=option.content)
+                        is_correct = option.value
+                    # Save user answer and whether they got it right
+                    user_answer = e_QuestionAnswer(challenge_answer=challenge_answer, question=question, created_by=request.user, answer=option.content, is_correct=is_correct)
                     user_answer.save()
 
         # Send success message (to be shown in Challenge detail page)
@@ -645,6 +648,7 @@ def challenge_close(request, challenge_id):
     
     try:
         challenge.to_close()
+        challenge.close_datetime = datetime.now()
         challenge.save()
     except:
         messages.error(request, 'Challenge cannot be closed')
@@ -668,6 +672,8 @@ def challenge_open(request, challenge_id):
     
     try:
         challenge.to_open()
+        challenge.open_datetime = datetime.now()
+        challenge.close_datetime = None
         challenge.save()
     except:
         messages.error(request, 'Challenge cannot be opened')
@@ -844,5 +850,7 @@ class ParticipationDetailView(LoginRequiredMixin, DetailView):
         context['challenge_questions'] = e_Question.objects.filter(challenge=participation.challenge)
 
         context['MEDIA_URL'] = settings.MEDIA_URL
+        challenge = e_Challenge.objects.get(pk=participation.challenge.id)
+        context['show_answers'] = (not challenge.when_close_show_correct_answers) or (challenge.when_close_show_correct_answers and (not challenge.is_open()))
 
         return context

@@ -33,6 +33,10 @@ class ChallengeForm(forms.ModelForm):
     class Meta:
         model = e_Challenge
         fields = ['id', 'title', 'difficulty_level', 'is_public', 'automatic_close_datetime', 'when_close_show_correct_answers', 'max_participations']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['max_participations'].initial = 1
 
 
 

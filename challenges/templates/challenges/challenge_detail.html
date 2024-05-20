@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Challenge "{{ challenge.title }}"" {% endblock %}
+{% load challenge_extras %}
 {% load auth_extras %}
 {% load my_tags %}
 {% load static %}
@@ -27,19 +28,23 @@
 <!-- Challenge Header -->
 <div class="my-3">
 
-    <div class="row mx-0 my-contribution-detail-meta-info-card-top">
+    <div class="row mx-0 my-contribution-detail-meta-info-card{% if canManage %}-top{% endif %}">
         <div class="col">
-            <h2 class="mt-3">Challenge "{{ challenge.title|title }}"</h2>
+            <h2 class="mt-3">
+                Challenge "{{ challenge.title|title }}"
+                {% if canManage %}
+                    <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
+                {% endif %}
+                {% if challenge.is_public %}
+                    <span class="badge {{challenge.publish_state|bootstrap_badge_publish_state}} text-white">{{ challenge.publish_state|title }}</span>
+                {% endif %}
+            </h2>
             <hr>
-            <p class="font-weight-light"><strong>ID:</strong> {{ challenge.id }} </p>
-            <p class="font-weight-light"><strong>Event:</strong> {{ challenge.event.Name|title }} </p>
-            <p class="font-weight-light"><strong>State:</strong> {{ challenge.state|title }} </p>
-            <p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>
-            <p class="font-weight-light"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></p>
-            <p class="font-weight-light"><strong>Number of questions:</strong> {{ challenge.nr_questions }} </p>
-            <p class="font-weight-light"><strong>Max Score:</strong> <span class="text-info">{{ challenge.max_score }}</span></p>
-            <p class="font-weight-light"><strong>Publish Sub-State:</strong> <span class="text-muted">{{ challenge.publish_state|title }}</span></p>
-            {% if challenge.open_datetime %}<p class="font-weight-light">Last opened on {{ challenge.open_datetime }}{% if challenge.close_datetime %} and closed on {{challenge.close_datetime}}{% endif %}.</p>{% endif %}
+            <h4 class="font-weight-light mb-3"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></h4>
+            <h4 class="font-weight-light"><strong>Max Score:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
+            <hr>
+            {% if canManage %}<p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>{% endif %}
+            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> Last opened on {{ challenge.open_datetime }}{% if challenge.close_datetime %} and closed on {{challenge.close_datetime}}{% endif %}</p>{% endif %}
             {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Automatically closes on {{ challenge.automatic_close_datetime }}.</p>{% endif %}
             {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Answers will only be published when Challenge is closed.</p>{% endif %}
         </div>
@@ -51,10 +56,9 @@
     
     <!-- Footer -->
     <!-- This is for Event Manager of this Context + Platform Admin -->
-    <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
-        
-        <!-- Buttons about Challenge -->
-        {% if canManage %}
+    {% if canManage %}
+        <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
+            <!-- Buttons about Challenge -->
             <!-- Information -->
             <p class="font-weight-light justify mt-2">Created on {{ challenge.creation_datetime }} by <span class="text-info">{{ challenge.created_by }}</span></p>
             <hr>
@@ -101,7 +105,7 @@
             <!-- Close -->
             {% if challenge.can_close %}
                 <!-- Close Modal Button-->
-                <button type="button" class="my-2 btn btn-info" data-toggle="modal" data-target="#closeModal">
+                <button type="button" class="my-2 btn btn-primary" data-toggle="modal" data-target="#closeModal">
                     <i class="bi bi-door-closed"></i> Close
                 </button>
                 <!-- Close Modal -->
@@ -116,7 +120,7 @@
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-info">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.
+                                    Are you sure you want to <span class="text-primary">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.
                                 </p>
                                 <p class="justify">
                                     To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -124,7 +128,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-info my-3 mr-3" href="{% url 'challenge-close' challenge.id %}">Confirm</a>
+                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-close' challenge.id %}">Confirm</a>
                             </div>
                         </div>
                     </div>
@@ -134,7 +138,7 @@
             <!-- Open -->
             {% if challenge.can_open %}
                 <!-- Open Modal Button-->
-                <button type="button" class="my-2 btn btn-info" data-toggle="modal" data-target="#openModal">
+                <button type="button" class="my-2 btn btn-primary" data-toggle="modal" data-target="#openModal">
                     <i class="bi bi-door-open"></i> Open
                 </button>
                 <!-- Open Modal -->
@@ -149,7 +153,7 @@
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-info">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.
+                                    Are you sure you want to <span class="text-primary">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.
                                 </p>
                                 <p class="justify">
                                     To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -157,7 +161,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-info my-3 mr-3" href="{% url 'challenge-open' challenge.id %}">Confirm</a>
+                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-open' challenge.id %}">Confirm</a>
                             </div>
                         </div>
                     </div>
@@ -203,9 +207,15 @@
                 <a class="my-2 btn btn-danger" href="{% url 'challenge-delete' challenge.id %}" ><i class="bi bi-trash"></i> Delete</a>
             {% endif %}
 
-        {% endif %}
-
-    </div>
+            <div class="my-2 d-flex justify-content-between">
+                <p class="m-0 font-weight-lighter text-muted">Event: {{challenge.event.Name|title}}</p>
+                <p class="m-0 font-weight-lighter text-muted">ID: {{challenge.id}}</p>
+            </div>
+            
+            
+            
+        </div>
+    {% endif %}
 </div>
 
 <!-- Participate + Questions -->

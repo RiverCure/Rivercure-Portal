@@ -269,6 +269,7 @@ class e_QuestionAnswer(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     creation_datetime = models.DateTimeField(auto_now_add=True)
     answer = models.CharField(max_length=500)
+    is_correct = models.BooleanField(blank=True, null=True) # Whether the user gave the correct answer for this question or not
 
     # Meta
     class Meta:

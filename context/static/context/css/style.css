@@ -331,3 +331,11 @@ a:hover {
   border-radius: 0.5rem;
   border: 1px solid rgb(221, 221, 221);
 }
+
+.answer-bg-success {
+  background-color: rgba(40, 167, 69, 0.4);
+}
+
+.answer-bg-danger {
+  background-color: rgba(220, 53, 69, 0.4);
+}
