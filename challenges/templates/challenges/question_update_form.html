@@ -52,7 +52,6 @@
                     <hr>
                     <div class="mc-form">
                         {{mc_form|crispy}}
-                        <p>{{mc_form.instance.id}}</p>
                         {% if mc_form.instance.id %}
                             <a id="delete-mc-option" href="{% url 'multiple-choice-option-delete' option_id=mc_form.instance.id %}" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
                         {% endif %}

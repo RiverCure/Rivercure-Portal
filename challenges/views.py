@@ -102,10 +102,11 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
 
-        user_participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user).count()
+        user_participations = e_ChallengeAnswer.objects.filter(challenge=challenge, created_by=self.request.user).count()
 
         context['canManage'] = context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
         context['user_participations_left'] = challenge.max_participations - user_participations
+        context['user_participations'] = user_participations
         context['canParticipate'] = challenge.is_open() and user_participations < challenge.max_participations
         context['MEDIA_URL'] = settings.MEDIA_URL
 
@@ -554,15 +555,20 @@ def challenge_participate(request, challenge_id):
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
 
     # Check Challenge visibility and only allow user to participate on it depending on that
-    if (not challenge.is_public) and (not context_organization_belong_check(request.user, challenge.event.context)):
-        messages.error(request, 'You can\'t participate in this Challenge!')
-        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+    # if (not challenge.is_public) and (not context_organization_belong_check(request.user, challenge.event.context)):
+    #     messages.error(request, 'You can\'t see this Challenge!')
+    #     return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+    
+    if not challenge.is_public:
+        if not context_organization_belong_check(request.user, challenge.event.context.organization):
+            messages.error(request, 'Challenge isn\'t public and you don\'t belong to its Organization!')
+            return redirect('event-challenge-list', challenge.event.context.code, challenge.event.id)
     
     # If Challenge is not open OR user has participated the max amount of times, don't allow
-    participations = e_ChallengeAnswer.objects.filter(created_by=request.user)
+    participations = e_ChallengeAnswer.objects.filter(challenge=challenge, created_by=request.user)
     if (not challenge.is_open()) or (participations.count() >= challenge.max_participations):
         messages.error(request, 'You can\'t participate in this Challenge!')
-        return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
+        return redirect('event-challenge-list', challenge.event.context.code, challenge.event.id)
 
 
     questions = e_Question.objects.filter(challenge=challenge) # TODO: Perhaps get this directly from challenge object?
@@ -627,6 +633,7 @@ def challenge_publish(request, challenge_id):
     try:
         challenge.to_publish()
         challenge.to_open()
+        challenge.open_datetime = datetime.now()
         challenge.save()
     except:
         messages.error(request, 'Challenge cannot be published')
@@ -781,6 +788,15 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
         # Only Event Manager or Platform Admin can see this page
         return context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
     
+    def get_queryset(self):
+
+        challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
+
+        # Show participations of all users for this Challenge
+        participations = e_ChallengeAnswer.objects.filter(challenge=challenge)
+
+        return participations
+    
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
@@ -832,7 +848,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         context['challenge'] = challenge
         # Show participations of this user for this Challenge
         context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
-        context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
+        context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations']) # TODO: I don't think this is doing anything
         context['MEDIA_URL'] = settings.MEDIA_URL
         
         return context

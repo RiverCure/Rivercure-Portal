@@ -61,5 +61,5 @@ urlpatterns = [
     path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
     # Event Managers
     path('event-managers/my-contexts/', EventManagerContextsListView.as_view(), name='event-manager-context-list'),
-    path('event-managers/my-challenges/', MyContextsChallengesFilterView.as_view(), name='my-contexts-challenges-list'), # TODO: MOVE THIS TO CONTEXT APP!
+    path('event-managers/my-challenges/', MyContextsChallengesFilterView.as_view(), name='my-contexts-challenges-list'),
 ]

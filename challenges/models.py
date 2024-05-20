@@ -119,6 +119,12 @@ class e_Challenge(models.Model):
         """
         return self.publish_state == ChallengePublishState.OPEN
     
+    def is_published(self):
+        """
+        Returns whether Challenge is PUBLISHED
+        """
+        return self.state == ChallengeState.PUBLISHED
+    
     def hide_correct_answers(self):
         pass
         # TODO!!

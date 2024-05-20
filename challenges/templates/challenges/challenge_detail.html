@@ -35,7 +35,7 @@
                 {% if canManage %}
                     <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
                 {% endif %}
-                {% if challenge.is_public %}
+                {% if challenge.is_published %}
                     <span class="badge {{challenge.publish_state|bootstrap_badge_publish_state}} text-white">{{ challenge.publish_state|title }}</span>
                 {% endif %}
             </h2>
@@ -223,7 +223,6 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col my-3">
 
-            {{user_participations}}
             <h5>Participations Left: <span class="text-info">{{user_participations_left}}</span></h5>
             <hr>
 
