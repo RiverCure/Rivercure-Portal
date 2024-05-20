@@ -46,7 +46,7 @@
             {% if canManage %}<p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>{% endif %}
             {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> Last opened on {{ challenge.open_datetime }}{% if challenge.close_datetime %} and closed on {{challenge.close_datetime}}{% endif %}</p>{% endif %}
             {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Automatically closes on {{ challenge.automatic_close_datetime }}.</p>{% endif %}
-            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Answers will only be published when Challenge is closed.</p>{% endif %}
+            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Correct answers will only be published when Challenge is closed.</p>{% endif %}
         </div>
     </div>
 
@@ -223,19 +223,47 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col my-3">
 
-            <p class="font-weight-light">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been made by users.</p>
-            <p class="font-weight-light">You can participate in this Challenge a total of <span class="text-info">{{ challenge.max_participations }}</span> time(s).</p>
+            {{user_participations}}
+            <h5>Participations Left: <span class="text-info">{{user_participations_left}}</span></h5>
             <hr>
 
             <div>
                 <a class="btn btn-primary {% if not canParticipate %}disabled{% endif %}" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
                 <a class="btn btn-info" href="{% url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> My Participation(s)</a>
-                {% if canManage %}<a class="btn btn-info" href="{% url 'challenge-all-participations' challenge.id %}"><i class="bi bi-clipboard-data"></i> See Participations</a>{% endif %}
             </div>
 
         </div>
     </div>
 </div>
+
+<!-- Latest User Participations -->
+{% if challenge.e_challengeanswer_set.count > 0 %}
+    <div class="my-3">
+        <div class="row mx-0 my-contribution-detail-meta-info-card">
+            <div class="col my-3">
+
+                <h5>Latest User Participations</h5>
+                <hr>
+
+                <div class="row flex-row flex-nowrap my-4 mx-0">
+                    {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":4" %}
+                        <div class="text-center mx-4">
+                            <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
+                            <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
+                            <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <hr>
+                <p class="font-weight-light">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been submitted.</p>
+                {% if canManage %}<a class="btn btn-info" href="{% url 'challenge-all-participations' challenge.id %}"><i class="bi bi-clipboard-data"></i> See Participations</a>{% endif %}
+
+            </div>
+        </div>
+        
+    </div>
+{% endif %}
 
 <!-- Footer (Bottom Buttons) -->
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">

@@ -31,8 +31,11 @@
         <a href="{% url 'participation-detail' participation.id %}">
             <div class="card my-card-hover my-2 my-context-card">
                 <div class="card-body pt-0">
-                    <h5 class="card-title">{{ participation.id }}</h5>
-                    <small class="text-body-secondary card-contributions text-muted">Submitted on {{ participation.creation_datetime }}</small>
+                    <div class="text-center">
+                        <img src="{{MEDIA_URL}}{{participation.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
+                        <h5 class="font-weight-light pt-2 mb-2"> {{ participation.created_by }}</h5>
+                        <small class="text-body-secondary card-contributions text-muted">Submitted on {{ participation.creation_datetime }}</small>
+                    </div>
                 </div>
             </div>
         </a>

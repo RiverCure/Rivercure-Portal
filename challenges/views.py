@@ -102,10 +102,12 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
 
-        user_participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user)
+        user_participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user).count()
 
         context['canManage'] = context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
-        context['canParticipate'] = challenge.is_open() and user_participations.count() < challenge.max_participations
+        context['user_participations_left'] = challenge.max_participations - user_participations
+        context['canParticipate'] = challenge.is_open() and user_participations < challenge.max_participations
+        context['MEDIA_URL'] = settings.MEDIA_URL
 
         return context
     
@@ -788,6 +790,7 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
         # Show participations of all users for this Challenge
         context['participation_list'] = e_ChallengeAnswer.objects.filter(challenge=challenge)
         context['filter'] = ChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
+        context['MEDIA_URL'] = settings.MEDIA_URL
         
         return context
 
@@ -830,17 +833,21 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         # Show participations of this user for this Challenge
         context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
         context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
+        context['MEDIA_URL'] = settings.MEDIA_URL
         
         return context
 
 
-class ParticipationDetailView(LoginRequiredMixin, DetailView):
+class ParticipationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_ChallengeAnswer
     template_name = 'challenges/challenge_participation_detail.html'
     pk_url_kwarg = 'participation_id'
     context_object_name = 'participation'
 
-    # TODO: Who can see this page???
+    def test_func(self):
+        participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
+        # Only members of Org and Platform Admin can see this page
+        return context_organization_belong_check(self.request.user, participation.challenge.event.context.organization) or is_platform_admin(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
