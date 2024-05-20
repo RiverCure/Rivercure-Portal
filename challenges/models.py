@@ -125,19 +125,6 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.PUBLISHED
     
-    def hide_correct_answers(self):
-        pass
-        # TODO!!
-    
-    def show_correct_answers(self):
-        pass
-        # TODO!!
-    
-    # State transitions
-    # @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.DELETED) # TODO: Add condition
-    # def to_delete(self):
-    #     """Change state of Challenge from DRAFT to DELETED"""
-    
     @transition(field=state, source=ChallengeState.DRAFT, target=ChallengeState.PUBLISHED, conditions=[can_publish])
     def to_publish(self):
         """Change state of Challenge from DRAFT to PUBLISHED"""
@@ -152,16 +139,10 @@ class e_Challenge(models.Model):
     @transition(field=publish_state, source=ChallengePublishState.CLOSED, target=ChallengePublishState.OPEN, conditions=[can_open])
     def to_open(self):
         """Change PUBLISHED sub-state of Challenge from CLOSED to OPEN"""
-        # TODO!!
-        # if self.when_close_show_correct_answers():
-        #     self.hide_correct_answers()
     
     @transition(field=publish_state, source=ChallengePublishState.OPEN, target=ChallengePublishState.CLOSED, conditions=[can_close])
     def to_close(self):
         """Change PUBLISHED sub-state of Challenge from OPEN to CLOSED"""
-        # TODO!!
-        # if self.when_close_show_correct_answers:
-        #     self.show_correct_answers()
 
 
 # We are not using neither of Django's options for inheritance (Abstract model or Multi-table)
@@ -191,15 +172,6 @@ class e_Question(models.Model):
     
     def is_true_false(self):
         return self.type == Question_Type.TRUE_FALSE
-    
-    # TODO: Use |title instead of this and delete this
-    def get_type(self):
-        if self.is_short_text():
-            return Question_Type.SHORT_TEXT.label
-        elif self.is_multiple_choice():
-            return Question_Type.MULTIPLE_CHOICE.label
-        else:
-            return Question_Type.TRUE_FALSE.label
 
     # Meta
     class Meta:

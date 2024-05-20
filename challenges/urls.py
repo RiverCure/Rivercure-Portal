@@ -26,11 +26,4 @@ urlpatterns = [
     path('questions/<int:question_id>/position-down/', question_position_down, name='question-position-down'),
     path('questions/<int:option_id>/multiple-choice-option/delete', multiple_choice_option_delete, name='multiple-choice-option-delete'),
     path('questions/<int:option_id>/true-false-option/delete', true_false_option_delete, name='true-false-option-delete'),
-    
-
-    # path('detail/<int:challenge_id>/', ChallengeDetailView.as_view(), name='challenge-detail'),
-    # path('questions/<int:challenge_id>/new/', QuestionCreateView.as_view(), name='question-add'), # TODO: <int:challenge_id>/questions/new/
-    # path('questions/<int:question_id>/update/', QuestionUpdateView.as_view(), name='question-update'),
-    # path('questions/<int:question_id>/short-text/new', questionShortTextCreate, name='question-short-text-add'), # TODO: DELETE
-    # path('participate/<int:challenge_id>/', ?, name='challenge-participate'),
 ]
