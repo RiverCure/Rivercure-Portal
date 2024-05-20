@@ -10,6 +10,8 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView, U
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 
+from rivercureproject import settings
+
 from context.models import e_ContextEvent
 from context.models import ContextMembership
 from organization.models import Membership
@@ -19,7 +21,8 @@ from context.views.authorization import context_organization_edit_permission_che
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
-from .filters import MyChallengeParticipationsFilter
+from .filters import MyChallengeParticipationsFilter, ChallengeParticipationsFilter
+
 
 
 class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -97,8 +100,10 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
 
-        # canManage = user is Event Manager or Platform Admin
+        user_participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user)
+
         context['canManage'] = context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
+        context['canParticipate'] = challenge.is_open() and user_participations.count() < challenge.max_participations
 
         return context
     
@@ -549,8 +554,9 @@ def challenge_participate(request, challenge_id):
         messages.error(request, 'You can\'t participate in this Challenge!')
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
     
-    # If Challenge is not Published, don't let users participate in it
-    if not challenge.state == ChallengeState.PUBLISHED:
+    # If Challenge is not open OR user has participated the max amount of times, don't allow
+    participations = e_ChallengeAnswer.objects.filter(created_by=request.user)
+    if (not challenge.is_open()) or (participations.count() >= challenge.max_participations):
         messages.error(request, 'You can\'t participate in this Challenge!')
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
 
@@ -754,11 +760,36 @@ def challenge_archive(request, challenge_id):
 #     return redirect('challenge-manage', args=[question.challenge.id])
 
 
+class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_ChallengeAnswer
+    template_name = 'challenges/challenge_participations_list.html'
+    filterset_class = ChallengeParticipationsFilter
+    context_object_name = 'participations'
+    pk_url_kwarg = 'challenge_id'
+    paginate_by = 9
+
+    def test_func(self):
+        challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
+        # Only Event Manager or Platform Admin can see this page
+        return context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
+    
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+
+        challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
+        context['challenge'] = challenge
+        # Show participations of all users for this Challenge
+        context['participation_list'] = e_ChallengeAnswer.objects.filter(challenge=challenge)
+        context['filter'] = ChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
+        
+        return context
+
 
 
 class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
     model = e_ChallengeAnswer
-    template_name = 'challenges/my_challenge_participations_list.html'
+    template_name = 'challenges/challenge_participations_list.html'
     filterset_class = MyChallengeParticipationsFilter
     context_object_name = 'participations'
     pk_url_kwarg = 'challenge_id'
@@ -791,7 +822,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
 
         context['challenge'] = challenge
         # Show participations of this user for this Challenge
-        context['participations'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
+        context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
         context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
         
         return context
@@ -811,5 +842,7 @@ class ParticipationDetailView(LoginRequiredMixin, DetailView):
         # TODO: Needs a try? Do we need a try in these CBVs?
         participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
         context['challenge_questions'] = e_Question.objects.filter(challenge=participation.challenge)
+
+        context['MEDIA_URL'] = settings.MEDIA_URL
 
         return context

@@ -107,7 +107,7 @@
 <!-- Meta-data -->
 <div class="my-3">
     <!-- Basic info -->
-    {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %} <!-- This is a bit of a 'creative' solution -->
+    {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %} <!-- this is a bit of a creative solution -->
     <div class="row mx-0 my-contribution-detail-meta-info-card-top">
     {% else %}
     <div class="row mx-0 my-contribution-detail-meta-info-card">

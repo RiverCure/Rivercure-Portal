@@ -12,12 +12,10 @@
 
 {% block content %}
 
-<h1 class="mt-2">Participations</h1>
-<p class="font-weight-light" align="justify">On this page you can see your participations for Challenge "{{challenge.title}}".</p>
-<hr>
+<h1 class="mt-2 mb-0">Challenge "{{challenge.title}}" - Participations</h1>
 
 <!-- Filter -->
-<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+<button class="btn btn-info dropdown-toggle mt-3" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 <div id="filter-menu" class="collapse card my-card-hover card-body">
     <form method="get">
         {{ filter.form |crispy }}

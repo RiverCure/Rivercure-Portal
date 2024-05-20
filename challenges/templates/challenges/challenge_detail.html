@@ -101,7 +101,7 @@
             <!-- Close -->
             {% if challenge.can_close %}
                 <!-- Close Modal Button-->
-                <button type="button" class="my-2 btn btn-outline-info" data-toggle="modal" data-target="#closeModal">
+                <button type="button" class="my-2 btn btn-info" data-toggle="modal" data-target="#closeModal">
                     <i class="bi bi-door-closed"></i> Close
                 </button>
                 <!-- Close Modal -->
@@ -134,7 +134,7 @@
             <!-- Open -->
             {% if challenge.can_open %}
                 <!-- Open Modal Button-->
-                <button type="button" class="my-2 btn btn-outline-info" data-toggle="modal" data-target="#openModal">
+                <button type="button" class="my-2 btn btn-info" data-toggle="modal" data-target="#openModal">
                     <i class="bi bi-door-open"></i> Open
                 </button>
                 <!-- Open Modal -->
@@ -218,9 +218,9 @@
             <hr>
 
             <div>
-                <a class="btn btn-primary" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
-                <a class="btn btn-info" href="{%url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> My Participation(s)</a>
-                <a class="btn btn-info" href="#"><i class="bi bi-clipboard-data"></i> See Participations</a>
+                <a class="btn btn-primary {% if not canParticipate %}disabled{% endif %}" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
+                <a class="btn btn-info" href="{% url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> My Participation(s)</a>
+                {% if canManage %}<a class="btn btn-info" href="{% url 'challenge-all-participations' challenge.id %}"><i class="bi bi-clipboard-data"></i> See Participations</a>{% endif %}
             </div>
 
         </div>
