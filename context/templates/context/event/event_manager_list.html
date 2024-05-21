@@ -19,16 +19,16 @@
 
 <!-- Top buttons -->
 <div class="mb-3">
-    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
     {% if canEdit %}
-        <a class="btn btn-success" href="{% url 'event-manager-list-add' context.code %}">Add Event Manager</a>
+        <a class="btn btn-success" href="{% url 'event-manager-list-add' context.code %}"><i class="bi bi-plus"></i> Add Event Manager</a>
     {% endif %}
 </div>
 
 <div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info">Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
     </form>
 </div>
 
@@ -48,9 +48,7 @@
                     {{ member.grant_date }}
                     <!-- Remove access -->
                     <a class="pl-2" href="{% url 'event-manager-remove' contextCode=context.code userId=member.user.id %}">
-                        <span class="label label-danger">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ff0000" class="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" /></svg>
-                        </span>
+                        <i class="bi bi-x-circle text-danger"></i>
                     </a>
                 </td>
             {% else %}
