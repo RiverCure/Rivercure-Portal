@@ -212,7 +212,7 @@
         
             <!-- Delete -->
             {% if user == contribution.createdBy or isMod or isContextOrOrgManager %}
-                <a class="my-2 btn btn-danger" href="{% url 'contribution-delete' contribution.pk %}" ><i class="bi bi-trash"></i> Delete Contribution</a>
+                <a class="my-2 btn btn-danger" href="{% url 'contribution-delete' contribution.pk %}" ><i class="bi bi-trash"></i> Delete</a>
             {% endif %}
         </div>
     {% endif %}

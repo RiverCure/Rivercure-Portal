@@ -105,14 +105,14 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
                         ff.options("-i {} -ss 00:00:01.000 -vframes 1 {}".format(input_path, output_path))
                         thumb = open(output_path, "rb")
                         thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
-
                         new_contribution.thumbnail = thumb_django_file
                     except:
+                        # TODO: do a clean_files method or something where we check the length of the video and only allow form to be valid if its > 1 second
                         raise Exception("Video needs to be longer than 1 second in order to have a thumbnail.")
 
                 new_contribution.save()
         
-        # TODO: If there are no files, add thumbnail depending on situationObserved
+        # If there are no files, add default thumbnail depending on situationObserved
         if len(files) == 0:
             situation = str(new_contribution.situationObserved).lower()
             # default_img_path = "{}contributions/situation_icons/{}.png".format(settings.MEDIA_URL, situation)
@@ -120,11 +120,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
             thumb = open(default_img_path, "rb")
             thumb_django_file = File(thumb)
             new_contribution.thumbnail = thumb_django_file
-            # new_contribution.situationObserved
-            # if (new_contribution.situationObserved == 'flood'):
-            
-            # TODO: why am i not doing new_contribution.save() here?
-
+            new_contribution.save()
 
         
         # Create and save e_ContributionValidation object

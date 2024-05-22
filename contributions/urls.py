@@ -3,6 +3,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    # TODO: Make these URLs nicer looking
     path('', AllContributionsListView.as_view(), name='all-contributions-list'),
     path('new/<str:contextCode>', ContributionCreateView.as_view(), name='contribution-create'),
     path('<str:contributionId>/detail', ContributionDetailView.as_view(), name='contribution-detail'),
