@@ -26,14 +26,18 @@
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
-<!-- Search function in map -->
+<!-- Leaflet: Search function in map -->
 <!-- https://github.com/perliedman/leaflet-control-geocoder -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+<!-- Leaflet: Get current position control -->
+<!-- https://github.com/domoritz/leaflet-locatecontrol -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 
 <style>
-    /* Silly fix for hiding the draw controls that were showing up by default on the map */
+    /* Silly fix for hiding the draw controls that were showing up by default on the map. Eheh */
     .leaflet-draw-section {
         display: none;
     }
@@ -50,78 +54,10 @@
 
 <script>
 
-    
-
-    {% comment %} document.addEventListener('DOMContentLoaded', () => {
-        window.addEventListener("map:init", e => {
-            const map = e.detail.map;   
-            map.addControl(new L.Control.Fullscreen()); //add control to enable fullscreen
-            
-            MyFunctions.mode = 'view';
-            MyFunctions.showMousePosition();
-            MyFunctions.mouseMove(map, 'view');
-            //visual tools
-            map.on('dragstart', e => {
-                e.target._container.style.cursor = 'grab';
-            });
-            map.on('dragend', e => {
-                e.target._container.style.cursor = 'pointer';
-            });
-            /*
-            MyFunctions.drawSensors(map, loadSensors());
-            MyFunctions.domainMarkers = L.markerClusterGroup();
-            MyFunctions.domainMarkers.addTo(map);
-            map.layerscontrol.addOverlay(MyFunctions.domainMarkers, "Domain markers");
-            MyFunctions.domainMarkers.bindTooltip("Boundary Line Point");
-            MyFunctions.polygonsInit(map); //init the polygon storing system
-            MyFunctions.boundariesInit(map); //init the boundaries variables
-
-            MyFunctions.getContext('{{ api }}' + '{{ context.code }}', map);
-            */
-        });
-    }); {% endcomment %}
-
     document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener("map:init", e => {
 
-            /*
-            // TODO: Is this the best way to do things?
-            // Add div where fixed marker is
-            document.getElementById('id_observationplace-map').insertAdjacentHTML('beforebegin', '<div class="fixed-centered-map-marker"></div>');
-
-            // Wrap previous div and div with map in a parent div
-            var parentDiv = document.createElement('div')
-
-            const div1 = document.querySelector();
-            const div2 = document.querySelector();
-            parentDiv.appendChild(div1);
-            parentDiv.appendChild(div2);
-
-
-
-
-            // element that will be wrapped
-            var el = document.querySelector('div.wrap_me');
-
-            // create wrapper container
-            var wrapper = document.createElement('div');
-
-            // insert wrapper before el in the DOM tree
-            el.parentNode.insertBefore(wrapper, el);
-
-            // move el into wrapper
-            wrapper.appendChild(el);
-            */
-
-
-
-
-
-            console.log("Hi")
             const map = e.detail.map;
-            console.log(e.detail.map);
-
-            
 
             // Try to find the user's current location
             map.locate({setView: true, maxZoom: 17});
@@ -129,15 +65,11 @@
             var marker = L.marker([0,0]).addTo(map);
             // On success (of finding user's location)
             map.on('locationfound', function (e) {
-                console.log("Hiiii")
-                //var marker = L.marker(e.latlng).addTo(map); // {draggable:'false'}
                 marker.setLatLng(e.latlng);
-                console.log(e.latlng);
             });
 
             // On error (of finding user's location)
             map.on('locationerror', function (e) {
-                // alert(e.message);
                 marker.setLatLng([38.722252, -9.139337]); // TODO: Change default location to what is in LEAFLET_SETTINGS
                 map.setZoom(17);
             });
@@ -146,14 +78,6 @@
             var lng = document.querySelector('#id_lng');
             let lat_initial = lat.value == '' ? 0 : lat.value;
             let lng_initial = lng.value == '' ? 0 : lng.value;
-
-            /*
-            map.on('map:loadfield', function (e) {
-                // Customize map for field
-                console.log(e.field, e.fieldid);
-                
-            });
-            */
 
             // Update position of the marker to be the center while the map is being moved
             map.on('move',function(e){
@@ -181,39 +105,16 @@
                 map.setZoom(17);
             }).addTo(map);
 
-            /*
-            map.on('move', function () {
-                marker.setLatLng(map.getCenter());
-                //console.log(map.getCenter());
-            });
-            //Dragend event of map for update marker position
-            map.on('dragend', function(e) {
-                var cnt = map.getCenter();
-                var position = marker.getLatLng();
-                lat = Number(position['lat']).toFixed(5);
-                lng = Number(position['lng']).toFixed(5);
-                //console.log(position);
-                setLeafLatLong(lat, lng);
-                
-            });
-            */
+            // Add current position control to map
+            L.control.locate({
+                initialZoomLevel: 17,
+                flyTo: true,
+                drawCircle: false,
+                drawMarker: false
+            }).addTo(map);
 
-            /*
-            var marker;
-            map.on('click', function(e) {
-                if(marker)
-                    map.removeLayer(marker);
-                console.log(e.latlng); // e is an event object (MouseEvent in this case)
-                marker = L.marker(e.latlng).addTo(map);
-                console.log("Hellooo")
-            });
-            */
         });
     })
-
-    function thankUser() {
-        alert("Thank you for submitting your contribution. We greatly appreciate it!");
-    }
 
 </script>
 
