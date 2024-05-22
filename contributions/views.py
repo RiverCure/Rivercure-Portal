@@ -11,6 +11,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core.files import File
 
+from rivercureportal.authorization import is_platform_admin
+
 import datetime
 from PIL import Image
 from pyffmpeg import FFmpeg
@@ -245,8 +247,8 @@ class ContributionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     context_object_name = 'contribution'
 
     def test_func(self):
-        # Author is the only user who can delete the Contribution
-        return author_of_contribution_check(self.request.user, self.get_object()) or context_organization_edit_permission_check(self.request.user, self.get_object().context.organization)
+        # Author, Event Manager or Platform Admin can delete the Contribution
+        return author_of_contribution_check(self.request.user, self.get_object()) or context_moderator_check(self.request.user, self.get_object().context) or is_platform_admin(self.request.user)
 
 
 @login_required

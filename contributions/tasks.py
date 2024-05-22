@@ -9,8 +9,10 @@ import requests
 load_dotenv()
 
 
-@shared_task
-def lat_long_to_address(contribution_id):
+# Use Exponential Backoff and retry a maximum of 5 times
+# As seen in: https://testdriven.io/blog/retrying-failed-celery-tasks/
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={'max_retries': 5})
+def lat_long_to_address(self, contribution_id):
 
     contribution = e_ContextContribution.objects.get(id=contribution_id)
 
@@ -20,13 +22,12 @@ def lat_long_to_address(contribution_id):
 
         # Call API
         print(os.getenv('REVGEO_API_KEY'))
-
         # We are using LocationIQ API
         # TODO: Make sure we are following all the directives of the free plan
         api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
         headers = {"accept": "application/json"}
 
-        response = requests.get(api_url, headers, timeout=10.0) # TODO: Is this enough time out time?
+        response = requests.get(api_url, headers, timeout=10.0)
 
         if response.status_code == 200:
             # Request went well, we can save the address
@@ -37,3 +38,4 @@ def lat_long_to_address(contribution_id):
         else:
             # Oops, something went wrong
             print("Reverse Geocoding API Error:", response.status_code, response.text)
+            raise Exception()
