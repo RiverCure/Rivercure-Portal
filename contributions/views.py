@@ -184,6 +184,8 @@ class ContributionDetailView(DetailView):
             # TODO: OR IS ADMIN!!
             if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization)):
                 # Then the user should not get access to the page
+                # TODO: use redirect instead. See how I did in challenges
+                # TODO: uniformize all views
                 raise Http404()
         
         # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
@@ -454,11 +456,3 @@ def make_thumbnail(contribution, attachment):
             thumb.thumbnail(output_size)
             contribution.thumbnail = thumb
             contribution.save()
-            # thumb.save(file_path)
-            # TODO: HOW TO SAVE THIS TO contribution.thumbnail ???
-
-        # Save as thumbnail
-    
-
-    ## Video
-    # TODO

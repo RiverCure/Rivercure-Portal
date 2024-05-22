@@ -283,11 +283,6 @@ a:hover {
   transform: translate(-50%, -50%);
 }
 
-/* Filter TODO: Substitute this for mt-? */ 
-#filter-menu {
-  margin-top: 5px;
-}
-
 /* Contributions */
 /* .contribution-cards-container {
   display: flex;
