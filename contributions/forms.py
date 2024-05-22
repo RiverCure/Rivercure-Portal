@@ -63,6 +63,7 @@ class ContributionInitialForm(forms.ModelForm):
         # Only accept up to 10 files
         if len(files) > 10:
             raise ValidationError("Too many files submitted. Only submit up to 10 files.")
+        
 
         total_size = 0
         for file in files:

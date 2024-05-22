@@ -86,13 +86,16 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         for f in files:
             new_attachment = handle_uploaded_file(new_contribution, f)
             
-            # If it's the first file, also save as thumbnail of Contribution
+            # If it's the first file in files, also save as thumbnail of Contribution
             if is_first_file:
                 is_first_file = False
+                
 
                 # If is image, simply save
                 if new_attachment.is_video_or_image() == 'image':
-                    new_contribution.thumbnail = f
+                    # new_contribution.thumbnail = f
+                    new_contribution.thumbnail = new_attachment.file
+
                 # If is video, first get thumbnail and then save
                 else:
                     try:
