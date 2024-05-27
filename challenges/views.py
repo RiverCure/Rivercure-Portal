@@ -756,16 +756,16 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         return context
 
 
-class ParticipationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class ParticipationDetailView(LoginRequiredMixin, DetailView): #UserPassesTestMixin
     model = e_ChallengeAnswer
     template_name = 'challenges/challenge_participation_detail.html'
     pk_url_kwarg = 'participation_id'
     context_object_name = 'participation'
 
-    def test_func(self):
-        participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
-        # Only members of Org and Platform Admin can see this page
-        return context_organization_belong_check(self.request.user, participation.challenge.event.context.organization) or is_platform_admin(self.request.user)
+    # def test_func(self):
+    #     participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
+    #     # Only members of Org and Platform Admin can see this page
+    #     return context_organization_belong_check(self.request.user, participation.challenge.event.context.organization) or is_platform_admin(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
