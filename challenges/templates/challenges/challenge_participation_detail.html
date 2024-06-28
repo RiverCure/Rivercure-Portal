@@ -62,6 +62,7 @@
 
             <p class="mb-2 mt-3 font-weight-normal">Your Answer</p>
 
+
             {% for answer in participation.question_answer.all %}
 
                 <!-- Short Text -->
@@ -86,6 +87,8 @@
                         </div>
                     {% endif %}
 
+                    
+
                 <!-- True or False -->
                 {% elif question.is_true_false %}
                     {% if answer.question == question %}
@@ -95,7 +98,36 @@
                     {% endif %}
                 {% endif %}
 
+                
             {% endfor %}
+
+            {% if question.is_true_false or question.is_multiple_choice %}
+                <p class="mb-2 mt-3 font-weight-normal">Correct Answer</p>
+
+                <!-- MC -->
+                {% if question.is_multiple_choice %}
+                    {% for mc_option in question.multiple_choice_option_question.all %}
+                        <div class="question-box mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="font-weight-light m-2">{{mc_option.content}}</p>
+                                <div class="m-2">{% if mc_option.is_correct %}<i class="bi bi-check-lg text-success"></i>{% else %}<i class="bi bi-x-lg text-danger"></i>{% endif %}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- TF -->
+                {% if question.is_true_false %}
+                    {% for tf_option in question.true_false_question.all %}
+                        <div class="question-box mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <p class="font-weight-light m-2">{{tf_option.content}}</p>
+                                <div class="m-2">{% if tf_option.value %}<span class="text-primary">True</span>{% else %}<span class="text-warning">False</span>{% endif %}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
 
         </div>
 
