@@ -1,25 +1,27 @@
-# from django.db import models
-from django.contrib.gis.db import models
-from django.contrib.gis.geos import Point
-from django.contrib.auth.models import User
-from context.models import EVENTKIND_CHOICES
-from django_fsm import FSMField, transition
-
 import os
 import subprocess
+
+from django_fsm import FSMField, transition
 from datetime import datetime
 from uuid import uuid4
 from mimetypes import guess_type
 from PIL import Image
 
+from django.utils.translation import gettext_lazy as _
+
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
+from django.contrib.auth.models import User
+
+from context.models import EVENTKIND_CHOICES
 from rivercureproject.settings import MEDIA_ROOT
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
-    PENDING = "PENDING", "Pending"
-    ACCEPTED = "ACCEPTED", "Accepted"
-    REJECTED = "REJECTED", "Rejected"
-    REPORTED = "REPORTED", "Reported"
+    PENDING = _("PENDING"), _("Pending")
+    ACCEPTED = _("ACCEPTED"), _("Accepted")
+    REJECTED = _("REJECTED"), _("Rejected")
+    REPORTED = _("REPORTED"), _("Reported")
 
 # TODO: Repeated code in here!
 def create_contribution_thumbnail_name(instance, filename):

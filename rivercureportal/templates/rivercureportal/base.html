@@ -1,4 +1,5 @@
 {% load auth_extras %}
+{% load i18n %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -29,6 +30,13 @@
                 max-height: 80vh;
                 overflow-x: hidden;
             }
+
+            .language-circle {
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
         </style>
         <header class="site-header">
             <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
@@ -166,6 +174,23 @@
                                 <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
                                 <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
                             {% endif %}
+                            <!-- Language Picker -->
+                            {% get_current_language as CURRENT_LANGUAGE %}
+                            {% get_available_languages as AVAILABLE_LANGUAGES %}
+                            {% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+                            <div class="nav-item dropdown">
+                                <a class="nav-link" href="#" id="languageDropdownMenuButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="{% static 'rivercureportal/icons/'|add:CURRENT_LANGUAGE|add:'-flag.png' %}" class="language-circle" alt="Language Icon"> 
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="languageDropdownMenuButton">
+                                    {% for language in languages %}
+                                        <a class="dropdown-item" href="/{{ language.code }}/">
+                                            <img src="{% static 'rivercureportal/icons/'|add:language.code|add:'-flag.png' %}" class="language-circle mx-2" alt="Language Icon"> 
+                                            {{language.name_local}}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,13 @@
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
+LANGUAGES = (
+    ('en', _('English')),
+    ('pt', _('Portuguese')),
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,6 +32,13 @@ SECRET_KEY = '^s&4uf&m0lgol2@%+-+7714k2t)wexo3j*b98dl3w_d-$z-e@b'
 DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
 FILES_BASE_PATH = os.getenv('FILES_BASE_PATH', BASE_DIR)
+
+# Locale path directory, where message files reside
+LOCALE_PATHS = [
+    # BASE_DIR / 'locale/',
+    os.path.join(BASE_DIR, 'locale/'),
+]
+
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -67,6 +80,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -140,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Lisbon'
 
