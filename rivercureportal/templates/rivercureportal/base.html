@@ -52,27 +52,27 @@
                             </div>
                             {% if user.is_authenticated %}
                                 <div class="nav-item">
-                                    <a href="{% url 'my-contributions' %}" class="nav-link">My Contributions</a>
+                                    <a href="{% url 'my-contributions' %}" class="nav-link">{% trans "My Contributions" %}</a>
                                 </div>
                                 {% if user|has_org %}
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Management
+                                            {% trans "Management" %}
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item disabled" href="#">Organization</a>
-                                            <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
-                                            <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                            <a class="dropdown-item disabled" href="#">{% trans "Organization" %}</a>
+                                            <a class="dropdown-item" href="{% url 'context-list' %}">{% trans "Contexts" %}</a>
+                                            <a class="dropdown-item" href="{% url 'sensor-list' %}">{% trans "Sensors" %}</a>
                                             {% if user|is_event_manag %}
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item disabled" href="#">Event Manager</a>
-                                                <a class="dropdown-item" href="{% url 'event-manager-context-list' %}">My Contexts</a>
-                                                <a class="dropdown-item" href="{% url 'my-contexts-challenges-list' %}">Challenges</a>
+                                                <a class="dropdown-item disabled" href="#">{% trans "Event Manager" %}</a>
+                                                <a class="dropdown-item" href="{% url 'event-manager-context-list' %}">{% trans "My Contexts" %}</a>
+                                                <a class="dropdown-item" href="{% url 'my-contexts-challenges-list' %}">{% trans "Challenges" %}</a>
                                             {% endif %}
                                             {% if user|is_mod %}
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item disabled" href="#">Moderator</a>
-                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}">My Contexts</a>
+                                                <a class="dropdown-item disabled" href="#">{% trans "Moderator" %}</a>
+                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}">{% trans "My Contexts" %}</a>
                                             {% endif %}
                                         </div>
                                     </li>
@@ -92,8 +92,8 @@
                                         Portal
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{% url 'hydrofeature-list' %}">Hydrofeatures</a>
-                                        <a class="dropdown-item" href="{% url 'organization-list' %}">Organizations</a>
+                                        <a class="dropdown-item" href="{% url 'hydrofeature-list' %}">Hydrofeatures DELETE</a>
+                                        <a class="dropdown-item" href="{% url 'organization-list' %}">{% trans "Organizations" %}</a>
                                     </div>
                                 </li>
                                 <!--
@@ -103,7 +103,7 @@
                                 -->
                             {% endif %}
                             <div class="nav-item">
-                                <a href="{% url 'rivercure-about' %}" class="nav-link">About</a>
+                                <a href="{% url 'rivercure-about' %}" class="nav-link">{% trans "About" %}</a>
                             </div>
                         </div>
 
@@ -128,7 +128,7 @@
                             <div class="dropdown-menu scrollable-menu" style="min-width: 30vw">
                                 {% for notification in user.notifications.unread %}
                                 <a class="dropdown-item text-wrap mb-0" href="{% url 'organization-manage' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
-                                    <small style="color: gray">{{ notification.timesince }} ago</small>
+                                    <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
                                     <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
                                 </a>
                                 <div class="dropdown-divider"></div>
@@ -136,10 +136,10 @@
                                         <div>
                                             <div class="row">
                                                 <div class="col-sm" style="border-right: 1px solid #e9ecef">
-                                                    <a class="dropdown-item" href="{% url 'notifications-all' %}" type="button"><small>See all notifications</small></a>
+                                                    <a class="dropdown-item" href="{% url 'notifications-all' %}" type="button"><small>{% trans "See all notifications" %}</small></a>
                                                 </div>
                                                 <div class="col-sm">
-                                                    <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>Clear all notifications</small></a>
+                                                    <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>{% trans "Clear all notifications" %}</small></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -157,7 +157,7 @@
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
                                     <div class="dropdown-menu">
                                         <a href="{% url 'admin:index' %}" class="dropdown-item">Admin Backoffice</a>
-                                        <a href="{% url 'users' %}" class="dropdown-item">Users</a>
+                                        <a href="{% url 'users' %}" class="dropdown-item">{% trans "Users" %}</a>
                                     </div>
                                 </div>
                             {% endif %}
@@ -165,14 +165,14 @@
                                 <div class="nav-item dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ user.username }} {%if request.session.organizationCode %} ({{ request.session.organizationCode }}) {% endif %}</a>
                                     <div class="dropdown-menu">
-                                        <a href="{% url 'profile' %}" class="dropdown-item">Edit My Profile</a>
-                                        <a href="{% url 'organization-list' %}" class="dropdown-item">Set Current Organization</a>
+                                        <a href="{% url 'profile' %}" class="dropdown-item">{% trans "Edit Profile"  %}</a>
+                                        <a href="{% url 'organization-list' %}" class="dropdown-item">{% trans "Set Current Organization" %}</a>
                                         <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
                                     </div>
                                 </div>
                             {% else %}
                                 <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                                <a class="nav-item nav-link" href="{% url 'register' %}">{% trans "Register" %}</a>
                             {% endif %}
                             <!-- Language Picker -->
                             {% get_current_language as CURRENT_LANGUAGE %}

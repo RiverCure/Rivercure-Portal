@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-01 10:02+0100\n"
+"POT-Creation-Date: 2024-07-01 12:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,9 +54,78 @@ msgstr "Reportada"
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
 
-#: rivercureportal/templates/rivercureportal/base.html:182
-msgid "Language"
-msgstr ""
+#: rivercureportal/templates/rivercureportal/base.html:56
+msgid "My Contributions"
+msgstr "Minhas Contribuições"
+
+#: rivercureportal/templates/rivercureportal/base.html:61
+msgid "Management"
+msgstr "Gestão"
+
+#: rivercureportal/templates/rivercureportal/base.html:64
+msgid "Organization"
+msgstr "Organização"
+
+#: rivercureportal/templates/rivercureportal/base.html:65
+msgid "Contexts"
+msgstr "Contextos"
+
+#: rivercureportal/templates/rivercureportal/base.html:66
+msgid "Sensors"
+msgstr "Sensores"
+
+#: rivercureportal/templates/rivercureportal/base.html:69
+msgid "Event Manager"
+msgstr "Gestor de Evento"
+
+#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:76
+msgid "My Contexts"
+msgstr "Meus Contextos"
+
+#: rivercureportal/templates/rivercureportal/base.html:71
+msgid "Challenges"
+msgstr "Desafios"
+
+#: rivercureportal/templates/rivercureportal/base.html:75
+msgid "Moderator"
+msgstr "Moderador"
+
+#: rivercureportal/templates/rivercureportal/base.html:98
+msgid "Organizations"
+msgstr "Organizações"
+
+#: rivercureportal/templates/rivercureportal/base.html:108
+msgid "About"
+msgstr "Sobre"
+
+#: rivercureportal/templates/rivercureportal/base.html:133
+msgid "ago"
+msgstr "atrás"
+
+#: rivercureportal/templates/rivercureportal/base.html:141
+msgid "See all notifications"
+msgstr "Ver todas as notificações"
+
+#: rivercureportal/templates/rivercureportal/base.html:144
+msgid "Clear all notifications"
+msgstr "Limpar todas as notificações"
+
+#: rivercureportal/templates/rivercureportal/base.html:162
+msgid "Users"
+msgstr "Utilizadores"
+
+#: rivercureportal/templates/rivercureportal/base.html:170
+msgid "Edit Profile"
+msgstr "Editar Perfil"
+
+#: rivercureportal/templates/rivercureportal/base.html:171
+msgid "Set Current Organization"
+msgstr "Definir Organização Atual"
+
+#: rivercureportal/templates/rivercureportal/base.html:177
+msgid "Register"
+msgstr "Registar"
 
 #: rivercureproject/settings.py:8
 msgid "English"
@@ -65,3 +134,76 @@ msgstr "Inglês"
 #: rivercureproject/settings.py:9
 msgid "Portuguese"
 msgstr "Português"
+
+#: users/templates/users/login.html:18
+msgid "Forgot Password?"
+msgstr "Esqueceu a Palavra-Passe?"
+
+#: users/templates/users/login.html:23
+msgid "Need An Account?"
+msgstr "Precisa De Conta?"
+
+#: users/templates/users/login.html:23
+msgid "Sign Up Now"
+msgstr "Registe-se Agora"
+
+#: users/templates/users/logout.html:8
+msgid "You have been logged out"
+msgstr "Fez Log Out"
+
+#: users/templates/users/logout.html:11
+msgid "Log In Again"
+msgstr "Faça Log In Outra Vez"
+
+#: users/templates/users/password_reset.html:13
+#: users/templates/users/password_reset_confirm.html:13
+#: users/templates/users/password_reset_confirm.html:17
+msgid "Reset Password"
+msgstr "Nova Palavra-Passe"
+
+#: users/templates/users/password_reset.html:17
+msgid "Request Password Reset"
+msgstr "Pedir Nova Palavra-Passe"
+
+#: users/templates/users/password_reset_complete.html:8
+msgid "Your password has been set!"
+msgstr "A sua palavra-passe foi definida!"
+
+#: users/templates/users/password_reset_complete.html:9
+msgid "Sign In Here"
+msgstr "Entre Aqui"
+
+#: users/templates/users/password_reset_done.html:7
+msgid "An email has been sent with instructions to reset your password"
+msgstr "Foi-lhe enviado um email com instruções sobre como redefinir a sua palavra-passe"
+
+#: users/templates/users/profile.html:21
+msgid "Profile Info"
+msgstr "Informação de Perfil"
+
+#: users/templates/users/profile.html:25
+msgid "Save"
+msgstr "Guardar"
+
+#: users/templates/users/register.html:13
+msgid "Join"
+msgstr "Entre no"
+
+#: users/templates/users/register.html:14
+msgid "Caution"
+msgstr "Cuidado"
+
+#: users/templates/users/register.html:14
+msgid "This site uses HTTP thus you shouldn't introduce a sensitive password"
+msgstr "Este site utiliza HTTP, logo, não deve introduzir uma palavra-passe sensível"
+
+#: users/templates/users/register.html:19
+msgid "Sign Up"
+msgstr "Registe-se"
+
+#: users/templates/users/register.html:23
+msgid "Already Have An Account?"
+msgstr "Já Tem Conta?"
+
+#~ msgid "Again"
+#~ msgstr "De Novo"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-01 10:02+0100\n"
+"POT-Creation-Date: 2024-07-01 12:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,8 +54,77 @@ msgstr ""
 msgid "Observation Details"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/base.html:182
-msgid "Language"
+#: rivercureportal/templates/rivercureportal/base.html:56
+msgid "My Contributions"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:61
+msgid "Management"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:64
+msgid "Organization"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:65
+msgid "Contexts"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:66
+msgid "Sensors"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:69
+msgid "Event Manager"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:76
+msgid "My Contexts"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:71
+msgid "Challenges"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:75
+msgid "Moderator"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:98
+msgid "Organizations"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:108
+msgid "About"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:133
+msgid "ago"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:141
+msgid "See all notifications"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:144
+msgid "Clear all notifications"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:162
+msgid "Users"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:170
+msgid "Edit Profile"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:171
+msgid "Set Current Organization"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:177
+msgid "Register"
 msgstr ""
 
 #: rivercureproject/settings.py:8
@@ -64,4 +133,74 @@ msgstr ""
 
 #: rivercureproject/settings.py:9
 msgid "Portuguese"
+msgstr ""
+
+#: users/templates/users/login.html:18
+msgid "Forgot Password?"
+msgstr ""
+
+#: users/templates/users/login.html:23
+msgid "Need An Account?"
+msgstr ""
+
+#: users/templates/users/login.html:23
+msgid "Sign Up Now"
+msgstr ""
+
+#: users/templates/users/logout.html:8
+msgid "You have been logged out"
+msgstr ""
+
+#: users/templates/users/logout.html:11
+msgid "Log In Again"
+msgstr ""
+
+#: users/templates/users/password_reset.html:13
+#: users/templates/users/password_reset_confirm.html:13
+#: users/templates/users/password_reset_confirm.html:17
+msgid "Reset Password"
+msgstr ""
+
+#: users/templates/users/password_reset.html:17
+msgid "Request Password Reset"
+msgstr ""
+
+#: users/templates/users/password_reset_complete.html:8
+msgid "Your password has been set!"
+msgstr ""
+
+#: users/templates/users/password_reset_complete.html:9
+msgid "Sign In Here"
+msgstr ""
+
+#: users/templates/users/password_reset_done.html:7
+msgid "An email has been sent with instructions to reset your password"
+msgstr ""
+
+#: users/templates/users/profile.html:21
+msgid "Profile Info"
+msgstr ""
+
+#: users/templates/users/profile.html:25
+msgid "Save"
+msgstr ""
+
+#: users/templates/users/register.html:13
+msgid "Join"
+msgstr ""
+
+#: users/templates/users/register.html:14
+msgid "Caution"
+msgstr ""
+
+#: users/templates/users/register.html:14
+msgid "This site uses HTTP thus you shouldn't introduce a sensitive password"
+msgstr ""
+
+#: users/templates/users/register.html:19
+msgid "Sign Up"
+msgstr ""
+
+#: users/templates/users/register.html:23
+msgid "Already Have An Account?"
 msgstr ""
