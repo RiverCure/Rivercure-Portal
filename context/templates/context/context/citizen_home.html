@@ -306,35 +306,50 @@
         <div class="d-flex justify-content-between align-items-center mx-3">
             {% comment %} <h1 class="m-0">Public Contexts</h1> {% endcomment %}
 
-            <!-- Top nav -->
-            <div class="d-flex justify-content-between align-items-center m-1">
-                <!-- Views -->
-                <ul class="nav nav-pills">
-                    <li class="nav-item mr-2">
-                    <a class="nav-link active" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true"><i class="bi bi-map"></i> Map</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true"><i class="bi bi-grid-3x3-gap"></i> Grid</a>
-                    </li>
-                </ul>
-
-                <!-- Grid Buttons-->
-            </div>
+            <!-- Views -->
+            <ul class="nav nav-pills">
+                <li class="nav-item mr-2">
+                <a class="nav-link active" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true"><i class="bi bi-map"></i> Map</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true"><i class="bi bi-grid-3x3-gap"></i> Grid</a>
+                </li>
+            </ul>
             
-            <div class="d-flex align-items-centerml-2">
 
-                <div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-sliders2"></i></button>
+            <!-- Filter form -->
+            <form method="get" class="form-inline">
+
+                <div class="dropdown">
+                    <!-- Toggle -->
+                    <button class="btn btn-primary dropdown-toggle ml-2" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-sliders2"></i>
+                    </button>
+
+                    <div class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation()">
+                        <!-- Organization -->
+                        <div class="form-group mb-3">
+                            <label for="organization" class="mb-2">Organization</label>
+                            {{filter.form.organization}}
+                        </div>
+                        <!-- Organization -->
+                        <div class="form-group">
+                            <label for="hydrofeature" class="mb-2">Hydrofeature</label>
+                            {{filter.form.hydroFeature}}
+                        </div>
+                    </div>
                 </div>
 
-                <form class="form-inline ml-2">
-                    <div class="form-row">
-                        <input type="text" class="form-control" id="inlineFormInputName" placeholder="Context Name">
-                    
-                        <button type="submit" class="btn btn-primary ml-2"><i class="bi bi-search"></i></button>
+                <div class="form-row ml-2">
+                    <!-- Context Name -->
+                    <div class="form-group">
+                        {{filter.form.Name}}
                     </div>
-                </form>
-            </div>
+
+                    <!-- Search -->
+                    <button type="submit" class="btn btn-primary ml-2"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
         </div>
 
         <!-- Small intro -->
@@ -356,6 +371,7 @@
         </div> {% endcomment %}
         
 
+        <!-- View tabs -->
         <div class="tab-content" id="publicContextsTabs">
             <!-- Map -->
             <div class="tab-pane fade show active mt-3" id="map-view" role="tabpanel" aria-labelledby="map-view-tab">
@@ -369,11 +385,14 @@
 
                 <div class="d-flex flex-row flex-wrap justify-content-around m-3">
                     {% for context in public_contexts %}
-                        <div class="card mb-4" style="width: 21rem;">
-                            <img src={{ context.picture.url }} class="card-img-top my-card-img" alt="...">
+                        <div class="card mb-4" style="width: 26rem;">
+                            <img src="{{ context.picture.url }}" class="card-img-top my-card-img" alt="...">
+                            {% comment %} <div class="card-img-overlay">
+                                <p class="card-text text-white observations-circle"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
+                            </div> {% endcomment %}
                             <div class="card-body">
                                 <h5 class="card-title">{{context.Name}}</h5>
-                                <p class="text-muted"><i class="bi bi-camera"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
+                                <p class="text-muted"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
                                 <a href="{% url 'contribution-create' context.code %}" class="btn btn-info"><i class="bi bi-upload"></i> Contribute</a>
                                 <a href="{% url 'public-context-detail' context.code %}" class="btn btn-info"><i class="bi bi-info-circle"></i> Details</a>
                             </div>
@@ -384,8 +403,6 @@
 
             </div>
         </div>
-
-        <!-- TODO: Most recent Contributions (platform-wide) -->
 
         <!-- Footer -->
         <div class="footer">

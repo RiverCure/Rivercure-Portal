@@ -122,6 +122,16 @@
 /* CSS classes with 'my-' prefix are custom (made by Maf) */
 
 /* Context cards */
+.observations-circle {
+  width: 3em;
+  height: 3em;
+  line-height: 3em;
+  border-radius: 50%;
+  border: #20bc9c;
+  text-align: center;
+  background: #20bc9c;
+}
+
 .my-context-card {
   width: 21rem;
 }

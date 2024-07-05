@@ -81,7 +81,7 @@ class PublicContextListView(FilterView):
     template_name = 'context/context/citizen_home.html'
     filterset_class = ContextFilter
     context_object_name = 'public_contexts'
-    paginate_by = 9
+    # paginate_by = 9
 
     def get_queryset(self):
         # context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')

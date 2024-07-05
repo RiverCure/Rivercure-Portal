@@ -2,7 +2,7 @@ import django_filters
 
 from django_filters.widgets import RangeWidget
 
-from django.forms.widgets import TextInput
+from django.forms.widgets import TextInput, Select
 
 from django.contrib.auth.models import User
 
@@ -37,8 +37,12 @@ class ContextFilter(django_filters.FilterSet):
                                      widget=TextInput(attrs={
                                                     'placeholder': 'Search by Context name...',
                                                     'type': 'search',
+                                                    'class': 'form-control',
                                                 }))
-    hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all())
+    hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all(),
+                                                    widget=Select(attrs={'class': 'form-control',}))
+    organization = django_filters.ModelChoiceFilter(label='Organization', queryset=Organization.objects.all(),
+                                                    widget=Select(attrs={'class': 'form-control',}))
     # hydroFeatureType = django_filters.ChoiceFilter(label='HydroFeature Type', choices=HYDROFEATUREKIND_CHOICES)
 
     class Meta:
