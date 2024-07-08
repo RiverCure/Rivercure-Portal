@@ -104,6 +104,7 @@ TEMPLATES = [
             ],
             'libraries':  {
                 'my_tags': 'rivercureproject.templatetags.my_tags',
+                'context_tags': 'context.templatetags.context_tags',
             }
         },
     },
