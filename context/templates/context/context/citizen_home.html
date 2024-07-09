@@ -6,8 +6,7 @@
 {% load i18n %}
 {% load static %}
 
-<!-- We're not using the base.html template because we wanted to have the map take up the full width 
-of the screen -->
+<!-- Overriding base template -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -37,6 +36,7 @@ of the screen -->
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
+        <!-- TODO: Move these plugins to settings.py -->
         <!-- Leaflet: Search function in map -->
         <!-- https://github.com/perliedman/leaflet-control-geocoder -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -49,14 +49,14 @@ of the screen -->
 
         <script>
 
-            function showGridFilterMenuButton() {
-                let gridFilterMenuButton = document.getElementById("dropdownFilterMenuButton");
-                gridFilterMenuButton.classList.remove("hidden");
+            function showGridSearchForm() {
+                let gridSearchForm = document.getElementById("grid-search-form");
+                gridSearchForm.classList.remove("hidden");
             }
 
-            function hideGridFilterMenuButton() {
-                let gridFilterMenuButton = document.getElementById("dropdownFilterMenuButton");
-                gridFilterMenuButton.classList.add("hidden");
+            function hideGridSearchForm() {
+                let gridSearchForm = document.getElementById("grid-search-form");
+                gridSearchForm.classList.add("hidden");
             }
             
             document.addEventListener('DOMContentLoaded', () => {
@@ -65,8 +65,13 @@ of the screen -->
         
                     const map = e.detail.map;
         
+                    map.layerscontrol.setPosition("topleft");
+
                     // Try to find the user's current location
-                    map.locate({setView: true, maxZoom: 17});
+                    map.locate({
+                        setView: true,
+                        maxZoom: 17,
+                    });
         
                     var marker = L.marker([0,0]).addTo(map);
                     // On success (of finding user's location)
@@ -75,38 +80,23 @@ of the screen -->
                     });
         
                     // On error (of finding user's location)
+                    // TODO: Show entire map of Portugal
                     map.on('locationerror', function (e) {
-                        marker.setLatLng([38.722252, -9.139337]); // TODO: Change default location to what is in LEAFLET_SETTINGS
+                        marker.setLatLng([38.722252, -9.139337]);
                         map.setZoom(17);
                     });
-        
-                    var lat = document.querySelector('#id_lat');
-                    var lng = document.querySelector('#id_lng');
-                    let lat_initial = lat.value == '' ? 0 : lat.value;
-                    let lng_initial = lng.value == '' ? 0 : lng.value;
-        
-                    // Update position of the marker to be the center while the map is being moved
-                    map.on('move',function(e){
-                        marker.setLatLng(map.getCenter());
-                    });
-        
-                    // Get latlng of center of the map (which is where the marker is fixed)
-                    map.on("moveend", function () {
-                        console.log(map.getCenter());
-                        marker.setLatLng(map.getCenter());
-        
-                        lat.value = map.getCenter().lat;
-                        lng.value = map.getCenter().lng;
-                    });
-        
+
                     // Add search function to map
                     // Using leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
                     L.Control.geocoder({
-                        defaultMarkGeocode: false
+                        position: 'topright',
+                        //defaultMarkGeocode: false,
+                        defaultMarkGeocode: true,
+                        collapsed: false,
+                        placeholder: 'Search by place...',
+                        showResultIcons: true, // TODO: i don't think this is doing anything
                     }).on('markgeocode', function(e) {
                         var bbox = e.geocode.bbox;
-                        console.log("bonjour");
-                        console.log(bbox);
                         map.fitBounds(bbox);
                         map.setZoom(17);
                     }).addTo(map);
@@ -118,7 +108,6 @@ of the screen -->
                         drawCircle: false,
                         drawMarker: false
                     }).addTo(map);
-        
                 });
             })
         
@@ -329,20 +318,19 @@ of the screen -->
             <!-- Tab buttons -->
             <ul class="nav nav-pills">
                 <li class="nav-item mr-2">
-                    <a class="nav-link {% is_active request.get_full_path 'map' %}" id="map-tab-button" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true" onclick="hideGridFilterMenuButton()"><i class="bi bi-map"></i> Map</a>
+                    <a class="nav-link {% is_active request.get_full_path 'map' %}" id="map-tab-button" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true" onclick="hideGridSearchForm()"><i class="bi bi-map"></i> Map</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% is_active request.get_full_path 'grid' %}" id="grid-tab-button" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true" onclick="showGridFilterMenuButton()"><i class="bi bi-grid-3x3-gap"></i> Grid</a>
+                    <a class="nav-link {% is_active request.get_full_path 'grid' %}" id="grid-tab-button" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true" onclick="showGridSearchForm()"><i class="bi bi-grid-3x3-gap"></i> Grid</a>
                 </li>
             </ul>
-            
 
-            <!-- Filter form -->
-            <form method="get" class="form-inline">
+            <!-- Grid search form -->
+            <form method="get" class="form-inline {% is_hidden request.get_full_path %}" id="grid-search-form">
 
                 <div class="dropdown">
                     <!-- Toggle -->
-                    <button class="btn btn-primary dropdown-toggle ml-2 hidden" type="button" id="dropdownFilterMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-primary dropdown-toggle ml-2" type="button" id="dropdownFilterMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="bi bi-sliders2"></i>
                     </button>
 

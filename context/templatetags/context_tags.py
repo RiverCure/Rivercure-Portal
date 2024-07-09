@@ -3,6 +3,7 @@ from django import template
 
 register = template.Library()
 
+# TODO: make these 3 functions prettier
 @register.simple_tag
 def is_active(url, tab):
     if (tab  == 'map'):
@@ -28,3 +29,9 @@ def is_show(url, tab):
             return ''
         else:
             return 'show'
+
+@register.simple_tag
+def is_hidden(url):
+    if (url == '/pt/contexts/public/'):
+        return 'hidden'
+    return ''
