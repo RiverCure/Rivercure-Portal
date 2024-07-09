@@ -13,7 +13,8 @@ from .views import (
     clearNotifications,
     UserUpdateView,
     NotificationListView,
-    about
+    about,
+    ContactView,
 )
 
 urlpatterns = [
@@ -29,5 +30,6 @@ urlpatterns = [
     path('profile/<int:pk>/update', UserUpdateView.as_view(), name='profile-update'),
     path('notification/clear', clearNotifications, name='notifications-clear'),
     path('notification/all', NotificationListView.as_view(), name='notifications-all'),
-    path('about/', about, name='rivercure-about')
+    path('about/', about, name='rivercure-about'),
+    path('contact/', ContactView.as_view(), name='contact'),
 ]

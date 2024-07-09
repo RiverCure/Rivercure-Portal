@@ -1,22 +1,35 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from leaflet.forms.widgets import LeafletWidget
-from django.contrib.auth.models import Group
 from django import forms
+
 from users.models import User
-from context.models import e_Context
-from .models import e_HydroFeature
 from sensors.models import Sensor
-from .filters import UserFilter, HydroFeatureFilter, HydrofeatureContextsFilter
+from context.models import e_Context
 from context.filters import ContextFilter
-from django.urls import reverse, reverse_lazy
 from notifications.models import Notification
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
-from django.db.models import Count, Q
 from contributions.models import ContributionStatus
+from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
+
+from context.views.mesh import check_celery
+
+from leaflet.forms.widgets import LeafletWidget
+
+from django.contrib import messages
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+
+from django.db.models import Count, Q
+from django.core.mail import send_mail
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
+from .models import e_HydroFeature
+from .forms import ContactForm
+from .filters import UserFilter, HydroFeatureFilter, HydrofeatureContextsFilter
+from .tasks import send_contact_email
+
 
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -205,3 +218,46 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     def test_func(self):
         return is_platform_admin(self)
+
+class ContactView(LoginRequiredMixin, FormView):
+    form_class = ContactForm
+    template_name = "rivercureportal/contact.html"
+
+    def get_success_url(self):
+        return reverse("contact")
+
+    def form_valid(self, form):
+        # email = form.cleaned_data.get("email")
+        email = self.request.user.email
+        subject = form.cleaned_data.get("subject")
+        message = form.cleaned_data.get("message")
+
+        # Celery
+        # contact = {
+        #     'from_email': email,
+        #     'subject': subject,
+        #     'message': message
+        # }
+
+        # if check_celery():
+        #     task = send_contact_email.delay(contact)
+        #     messages.success(self.request, 'Thank you for your contact!')
+        # else:  # Celery offline
+        #     messages.error(self.request, 'Background process offline: Contact admin.')
+
+        # Debug
+        full_message = f"""
+            Received message below from {email}
+            Subject - {subject}
+            ________________________
+
+
+            {message}
+            """
+        send_mail(
+            subject=subject,
+            message=full_message,
+            from_email=email,
+            recipient_list=['to@email.com'],
+        )
+        return super(ContactView, self).form_valid(form)
