@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
+from django.core import serializers
 
 from context.views.helpers import get_context_folder_path, get_log_folder_path
 from rivercureproject.settings import MEDIA_ROOT
@@ -82,6 +83,7 @@ class PublicContextListView(FilterView):
     filterset_class = ContextFilter
     context_object_name = 'public_contexts'
     # paginate_by = 9
+    # TODO: Since we're not using pagination anymore, make sure this is well done
 
     def get_queryset(self):
         # context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
@@ -104,6 +106,11 @@ class PublicContextListView(FilterView):
         # TODO: Filtering: Is this working well? Should I change context_list to public_contexts? Is it indifferent?
         context['context_list'] = e_Context.objects.exclude(isPublic=False).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
         context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
+        
+        # List of all public contexts (for JS)
+        public_contexts = e_Context.objects.exclude(isPublic=False)
+        # context['public_contexts_list'] = list(public_contexts.values('code', 'Name', 'description', 'picture'))
+        context['public_contexts_json'] = serializers.serialize('json', list(public_contexts), fields=('code', 'Name', 'description', 'geomExternalBoundary', 'CLExternalBoundary', 'picture'))
 
         return context
 
