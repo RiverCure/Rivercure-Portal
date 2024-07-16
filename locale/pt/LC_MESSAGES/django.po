@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-01 12:42+0100\n"
+"POT-Creation-Date: 2024-07-16 14:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,124 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: context/filters.py:38
+msgid "Search by name..."
+msgstr "Procurar por nome..."
+
+#: context/filters.py:44
+#: context/templates/context/context/citizen_home.html:229
+#: rivercureportal/templates/rivercureportal/base.html:66
+msgid "Organization"
+msgstr "Organização"
+
+#: context/templates/context/context/citizen_home.html:221
+#: rivercureportal/templates/rivercureportal/base.html:58
+msgid "My Contributions"
+msgstr "Minhas Contribuições"
+
+#: context/templates/context/context/citizen_home.html:226
+#: rivercureportal/templates/rivercureportal/base.html:63
+msgid "Management"
+msgstr "Gestão"
+
+#: context/templates/context/context/citizen_home.html:230
+#: rivercureportal/templates/rivercureportal/base.html:67
+msgid "Contexts"
+msgstr "Contextos"
+
+#: context/templates/context/context/citizen_home.html:231
+#: rivercureportal/templates/rivercureportal/base.html:68
+msgid "Sensors"
+msgstr "Sensores"
+
+#: context/templates/context/context/citizen_home.html:234
+#: rivercureportal/templates/rivercureportal/base.html:71
+msgid "Event Manager"
+msgstr "Gestor de Evento"
+
+#: context/templates/context/context/citizen_home.html:235
+#: context/templates/context/context/citizen_home.html:241
+#: rivercureportal/templates/rivercureportal/base.html:72
+#: rivercureportal/templates/rivercureportal/base.html:78
+msgid "My Contexts"
+msgstr "Meus Contextos"
+
+#: context/templates/context/context/citizen_home.html:236
+#: rivercureportal/templates/rivercureportal/base.html:73
+msgid "Challenges"
+msgstr "Desafios"
+
+#: context/templates/context/context/citizen_home.html:240
+#: rivercureportal/templates/rivercureportal/base.html:77
+msgid "Moderator"
+msgstr "Moderador"
+
+#: context/templates/context/context/citizen_home.html:263
+#: rivercureportal/templates/rivercureportal/base.html:100
+msgid "Organizations"
+msgstr "Organizações"
+
+#: context/templates/context/context/citizen_home.html:272
+#: rivercureportal/templates/rivercureportal/base.html:109
+msgid "Contact"
+msgstr "Contacto"
+
+#: context/templates/context/context/citizen_home.html:275
+#: rivercureportal/templates/rivercureportal/base.html:112
+msgid "About"
+msgstr "Sobre"
+
+#: context/templates/context/context/citizen_home.html:300
+#: rivercureportal/templates/rivercureportal/base.html:137
+msgid "ago"
+msgstr "atrás"
+
+#: context/templates/context/context/citizen_home.html:308
+#: rivercureportal/templates/rivercureportal/base.html:145
+msgid "See all notifications"
+msgstr "Ver todas as notificações"
+
+#: context/templates/context/context/citizen_home.html:311
+#: rivercureportal/templates/rivercureportal/base.html:148
+msgid "Clear all notifications"
+msgstr "Limpar todas as notificações"
+
+#: context/templates/context/context/citizen_home.html:329
+#: rivercureportal/templates/rivercureportal/base.html:166
+msgid "Users"
+msgstr "Utilizadores"
+
+#: context/templates/context/context/citizen_home.html:337
+#: rivercureportal/templates/rivercureportal/base.html:174
+msgid "Edit Profile"
+msgstr "Editar Perfil"
+
+#: context/templates/context/context/citizen_home.html:338
+#: rivercureportal/templates/rivercureportal/base.html:175
+msgid "Set Current Organization"
+msgstr "Definir Organização Atual"
+
+#: context/templates/context/context/citizen_home.html:344
+#: rivercureportal/templates/rivercureportal/base.html:181
+msgid "Register"
+msgstr "Registar"
+
+#: context/templates/context/context/citizen_home.html:387
+msgid "Map"
+msgstr "Mapa"
+
+#: context/templates/context/context/citizen_home.html:390
+msgid "Grid"
+msgstr "Grelha"
+
+#: context/templates/context/context/citizen_home.html:452
+msgid "Contribute"
+msgstr "Contribuir"
+
+#: context/templates/context/context/citizen_home.html:453
+msgid "Details"
+msgstr "Detalhes"
 
 #: contributions/models.py:21
 msgid "PENDING"
@@ -53,79 +171,6 @@ msgstr "Reportada"
 #: contributions/templates/contributions/contribution_detail.html:313
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
-
-#: rivercureportal/templates/rivercureportal/base.html:56
-msgid "My Contributions"
-msgstr "Minhas Contribuições"
-
-#: rivercureportal/templates/rivercureportal/base.html:61
-msgid "Management"
-msgstr "Gestão"
-
-#: rivercureportal/templates/rivercureportal/base.html:64
-msgid "Organization"
-msgstr "Organização"
-
-#: rivercureportal/templates/rivercureportal/base.html:65
-msgid "Contexts"
-msgstr "Contextos"
-
-#: rivercureportal/templates/rivercureportal/base.html:66
-msgid "Sensors"
-msgstr "Sensores"
-
-#: rivercureportal/templates/rivercureportal/base.html:69
-msgid "Event Manager"
-msgstr "Gestor de Evento"
-
-#: rivercureportal/templates/rivercureportal/base.html:70
-#: rivercureportal/templates/rivercureportal/base.html:76
-msgid "My Contexts"
-msgstr "Meus Contextos"
-
-#: rivercureportal/templates/rivercureportal/base.html:71
-msgid "Challenges"
-msgstr "Desafios"
-
-#: rivercureportal/templates/rivercureportal/base.html:75
-msgid "Moderator"
-msgstr "Moderador"
-
-#: rivercureportal/templates/rivercureportal/base.html:98
-msgid "Organizations"
-msgstr "Organizações"
-
-#: rivercureportal/templates/rivercureportal/base.html:108
-msgid "About"
-msgstr "Sobre"
-
-#: rivercureportal/templates/rivercureportal/base.html:133
-msgid "ago"
-msgstr "atrás"
-
-#: rivercureportal/templates/rivercureportal/base.html:141
-msgid "See all notifications"
-msgstr "Ver todas as notificações"
-
-#: rivercureportal/templates/rivercureportal/base.html:144
-msgid "Clear all notifications"
-msgstr "Limpar todas as notificações"
-
-#: rivercureportal/templates/rivercureportal/base.html:162
-msgid "Users"
-msgstr "Utilizadores"
-
-#: rivercureportal/templates/rivercureportal/base.html:170
-msgid "Edit Profile"
-msgstr "Editar Perfil"
-
-#: rivercureportal/templates/rivercureportal/base.html:171
-msgid "Set Current Organization"
-msgstr "Definir Organização Atual"
-
-#: rivercureportal/templates/rivercureportal/base.html:177
-msgid "Register"
-msgstr "Registar"
 
 #: rivercureproject/settings.py:8
 msgid "English"
@@ -175,7 +220,9 @@ msgstr "Entre Aqui"
 
 #: users/templates/users/password_reset_done.html:7
 msgid "An email has been sent with instructions to reset your password"
-msgstr "Foi-lhe enviado um email com instruções sobre como redefinir a sua palavra-passe"
+msgstr ""
+"Foi-lhe enviado um email com instruções sobre como redefinir a sua palavra-"
+"passe"
 
 #: users/templates/users/profile.html:21
 msgid "Profile Info"
@@ -195,7 +242,8 @@ msgstr "Cuidado"
 
 #: users/templates/users/register.html:14
 msgid "This site uses HTTP thus you shouldn't introduce a sensitive password"
-msgstr "Este site utiliza HTTP, logo, não deve introduzir uma palavra-passe sensível"
+msgstr ""
+"Este site utiliza HTTP, logo, não deve introduzir uma palavra-passe sensível"
 
 #: users/templates/users/register.html:19
 msgid "Sign Up"
@@ -204,6 +252,9 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
+
+#~ msgid "Contacts"
+#~ msgstr "Contacto"
 
 #~ msgid "Again"
 #~ msgstr "De Novo"

@@ -98,13 +98,13 @@
                                         <a class="dropdown-item" href="{% url 'organization-list' %}">{% trans "Organizations" %}</a>
                                     </div>
                                 </li>
-                                <div class="nav-item">
+                                {% comment %} <div class="nav-item">
                                     <a href="{% url 'public-contexts' %}" class="nav-link">Public contexts</a>
-                                </div>
-                                <div class="nav-item">
-                                    <a href="{% url 'contact' %}" class="nav-link">{% trans "Contact" %}</a>
-                                </div>
-                            {% endif %}
+                                </div> {% endcomment %}
+                                {% endif %}
+                            <div class="nav-item">
+                                <a href="{% url 'contact' %}" class="nav-link">{% trans "Contact" %}</a>
+                            </div>
                             <div class="nav-item">
                                 <a href="{% url 'rivercure-about' %}" class="nav-link">{% trans "About" %}</a>
                             </div>

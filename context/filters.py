@@ -3,16 +3,16 @@ import django_filters
 from django_filters.widgets import RangeWidget
 
 from django.forms.widgets import TextInput, Select
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import User
-
-from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
 
 from organization.models import Organization
 from rivercureportal.models import e_HydroFeature
 from contributions.models import e_ContextContribution, ContributionStatus
 from challenges.models import e_Challenge, DIFFICULTY_LEVEL, ChallengeState
 
+from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
 
 class ContextSensorFilter(django_filters.FilterSet):
 
@@ -35,13 +35,13 @@ class EventFilter(django_filters.FilterSet):
 class ContextFilter(django_filters.FilterSet):
     Name = django_filters.CharFilter(label='Context Name', lookup_expr='icontains',
                                      widget=TextInput(attrs={
-                                                    'placeholder': 'Search by name...',
+                                                    'placeholder': _('Search by name...'),
                                                     'type': 'search',
                                                     'class': 'form-control',
                                                 }))
     hydroFeature = django_filters.ModelChoiceFilter(label='HydroFeature', queryset=e_HydroFeature.objects.all(),
                                                     widget=Select(attrs={'class': 'form-control',}))
-    organization = django_filters.ModelChoiceFilter(label='Organization', queryset=Organization.objects.all(),
+    organization = django_filters.ModelChoiceFilter(label=_('Organization'), queryset=Organization.objects.all(),
                                                     widget=Select(attrs={'class': 'form-control',}))
     # hydroFeatureType = django_filters.ChoiceFilter(label='HydroFeature Type', choices=HYDROFEATUREKIND_CHOICES)
 
