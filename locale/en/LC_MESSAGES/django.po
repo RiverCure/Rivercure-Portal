@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-16 14:51+0100\n"
+"POT-Creation-Date: 2024-07-17 14:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,6 +77,7 @@ msgstr ""
 
 #: context/templates/context/context/citizen_home.html:272
 #: rivercureportal/templates/rivercureportal/base.html:109
+#: rivercureportal/templates/rivercureportal/contact.html:23
 msgid "Contact"
 msgstr ""
 
@@ -170,6 +171,51 @@ msgstr ""
 
 #: contributions/templates/contributions/contribution_detail.html:313
 msgid "Observation Details"
+msgstr ""
+
+#: rivercureportal/forms.py:8
+msgid "Request Context"
+msgstr ""
+
+#: rivercureportal/forms.py:9
+msgid "Questions"
+msgstr ""
+
+#: rivercureportal/forms.py:11
+msgid "Other"
+msgstr ""
+
+#: rivercureportal/forms.py:14
+msgid "Your email address"
+msgstr ""
+
+#: rivercureportal/forms.py:21
+msgid "Your message"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/contact.html:27
+msgid ""
+"We appreciate your interest in the RiverCure Portal. Should you have any "
+"inquiries, feedback, or require assistance, please complete the form below "
+"with your contact information, subject and message. Our team will respond to "
+"your submission at the earliest opportunity. Thank you for reaching out to "
+"us."
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/contact.html:34
+msgid "Email Address"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/contact.html:39
+msgid "Subject"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/contact.html:44
+msgid "Message"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/contact.html:49
+msgid "Send"
 msgstr ""
 
 #: rivercureproject/settings.py:8

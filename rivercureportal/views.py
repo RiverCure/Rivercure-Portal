@@ -219,7 +219,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     def test_func(self):
         return is_platform_admin(self)
 
-class ContactView(LoginRequiredMixin, FormView):
+class ContactView(FormView):
     form_class = ContactForm
     template_name = "rivercureportal/contact.html"
 
@@ -227,8 +227,10 @@ class ContactView(LoginRequiredMixin, FormView):
         return reverse("contact")
 
     def form_valid(self, form):
-        # email = form.cleaned_data.get("email")
-        email = self.request.user.email
+        if self.request.user.is_authenticated:
+            email = self.request.user.email
+        else:
+            email = form.cleaned_data.get("email")
         subject = form.cleaned_data.get("subject")
         message = form.cleaned_data.get("message")
 
