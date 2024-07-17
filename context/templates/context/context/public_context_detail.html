@@ -1,6 +1,7 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} {{ context.Name }} {% endblock %}
 {% load static %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block scripts %}
@@ -24,8 +25,8 @@
 
 
 <!-- Presentation about Context (photo, introduction, see more, ...)-->
-<h1>{{ context.Name }} context </h1>
-<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
+<h1>{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
 <div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
@@ -34,18 +35,17 @@
         <p class="card-text">{{ context.description }}</p>
         {% if context.hydroFeature %}<h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>{% endif %}
         <hr>
-        <a class="btn btn-primary" href="{% url 'contribution-create' context.code %}"><i class="bi bi-upload"></i> Contribute</a>
+        <a class="btn btn-info" href="{% url 'contribution-create' context.code %}"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>
         <div class="float-right">
-            <a class="btn btn-info" href="{% url 'context-detail' context.code %}">See details</a>
+            <a class="btn btn-info" href="{% url 'context-detail' context.code %}"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
             {% if context.hydroFeature %}
-                <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a>
+                {% comment %} <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a> {% endcomment %}
             {% endif %}
         </div>
     </div>
 </div>
 
 
-<hr>
 
 
 <!-- Contribution list -->
@@ -53,15 +53,14 @@
 <div class="container-fluid pt-3 mt-4">
     <div class="row">
         <div class="col-10">
-            <h1 class="">Contributions</h1>
+            <h1 class="">{% trans "Contributions" %}</h1>
         </div>
         <div class="col-2 text-right my-auto">
-            <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">See more <i class="bi bi-chevron-right"></i></a>
+            <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">{% trans "See more" %} <i class="bi bi-chevron-right"></i></a>
         </div>
     </div>
-    <p class="subtitle">Most recent Contributions</p>
     {% if contributions.count == 0 %}
-        <p class="font-weight-light my-2 text-center">There are no Contributions for this Context yet. Why don't you make one?</p>
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Contributions for this Context yet. Why don't you make one?" %}</p>
     {% endif %}
 
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
@@ -77,7 +76,7 @@
                         <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                         <div class="card-body pt-0" style="margin-top: -10px;">
                             <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                            <small class="text-body-secondary card-contributions text-muted">Submitted on {{ contribution.creationDateTime }}</small>
+                            <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
                         </div>
                     </div>
                 </a>
@@ -87,24 +86,22 @@
 
 </div>
 <div class="mb-3 text-center">
-    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> Scroll horizontally to see more</p>
+    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
 </div>
 
-<hr>
 
 <!-- Event list -->
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col-10">
-            <h1 class="">Events</h1>
+            <h1 class="">{% trans "Events" %}</h1>
         </div>
         <div class="col-2 text-center my-auto">
-            <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">See more <i class="bi bi-chevron-right"></i></a>
+            <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">{% trans "See more" %} <i class="bi bi-chevron-right"></i></a>
         </div>
     </div>
-    <p class="subtitle">Most recent events</p>
     {% if events.count == 0 %}
-        <p class="font-weight-light my-2 text-center">There are no Events for this Context.</p>
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Events for this Context." %}</p>
     {% endif %}
 
     <div class="scrolling-wrapper row flex-row flex-nowrap mt-4 pb-4 pt-2">
@@ -118,8 +115,8 @@
                             <p class="card-text text-muted">{{ event.type|title }} {% if event.subtype is not None %}- {{ event.subtype|title }} {% endif %}</p>
                         </div>
                         <div class="card-footer">
-                            <small class="text-body-secondary text-muted">{{ event.state }}</small>
-                            <small class="text-body-secondary text-muted">Started on {{ event.startDate }}</small>
+                            {% comment %} <small class="text-body-secondary text-muted">{{ event.state }}</small> {% endcomment %}
+                            <small class="text-body-secondary text-muted">{% trans "Started on" %} {{ event.startDate }}</small>
                         </div>            
                     </div>
                 </a>
@@ -129,13 +126,12 @@
 
 </div>
 <div class="mb-3 text-center">
-    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> Scroll horizontally to see more</p>
+    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
 </div>
 
-<hr>
 
 
 <!-- Bottom button -->
-<a class="btn btn-secondary mb-3" style="float: right;" href="{% url 'public-contexts' %}">Back to Public Context list</a>
+<a class="btn btn-secondary mb-3" style="float: right;" href="{% url 'public-contexts' %}">{% trans "Back to Home" %}</a>
 
 {% endblock content %}

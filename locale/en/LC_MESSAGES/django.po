@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-17 14:37+0100\n"
+"POT-Creation-Date: 2024-07-17 16:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,17 +24,20 @@ msgstr ""
 
 #: context/filters.py:44
 #: context/templates/context/context/citizen_home.html:229
+#: context/templates/context/context/public_context_detail.html:29
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:155
-#: context/templates/context/context/citizen_home.html:452
+#: context/templates/context/context/citizen_home.html:453
+#: context/templates/context/context/public_context_detail.html:38
 msgid "Contribute"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:156
-#: context/templates/context/context/citizen_home.html:453
+#: context/templates/context/context/citizen_home.html:454
+#: context/templates/context/context/public_context_detail.html:40
 msgid "Details"
 msgstr ""
 
@@ -137,6 +140,45 @@ msgstr ""
 
 #: context/templates/context/context/citizen_home.html:390
 msgid "Grid"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:57
+msgid "Contributions"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:60
+#: context/templates/context/context/public_context_detail.html:101
+msgid "See more"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:64
+msgid ""
+"There are no Contributions for this Context yet. Why don't you make one?"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:80
+msgid "Submitted on"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:90
+#: context/templates/context/context/public_context_detail.html:131
+msgid "Scroll horizontally to see more"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:98
+msgid "Events"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:105
+msgid "There are no Events for this Context."
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:121
+msgid "Started on"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:137
+msgid "Back to Home"
 msgstr ""
 
 #: contributions/models.py:21
