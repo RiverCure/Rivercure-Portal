@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-17 14:30+0100\n"
+"POT-Creation-Date: 2024-07-17 14:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,16 @@ msgstr "Procurar por nome..."
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
+
+#: context/templates/context/context/citizen_home.html:155
+#: context/templates/context/context/citizen_home.html:452
+msgid "Contribute"
+msgstr "Contribuir"
+
+#: context/templates/context/context/citizen_home.html:156
+#: context/templates/context/context/citizen_home.html:453
+msgid "Details"
+msgstr "Detalhes"
 
 #: context/templates/context/context/citizen_home.html:221
 #: rivercureportal/templates/rivercureportal/base.html:58
@@ -128,14 +138,6 @@ msgstr "Mapa"
 #: context/templates/context/context/citizen_home.html:390
 msgid "Grid"
 msgstr "Grelha"
-
-#: context/templates/context/context/citizen_home.html:452
-msgid "Contribute"
-msgstr "Contribuir"
-
-#: context/templates/context/context/citizen_home.html:453
-msgid "Details"
-msgstr "Detalhes"
 
 #: contributions/models.py:21
 msgid "PENDING"

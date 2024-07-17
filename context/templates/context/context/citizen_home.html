@@ -150,9 +150,9 @@
                             const pk = context["1"]["pk"];
 
                             const header = `<h3>${context["1"]["fields"]["Name"]}</h3>`;
-                            const picture = `<img src="/media/${context["1"]["fields"]["picture"]}" class="mb-2 rounded" style="width: 14rem; alt="Context Picture">`;
-                            const contributeBtn = `<a href="${cur_lang}/contributions/new/${pk}" class="btn btn-info text-white mr-2"><i class="bi bi-upload"></i> Contribute</a>`; // We have to hardcode URL
-                            const detailBtn = `<a href="${cur_lang}/contexts/public/${pk}" class="btn btn-info text-white"><i class="bi bi-info-circle"></i> Details</a>`;
+                            const picture = `<img src="/media/${context["1"]["fields"]["picture"]}" class="mb-2 rounded" style="width: 16rem; alt="Context Picture">`;
+                            const contributeBtn = `<a href="${cur_lang}/contributions/new/${pk}" class="btn btn-info text-white mr-2 btn-block"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>`; // We have to hardcode URL
+                            const detailBtn = `<a href="${cur_lang}/contexts/public/${pk}" class="btn btn-info mt-0 text-white btn-block"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>`;
                             const btns = `<div class="d-flex">${contributeBtn}${detailBtn}</div>`;
 
                             domain.bindPopup(header + "<hr class=\"my-2\">" + picture + btns,  {

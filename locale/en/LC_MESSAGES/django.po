@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-17 14:30+0100\n"
+"POT-Creation-Date: 2024-07-17 14:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,16 @@ msgstr ""
 #: context/templates/context/context/citizen_home.html:229
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
+msgstr ""
+
+#: context/templates/context/context/citizen_home.html:155
+#: context/templates/context/context/citizen_home.html:452
+msgid "Contribute"
+msgstr ""
+
+#: context/templates/context/context/citizen_home.html:156
+#: context/templates/context/context/citizen_home.html:453
+msgid "Details"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:221
@@ -127,14 +137,6 @@ msgstr ""
 
 #: context/templates/context/context/citizen_home.html:390
 msgid "Grid"
-msgstr ""
-
-#: context/templates/context/context/citizen_home.html:452
-msgid "Contribute"
-msgstr ""
-
-#: context/templates/context/context/citizen_home.html:453
-msgid "Details"
 msgstr ""
 
 #: contributions/models.py:21
