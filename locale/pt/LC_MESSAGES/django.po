@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-18 10:58+0100\n"
+"POT-Creation-Date: 2024-07-18 15:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,17 +84,20 @@ msgid "Moderator"
 msgstr "Moderador"
 
 #: context/templates/context/context/citizen_home.html:263
+#: rivercureportal/templates/rivercureportal/about.html:99
 #: rivercureportal/templates/rivercureportal/base.html:100
 msgid "Organizations"
 msgstr "Organizações"
 
 #: context/templates/context/context/citizen_home.html:272
+#: context/templates/context/context/citizen_home.html:469
 #: rivercureportal/templates/rivercureportal/base.html:109
 #: rivercureportal/templates/rivercureportal/contact.html:23
 msgid "Contact"
 msgstr "Contacto"
 
 #: context/templates/context/context/citizen_home.html:275
+#: context/templates/context/context/citizen_home.html:471
 #: rivercureportal/templates/rivercureportal/base.html:112
 msgid "About"
 msgstr "Sobre"
@@ -115,6 +118,7 @@ msgid "Clear all notifications"
 msgstr "Limpar todas as notificações"
 
 #: context/templates/context/context/citizen_home.html:329
+#: rivercureportal/templates/rivercureportal/about.html:93
 #: rivercureportal/templates/rivercureportal/base.html:166
 msgid "Users"
 msgstr "Utilizadores"
@@ -143,6 +147,7 @@ msgid "Grid"
 msgstr "Grelha"
 
 #: context/templates/context/context/public_context_detail.html:57
+#: rivercureportal/templates/rivercureportal/about.html:81
 msgid "Contributions"
 msgstr "Contribuições"
 
@@ -238,7 +243,7 @@ msgstr "O seu endereço de email"
 msgid "Your message"
 msgstr "A sua mensagem"
 
-#: rivercureportal/templates/rivercureportal/about.html:55
+#: rivercureportal/templates/rivercureportal/about.html:67
 msgid ""
 "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, "
 "and hydrodynamic modeling tools to help manage flood risks. It supports all "
@@ -247,21 +252,41 @@ msgid ""
 "authoritative data. This includes curated outputs from sensing instruments "
 "and data from virtual entities, which combine lower-level modeling results "
 "or other types of information not directly collected by physical instruments."
-msgstr "O RiverCure Portal (RCP) reúne contextos geográficos, dados de sensores e ferramentas de modelação hidrodinâmica para ajudar na gestão de riscos de inundação. Suporta todas as etapas da gestão de riscos de inundação, desde a avaliação e prevenção até à preparação para emergências e resposta. O RCP utiliza de forma eficiente dados colaborativos e dados autoritativos. Isto inclui resultados curados de instrumentos de deteção e dados de entidades virtuais, que combinam resultados de modelação de baixo nível ou outros tipos de informações não diretamente recolhidas por instrumentos físicos."
+msgstr ""
+"O RiverCure Portal (RCP) reúne contextos geográficos, dados de sensores e "
+"ferramentas de modelação hidrodinâmica para ajudar na gestão de riscos de "
+"inundação. Suporta todas as etapas da gestão de riscos de inundação, desde a "
+"avaliação e prevenção até à preparação para emergências e resposta. O RCP "
+"utiliza de forma eficiente dados colaborativos e dados autoritativos. Isto "
+"inclui resultados curados de instrumentos de deteção e dados de entidades "
+"virtuais, que combinam resultados de modelação de baixo nível ou outros "
+"tipos de informações não diretamente recolhidas por instrumentos físicos."
 
-#: rivercureportal/templates/rivercureportal/about.html:58
+#: rivercureportal/templates/rivercureportal/about.html:70
 msgid ""
 "RiverCure addresses the issue of reducing uncertainty and improving "
 "forecasting capabilities of hydrodynamic and morphodynamic mathematical "
 "models for flood simulation, water resources management and habitat "
 "protection."
-msgstr "O RiverCure aborda a questão da redução da incerteza e melhoria das capacidades de previsão de modelos matemáticos hidrodinâmicos e morfodinâmicos para simulação de inundações, gestão de recursos hídricos e proteção de habitats."
+msgstr ""
+"O RiverCure aborda a questão da redução da incerteza e melhoria das "
+"capacidades de previsão de modelos matemáticos hidrodinâmicos e "
+"morfodinâmicos para simulação de inundações, gestão de recursos hídricos e "
+"proteção de habitats."
 
-#: rivercureportal/templates/rivercureportal/about.html:85
+#: rivercureportal/templates/rivercureportal/about.html:87
+msgid "Public Contexts"
+msgstr "Contextos Públicos"
+
+#: rivercureportal/templates/rivercureportal/about.html:108
+msgid "How does it work?"
+msgstr "Como funciona?"
+
+#: rivercureportal/templates/rivercureportal/about.html:123
 msgid "What is a Context?"
 msgstr "O que é um Contexto?"
 
-#: rivercureportal/templates/rivercureportal/about.html:91
+#: rivercureportal/templates/rivercureportal/about.html:129
 msgid ""
 "A Context, or geographic Context, refers to a specific geographic area, "
 "pertinent to modeling and analyzing flood events. A Context can be linked to "
@@ -275,7 +300,7 @@ msgstr ""
 "bacia hidrográfica, estuário ou lago. Cada Contexto é definido por um nome, "
 "sensores e várias características geográficas."
 
-#: rivercureportal/templates/rivercureportal/about.html:101
+#: rivercureportal/templates/rivercureportal/about.html:139
 msgid ""
 "I want to contribute to a Context that does not exist in the RiverCure "
 "Portal. What should I do?"
@@ -283,7 +308,7 @@ msgstr ""
 "Quero contribuir para um Contexto que não existe no RiverCure Portal. Como "
 "devo proceder?"
 
-#: rivercureportal/templates/rivercureportal/about.html:108
+#: rivercureportal/templates/rivercureportal/about.html:146
 #, python-format
 msgid ""
 "If you wish to contribute to a Context that is not currently defined in the "

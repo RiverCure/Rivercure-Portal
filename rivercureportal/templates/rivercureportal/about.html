@@ -4,7 +4,9 @@
 {% load i18n %}
 {% load static %}
 
-{% block landing_page %}
+<!-- TODO: Use block landing_page in citizen home, instead of overriding base.html -->
+
+{% block content %}
 
 <style>
     #wel {
@@ -33,9 +35,20 @@
         animation: mymove 5s forwards;
         font-size: large;
     }
+
+    .statistics-img {
+        width: 14rem;
+        height: 100%;
+    }
+
+    #how-to-use-img {
+        width: 70rem;
+        height: 100%;
+    }
+
 </style>
 
-<img id="wel" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
+{% comment %} <img id="wel" src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="jpg" />
 <p id="subwel"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IST-ID, INESC-ID, APA I.P.</b></p>
 <br />
 <div id="info">
@@ -43,8 +56,9 @@
         RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical<br />
         models for flood simulation, water resources management and habitat protection.
     </p>
-</div>
+</div> {% endcomment %}
 
+<div class="py-2"></div>
 
 <!-- RCP intro -->
  <div class="media m-4">
@@ -61,23 +75,50 @@
     </div>
  </div>
 
-<!-- Como funciona -->
-<p>"Como funciona"</p>
-desenho
-
 <!-- Estatísticas -->
-<p>"Estatísticas"</p>
+<div class="d-flex justify-content-between m-4">
+    <div class="d-flex flex-column align-items-center">
+        <img src="{% static 'rivercureportal/about/statistics/contributions.png' %}" alt="Contributions Icon" class="statistics-img"> 
+        <h4>{{contributions}}</h4>
+        <h4>{% trans "Contributions" %}</h4>
+    </div>
 
-<p>Contributions - {{contributions}}</p>
-<p>Users - {{users}}</p>
-<p>Contexts - {{contexts}}</p>
-w number animation
+    <div class="d-flex flex-column align-items-center">
+        <img src="{% static 'rivercureportal/about/statistics/contexts.png' %}" alt="Contexts Icon" class="statistics-img"> 
+        <h4>{{contexts}}</h4>
+        <h4>{% trans "Public Contexts" %}</h4>
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
+        <img src="{% static 'rivercureportal/about/statistics/users.png' %}" alt="Users Icon" class="statistics-img"> 
+        <h4>{{users}}</h4>
+        <h4>{% trans "Users" %}</h4>
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
+        <img src="{% static 'rivercureportal/about/statistics/orgs.png' %}" alt="Organizations Icon" class="statistics-img"> 
+        <h4>{{orgs}}</h4>
+        <h4>{% trans "Organizations" %}</h4>
+    </div>
+</div>
+
+<div class="py-4"></div>
+
+<!-- Como funciona -->
+{% get_current_language as CURRENT_LANGUAGE %}
+<div class="d-flex flex-column align-items-center">
+    <h2>{% trans "How does it work?" %}</h2>
+    <img src="{% static 'rivercureportal/about/how-to-use-'|add:CURRENT_LANGUAGE|add:'.png' %}" alt="How to use illustration" id="how-to-use-img"> 
+</div>
+
+<div class="py-4"></div>
 
 <!-- FAQ -->
-<h2 class="m-4">FAQ</h2>
+ 
+<h1 class="m-4 px-2">FAQ</h1>
 
 <div class="accordion" id="accordionFAQ">
-    <!-- 1 -->
+    <!-- Q -->
     <div class="card">
       <div class="card-header" id="headingOne">
         <h2 class="mb-0">
@@ -93,16 +134,64 @@ w number animation
       </div>
     </div>
 
-    <!-- 2 -->
+    <!-- Q -->
     <div class="card">
-      <div class="card-header" id="headingTwo">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+              <i class="bi bi-chevron-down"></i> {% trans "What is a Contribution?" %}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionFAQ">
+          <div class="card-body">
+              {% blocktrans %}TODO{% endblocktrans %}
+          </div>
+        </div>
+    </div>
+
+    <!-- Q -->
+    <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+              <i class="bi bi-chevron-down"></i> {% trans "What is an Event?" %}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionFAQ">
+          <div class="card-body">
+              {% blocktrans %}TODO{% endblocktrans %}
+          </div>
+        </div>
+    </div>
+
+    <!-- Q -->
+    <div class="card">
+        <div class="card-header" id="headingFour">
+          <h2 class="mb-0">
+            <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+              <i class="bi bi-chevron-down"></i> {% trans "What is a Challenge?" %}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionFAQ">
+          <div class="card-body">
+              {% blocktrans %}TODO{% endblocktrans %}
+          </div>
+        </div>
+    </div>
+
+    <!-- Q -->
+    <div class="card">
+      <div class="card-header" id="headingFive">
         <h2 class="mb-0">
-          <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
             <i class="bi bi-chevron-down"></i> {% trans "I want to contribute to a Context that does not exist in the RiverCure Portal. What should I do?" %}
           </button>
         </h2>
       </div>
-      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionFAQ">
+      <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionFAQ">
         <div class="card-body">
             {% url 'contact' as contact_url %}
             {% blocktrans with contact='<a href="'|add:contact_url|add:'">Contact</a>'|safe %}If you wish to contribute to a Context that is not currently defined in the RiverCure Portal, we encourage you to reach out to us through our {{contact}} page. Our team will evaluate your request and respond in a timely manner.{% endblocktrans %}
@@ -110,6 +199,8 @@ w number animation
       </div>
     </div>
     
-  </div>
+</div>
+
+<div class="py-4"></div>
 
 {% endblock %}
