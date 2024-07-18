@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-17 16:12+0100\n"
+"POT-Creation-Date: 2024-07-18 10:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -161,7 +161,7 @@ msgid "Submitted on"
 msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:90
-#: context/templates/context/context/public_context_detail.html:131
+#: context/templates/context/context/public_context_detail.html:132
 msgid "Scroll horizontally to see more"
 msgstr ""
 
@@ -173,11 +173,11 @@ msgstr ""
 msgid "There are no Events for this Context."
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:121
+#: context/templates/context/context/public_context_detail.html:122
 msgid "Started on"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:137
+#: context/templates/context/context/public_context_detail.html:138
 msgid "Back to Home"
 msgstr ""
 
@@ -235,6 +235,53 @@ msgstr ""
 
 #: rivercureportal/forms.py:21
 msgid "Your message"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:55
+msgid ""
+"The RiverCure Portal (RCP) brings together geographic contexts, sensor data, "
+"and hydrodynamic modeling tools to help manage flood risks. It supports all "
+"stages of flood risk management, from assessment and prevention to emergency "
+"preparedness and response. The RCP efficiently uses both crowdsourced and "
+"authoritative data. This includes curated outputs from sensing instruments "
+"and data from virtual entities, which combine lower-level modeling results "
+"or other types of information not directly collected by physical instruments."
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:58
+msgid ""
+"RiverCure addresses the issue of reducing uncertainty and improving "
+"forecasting capabilities of hydrodynamic and morphodynamic mathematical "
+"models for flood simulation, water resources management and habitat "
+"protection."
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:85
+msgid "What is a Context?"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:91
+msgid ""
+"A Context, or geographic Context, refers to a specific geographic area, "
+"pertinent to modeling and analyzing flood events. A Context can be linked to "
+"a hydrological feature, such as a river, river basin, estuary, or lake. Each "
+"context is defined by a name, sensors, and various geographic "
+"characteristics."
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:101
+msgid ""
+"I want to contribute to a Context that does not exist in the RiverCure "
+"Portal. What should I do?"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:108
+#, python-format
+msgid ""
+"If you wish to contribute to a Context that is not currently defined in the "
+"RiverCure Portal, we encourage you to reach out to us through our "
+"%(contact)s page. Our team will evaluate your request and respond in a "
+"timely manner."
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/contact.html:27

@@ -7,6 +7,7 @@ from context.filters import ContextFilter
 from notifications.models import Notification
 from contributions.models import ContributionStatus
 from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
+from contributions.models  import e_ContextContribution
 
 from context.views.mesh import check_celery
 
@@ -72,7 +73,14 @@ def home(request):
     return redirect('public-contexts')
 
 def about(request):
-    return render(request, 'rivercureportal/about.html')
+
+    context = {
+        'contributions': e_ContextContribution.objects.all().count(), # Total number of Contributions
+        'contexts': e_Context.objects.all().count(), # Total number of Contexts
+        'users': User.objects.all().count(), # Total number of users
+    }
+
+    return render(request, 'rivercureportal/about.html', context)
 
 
 class HydroFeatureListView(LoginRequiredMixin, ListView):

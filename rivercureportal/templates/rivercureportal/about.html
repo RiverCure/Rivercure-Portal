@@ -1,6 +1,7 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} About {% endblock %}
 {% load auth_extras %}
+{% load i18n %}
 {% load static %}
 
 {% block landing_page %}
@@ -43,5 +44,72 @@
         models for flood simulation, water resources management and habitat protection.
     </p>
 </div>
+
+
+<!-- RCP intro -->
+ <div class="media m-4">
+    <img src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="RiverCure Logo">
+    <div class="media-body">
+        <h5>RiverCure Portal</h5>
+        <p class="text-justify">
+            {% trans "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, and hydrodynamic modeling tools to help manage flood risks. It supports all stages of flood risk management, from assessment and prevention to emergency preparedness and response. The RCP efficiently uses both crowdsourced and authoritative data. This includes curated outputs from sensing instruments and data from virtual entities, which combine lower-level modeling results or other types of information not directly collected by physical instruments." %}
+        </p>
+        <p class="text-justify">
+            {% trans "RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection." %}
+        </p>
+        <p class="text-right font-weight-lighter">IST-ID, INESC-ID, APA I.P</p>
+    </div>
+ </div>
+
+<!-- Como funciona -->
+<p>"Como funciona"</p>
+desenho
+
+<!-- Estatísticas -->
+<p>"Estatísticas"</p>
+
+<p>Contributions - {{contributions}}</p>
+<p>Users - {{users}}</p>
+<p>Contexts - {{contexts}}</p>
+w number animation
+
+<!-- FAQ -->
+<h2 class="m-4">FAQ</h2>
+
+<div class="accordion" id="accordionFAQ">
+    <!-- 1 -->
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h2 class="mb-0">
+          <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <i class="bi bi-chevron-down"></i> {% trans "What is a Context?" %}
+          </button>
+        </h2>
+      </div>
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionFAQ">
+        <div class="card-body">
+            {% blocktrans %}A Context, or geographic Context, refers to a specific geographic area, pertinent to modeling and analyzing flood events. A Context can be linked to a hydrological feature, such as a river, river basin, estuary, or lake. Each context is defined by a name, sensors, and various geographic characteristics.{% endblocktrans %}
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h2 class="mb-0">
+          <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            <i class="bi bi-chevron-down"></i> {% trans "I want to contribute to a Context that does not exist in the RiverCure Portal. What should I do?" %}
+          </button>
+        </h2>
+      </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionFAQ">
+        <div class="card-body">
+            {% url 'contact' as contact_url %}
+            {% blocktrans with contact='<a href="'|add:contact_url|add:'">Contact</a>'|safe %}If you wish to contribute to a Context that is not currently defined in the RiverCure Portal, we encourage you to reach out to us through our {{contact}} page. Our team will evaluate your request and respond in a timely manner.{% endblocktrans %}
+        </div>
+      </div>
+    </div>
+    
+  </div>
 
 {% endblock %}
