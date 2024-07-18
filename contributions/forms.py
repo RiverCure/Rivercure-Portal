@@ -1,11 +1,13 @@
+from datetime import datetime
+
+from leaflet.forms.widgets import LeafletWidget
+
 from django import forms
 from django.forms import ValidationError
 
-from datetime import datetime
+from django.utils.translation import gettext_lazy as _
 
-from .models import e_ContextContribution
-from context.models import EVENTKIND_CHOICES
-from leaflet.forms.widgets import LeafletWidget
+from .models import e_ContextContribution, SituationChoices
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -27,28 +29,28 @@ class MultipleFileField(forms.FileField):
 
 class ContributionInitialForm(forms.ModelForm):
     observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','max': datetime.now().date()}),
-                                              help_text='This is the date at which you have made your observation.',
-                                              label='Observation Date')
-    observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Enter a description of what you observed. Example: The water level reached 2 meters.'}),
-                                             help_text='This is a text description of the observation you made.',
-                                             label='Description')
-    situationObserved = forms.ChoiceField(choices=EVENTKIND_CHOICES,
-                                          help_text='This is the type of situation you observed.',
-                                          label='Situation Observed')
+                                              help_text=_('Date in which you have made your observation.'),
+                                              label=_('Observation Date'))
+    observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': _('Enter a description of what you observed. Example: The water level reached 2 meters.')}),
+                                             help_text=_('Text description of the observation you made.'),
+                                             label=_('Description'))
+    situationObserved = forms.ChoiceField(choices=SituationChoices.choices,
+                                          help_text=_('Type of situation you observed.'),
+                                          label=_('Situation Observed'))
     lat = forms.FloatField(label='Latitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
     lng = forms.FloatField(label='Longitude', widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
-    file_field = MultipleFileField(help_text='Optional: Submit any photos or videos you have related to the situation you observed. Only submit up to 10 files, with a total size of 10mb.',
-                                   label='Images and videos',
+    file_field = MultipleFileField(help_text=_('Optional: Submit any photos or videos you have related to the situation you observed. Only submit up to 10 files, with a total size of 10mb.'),
+                                   label=_('Images and videos'),
                                    required=False)
 
     class Meta:
         model = e_ContextContribution
         fields = ['id', 'situationObserved', 'observationDescription', 'observationDate', 'observationPlace']
         labels = {
-            'observationPlace': 'Observation Place',
+            'observationPlace': _('Observation Place'),
         }
         help_texts = {
-            'observationPlace': 'Move the map around to pick the location. Alternatively, you can text search for the desired position.'
+            'observationPlace': _('Move the map around to pick the location. Alternatively, you can text search for the desired location.')
         }
         widgets = {'observationPlace': LeafletWidget()}
     
@@ -62,7 +64,7 @@ class ContributionInitialForm(forms.ModelForm):
 
         # Only accept up to 10 files
         if len(files) > 10:
-            raise ValidationError("Too many files submitted. Only submit up to 10 files.")
+            raise ValidationError(_("Too many files submitted. Only submit up to 10 files."))
         
 
         total_size = 0
@@ -70,11 +72,11 @@ class ContributionInitialForm(forms.ModelForm):
             if file:
                 total_size = total_size + file.size
             else:
-                raise forms.ValidationError("Could not read uploaded file.")
+                raise forms.ValidationError(_("Could not read uploaded file."))
         
         # Only accept a total size of 10mb
         if total_size > 10485760:
-            raise ValidationError("Total size of files is too large ( > 10mb ).")
+            raise ValidationError(_("Total size of files is too large ( > 10mb )."))
         
         return files
 

@@ -23,6 +23,16 @@ class ContributionStatus(models.TextChoices):
     REJECTED = _("REJECTED"), _("Rejected")
     REPORTED = _("REPORTED"), _("Reported")
 
+class SituationChoices(models.TextChoices):
+    FLOOD = _("FLOOD"), _("Flood")
+    HEAVY_PRECIPITATION = _("HEAVY_PRECIPITATION"), _("Heavy Precipitation")
+    DROUGHT = _("DROUGHT"), _("Drought")
+    STORM = _("STORM"), _("Storm")
+    TSUNAMI = _("TSUNAMI"), _("Tsunami")
+    TORNADO = _("TORNADO"), _("Tornado")
+    LANDSLIDE = _("LANDSLIDE"), _("Landslide")
+    RIVER_POLLUTION = _("RIVER_POLLUTION"), _("River Pollution")
+
 # TODO: Repeated code in here!
 def create_contribution_thumbnail_name(instance, filename):
     """
@@ -66,7 +76,7 @@ class e_ContextContribution(models.Model):
     observationPlace = models.PointField()
     observationAddress = models.CharField(max_length=300, blank=True)
     observationDescription = models.TextField()
-    situationObserved = models.CharField(max_length=30, choices=EVENTKIND_CHOICES)
+    situationObserved = models.CharField(max_length=30, choices=SituationChoices.choices)
 
     # TODO: Add extra information asked depending on SituationObserved
 

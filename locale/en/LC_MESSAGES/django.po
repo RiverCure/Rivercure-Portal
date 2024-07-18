@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-18 15:46+0100\n"
+"POT-Creation-Date: 2024-07-18 17:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,7 @@ msgstr ""
 #: context/filters.py:44
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
+#: contributions/templates/contributions/contribution_form.html:130
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr ""
@@ -84,7 +85,7 @@ msgid "Moderator"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:263
-#: rivercureportal/templates/rivercureportal/about.html:99
+#: rivercureportal/templates/rivercureportal/about.html:102
 #: rivercureportal/templates/rivercureportal/base.html:100
 msgid "Organizations"
 msgstr ""
@@ -118,7 +119,7 @@ msgid "Clear all notifications"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:329
-#: rivercureportal/templates/rivercureportal/about.html:93
+#: rivercureportal/templates/rivercureportal/about.html:96
 #: rivercureportal/templates/rivercureportal/base.html:166
 msgid "Users"
 msgstr ""
@@ -147,7 +148,7 @@ msgid "Grid"
 msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:57
-#: rivercureportal/templates/rivercureportal/about.html:81
+#: rivercureportal/templates/rivercureportal/about.html:84
 msgid "Contributions"
 msgstr ""
 
@@ -186,6 +187,68 @@ msgstr ""
 msgid "Back to Home"
 msgstr ""
 
+#: contributions/forms.py:32
+msgid "Date in which you have made your observation."
+msgstr ""
+
+#: contributions/forms.py:33
+msgid "Observation Date"
+msgstr ""
+
+#: contributions/forms.py:34
+msgid ""
+"Enter a description of what you observed. Example: The water level reached 2 "
+"meters."
+msgstr ""
+
+#: contributions/forms.py:35
+msgid "Text description of the observation you made."
+msgstr ""
+
+#: contributions/forms.py:36
+msgid "Description"
+msgstr ""
+
+#: contributions/forms.py:38
+msgid "Type of situation you observed."
+msgstr ""
+
+#: contributions/forms.py:39
+msgid "Situation Observed"
+msgstr ""
+
+#: contributions/forms.py:42
+msgid ""
+"Optional: Submit any photos or videos you have related to the situation you "
+"observed. Only submit up to 10 files, with a total size of 10mb."
+msgstr ""
+
+#: contributions/forms.py:43
+msgid "Images and videos"
+msgstr ""
+
+#: contributions/forms.py:50
+msgid "Observation Place"
+msgstr ""
+
+#: contributions/forms.py:53
+msgid ""
+"Move the map around to pick the location. Alternatively, you can text search "
+"for the desired location."
+msgstr ""
+
+#: contributions/forms.py:67
+msgid "Too many files submitted. Only submit up to 10 files."
+msgstr ""
+
+#: contributions/forms.py:75
+msgid "Could not read uploaded file."
+msgstr ""
+
+#: contributions/forms.py:79
+msgid "Total size of files is too large ( > 10mb )."
+msgstr ""
+
 #: contributions/models.py:21
 msgid "PENDING"
 msgstr ""
@@ -218,8 +281,126 @@ msgstr ""
 msgid "Reported"
 msgstr ""
 
+#: contributions/models.py:27
+msgid "FLOOD"
+msgstr ""
+
+#: contributions/models.py:27
+msgid "Flood"
+msgstr ""
+
+#: contributions/models.py:28
+msgid "HEAVY_PRECIPITATION"
+msgstr ""
+
+#: contributions/models.py:28
+msgid "Heavy Precipitation"
+msgstr ""
+
+#: contributions/models.py:29
+msgid "DROUGHT"
+msgstr ""
+
+#: contributions/models.py:29
+msgid "Drought"
+msgstr ""
+
+#: contributions/models.py:30
+msgid "STORM"
+msgstr ""
+
+#: contributions/models.py:30
+msgid "Storm"
+msgstr ""
+
+#: contributions/models.py:31
+msgid "TSUNAMI"
+msgstr ""
+
+#: contributions/models.py:31
+msgid "Tsunami"
+msgstr ""
+
+#: contributions/models.py:32
+msgid "TORNADO"
+msgstr ""
+
+#: contributions/models.py:32
+msgid "Tornado"
+msgstr ""
+
+#: contributions/models.py:33
+msgid "LANDSLIDE"
+msgstr ""
+
+#: contributions/models.py:33
+msgid "Landslide"
+msgstr ""
+
+#: contributions/models.py:34
+msgid "RIVER_POLLUTION"
+msgstr ""
+
+#: contributions/models.py:34
+msgid "River Pollution"
+msgstr ""
+
 #: contributions/templates/contributions/contribution_detail.html:313
 msgid "Observation Details"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:136
+msgid ""
+"If you have observed an extreme weather situation in this geographical "
+"context, you may contribute to the RiverCure Portal by submitting a <span "
+"class='word-color'>Contribution</span>, in which you must include the type "
+"of situation observed (flood, drought, etc), a description of what you saw, "
+"the date and place of this episode, and, optionally, any videos or images "
+"you have collected of the incident."
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:138
+#, python-format
+msgid ""
+"For more information about the RiverCure Portal and Contributions, please "
+"visit the %(about)s page, or the <a href=\"https://rivercure.notion."
+"site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:149
+msgid "Submit"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:152
+#: contributions/templates/contributions/contribution_form.html:177
+msgid "Cancel"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:161
+msgid "Submit Contribution"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:168
+msgid ""
+"Are you sure you want to submit this Contribution? Make sure the information "
+"is <span class='word-color'>correct</span>!"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:171
+msgid ""
+"After submission, your Contribution will await <span class='word-"
+"color'>validation</span>, which will be performed by a RiverCure Moderator."
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:173
+msgid ""
+"To read more about Contributions and the Validation process, please visit "
+"the <a href=\"https://rivercure.notion."
+"site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
+msgstr ""
+
+#: contributions/templates/contributions/contribution_form.html:178
+msgid "Confirm"
 msgstr ""
 
 #: rivercureportal/forms.py:8
@@ -242,7 +423,7 @@ msgstr ""
 msgid "Your message"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:67
+#: rivercureportal/templates/rivercureportal/about.html:70
 msgid ""
 "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, "
 "and hydrodynamic modeling tools to help manage flood risks. It supports all "
@@ -253,7 +434,7 @@ msgid ""
 "or other types of information not directly collected by physical instruments."
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:70
+#: rivercureportal/templates/rivercureportal/about.html:73
 msgid ""
 "RiverCure addresses the issue of reducing uncertainty and improving "
 "forecasting capabilities of hydrodynamic and morphodynamic mathematical "
@@ -261,19 +442,19 @@ msgid ""
 "protection."
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:87
+#: rivercureportal/templates/rivercureportal/about.html:90
 msgid "Public Contexts"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:108
+#: rivercureportal/templates/rivercureportal/about.html:111
 msgid "How does it work?"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:123
+#: rivercureportal/templates/rivercureportal/about.html:126
 msgid "What is a Context?"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:129
+#: rivercureportal/templates/rivercureportal/about.html:132
 msgid ""
 "A Context, or geographic Context, refers to a specific geographic area, "
 "pertinent to modeling and analyzing flood events. A Context can be linked to "
@@ -282,13 +463,31 @@ msgid ""
 "characteristics."
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:139
+#: rivercureportal/templates/rivercureportal/about.html:142
+msgid "What is a Contribution?"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:148
+#: rivercureportal/templates/rivercureportal/about.html:164
+#: rivercureportal/templates/rivercureportal/about.html:180
+msgid "TODO"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:158
+msgid "What is an Event?"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:174
+msgid "What is a Challenge?"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/about.html:190
 msgid ""
 "I want to contribute to a Context that does not exist in the RiverCure "
 "Portal. What should I do?"
 msgstr ""
 
-#: rivercureportal/templates/rivercureportal/about.html:146
+#: rivercureportal/templates/rivercureportal/about.html:197
 #, python-format
 msgid ""
 "If you wish to contribute to a Context that is not currently defined in the "

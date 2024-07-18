@@ -2,6 +2,7 @@
 {% block title %} Create Contribution {% endblock %}
 {% load crispy_forms_tags %}
 {% load leaflet_tags %}
+{% load i18n %}
 {% load static %}
 
 
@@ -125,21 +126,16 @@
 {% block content %}
 
 
-<h1>{{ context.Name }} Context </h1>
-<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
+<h1>{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
 
-<div class="content-section">
+<div class="card p-4 mb-4">
     <!-- Header -->
-    <p class="font-weight-light" align="justify">
-        If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting
-        a <span class='word-color'>Contribution</span>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw,
-        the date and place of this episode, and, optionally, any videos or images you have collected of the incident.
-    </p>
-    <p class="font-weight-light" align="justify">
-        For more information about RiverCure and Contributions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
-    </p>
+    <p class="font-weight-light" align="justify">{% blocktrans %}If you have observed an extreme weather situation in this geographical context, you may contribute to the RiverCure Portal by submitting a <span class='word-color'>Contribution</span>, in which you must include the type of situation observed (flood, drought, etc), a description of what you saw, the date and place of this episode, and, optionally, any videos or images you have collected of the incident.{% endblocktrans %}</p>
+    {% url 'rivercure-about' as about_url %}
+    <p class="font-weight-light" align="justify">{% blocktrans with about='<a href="'|add:about_url|add:'">About</a>'|safe %}For more information about the RiverCure Portal and Contributions, please visit the {{about}} page, or the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.{% endblocktrans %}</p>
     <hr>
 
     <!-- Form -->
@@ -150,10 +146,10 @@
 
         <!-- Confirm Modal Button-->
         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmModal">
-            Submit
+            {% trans "Submit" %}
         </button>
 
-        <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context.code %}">Cancel</a>
+        <a class="btn btn-outline-secondary" href="{% url 'public-context-detail' context.code %}">{% trans "Cancel" %}</a>
 
     </form>
     
@@ -162,25 +158,24 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Submit Contribution {{contribution.pk}}</h5>
+                    <h5 class="modal-title" id="confirmModalLabel">{% trans "Submit Contribution" %} {{contribution.pk}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <p class="justify">
-                        Are you sure you want to submit this Contribution? Make sure the information is <span class='word-color'>correct</span>!
+                        {% trans "Are you sure you want to submit this Contribution? Make sure the information is <span class='word-color'>correct</span>!" %}
                     </p>
                     <p class="justify">
-                        After submission, your Contribution will await <span class='word-color'>validation</span>, which will be performed by a RiverCure Moderator.
+                        {% trans "After submission, your Contribution will await <span class='word-color'>validation</span>, which will be performed by a RiverCure Moderator." %}
                     </p>
-                    <p class="justify">
-                        To read more about Contributions and the Validation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                    <p class="justify">{% blocktrans %}To read more about Contributions and the Validation process, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.{% endblocktrans %}
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-info my-3 mr-3" type="submit" form="contributionForm">Confirm</button>
+                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button class="btn btn-info my-3 mr-3" type="submit" form="contributionForm">{% trans "Confirm" %}</button>
                 </div>
             </div>
         </div>
