@@ -15,24 +15,24 @@ from django.contrib.auth.models import User
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
-    PENDING = _("PENDING"), _("Pending")
-    ACCEPTED = _("ACCEPTED"), _("Accepted")
-    REJECTED = _("REJECTED"), _("Rejected")
-    REPORTED = _("REPORTED"), _("Reported")
+    PENDING = "PENDING", _("Pending")
+    ACCEPTED = "ACCEPTED", _("Accepted")
+    REJECTED = "REJECTED", _("Rejected")
+    REPORTED = "REPORTED", _("Reported")
 
 class SituationChoices(models.TextChoices):
-    FLOOD = _("FLOOD"), _("Flood")
-    HEAVY_PRECIPITATION = _("HEAVY_PRECIPITATION"), _("Heavy Precipitation")
-    DROUGHT = _("DROUGHT"), _("Drought")
-    STORM = _("STORM"), _("Storm")
-    TSUNAMI = _("TSUNAMI"), _("Tsunami")
-    TORNADO = _("TORNADO"), _("Tornado")
-    LANDSLIDE = _("LANDSLIDE"), _("Landslide")
-    RIVER_POLLUTION = _("RIVER_POLLUTION"), _("River Pollution")
+    FLOOD = "FLOOD", _("Flood")
+    HEAVY_PRECIPITATION = "HEAVY_PRECIPITATION", _("Heavy Precipitation")
+    DROUGHT = "DROUGHT", _("Drought")
+    STORM = "STORM", _("Storm")
+    TSUNAMI = "TSUNAMI", _("Tsunami")
+    TORNADO = "TORNADO", _("Tornado")
+    LANDSLIDE = "LANDSLIDE", _("Landslide")
+    RIVER_POLLUTION = "RIVER_POLLUTION", _("River Pollution")
 
 class TornadoType(models.TextChoices):
-    ON_WATER = _("ON_WATER"), _("On Water")
-    ON_LAND = _("ON_LAND"), _("On Land")
+    ON_WATER = "ON_WATER", _("On Water")
+    ON_LAND = "ON_LAND", _("On Land")
 
 # TODO: Repeated code in here!
 def create_contribution_thumbnail_name(instance, filename):

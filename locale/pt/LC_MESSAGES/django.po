@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-22 18:33+0100\n"
+"POT-Creation-Date: 2024-07-22 19:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr "Procurar por nome..."
 #: context/filters.py:44
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
-#: contributions/templates/contributions/contribution_form.html:172
+#: contributions/templates/contributions/contribution_form.html:166
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
@@ -43,6 +43,8 @@ msgid "Details"
 msgstr "Detalhes"
 
 #: context/templates/context/context/citizen_home.html:221
+#: contributions/templates/contributions/my_contributions_list.html:7
+#: contributions/templates/contributions/my_contributions_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:58
 msgid "My Contributions"
 msgstr "Minhas Contribuições"
@@ -164,6 +166,7 @@ msgstr ""
 "Ainda não existem Contribuições para este Contexto. Porque não faz uma?"
 
 #: context/templates/context/context/public_context_detail.html:80
+#: contributions/templates/contributions/my_contributions_list.html:46
 msgid "Submitted on"
 msgstr "Submetido a"
 
@@ -188,13 +191,53 @@ msgstr "Começou a"
 msgid "Back to Home"
 msgstr "Voltar a Home"
 
+#: contributions/filters.py:29 contributions/forms.py:39
+msgid "Situation Observed"
+msgstr "Situação Observada"
+
+#: contributions/filters.py:30 contributions/forms.py:33
+msgid "Observation Date"
+msgstr "Data de Observação"
+
+#: contributions/filters.py:31
+msgid ""
+"The observation was made in between the specified dates. <i>Hint:</i> You "
+"may also just search for dates more recent than the date on the left, or "
+"older than the date on the right."
+msgstr ""
+"A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
+"pode pesquisar por datas mais recentes do que a data à esquerda, ou mais "
+"antigas do que a data à direita."
+
+#: contributions/filters.py:34
+msgid "Submission Date"
+msgstr "Data de Submissão"
+
+#: contributions/filters.py:35
+msgid ""
+"The Contribution was submitted in between the specified dates. <i>Hint:</i> "
+"You may also just search for dates more recent than the date on the left, or "
+"older than the date on the right."
+msgstr ""
+"A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
+"Também pode pesquisar por datas mais recentes do que a data à esquerda, ou "
+"mais antigas do que a data à direita."
+
+#: contributions/filters.py:38
+msgid "Context"
+msgstr "Contexto"
+
+#: contributions/filters.py:41
+msgid "Search by Context name..."
+msgstr "Procurar por nome do Contexto..."
+
+#: contributions/filters.py:44
+msgid "Contribution State"
+msgstr "Estado da Contribuição"
+
 #: contributions/forms.py:32
 msgid "Date in which you have made your observation."
 msgstr "Data na qual fez a sua observação."
-
-#: contributions/forms.py:33
-msgid "Observation Date"
-msgstr "Data de Observação"
 
 #: contributions/forms.py:34
 msgid ""
@@ -215,10 +258,6 @@ msgstr "Descrição"
 #: contributions/forms.py:38
 msgid "Type of situation you observed."
 msgstr "Tipo de situação observada."
-
-#: contributions/forms.py:39
-msgid "Situation Observed"
-msgstr "Situação Observada"
 
 #: contributions/forms.py:42
 msgid ""
@@ -282,79 +321,39 @@ msgid "Total size of files is too large ( > 10mb )."
 msgstr "O tamanho total dos ficheiros é demasiado grande ( > 10 MB )"
 
 #: contributions/models.py:18
-msgid "PENDING"
-msgstr "Pendente"
-
-#: contributions/models.py:18
 msgid "Pending"
 msgstr "Pendente"
-
-#: contributions/models.py:19
-msgid "ACCEPTED"
-msgstr "Aceite"
 
 #: contributions/models.py:19
 msgid "Accepted"
 msgstr "Aceite"
 
 #: contributions/models.py:20
-msgid "REJECTED"
-msgstr "Rejeitada"
-
-#: contributions/models.py:20
 msgid "Rejected"
 msgstr "Rejeitada"
-
-#: contributions/models.py:21
-msgid "REPORTED"
-msgstr "Reportada"
 
 #: contributions/models.py:21
 msgid "Reported"
 msgstr "Reportada"
 
 #: contributions/models.py:24
-msgid "FLOOD"
-msgstr "INUNDAÇÃO"
-
-#: contributions/models.py:24
 msgid "Flood"
 msgstr "Inundação"
-
-#: contributions/models.py:25
-msgid "HEAVY_PRECIPITATION"
-msgstr "PRECIPITAÇÃO INTENSA"
 
 #: contributions/models.py:25
 msgid "Heavy Precipitation"
 msgstr "Precipitação Intensa"
 
 #: contributions/models.py:26
-msgid "DROUGHT"
-msgstr "SECA"
-
-#: contributions/models.py:26
 msgid "Drought"
 msgstr "Seca"
-
-#: contributions/models.py:27
-msgid "STORM"
-msgstr "TEMPESTADE"
 
 #: contributions/models.py:27
 msgid "Storm"
 msgstr "Tempestade"
 
 #: contributions/models.py:28
-msgid "TSUNAMI"
-msgstr ""
-
-#: contributions/models.py:28
 msgid "Tsunami"
-msgstr ""
-
-#: contributions/models.py:29
-msgid "TORNADO"
 msgstr ""
 
 #: contributions/models.py:29
@@ -362,32 +361,16 @@ msgid "Tornado"
 msgstr ""
 
 #: contributions/models.py:30
-msgid "LANDSLIDE"
-msgstr "DESLIZAMENTO DE TERRAS"
-
-#: contributions/models.py:30
 msgid "Landslide"
 msgstr "Deslizamento de Terras"
-
-#: contributions/models.py:31
-msgid "RIVER_POLLUTION"
-msgstr "POLUIÇÃO FLUVIAL"
 
 #: contributions/models.py:31
 msgid "River Pollution"
 msgstr "Poluição Fluvial"
 
 #: contributions/models.py:34
-msgid "ON_WATER"
-msgstr ""
-
-#: contributions/models.py:34
 msgid "On Water"
 msgstr "Sobre Água"
-
-#: contributions/models.py:35
-msgid "ON_LAND"
-msgstr ""
 
 #: contributions/models.py:35
 msgid "On Land"
@@ -397,7 +380,7 @@ msgstr "Sobre Terra"
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
 
-#: contributions/templates/contributions/contribution_form.html:178
+#: contributions/templates/contributions/contribution_form.html:172
 msgid ""
 "If you have observed an extreme weather situation in this geographical "
 "context, you may contribute to the RiverCure Portal by submitting a <span "
@@ -413,7 +396,7 @@ msgstr ""
 "deste episódio e, opcionalmente, quaisquer vídeos ou imagens que tenha "
 "recolhido do incidente."
 
-#: contributions/templates/contributions/contribution_form.html:180
+#: contributions/templates/contributions/contribution_form.html:174
 #, python-format
 msgid ""
 "For more information about the RiverCure Portal and Contributions, please "
@@ -424,20 +407,20 @@ msgstr ""
 "visite a página %(about)s, ou a <a href=\"https://rivercure.notion."
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
 
-#: contributions/templates/contributions/contribution_form.html:192
+#: contributions/templates/contributions/contribution_form.html:186
 msgid "Submit"
 msgstr "Submeter"
 
-#: contributions/templates/contributions/contribution_form.html:195
-#: contributions/templates/contributions/contribution_form.html:220
+#: contributions/templates/contributions/contribution_form.html:189
+#: contributions/templates/contributions/contribution_form.html:214
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: contributions/templates/contributions/contribution_form.html:204
+#: contributions/templates/contributions/contribution_form.html:198
 msgid "Submit Contribution"
 msgstr "Submeter Contribuição"
 
-#: contributions/templates/contributions/contribution_form.html:211
+#: contributions/templates/contributions/contribution_form.html:205
 msgid ""
 "Are you sure you want to submit this Contribution? Make sure the information "
 "is <span class='word-color'>correct</span>!"
@@ -445,7 +428,7 @@ msgstr ""
 "Tem a certeza que quer submeter esta Contribuição? Garanta que a informação "
 "é <span class='word-color'>correta</span>!"
 
-#: contributions/templates/contributions/contribution_form.html:214
+#: contributions/templates/contributions/contribution_form.html:208
 msgid ""
 "After submission, your Contribution will await <span class='word-"
 "color'>validation</span>, which will be performed by a RiverCure Moderator."
@@ -453,7 +436,7 @@ msgstr ""
 "Após a submissão, a sua Contribuição irá aguardar <span class='word-"
 "color'>validação</span>, a qual será executada por um Moderador do Rivercure."
 
-#: contributions/templates/contributions/contribution_form.html:216
+#: contributions/templates/contributions/contribution_form.html:210
 msgid ""
 "To read more about Contributions and the Validation process, please visit "
 "the <a href=\"https://rivercure.notion."
@@ -463,9 +446,25 @@ msgstr ""
 "visite a <a href=\"https://rivercure.notion."
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
 
-#: contributions/templates/contributions/contribution_form.html:221
+#: contributions/templates/contributions/contribution_form.html:215
 msgid "Confirm"
 msgstr "Confirmar"
+
+#: contributions/templates/contributions/my_contributions_list.html:20
+msgid ""
+"On this page you can see the Contributions you have submitted to the "
+"RiverCure Portal."
+msgstr ""
+"Nesta página, pode ver as Contribuições que submeteu ao RiverCure Portal."
+
+#: contributions/templates/contributions/my_contributions_list.html:28
+msgid "Apply"
+msgstr "Aplicar"
+
+#: contributions/templates/contributions/my_contributions_list.html:54
+msgid "There are no Contributions yet. Why don't you contribute to a Context?"
+msgstr ""
+"Ainda não existem Contribuições. Porque não contribui para um Contexto?"
 
 #: rivercureportal/forms.py:8
 msgid "Request Context"
@@ -693,6 +692,36 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
+
+#~ msgid "HEAVY_PRECIPITATION"
+#~ msgstr "PRECIPITAÇÃO INTENSA"
+
+#~ msgid "DROUGHT"
+#~ msgstr "SECA"
+
+#~ msgid "STORM"
+#~ msgstr "TEMPESTADE"
+
+#~ msgid "LANDSLIDE"
+#~ msgstr "DESLIZAMENTO DE TERRAS"
+
+#~ msgid "RIVER_POLLUTION"
+#~ msgstr "POLUIÇÃO FLUVIAL"
+
+#~ msgid "FLOOD"
+#~ msgstr "INUNDAÇÃO"
+
+#~ msgid "PENDING"
+#~ msgstr "Pendente"
+
+#~ msgid "ACCEPTED"
+#~ msgstr "Aceite"
+
+#~ msgid "REJECTED"
+#~ msgstr "Rejeitada"
+
+#~ msgid "REPORTED"
+#~ msgstr "Reportada"
 
 #~ msgid ""
 #~ "To read more about Contributions and the Validation process, please visit "
