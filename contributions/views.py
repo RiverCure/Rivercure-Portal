@@ -17,7 +17,7 @@ import datetime
 from PIL import Image
 from pyffmpeg import FFmpeg
 
-from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation
+from .models import e_ContextContribution, e_ContributionAttachment, ContributionStatus, e_ContributionReport, e_ContributionValidation, SituationChoices
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
@@ -78,6 +78,14 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution.context = _context
         new_contribution.creationDateTime = datetime.datetime.now()
         new_contribution.observationPlace = Point(long, lat)
+
+        # Set extra data
+        if (new_contribution.situationObserved == SituationChoices.FLOOD):
+            new_contribution.floating_objects_time = form.cleaned_data['floating_objects_time']
+            new_contribution.water_height = form.cleaned_data['water_height']
+        elif (new_contribution.situationObserved == SituationChoices.TORNADO):
+            new_contribution.velocity = form.cleaned_data['velocity']
+            new_contribution.tornado_type = form.cleaned_data['tornado_type']
 
         # Save
         new_contribution.save()

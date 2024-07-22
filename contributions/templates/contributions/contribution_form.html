@@ -50,12 +50,54 @@
     .word-color {
         color: #17a2b8;
     }
+
+    .hidden {
+        display: none;
+    }
 </style>
 
 
 <script>
 
+    function showDivs(divsToShow, divsToHide) {
+        for (let div of divsToHide) {
+            div.classList.add("hidden");
+        }
+        for (let div of divsToShow) {
+            div.classList.remove("hidden");
+        }
+    }
+
+    // Inputs are all inside form. Depending on selection, they are hidden or shown
+
     document.addEventListener('DOMContentLoaded', () => {
+
+        // Flood
+        var div_id_floating_objects_time = document.getElementById("div_id_floating_objects_time");
+        var div_id_water_height = document.getElementById("div_id_water_height");
+        // Tornado
+        var div_id_velocity = document.getElementById("div_id_velocity");
+        var div_id_tornado_type = document.getElementById("div_id_tornado_type");
+
+        // By default, 'Flood' is selected
+        showDivs([div_id_floating_objects_time, div_id_water_height], [div_id_velocity, div_id_tornado_type]);
+        console.log("hid");
+
+        document.getElementById("id_situationObserved").addEventListener("change", (event) => {
+            situationObserved = event.target.value;
+
+            if (situationObserved == "FLOOD") {
+                showDivs([div_id_floating_objects_time, div_id_water_height], [div_id_velocity, div_id_tornado_type]);
+            } else if (situationObserved == "TORNADO") {
+                showDivs([div_id_velocity, div_id_tornado_type], [div_id_floating_objects_time, div_id_water_height]);
+            } else {
+                showDivs([], [div_id_floating_objects_time, div_id_water_height, div_id_velocity, div_id_tornado_type]);
+            }
+        });
+
+
+
+
         window.addEventListener("map:init", e => {
 
             const map = e.detail.map;
@@ -142,6 +184,7 @@
     <form method="POST" enctype="multipart/form-data" id="contributionForm">
         {% csrf_token %}
 
+        <!-- Main data -->
         {{ form|crispy }}
 
         <!-- Confirm Modal Button-->

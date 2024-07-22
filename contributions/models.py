@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 from django_fsm import FSMField, transition
 from datetime import datetime
@@ -7,14 +6,12 @@ from uuid import uuid4
 from mimetypes import guess_type
 from PIL import Image
 
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.gis.db import models
-from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 
-from context.models import EVENTKIND_CHOICES
-from rivercureproject.settings import MEDIA_ROOT
 
 # States for a Contribution
 class ContributionStatus(models.TextChoices):
@@ -32,6 +29,10 @@ class SituationChoices(models.TextChoices):
     TORNADO = _("TORNADO"), _("Tornado")
     LANDSLIDE = _("LANDSLIDE"), _("Landslide")
     RIVER_POLLUTION = _("RIVER_POLLUTION"), _("River Pollution")
+
+class TornadoType(models.TextChoices):
+    ON_WATER = _("ON_WATER"), _("On Water")
+    ON_LAND = _("ON_LAND"), _("On Land")
 
 # TODO: Repeated code in here!
 def create_contribution_thumbnail_name(instance, filename):
@@ -78,7 +79,13 @@ class e_ContextContribution(models.Model):
     observationDescription = models.TextField()
     situationObserved = models.CharField(max_length=30, choices=SituationChoices.choices)
 
-    # TODO: Add extra information asked depending on SituationObserved
+    # Extra information asked depending on situationObserved
+    # Flood
+    floating_objects_time = models.DurationField(blank=True, null=True)
+    water_height = models.FloatField(validators=[MinValueValidator(0)], blank=True, null=True)
+    # Tornado
+    velocity = models.IntegerField(validators=[MinValueValidator(0)], blank=True, null=True) # km/h
+    tornado_type = models.CharField(max_length=10, choices=TornadoType.choices, blank=True)
 
     class Meta:
         verbose_name = 'Contribution'

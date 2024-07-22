@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-18 17:25+0100\n"
+"POT-Creation-Date: 2024-07-22 18:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: context/filters.py:44
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
-#: contributions/templates/contributions/contribution_form.html:130
+#: contributions/templates/contributions/contribution_form.html:172
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr ""
@@ -227,129 +227,169 @@ msgstr ""
 msgid "Images and videos"
 msgstr ""
 
+#: contributions/forms.py:45
+msgid "Transit Time of Floating Objects"
+msgstr ""
+
+#: contributions/forms.py:48
+msgid "Water Height"
+msgstr ""
+
 #: contributions/forms.py:50
-msgid "Observation Place"
+msgid "Height in meters."
+msgstr ""
+
+#: contributions/forms.py:51
+msgid "Velocity"
 msgstr ""
 
 #: contributions/forms.py:53
+msgid "Velocity in km/h."
+msgstr ""
+
+#: contributions/forms.py:55
+msgid "Tornado Type"
+msgstr ""
+
+#: contributions/forms.py:62
+msgid "Observation Place"
+msgstr ""
+
+#: contributions/forms.py:65
 msgid ""
 "Move the map around to pick the location. Alternatively, you can text search "
 "for the desired location."
 msgstr ""
 
-#: contributions/forms.py:67
+#: contributions/forms.py:79
 msgid "Too many files submitted. Only submit up to 10 files."
 msgstr ""
 
-#: contributions/forms.py:75
+#: contributions/forms.py:87
 msgid "Could not read uploaded file."
 msgstr ""
 
-#: contributions/forms.py:79
+#: contributions/forms.py:91
 msgid "Total size of files is too large ( > 10mb )."
 msgstr ""
 
-#: contributions/models.py:21
+#: contributions/models.py:18
 msgid "PENDING"
 msgstr ""
 
-#: contributions/models.py:21
+#: contributions/models.py:18
 msgid "Pending"
 msgstr ""
 
-#: contributions/models.py:22
+#: contributions/models.py:19
 msgid "ACCEPTED"
 msgstr ""
 
-#: contributions/models.py:22
+#: contributions/models.py:19
 msgid "Accepted"
 msgstr ""
 
-#: contributions/models.py:23
+#: contributions/models.py:20
 msgid "REJECTED"
 msgstr ""
 
-#: contributions/models.py:23
+#: contributions/models.py:20
 msgid "Rejected"
 msgstr ""
 
-#: contributions/models.py:24
+#: contributions/models.py:21
 msgid "REPORTED"
 msgstr ""
 
-#: contributions/models.py:24
+#: contributions/models.py:21
 msgid "Reported"
 msgstr ""
 
-#: contributions/models.py:27
+#: contributions/models.py:24
 msgid "FLOOD"
 msgstr ""
 
-#: contributions/models.py:27
+#: contributions/models.py:24
 msgid "Flood"
 msgstr ""
 
-#: contributions/models.py:28
+#: contributions/models.py:25
 msgid "HEAVY_PRECIPITATION"
 msgstr ""
 
-#: contributions/models.py:28
+#: contributions/models.py:25
 msgid "Heavy Precipitation"
 msgstr ""
 
-#: contributions/models.py:29
+#: contributions/models.py:26
 msgid "DROUGHT"
 msgstr ""
 
-#: contributions/models.py:29
+#: contributions/models.py:26
 msgid "Drought"
 msgstr ""
 
-#: contributions/models.py:30
+#: contributions/models.py:27
 msgid "STORM"
 msgstr ""
 
-#: contributions/models.py:30
+#: contributions/models.py:27
 msgid "Storm"
 msgstr ""
 
-#: contributions/models.py:31
+#: contributions/models.py:28
 msgid "TSUNAMI"
 msgstr ""
 
-#: contributions/models.py:31
+#: contributions/models.py:28
 msgid "Tsunami"
 msgstr ""
 
-#: contributions/models.py:32
+#: contributions/models.py:29
 msgid "TORNADO"
 msgstr ""
 
-#: contributions/models.py:32
+#: contributions/models.py:29
 msgid "Tornado"
 msgstr ""
 
-#: contributions/models.py:33
+#: contributions/models.py:30
 msgid "LANDSLIDE"
 msgstr ""
 
-#: contributions/models.py:33
+#: contributions/models.py:30
 msgid "Landslide"
 msgstr ""
 
-#: contributions/models.py:34
+#: contributions/models.py:31
 msgid "RIVER_POLLUTION"
 msgstr ""
 
-#: contributions/models.py:34
+#: contributions/models.py:31
 msgid "River Pollution"
+msgstr ""
+
+#: contributions/models.py:34
+msgid "ON_WATER"
+msgstr ""
+
+#: contributions/models.py:34
+msgid "On Water"
+msgstr ""
+
+#: contributions/models.py:35
+msgid "ON_LAND"
+msgstr ""
+
+#: contributions/models.py:35
+msgid "On Land"
 msgstr ""
 
 #: contributions/templates/contributions/contribution_detail.html:313
 msgid "Observation Details"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:136
+#: contributions/templates/contributions/contribution_form.html:178
 msgid ""
 "If you have observed an extreme weather situation in this geographical "
 "context, you may contribute to the RiverCure Portal by submitting a <span "
@@ -359,7 +399,7 @@ msgid ""
 "you have collected of the incident."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:138
+#: contributions/templates/contributions/contribution_form.html:180
 #, python-format
 msgid ""
 "For more information about the RiverCure Portal and Contributions, please "
@@ -367,39 +407,39 @@ msgid ""
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:149
+#: contributions/templates/contributions/contribution_form.html:192
 msgid "Submit"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:152
-#: contributions/templates/contributions/contribution_form.html:177
+#: contributions/templates/contributions/contribution_form.html:195
+#: contributions/templates/contributions/contribution_form.html:220
 msgid "Cancel"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:161
+#: contributions/templates/contributions/contribution_form.html:204
 msgid "Submit Contribution"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:168
+#: contributions/templates/contributions/contribution_form.html:211
 msgid ""
 "Are you sure you want to submit this Contribution? Make sure the information "
 "is <span class='word-color'>correct</span>!"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:171
+#: contributions/templates/contributions/contribution_form.html:214
 msgid ""
 "After submission, your Contribution will await <span class='word-"
 "color'>validation</span>, which will be performed by a RiverCure Moderator."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:173
+#: contributions/templates/contributions/contribution_form.html:216
 msgid ""
 "To read more about Contributions and the Validation process, please visit "
 "the <a href=\"https://rivercure.notion."
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_form.html:178
+#: contributions/templates/contributions/contribution_form.html:221
 msgid "Confirm"
 msgstr ""
 

@@ -7,7 +7,7 @@ from django.forms import ValidationError
 
 from django.utils.translation import gettext_lazy as _
 
-from .models import e_ContextContribution, SituationChoices
+from .models import e_ContextContribution, SituationChoices, TornadoType
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -42,6 +42,18 @@ class ContributionInitialForm(forms.ModelForm):
     file_field = MultipleFileField(help_text=_('Optional: Submit any photos or videos you have related to the situation you observed. Only submit up to 10 files, with a total size of 10mb.'),
                                    label=_('Images and videos'),
                                    required=False)
+    floating_objects_time = forms.DurationField(label=_('Transit Time of Floating Objects'),
+                                                required=False,
+                                                widget=forms.TextInput(attrs={'placeholder': 'HH:MM:SS',}))
+    water_height = forms.FloatField(label=_('Water Height'),
+                                    required=False,
+                                    widget=forms.NumberInput(attrs={'placeholder': _('Height in meters.'),}))
+    velocity = forms.IntegerField(label=_('Velocity'),
+                                  required=False,
+                                  widget=forms.NumberInput(attrs={'placeholder': _('Velocity in km/h.')}))
+    tornado_type = forms.ChoiceField(choices=TornadoType.choices,
+                                     label=_('Tornado Type'),
+                                     required=False)
 
     class Meta:
         model = e_ContextContribution
