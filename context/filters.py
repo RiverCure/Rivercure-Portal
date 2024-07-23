@@ -172,40 +172,40 @@ class EventManagerAddFilter(django_filters.FilterSet):
 
 # TODO: This is the same as ModeratorContextFilter. Merge
 class EventManagerContextFilter(django_filters.FilterSet):
-    Name = django_filters.CharFilter(label='Context Name',
+    Name = django_filters.CharFilter(label=_('Context Name'),
                                         field_name='context__Name',
                                         lookup_expr='icontains',
                                         widget=TextInput(attrs={
-                                                    'placeholder': 'Search by Context name...',
+                                                    'placeholder': _('Search by Context name...'),
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
     hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
-    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label='Organization', queryset=Organization.objects.all())
+    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label=_('Organization'), queryset=Organization.objects.all())
 
     class Meta:
         Model = e_Context
         fields = ['Name', 'hydroFeature', 'organization']
 
 class MyContextsChallengesFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(label='Challenge Title',
+    title = django_filters.CharFilter(label=_('Challenge Title'),
                                       lookup_expr='icontains',
                                       widget=TextInput(attrs={
-                                                    'placeholder': 'Search by title...',
+                                                    'placeholder': _('Search by title...'),
                                                     'type': 'search',
                                                     'class': 'form-control',
                                                     }))
-    difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL, label='Difficulty Level')
-    event = django_filters.CharFilter(label='Event',
+    difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL, label=_('Difficulty Level'))
+    event = django_filters.CharFilter(label=_('Event'),
                                       field_name='event__Name', lookup_expr='icontains',
                                       widget=TextInput(attrs={
-                                        'placeholder': 'Search by Event name...',
+                                        'placeholder': _('Search by Event name...'),
                                         'type': 'search',
                                       }))
-    state = django_filters.ChoiceFilter(label='Challenge State',
+    state = django_filters.ChoiceFilter(label=_('Challenge State'),
                                         choices=ChallengeState.choices)
-    creation_datetime = django_filters.DateFromToRangeFilter(label='Creation date',
-                                                           help_text='The Challenge was created in between the specified dates. <i>Hint:</i> You may also just search for dates more recent than the date on the left, or older than the date on the right.',
+    creation_datetime = django_filters.DateFromToRangeFilter(label=_('Creation Date'),
+                                                           help_text=_('The Challenge was created in between the specified dates. <i>Hint:</i> You may also just search for dates more recent than the date on the left, or older than the date on the right.'),
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 14:14+0100\n"
+"POT-Creation-Date: 2024-07-23 14:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Search by name..."
 msgstr "Procurar por nome..."
 
-#: context/filters.py:44
+#: context/filters.py:44 context/filters.py:184
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
 #: contributions/templates/contributions/contribution_detail.html:98
@@ -31,6 +31,52 @@ msgstr "Procurar por nome..."
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
+
+#: context/filters.py:175
+msgid "Context Name"
+msgstr "Nome do Contexto"
+
+#: context/filters.py:179 contributions/filters.py:40
+msgid "Search by Context name..."
+msgstr "Procurar por nome do Contexto..."
+
+#: context/filters.py:191
+msgid "Challenge Title"
+msgstr "Título do Desafio"
+
+#: context/filters.py:194
+msgid "Search by title..."
+msgstr "Procurar por título..."
+
+#: context/filters.py:198
+msgid "Difficulty Level"
+msgstr "Nível de Dificuldade"
+
+#: context/filters.py:199
+msgid "Event"
+msgstr "Evento"
+
+#: context/filters.py:202
+msgid "Search by Event name..."
+msgstr "Procurar por nome do Evento..."
+
+#: context/filters.py:205
+msgid "Challenge State"
+msgstr "Estado do Desafio"
+
+#: context/filters.py:207
+msgid "Creation Date"
+msgstr "Data de Criação"
+
+#: context/filters.py:208
+msgid ""
+"The Challenge was created in between the specified dates. <i>Hint:</i> You "
+"may also just search for dates more recent than the date on the left, or "
+"older than the date on the right."
+msgstr ""
+"O Desafio foi criado entre as datas especificadas. <i>Dica:</i> Também pode "
+"pesquisar por datas mais recentes do que a data à esquerda, ou mais antigas "
+"do que a data à direita."
 
 #: context/templates/context/context/citizen_home.html:155
 #: context/templates/context/context/citizen_home.html:453
@@ -74,10 +120,11 @@ msgstr "Gestor de Evento"
 
 #: context/templates/context/context/citizen_home.html:235
 #: context/templates/context/context/citizen_home.html:241
+#: context/templates/context/event/event_manager_my_context_list.html:29
 #: rivercureportal/templates/rivercureportal/base.html:72
 #: rivercureportal/templates/rivercureportal/base.html:78
 msgid "My Contexts"
-msgstr "Meus Contextos"
+msgstr "Os Meus Contextos"
 
 #: context/templates/context/context/citizen_home.html:236
 #: rivercureportal/templates/rivercureportal/base.html:73
@@ -197,6 +244,41 @@ msgstr "Começou a"
 msgid "Back to Home"
 msgstr "Voltar a Home"
 
+#: context/templates/context/event/event_manager_my_context_list.html:32
+msgid ""
+"On this page you can see the Contexts in which you are an Event Manager. For "
+"more information on Event Managers and Context-level permissions, please "
+"visit the"
+msgstr ""
+"Nesta página, pode ver os Contextos em que é um Gestor de Eventos. Para mais "
+"informações sobre Gestores de Eventos e permissões ao nível do Contexto, por "
+"favor visite a"
+
+#: context/templates/context/event/event_manager_my_context_list.html:37
+#: contributions/templates/contributions/contribution_list.html:24
+msgid "Search and Filter"
+msgstr "Procurar e Filtrar"
+
+#: context/templates/context/event/event_manager_my_context_list.html:53
+#: contributions/templates/contributions/contribution_list.html:28
+#: contributions/templates/contributions/my_contributions_list.html:28
+msgid "Apply"
+msgstr "Aplicar"
+
+#: context/templates/context/event/event_manager_my_context_list.html:75
+msgid "There are no Contexts."
+msgstr "Não existem Contextos."
+
+#: context/templates/context/event/event_manager_my_context_list.html:86
+#: contributions/templates/contributions/contribution_list.html:73
+msgid "First Page"
+msgstr "Primeira Página"
+
+#: context/templates/context/event/event_manager_my_context_list.html:100
+#: contributions/templates/contributions/contribution_list.html:87
+msgid "Last Page"
+msgstr "Última Página"
+
 #: contributions/filters.py:11 contributions/filters.py:28
 #: contributions/forms.py:39
 msgid "Situation Observed"
@@ -234,10 +316,6 @@ msgstr ""
 #: contributions/filters.py:37
 msgid "Context"
 msgstr "Contexto"
-
-#: contributions/filters.py:40
-msgid "Search by Context name..."
-msgstr "Procurar por nome do Contexto..."
 
 #: contributions/filters.py:43
 msgid "Contribution State"
@@ -664,15 +742,6 @@ msgid ""
 msgstr ""
 "Nesta página, pode ver as Contribuições que outros utilizadores submeteram ao"
 
-#: contributions/templates/contributions/contribution_list.html:24
-msgid "Search and Filter"
-msgstr "Procurar e Filtrar"
-
-#: contributions/templates/contributions/contribution_list.html:28
-#: contributions/templates/contributions/my_contributions_list.html:28
-msgid "Apply"
-msgstr "Aplicar"
-
 #: contributions/templates/contributions/contribution_list.html:60
 msgid "There are no Contributions yet. Why don't you"
 msgstr "Ainda não existem Contribuições. Porque não"
@@ -688,14 +757,6 @@ msgstr "para este Contexto?"
 #: contributions/templates/contributions/contribution_list.html:64
 msgid "Back to Context"
 msgstr "Voltar a Contexto"
-
-#: contributions/templates/contributions/contribution_list.html:73
-msgid "First Page"
-msgstr "Primeira Página"
-
-#: contributions/templates/contributions/contribution_list.html:87
-msgid "Last Page"
-msgstr "Última Página"
 
 #: contributions/templates/contributions/my_contributions_list.html:20
 msgid ""
@@ -935,15 +996,6 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
-
-#~ msgid ""
-#~ "The observation was made in between the specified dates. <i>Hint:</i> You "
-#~ "may also just search for dates more recent than the date on the left, or "
-#~ "older than the date on the right."
-#~ msgstr ""
-#~ "A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
-#~ "pode pesquisar por datas mais recentes do que a data à esquerda, ou mais "
-#~ "antigas do que a data à direita."
 
 #~ msgid ""
 #~ "The Contribution was submitted in between the specified dates. <i>Hint:</"

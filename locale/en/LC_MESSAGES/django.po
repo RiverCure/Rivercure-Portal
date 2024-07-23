@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 14:14+0100\n"
+"POT-Creation-Date: 2024-07-23 14:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Search by name..."
 msgstr ""
 
-#: context/filters.py:44
+#: context/filters.py:44 context/filters.py:184
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
 #: contributions/templates/contributions/contribution_detail.html:98
@@ -30,6 +30,49 @@ msgstr ""
 #: contributions/templates/contributions/contribution_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
+msgstr ""
+
+#: context/filters.py:175
+msgid "Context Name"
+msgstr ""
+
+#: context/filters.py:179 contributions/filters.py:40
+msgid "Search by Context name..."
+msgstr ""
+
+#: context/filters.py:191
+msgid "Challenge Title"
+msgstr ""
+
+#: context/filters.py:194
+msgid "Search by title..."
+msgstr ""
+
+#: context/filters.py:198
+msgid "Difficulty Level"
+msgstr ""
+
+#: context/filters.py:199
+msgid "Event"
+msgstr ""
+
+#: context/filters.py:202
+msgid "Search by Event name..."
+msgstr ""
+
+#: context/filters.py:205
+msgid "Challenge State"
+msgstr ""
+
+#: context/filters.py:207
+msgid "Creation Date"
+msgstr ""
+
+#: context/filters.py:208
+msgid ""
+"The Challenge was created in between the specified dates. <i>Hint:</i> You "
+"may also just search for dates more recent than the date on the left, or "
+"older than the date on the right."
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:155
@@ -74,6 +117,7 @@ msgstr ""
 
 #: context/templates/context/context/citizen_home.html:235
 #: context/templates/context/context/citizen_home.html:241
+#: context/templates/context/event/event_manager_my_context_list.html:29
 #: rivercureportal/templates/rivercureportal/base.html:72
 #: rivercureportal/templates/rivercureportal/base.html:78
 msgid "My Contexts"
@@ -196,6 +240,38 @@ msgstr ""
 msgid "Back to Home"
 msgstr ""
 
+#: context/templates/context/event/event_manager_my_context_list.html:32
+msgid ""
+"On this page you can see the Contexts in which you are an Event Manager. For "
+"more information on Event Managers and Context-level permissions, please "
+"visit the"
+msgstr ""
+
+#: context/templates/context/event/event_manager_my_context_list.html:37
+#: contributions/templates/contributions/contribution_list.html:24
+msgid "Search and Filter"
+msgstr ""
+
+#: context/templates/context/event/event_manager_my_context_list.html:53
+#: contributions/templates/contributions/contribution_list.html:28
+#: contributions/templates/contributions/my_contributions_list.html:28
+msgid "Apply"
+msgstr ""
+
+#: context/templates/context/event/event_manager_my_context_list.html:75
+msgid "There are no Contexts."
+msgstr ""
+
+#: context/templates/context/event/event_manager_my_context_list.html:86
+#: contributions/templates/contributions/contribution_list.html:73
+msgid "First Page"
+msgstr ""
+
+#: context/templates/context/event/event_manager_my_context_list.html:100
+#: contributions/templates/contributions/contribution_list.html:87
+msgid "Last Page"
+msgstr ""
+
 #: contributions/filters.py:11 contributions/filters.py:28
 #: contributions/forms.py:39
 msgid "Situation Observed"
@@ -226,10 +302,6 @@ msgstr ""
 
 #: contributions/filters.py:37
 msgid "Context"
-msgstr ""
-
-#: contributions/filters.py:40
-msgid "Search by Context name..."
 msgstr ""
 
 #: contributions/filters.py:43
@@ -618,15 +690,6 @@ msgid ""
 "On this page you can see the Contributions that other users have submitted to"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_list.html:24
-msgid "Search and Filter"
-msgstr ""
-
-#: contributions/templates/contributions/contribution_list.html:28
-#: contributions/templates/contributions/my_contributions_list.html:28
-msgid "Apply"
-msgstr ""
-
 #: contributions/templates/contributions/contribution_list.html:60
 msgid "There are no Contributions yet. Why don't you"
 msgstr ""
@@ -641,14 +704,6 @@ msgstr ""
 
 #: contributions/templates/contributions/contribution_list.html:64
 msgid "Back to Context"
-msgstr ""
-
-#: contributions/templates/contributions/contribution_list.html:73
-msgid "First Page"
-msgstr ""
-
-#: contributions/templates/contributions/contribution_list.html:87
-msgid "Last Page"
 msgstr ""
 
 #: contributions/templates/contributions/my_contributions_list.html:20

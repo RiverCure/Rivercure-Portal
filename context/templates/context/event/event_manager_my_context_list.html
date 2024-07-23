@@ -2,6 +2,7 @@
 {% block title %} My Contexts {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -25,17 +26,15 @@
 </style>
 
 <!-- Header -->
-<h1> My Contexts </h1>
+<h1> {% trans "My Contexts" %} </h1>
 <hr>
 
-<p class="font-weight-light" align="justify">
-    On this page you can see the Contexts in which you are an Event Manager.
-    For more information on Event Managers and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+<p class="font-weight-light" align="justify">{% trans "On this page you can see the Contexts in which you are an Event Manager. For more information on Event Managers and Context-level permissions, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
 <div class="mb-3">
     <!-- Search and Filter Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
     
     {% comment %} <!-- Sort Button -->
     <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
@@ -50,7 +49,7 @@
 <div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 
@@ -72,7 +71,7 @@
     {% endfor %}
 </div>
 {% if contexts.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Contexts.</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Contexts." %}</p>
 {% endif %}
 
 
@@ -83,7 +82,7 @@
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -97,7 +96,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>
