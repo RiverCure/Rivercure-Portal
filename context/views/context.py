@@ -173,7 +173,7 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('creationDateTime') # Contributions that belong to this context and are Accepted
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Contributions that belong to this context and are Accepted
         context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
         context['MEDIA_URL'] = settings.MEDIA_URL
         return context

@@ -85,9 +85,11 @@
     </div>
 
 </div>
+{% if contributions.count != 0 %}
 <div class="mb-3 text-center">
     <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
 </div>
+{% endif %}
 
 
 <!-- Event list -->
@@ -125,9 +127,11 @@
     </div>
 
 </div>
+{% if events.count != 0 %}
 <div class="mb-3 text-center">
     <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
 </div>
+{% endif %}
 
 
 
