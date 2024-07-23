@@ -160,7 +160,7 @@ class ContributionListView(FilterView):
     def get_queryset(self):
 
         context_code = self.kwargs['contextCode']
-        contribution_list = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED) # Only show Accepted Contributions
+        contribution_list = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
 
         return contribution_list
     
@@ -170,7 +170,7 @@ class ContributionListView(FilterView):
         context = super().get_context_data(**kwargs)
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['context'] = get_object_or_404(e_Context, code=context_code)
-        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED) # Only show Accepted Contributions
+        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
         context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context

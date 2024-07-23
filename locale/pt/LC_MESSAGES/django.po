@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-22 19:11+0100\n"
+"POT-Creation-Date: 2024-07-23 11:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,9 @@ msgstr "Procurar por nome..."
 #: context/filters.py:44
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
+#: contributions/templates/contributions/contribution_detail.html:92
 #: contributions/templates/contributions/contribution_form.html:166
+#: contributions/templates/contributions/contribution_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
@@ -39,6 +41,7 @@ msgstr "Contribuir"
 #: context/templates/context/context/citizen_home.html:156
 #: context/templates/context/context/citizen_home.html:454
 #: context/templates/context/context/public_context_detail.html:40
+#: contributions/templates/contributions/contribution_detail.html:379
 msgid "Details"
 msgstr "Detalhes"
 
@@ -166,12 +169,15 @@ msgstr ""
 "Ainda não existem Contribuições para este Contexto. Porque não faz uma?"
 
 #: context/templates/context/context/public_context_detail.html:80
+#: contributions/templates/contributions/contribution_detail.html:120
+#: contributions/templates/contributions/contribution_list.html:52
 #: contributions/templates/contributions/my_contributions_list.html:46
 msgid "Submitted on"
 msgstr "Submetido a"
 
 #: context/templates/context/context/public_context_detail.html:90
 #: context/templates/context/context/public_context_detail.html:132
+#: contributions/templates/contributions/contribution_detail.html:298
 msgid "Scroll horizontally to see more"
 msgstr "Arraste horizontalmente para ver mais"
 
@@ -191,36 +197,38 @@ msgstr "Começou a"
 msgid "Back to Home"
 msgstr "Voltar a Home"
 
-#: contributions/filters.py:29 contributions/forms.py:39
+#: contributions/filters.py:12 contributions/filters.py:29
+#: contributions/forms.py:39
 msgid "Situation Observed"
 msgstr "Situação Observada"
 
-#: contributions/filters.py:30 contributions/forms.py:33
+#: contributions/filters.py:13 contributions/filters.py:30
+#: contributions/forms.py:33
 msgid "Observation Date"
 msgstr "Data de Observação"
 
-#: contributions/filters.py:31
+#: contributions/filters.py:14 contributions/filters.py:31
 msgid ""
 "The observation was made in between the specified dates. <i>Hint:</i> You "
-"may also just search for dates more recent than the date on the left, or "
-"older than the date on the right."
+"may also just search for observations more recent than the date on the left, "
+"or older than the date on the right."
 msgstr ""
 "A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
-"pode pesquisar por datas mais recentes do que a data à esquerda, ou mais "
+"pode pesquisar por observações mais recentes do que a data à esquerda, ou mais "
 "antigas do que a data à direita."
 
-#: contributions/filters.py:34
+#: contributions/filters.py:17 contributions/filters.py:34
 msgid "Submission Date"
 msgstr "Data de Submissão"
 
-#: contributions/filters.py:35
+#: contributions/filters.py:18 contributions/filters.py:35
 msgid ""
 "The Contribution was submitted in between the specified dates. <i>Hint:</i> "
-"You may also just search for dates more recent than the date on the left, or "
-"older than the date on the right."
+"You may also just search for Contributions more recent than the date on the "
+"left, or older than the date on the right."
 msgstr ""
 "A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
-"Também pode pesquisar por datas mais recentes do que a data à esquerda, ou "
+"Também pode pesquisar por Contribuições mais recentes do que a data à esquerda, ou "
 "mais antigas do que a data à direita."
 
 #: contributions/filters.py:38
@@ -252,6 +260,7 @@ msgid "Text description of the observation you made."
 msgstr "Descrição textual da observação que fez."
 
 #: contributions/forms.py:36
+#: contributions/templates/contributions/contribution_detail.html:326
 msgid "Description"
 msgstr "Descrição"
 
@@ -325,10 +334,12 @@ msgid "Pending"
 msgstr "Pendente"
 
 #: contributions/models.py:19
+#: contributions/templates/contributions/contribution_detail.html:157
 msgid "Accepted"
 msgstr "Aceite"
 
 #: contributions/models.py:20
+#: contributions/templates/contributions/contribution_detail.html:189
 msgid "Rejected"
 msgstr "Rejeitada"
 
@@ -376,9 +387,207 @@ msgstr "Sobre Água"
 msgid "On Land"
 msgstr "Sobre Terra"
 
+#: contributions/templates/contributions/contribution_detail.html:118
+#: contributions/templates/contributions/contribution_detail.html:496
+msgid "Contribution"
+msgstr "Contribuição"
+
+#: contributions/templates/contributions/contribution_detail.html:121
+msgid "State"
+msgstr "Estado"
+
+#: contributions/templates/contributions/contribution_detail.html:134
+#: contributions/templates/contributions/contribution_detail.html:508
+msgid "Rejection reason"
+msgstr "Razão de Rejeição"
+
+#: contributions/templates/contributions/contribution_detail.html:140
+msgid "Back to Contribution list"
+msgstr "Voltar à lista de Contribuições"
+
+#: contributions/templates/contributions/contribution_detail.html:144
+msgid "Accept"
+msgstr "Aceitar"
+
+#: contributions/templates/contributions/contribution_detail.html:151
+msgid "Accept Contribution"
+msgstr "Aceitar Contribuição"
+
+#: contributions/templates/contributions/contribution_detail.html:157
+#: contributions/templates/contributions/contribution_detail.html:189
+msgid "Are you sure you want to mark this Contribution as"
+msgstr "Tem a certeza que pretende marcar esta Contribuição como"
+
+#: contributions/templates/contributions/contribution_detail.html:158
+#: contributions/templates/contributions/contribution_detail.html:190
+msgid "This action is irreversible!"
+msgstr "Esta ação é irreversível!"
+
+#: contributions/templates/contributions/contribution_detail.html:161
+#: contributions/templates/contributions/contribution_detail.html:193
+msgid ""
+"To read more about Contributions and the Moderation process, please visit the"
+msgstr ""
+"Para ler mais sobre Contribuições e o processo de Moderação, por favor "
+"visite a"
+
+#: contributions/templates/contributions/contribution_detail.html:165
+#: contributions/templates/contributions/contribution_detail.html:201
+#: contributions/templates/contributions/contribution_detail.html:442
+#: contributions/templates/contributions/contribution_form.html:189
+#: contributions/templates/contributions/contribution_form.html:214
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: contributions/templates/contributions/contribution_detail.html:166
+#: contributions/templates/contributions/contribution_detail.html:203
+#: contributions/templates/contributions/contribution_detail.html:444
+#: contributions/templates/contributions/contribution_form.html:215
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: contributions/templates/contributions/contribution_detail.html:175
+msgid "Reject"
+msgstr "Rejeitar"
+
+#: contributions/templates/contributions/contribution_detail.html:183
+msgid "Reject Contribution"
+msgstr "Rejeitar Contribuição"
+
+#: contributions/templates/contributions/contribution_detail.html:211
+msgid "Validate Next Contribution"
+msgstr "Validar Próxima Contribuição"
+
+#: contributions/templates/contributions/contribution_detail.html:217
+msgid "Delete"
+msgstr "Apagar"
+
+#: contributions/templates/contributions/contribution_detail.html:230
+msgid "Uploaded Media"
+msgstr "Média Carregada"
+
 #: contributions/templates/contributions/contribution_detail.html:313
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
+
+#: contributions/templates/contributions/contribution_detail.html:370
+msgid "Observed on"
+msgstr "Observado a"
+
+#: contributions/templates/contributions/contribution_detail.html:377
+msgid ""
+"Address will be available shortly after Contribution is accepted. In the "
+"meantime, check the details."
+msgstr ""
+"O endereço estará disponível após a Contribuição ser aceite. Enquanto isso, "
+"consulte os detalhes."
+
+#: contributions/templates/contributions/contribution_detail.html:382
+msgid "Latitude"
+msgstr "Latitude"
+
+#: contributions/templates/contributions/contribution_detail.html:385
+msgid "Longitude"
+msgstr "Longitude"
+
+#: contributions/templates/contributions/contribution_detail.html:404
+msgid "See Context"
+msgstr "Ver Contexto"
+
+#: contributions/templates/contributions/contribution_detail.html:410
+msgid "Report"
+msgstr "Reportar"
+
+#: contributions/templates/contributions/contribution_detail.html:418
+msgid "Report Contribution"
+msgstr "Reportar Contribuição"
+
+#: contributions/templates/contributions/contribution_detail.html:424
+msgid ""
+"Are you sure you want to <span class='text-danger'>report</span> this "
+"Contribution?"
+msgstr ""
+"Tem a certeza de que deseja <span class='text-danger'>reportar</span> esta "
+"Contribuição?"
+
+#: contributions/templates/contributions/contribution_detail.html:425
+msgid "Make sure you are following the"
+msgstr "Certifique-se de que está a seguir as"
+
+#: contributions/templates/contributions/contribution_detail.html:425
+msgid "Platform Guidelines"
+msgstr "Diretrizes da Plataforma"
+
+#: contributions/templates/contributions/contribution_detail.html:427
+msgid ""
+"To read more about reporting Contributions and the Moderation process, "
+"please visit the"
+msgstr ""
+"Para ler mais sobre Contribuições e o processo de Moderação, por favor "
+"visite a"
+
+#: contributions/templates/contributions/contribution_detail.html:435
+msgid ""
+"Please write the <span class='font-weight-bold'>reason</span> for reporting "
+"this Contribution."
+msgstr ""
+"Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
+"reportar esta Contribuição."
+
+#: contributions/templates/contributions/contribution_detail.html:460
+msgid "Validation History"
+msgstr "Histórico de Validação"
+
+#: contributions/templates/contributions/contribution_detail.html:461
+msgid ""
+"This is the history of the states this Contribution has been in, from most "
+"recent to oldest. Scroll to see more, and click on one to see details."
+msgstr ""
+"Este é o histórico dos estados em que esta Contribuição já esteve, do mais "
+"recente ao mais antigo. Arraste horizontalmente para ver mais, e clique em "
+"um para ver os detalhes."
+
+#: contributions/templates/contributions/contribution_detail.html:482
+msgid "Latest Validation"
+msgstr "Última Validação"
+
+#: contributions/templates/contributions/contribution_detail.html:485
+msgid "User Submission"
+msgstr "Submissão do Utilizador"
+
+#: contributions/templates/contributions/contribution_detail.html:503
+msgid "Validated on"
+msgstr "Validado a"
+
+#: contributions/templates/contributions/contribution_detail.html:504
+msgid "Validated by"
+msgstr "Validado por"
+
+#: contributions/templates/contributions/contribution_detail.html:513
+#: contributions/templates/contributions/contribution_detail.html:569
+msgid "Close"
+msgstr "Fechar"
+
+#: contributions/templates/contributions/contribution_detail.html:534
+msgid ""
+"Reports made by users. Scroll to see more, and click on one to see details."
+msgstr ""
+"Alertas feitos pelos utilizadores. Arraste horizontalmente para ver mais, e "
+"clique em um para ver os detalhes."
+
+#: contributions/templates/contributions/contribution_detail.html:546
+#: contributions/templates/contributions/contribution_detail.html:559
+msgid "Reported by"
+msgstr "Reportado por"
+
+#: contributions/templates/contributions/contribution_detail.html:547
+#: contributions/templates/contributions/contribution_detail.html:566
+msgid "Reported on"
+msgstr "Reportado a"
+
+#: contributions/templates/contributions/contribution_detail.html:548
+msgid "Read"
+msgstr "Ler"
 
 #: contributions/templates/contributions/contribution_form.html:172
 msgid ""
@@ -411,11 +620,6 @@ msgstr ""
 msgid "Submit"
 msgstr "Submeter"
 
-#: contributions/templates/contributions/contribution_form.html:189
-#: contributions/templates/contributions/contribution_form.html:214
-msgid "Cancel"
-msgstr "Cancelar"
-
 #: contributions/templates/contributions/contribution_form.html:198
 msgid "Submit Contribution"
 msgstr "Submeter Contribuição"
@@ -446,9 +650,44 @@ msgstr ""
 "visite a <a href=\"https://rivercure.notion."
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
 
-#: contributions/templates/contributions/contribution_form.html:215
-msgid "Confirm"
-msgstr "Confirmar"
+#: contributions/templates/contributions/contribution_list.html:20
+msgid ""
+"On this page you can see the Contributions that other users have submitted to"
+msgstr ""
+"Nesta página, pode ver as Contribuições que outros utilizadores submeteram ao"
+
+#: contributions/templates/contributions/contribution_list.html:24
+msgid "Search and Filter"
+msgstr "Procurar e Filtrar"
+
+#: contributions/templates/contributions/contribution_list.html:28
+#: contributions/templates/contributions/my_contributions_list.html:28
+msgid "Apply"
+msgstr "Aplicar"
+
+#: contributions/templates/contributions/contribution_list.html:60
+msgid "There are no Contributions yet. Why don't you"
+msgstr "Ainda não existem Contribuições. Porque não"
+
+#: contributions/templates/contributions/contribution_list.html:60
+msgid "contribute"
+msgstr "contribui"
+
+#: contributions/templates/contributions/contribution_list.html:60
+msgid "to this Context?"
+msgstr "para este Contexto?"
+
+#: contributions/templates/contributions/contribution_list.html:64
+msgid "Back to Context"
+msgstr "Voltar a Contexto"
+
+#: contributions/templates/contributions/contribution_list.html:73
+msgid "First Page"
+msgstr "Primeira Página"
+
+#: contributions/templates/contributions/contribution_list.html:87
+msgid "Last Page"
+msgstr "Última Página"
 
 #: contributions/templates/contributions/my_contributions_list.html:20
 msgid ""
@@ -456,10 +695,6 @@ msgid ""
 "RiverCure Portal."
 msgstr ""
 "Nesta página, pode ver as Contribuições que submeteu ao RiverCure Portal."
-
-#: contributions/templates/contributions/my_contributions_list.html:28
-msgid "Apply"
-msgstr "Aplicar"
 
 #: contributions/templates/contributions/my_contributions_list.html:54
 msgid "There are no Contributions yet. Why don't you contribute to a Context?"
@@ -693,6 +928,35 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
+#~ msgid ""
+#~ "The observation was made in between the specified dates. <i>Hint:</i> You "
+#~ "may also just search for dates more recent than the date on the left, or "
+#~ "older than the date on the right."
+#~ msgstr ""
+#~ "A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
+#~ "pode pesquisar por datas mais recentes do que a data à esquerda, ou mais "
+#~ "antigas do que a data à direita."
+
+#~ msgid ""
+#~ "The Contribution was submitted in between the specified dates. <i>Hint:</"
+#~ "i> You may also just search for dates more recent than the date on the "
+#~ "left, or older than the date on the right."
+#~ msgstr ""
+#~ "A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
+#~ "Também pode pesquisar por datas mais recentes do que a data à esquerda, "
+#~ "ou mais antigas do que a data à direita."
+
+#, fuzzy, python-format
+#~| msgid ""
+#~| " There are no contributions yet. Why don't you %(contribution_create)s "
+#~| "to this Context?"
+#~ msgid ""
+#~ "</a>'|safe %%} There are no contributions yet. Why don't you "
+#~ "%(contribution_create)s to this Context?"
+#~ msgstr ""
+#~ "Ainda não existem Contribuições. Porque não %(contribution_create)s para "
+#~ "este Contexto?"
+
 #~ msgid "HEAVY_PRECIPITATION"
 #~ msgstr "PRECIPITAÇÃO INTENSA"
 
@@ -722,13 +986,6 @@ msgstr "Já Tem Conta?"
 
 #~ msgid "REPORTED"
 #~ msgstr "Reportada"
-
-#~ msgid ""
-#~ "To read more about Contributions and the Validation process, please visit "
-#~ "the <a href="
-#~ msgstr ""
-#~ "Para ler mais sobre Contribuições e o processo de Validação, por favor "
-#~ "visite"
 
 #~ msgid "Contacts"
 #~ msgstr "Contacto"

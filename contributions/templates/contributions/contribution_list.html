@@ -2,6 +2,7 @@
 {% block title %} Contributions {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -14,17 +15,17 @@
 
 {% block content %}
 
-<h1 class="mt-2">{{ context.Name }} context </h1>
-<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
-<p class="font-weight-light" align="justify">On this page you can see the Contributions that other users have submitted to {{ context.Name }}.</p>
+<h1 class="mt-2">{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
+<p class="font-weight-light" align="justify">{% trans "On this page you can see the Contributions that other users have submitted to" %} {{ context.Name }}.</p>
 <hr>
 
 <!-- Filter -->
-<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
-<div id="filter-menu" class="collapse card my-card-hover card-body">
+<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+<div id="filter-menu" class="collapse card my-card-hover card-body mt-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 <hr>
@@ -47,7 +48,7 @@
                 <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                 <div class="card-body pt-0" style="margin-top: -10px;">
                     <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                    <small class="text-body-secondary card-contributions text-muted">Submitted on {{ contribution.creationDateTime }}</small>
+                    <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
                 </div>
             </div>
         </a>
@@ -55,11 +56,11 @@
 </div>
 <!-- If list empty -->
 {% if contributions.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no contributions yet. Why don't you <a href="{% url 'contribution-create' context.code %}">contribute</a> to this Context?</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Contributions yet. Why don't you" %} <a href="{% url 'contribution-create' context.code %}">{% trans "contribute" %}</a> {% trans "to this Context?" %}</p>
 {% endif %}
 
 <!-- Bottom button -->
-<a class="btn btn-secondary my-3" style="float: right;" href="{% url 'public-context-detail' context.code %}">Back to Context</a>
+<a class="btn btn-secondary my-3" style="float: right;" href="{% url 'public-context-detail' context.code %}">{% trans "Back to Context" %}</a>
 
 <!-- Pagination -->
 <div class="row">
@@ -68,7 +69,7 @@
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -82,7 +83,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>
