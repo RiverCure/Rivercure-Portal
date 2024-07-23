@@ -330,6 +330,16 @@
             <hr>
             <h5>{% trans "Description" %}</h5>
             <p class="font-weight-light" align="justify">{{ contribution.observationDescription }}</p>
+
+            {% if contribution.situationObserved == "FLOOD" %}
+            <hr>
+            <p>{% trans "Transit Time of Floating Objects" %}: <span class="font-weight-light">{{contribution.floating_objects_time}}</span></p>
+            <p>{% trans "Water Height" %}: <span class="font-weight-light">{{contribution.water_height}} {% trans "meters" %}</span></p>
+            {% elif contribution.situationObserved == "TORNADO" %}
+            <hr>
+            <p>{% trans "Velocity" %}: <span class="font-weight-light">{{contribution.velocity}} km/h</span></p>
+            <p>{% trans "Tornado Type" %}: <span class="font-weight-light">{{contribution.tornado_type}}</span></p>
+            {% endif %}
         </div>
 
         {% comment %} <!-- Observation date / Footer -->
@@ -367,7 +377,7 @@
 
 <div class="row mx-0 ">
 
-    <div class="col p-0 border-right my-contribution-detail-footer my-border-radius-bottom-left my-contribution-detail-meta-info-card-footer-left">
+    <div class="col d-flex flex-column justify-content-center p-0 border-right my-contribution-detail-footer my-border-radius-bottom-left my-contribution-detail-meta-info-card-footer-left">
         <!-- Observation date / Footer -->
         <div class="my-border-radius-bottom-left">
             <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }}</p>
