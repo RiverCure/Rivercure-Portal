@@ -9,10 +9,10 @@ from django.contrib.auth.models import User
 
 from organization.models import Organization
 from rivercureportal.models import e_HydroFeature
-from contributions.models import e_ContextContribution, ContributionStatus
+from contributions.models import e_ContextContribution, ContributionStatus, SituationChoices
 from challenges.models import e_Challenge, DIFFICULTY_LEVEL, ChallengeState
 
-from .models import e_ContextEvent, e_ContextSensor, e_Context, EVENTKIND_CHOICES
+from .models import e_ContextEvent, e_ContextSensor, e_Context
 
 class ContextSensorFilter(django_filters.FilterSet):
 
@@ -66,20 +66,20 @@ class ModeratorAddFilter(django_filters.FilterSet):
 
 
 class ModeratorFilter(django_filters.FilterSet):
-    user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
+    user__username = django_filters.CharFilter(label=_('Username'), field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
-                                                    'placeholder': 'Search by username...',
+                                                    'placeholder': _('Search by username...'),
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
-    user__email = django_filters.CharFilter(label='Email address', field_name='user__email', lookup_expr='icontains',
+    user__email = django_filters.CharFilter(label=_('Email Address'), field_name='user__email', lookup_expr='icontains',
                                                widget=TextInput(attrs={
-                                                    'placeholder': 'Search by email address...',
+                                                    'placeholder': _('Search by email address...'),
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
-    grant_date = django_filters.DateFromToRangeFilter(label='Date granted',
-                                                        help_text='The permission was given in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
+    grant_date = django_filters.DateFromToRangeFilter(label=_('Date granted'),
+                                                        help_text=_('The permission was given in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.'),
                                                         widget=RangeWidget(attrs={
                                                             'placeholder': 'yyyy-mm-dd',
                                                             'type': 'date'
@@ -108,20 +108,20 @@ class ModeratorContextFilter(django_filters.FilterSet):
 
 
 class ModeratorContextContributionFilter(django_filters.FilterSet):
-    state = django_filters.ChoiceFilter(label='State',
+    state = django_filters.ChoiceFilter(label=_('State'),
                                         choices=ContributionStatus.choices)
-    situationObserved = django_filters.ChoiceFilter(choices=EVENTKIND_CHOICES, label='Situation Observed')
-    observationDate = django_filters.DateFromToRangeFilter(label='Observation date',
-                                                           help_text='The observation was made in between the specified dates. <i>Hint:</i> You may also just search for observations more recent than the date on the left, or older than the date on the right.',
+    situationObserved = django_filters.ChoiceFilter(choices=SituationChoices.choices, label=_('Situation Observed'))
+    observationDate = django_filters.DateFromToRangeFilter(label=_('Observation Date'),
+                                                           help_text=_('The observation was made in between the specified dates. <i>Hint:</i> You may also just search for observations more recent than the date on the left, or older than the date on the right.'),
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
-    creationDateTime = django_filters.DateFromToRangeFilter(label='Submission date',
-                                                           help_text='The contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for contributions more recent than the date on the left, or older than the date on the right.',
+    creationDateTime = django_filters.DateFromToRangeFilter(label=_('Submission Date'),
+                                                           help_text=_('The Contribution was submitted in between the specified dates. <i>Hint:</i> You may also just search for Contributions more recent than the date on the left, or older than the date on the right.'),
                                                            widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
                                                                                      'type': 'date'}))
-    createdBy__username = django_filters.CharFilter(label='Author', field_name='createdBy__username', lookup_expr='icontains',
+    createdBy__username = django_filters.CharFilter(label=_('Author'), field_name='createdBy__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
-                                                    'placeholder': 'Search by author username...',
+                                                    'placeholder': _('Search by username...'),
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))

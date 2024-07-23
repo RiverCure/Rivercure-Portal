@@ -1,6 +1,7 @@
 {% extends "rivercureportal/base.html" %}
 {% block show_messages %}{% endblock %} <!-- As seen in: https://stackoverflow.com/questions/7768165/how-to-override-django-base-template -->
-{% block title %} Contributions {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Contributions" %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
@@ -38,34 +39,32 @@
 {% endif %}
 
 <!-- Header -->
-<h1> {{context.Name}} Context - Contributions </h1>
+<h1> {{context.Name}} - {% trans "Contributions" %} </h1>
 <hr>
 
-<p class="font-weight-light" align="justify">
-    On this page you can see a Moderator-specific view of the Contributions of {{context.Name}}.
-    For more information on Moderators and Contributions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+<p class="font-weight-light" align="justify">{% blocktrans with context_name=context.Name%}On this page you can see a Moderator-specific view of the Contributions of {{context_name}}. For more information on Moderators and Contributions, please visit the{% endblocktrans %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
 <div class="mb-3">
     <!-- Search and Filter Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
 
     <!-- Sort Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
+    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Sort By" %}</button>
     <!-- Sort Menu-->
     <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
         {% comment %} <a class="dropdown-item" href="?sort=date_asc&{{params}}"><i class="bi bi-sort-up"></i> Ascending Date</a> {% endcomment %}
         {% comment %} <a class="dropdown-item" href="?sort=date_desc&{{params}}"><i class="bi bi-sort-down"></i> Descending Date</a> {% endcomment %}
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> Ascending Date</a>
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> Descending Date</a>
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> {% trans "Ascending Date" %}</a>
+        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> {% trans "Descending Date" %}</a>
     </div>
 
     <div style="float: right;">
         <!-- Actions -->
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Actions" %}</button>
         <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
-            <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> Accept Selected</button>
-            <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> Reject Selected</button>
+            <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> {% trans "Accept Selected" %}</button>
+            <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> {% trans "Reject Selected" %}</button>
         </div>
     </div>
 
@@ -75,7 +74,7 @@
 <div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 
@@ -86,13 +85,13 @@
     <!-- Contribution list -->
     <table class="table table-hover">
         <tr>
-            <th scope="col">Contribution ID</th>
-            <th scope="col">Situation</th>
-            <th scope="col">Date Submitted</th>
-            <th scope="col">Author</th>
-            <th scope="col">State</th>
-            <th scope="col">File(s) Size</th>
-            <th scope="col">Select</th>
+            <th scope="col">{% trans "Contribution ID" %}</th>
+            <th scope="col">{% trans "Situation" %}</th>
+            <th scope="col">{% trans "Date Submitted" %}</th>
+            <th scope="col">{% trans "Author" %}</th>
+            <th scope="col">{% trans "State" %}</th>
+            <th scope="col">{% trans "File(s) Size" %}</th>
+            <th scope="col">{% trans "Select" %}</th>
         </tr>
         {% for contribution in contributions %}
                 <tr>
@@ -114,7 +113,7 @@
 
             {% empty %}
             <!-- TODO: Change this to something prettier eheh -->
-            <td><h2 class="text-secondary font-italic no-context-data">There are no Contributions.</h2></td>
+            <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no Contributions." %}</h2></td>
         {% endfor %}
     </table>
 
@@ -122,17 +121,17 @@
 
 <!-- Bottom button -->
 <div class="w-100 mb-4">
-    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-context-list' %}">Back to Context list</a>
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-context-list' %}">{% trans "Back to Contexts" %}</a>
 </div>
 
 <!-- Pagination -->
 <div class="row">
     <div class="col">
         {% if is_paginated %}
-            <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
+            <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -146,7 +145,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>

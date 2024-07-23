@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 14:41+0100\n"
+"POT-Creation-Date: 2024-07-23 15:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,12 +25,48 @@ msgstr "Procurar por nome..."
 #: context/filters.py:44 context/filters.py:103 context/filters.py:184
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
+#: context/templates/context/moderator/moderator_add_list.html:13
+#: context/templates/context/moderator/moderator_list.html:13
 #: contributions/templates/contributions/contribution_detail.html:98
 #: contributions/templates/contributions/contribution_form.html:166
 #: contributions/templates/contributions/contribution_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
+
+#: context/filters.py:69
+#: context/templates/context/moderator/moderator_add_list.html:30
+#: context/templates/context/moderator/moderator_list.html:37
+msgid "Username"
+msgstr "Nome de Utilizador"
+
+#: context/filters.py:71 context/filters.py:124
+msgid "Search by username..."
+msgstr "Procurar por nome de utilizador..."
+
+#: context/filters.py:75
+#: rivercureportal/templates/rivercureportal/contact.html:34
+msgid "Email Address"
+msgstr "Endereço de Email"
+
+#: context/filters.py:77
+msgid "Search by email address..."
+msgstr "Procurar por endereço de email..."
+
+#: context/filters.py:81
+#: context/templates/context/moderator/moderator_list.html:39
+msgid "Date granted"
+msgstr "Data concedida"
+
+#: context/filters.py:82
+msgid ""
+"The permission was given in between the specified dates. <i>Hint:</i> You "
+"may also just search for permission dates more recent than the date on the "
+"left, or older than the date on the right."
+msgstr ""
+"A permissão foi concedida entre as datas especificadas. <i>Dica:</i> Também "
+"pode pesquisar por datas de permissão mais recentes do que a data à "
+"esquerda, ou mais antigas do que a data à direita."
 
 #: context/filters.py:94 context/filters.py:175
 msgid "Context Name"
@@ -39,6 +75,54 @@ msgstr "Nome do Contexto"
 #: context/filters.py:98 context/filters.py:179 contributions/filters.py:40
 msgid "Search by Context name..."
 msgstr "Procurar por nome do Contexto..."
+
+#: context/filters.py:111
+#: context/templates/context/moderator/moderator_context_contribution_list.html:95
+#: contributions/templates/contributions/contribution_detail.html:127
+msgid "State"
+msgstr "Estado"
+
+#: context/filters.py:113 contributions/filters.py:11
+#: contributions/filters.py:28 contributions/forms.py:39
+msgid "Situation Observed"
+msgstr "Situação Observada"
+
+#: context/filters.py:114 contributions/filters.py:12
+#: contributions/filters.py:29 contributions/forms.py:33
+msgid "Observation Date"
+msgstr "Data de Observação"
+
+#: context/filters.py:115 contributions/filters.py:13
+#: contributions/filters.py:30
+msgid ""
+"The observation was made in between the specified dates. <i>Hint:</i> You "
+"may also just search for observations more recent than the date on the left, "
+"or older than the date on the right."
+msgstr ""
+"A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
+"pode pesquisar por observações mais recentes do que a data à esquerda, ou "
+"mais antigas do que a data à direita."
+
+#: context/filters.py:118 contributions/filters.py:16
+#: contributions/filters.py:33
+msgid "Submission Date"
+msgstr "Data de Submissão"
+
+#: context/filters.py:119 contributions/filters.py:17
+#: contributions/filters.py:34
+msgid ""
+"The Contribution was submitted in between the specified dates. <i>Hint:</i> "
+"You may also just search for Contributions more recent than the date on the "
+"left, or older than the date on the right."
+msgstr ""
+"A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
+"Também pode pesquisar por Contribuições mais recentes do que a data à "
+"esquerda, ou mais antigas do que a data à direita."
+
+#: context/filters.py:122
+#: context/templates/context/moderator/moderator_context_contribution_list.html:94
+msgid "Author"
+msgstr "Autor"
 
 #: context/filters.py:191
 msgid "Challenge Title"
@@ -202,6 +286,8 @@ msgid "Grid"
 msgstr "Grelha"
 
 #: context/templates/context/context/public_context_detail.html:57
+#: context/templates/context/moderator/moderator_context_contribution_list.html:4
+#: context/templates/context/moderator/moderator_context_contribution_list.html:43
 #: rivercureportal/templates/rivercureportal/about.html:84
 msgid "Contributions"
 msgstr "Contribuições"
@@ -257,12 +343,16 @@ msgstr ""
 "favor visite a"
 
 #: context/templates/context/event/event_manager_my_context_list.html:37
+#: context/templates/context/moderator/moderator_context_contribution_list.html:51
+#: context/templates/context/moderator/moderator_list.html:21
 #: context/templates/context/moderator/moderator_my_context_list.html:44
 #: contributions/templates/contributions/contribution_list.html:24
 msgid "Search and Filter"
 msgstr "Procurar e Filtrar"
 
 #: context/templates/context/event/event_manager_my_context_list.html:53
+#: context/templates/context/moderator/moderator_context_contribution_list.html:80
+#: context/templates/context/moderator/moderator_list.html:30
 #: context/templates/context/moderator/moderator_my_context_list.html:60
 #: contributions/templates/contributions/contribution_list.html:28
 #: contributions/templates/contributions/my_contributions_list.html:28
@@ -275,16 +365,145 @@ msgid "There are no Contexts."
 msgstr "Não existem Contextos."
 
 #: context/templates/context/event/event_manager_my_context_list.html:86
+#: context/templates/context/moderator/moderator_add_list.html:67
+#: context/templates/context/moderator/moderator_context_contribution_list.html:138
+#: context/templates/context/moderator/moderator_list.html:78
 #: context/templates/context/moderator/moderator_my_context_list.html:106
 #: contributions/templates/contributions/contribution_list.html:73
 msgid "First Page"
 msgstr "Primeira Página"
 
 #: context/templates/context/event/event_manager_my_context_list.html:100
+#: context/templates/context/moderator/moderator_add_list.html:81
+#: context/templates/context/moderator/moderator_context_contribution_list.html:152
+#: context/templates/context/moderator/moderator_list.html:92
 #: context/templates/context/moderator/moderator_my_context_list.html:120
 #: contributions/templates/contributions/contribution_list.html:87
 msgid "Last Page"
 msgstr "Última Página"
+
+#: context/templates/context/moderator/moderator_add_list.html:3
+#: context/templates/context/moderator/moderator_list.html:23
+msgid "Add Moderator"
+msgstr "Adicionar Moderador"
+
+#: context/templates/context/moderator/moderator_add_list.html:12
+#, python-format
+msgid "%(context_name)s Moderators - Add"
+msgstr "Moderadores de %(context_name)s - Adicionar"
+
+#: context/templates/context/moderator/moderator_add_list.html:16
+msgid ""
+"On this page you can search for members of the %(org)s Organization and add "
+"them as Moderators of the %(context_name)s Context. Click the <i class=\"bi "
+"bi-plus-circle text-success\"></i> symbol to make a certain user a "
+"Moderator. For more information on Moderators and Context-level permissions, "
+"please visit the"
+msgstr "Nesta página, pode procurar membros da Organização %(org)s e adicioná-los como Moderadores do Contexto %(context_name)s. Clique no símbolo <i class=\"bi bi-plus-circle text-success\"></i> para tornar um determinado utilizador um Moderador. Para mais informações sobre Moderadores e permissões ao nível do Contexto, por favor visite a"
+
+#: context/templates/context/moderator/moderator_add_list.html:23
+msgid "Search"
+msgstr "Procurar"
+
+#: context/templates/context/moderator/moderator_add_list.html:32
+msgid "Role"
+msgstr "Papel"
+
+#: context/templates/context/moderator/moderator_add_list.html:50
+msgid "There are no available users."
+msgstr "Não existem utilizadores disponíveis."
+
+#: context/templates/context/moderator/moderator_add_list.html:56
+msgid "Back to Moderators"
+msgstr "Voltar para Moderadores"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:46
+#, python-format
+msgid ""
+"On this page you can see a Moderator-specific view of the Contributions of "
+"%(context_name)s. For more information on Moderators and Contributions, "
+"please visit the"
+msgstr ""
+"Nesta página, pode ver uma vista específica para Moderadores das "
+"Contribuições de %(context_name)s. Para mais informações sobre Moderadores e "
+"Contribuições, por favor visite a"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:54
+msgid "Sort By"
+msgstr "Ordenar Por"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:61
+msgid "Ascending Date"
+msgstr "Data Ascendente"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:62
+msgid "Descending Date"
+msgstr "Data Descendente"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:67
+msgid "Actions"
+msgstr "Ações"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:69
+msgid "Accept Selected"
+msgstr "Aceitar Selecionadas"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:70
+msgid "Reject Selected"
+msgstr "Rejeitar Selecionadas"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:91
+msgid "Contribution ID"
+msgstr "ID da Contribuição"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:92
+msgid "Situation"
+msgstr "Situação"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:93
+msgid "Date Submitted"
+msgstr "Data de Submissão"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:96
+msgid "File(s) Size"
+msgstr "Tamanho do(s) Ficheiro(s)"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:97
+msgid "Select"
+msgstr "Selecionar"
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:120
+msgid "There are no Contributions."
+msgstr "Não existem Contribuições."
+
+#: context/templates/context/moderator/moderator_context_contribution_list.html:128
+msgid "Back to Contexts"
+msgstr "Voltar a Contextos"
+
+#: context/templates/context/moderator/moderator_list.html:3
+#: context/templates/context/moderator/moderator_list.html:12
+msgid "Moderators"
+msgstr "Moderadores"
+
+#: context/templates/context/moderator/moderator_list.html:16
+#, python-format
+msgid ""
+"On this page you can see the Moderators of the %(context_name)s Context. For "
+"more information on Moderators and Context-level permissions, please visit "
+"the"
+msgstr ""
+"Nesta página pode ver os Moderadores do Contexto %(context_name)s. Para mais "
+"informações sobre Moderadores e permissões ao nível do Contexto, por favor "
+"visite o"
+
+#: context/templates/context/moderator/moderator_list.html:61
+msgid "There are no Moderators in this Organization."
+msgstr "Não existem Moderadores nesta Organização."
+
+#: context/templates/context/moderator/moderator_list.html:67
+#: contributions/templates/contributions/contribution_list.html:64
+msgid "Back to Context"
+msgstr "Voltar a Contexto"
 
 #: context/templates/context/moderator/moderator_my_context_list.html:39
 msgid ""
@@ -307,40 +526,6 @@ msgstr "de"
 #: context/templates/context/moderator/moderator_my_context_list.html:84
 msgid "contributions"
 msgstr "contribuições"
-
-#: contributions/filters.py:11 contributions/filters.py:28
-#: contributions/forms.py:39
-msgid "Situation Observed"
-msgstr "Situação Observada"
-
-#: contributions/filters.py:12 contributions/filters.py:29
-#: contributions/forms.py:33
-msgid "Observation Date"
-msgstr "Data de Observação"
-
-#: contributions/filters.py:13 contributions/filters.py:30
-msgid ""
-"The observation was made in between the specified dates. <i>Hint:</i> You "
-"may also just search for observations more recent than the date on the left, "
-"or older than the date on the right."
-msgstr ""
-"A observação foi feita entre as datas especificadas. <i>Dica:</i> Também "
-"pode pesquisar por observações mais recentes do que a data à esquerda, ou "
-"mais antigas do que a data à direita."
-
-#: contributions/filters.py:16 contributions/filters.py:33
-msgid "Submission Date"
-msgstr "Data de Submissão"
-
-#: contributions/filters.py:17 contributions/filters.py:34
-msgid ""
-"The Contribution was submitted in between the specified dates. <i>Hint:</i> "
-"You may also just search for Contributions more recent than the date on the "
-"left, or older than the date on the right."
-msgstr ""
-"A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
-"Também pode pesquisar por Contribuições mais recentes do que a data à "
-"esquerda, ou mais antigas do que a data à direita."
 
 #: contributions/filters.py:37
 msgid "Context"
@@ -502,10 +687,6 @@ msgstr "Sobre Terra"
 #: contributions/templates/contributions/contribution_detail.html:512
 msgid "Contribution"
 msgstr "Contribuição"
-
-#: contributions/templates/contributions/contribution_detail.html:127
-msgid "State"
-msgstr "Estado"
 
 #: contributions/templates/contributions/contribution_detail.html:140
 #: contributions/templates/contributions/contribution_detail.html:524
@@ -783,10 +964,6 @@ msgstr "contribui"
 msgid "to this Context?"
 msgstr "para este Contexto?"
 
-#: contributions/templates/contributions/contribution_list.html:64
-msgid "Back to Context"
-msgstr "Voltar a Contexto"
-
 #: contributions/templates/contributions/my_contributions_list.html:20
 msgid ""
 "On this page you can see the Contributions you have submitted to the "
@@ -929,10 +1106,6 @@ msgstr ""
 "responderá à sua submissão com a maior brevidade possível. Obrigado por nos "
 "contactar."
 
-#: rivercureportal/templates/rivercureportal/contact.html:34
-msgid "Email Address"
-msgstr "Endereço de Email"
-
 #: rivercureportal/templates/rivercureportal/contact.html:39
 msgid "Subject"
 msgstr "Assunto"
@@ -1026,14 +1199,11 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
-#~ msgid ""
-#~ "The Contribution was submitted in between the specified dates. <i>Hint:</"
-#~ "i> You may also just search for dates more recent than the date on the "
-#~ "left, or older than the date on the right."
-#~ msgstr ""
-#~ "A Contribuição foi submetida entre as datas especificadas. <i>Dica:</i> "
-#~ "Também pode pesquisar por datas mais recentes do que a data à esquerda, "
-#~ "ou mais antigas do que a data à direita."
+#~ msgid "Search by author username..."
+#~ msgstr "Procurar por nome de utilizador..."
+
+#~ msgid "Email address"
+#~ msgstr "Endereço de Email"
 
 #, fuzzy, python-format
 #~| msgid ""

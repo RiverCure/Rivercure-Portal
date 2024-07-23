@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Moderators {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Moderators" %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
@@ -8,36 +9,34 @@
 
 {% block content %}
 <!-- Header -->
-<h1>{{ context.Name }} Moderators </h1>
-<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
+<h1>{{ context.Name }} {% trans "Moderators" %} </h1>
+<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
-<p class="font-weight-light" align="justify">
-    On this page you can see the moderators of the {{ context.Name }} context.
-    For more information on moderators and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+<p class="font-weight-light" align="justify">{% blocktrans with context_name=context.Name %}On this page you can see the Moderators of the {{context_name}} Context. For more information on Moderators and Context-level permissions, please visit the{% endblocktrans %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
 <!-- Top buttons -->
 <div class="mb-3">
-    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
     {% if canEdit %}
-        <a class="btn btn-success" href="{% url 'moderator-list-add' context.code %}"><i class="bi bi-plus"></i> Add Moderator</a>
+        <a class="btn btn-success" href="{% url 'moderator-list-add' context.code %}"><i class="bi bi-plus"></i> {% trans "Add Moderator" %}</a>
     {% endif %}
 </div>
 
 <div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i>Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 
 <!-- Moderator list -->
 <table class="table table-hover">
     <tr>
-        <th scope="col">Username</th>
+        <th scope="col">{% trans "Username" %}</th>
         <th scope="col">Email</th>
-        <th scope="col">Date granted</th>
+        <th scope="col">{% trans "Date granted" %}</th>
     </tr>
     {% for member in users %}
         <tr>
@@ -59,13 +58,13 @@
 
         {% empty %}
         <!-- TODO: Change this to something prettier eheh -->
-        <td><h2 class="text-secondary font-italic no-context-data">There are no moderators in this organization.</h2></td>
+        <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no Moderators in this Organization." %}</h2></td>
     {% endfor %}
 </table>
 
 <!-- Bottom button -->
 <div class="w-100 mb-4">
-    <a class="btn btn-secondary" style="float: right;" href="{% url 'context-detail' context.code %}">Back to Context detail</a>
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'context-detail' context.code %}">{% trans "Back to Context" %}</a>
 </div>
 
 <!-- Pagination -->
@@ -76,7 +75,7 @@
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -90,7 +89,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>

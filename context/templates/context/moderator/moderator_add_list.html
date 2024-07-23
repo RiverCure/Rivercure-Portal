@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Add Moderator {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Add Moderator" %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
@@ -8,34 +9,27 @@
 
 {% block content %}
 <!-- Header -->
-<h1>{{ context.Name }} Moderators - Add </h1>
-<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
+<h1>{% blocktrans with context_name=context.Name %}{{context_name}} Moderators - Add{% endblocktrans %}</h1>
+<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
-<p class="font-weight-light" align="justify">
-    On this page you can search for members of the {{ context.organization }} organization and add them as moderators of the {{ context.Name }} context.
-    Click the
-    <span class="label label-success">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#008000" class="bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" /></svg>
-    </span>
-    symbol to make a certain user a moderator.
-    For more information on moderators and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+<p class="font-weight-light" align="justify">{% blocktrans with org=context.organization context_name=context.Name %}On this page you can search for members of the {{org}} Organization and add them as Moderators of the {{context_name}} Context. Click the <i class="bi bi-plus-circle text-success"></i> symbol to make a certain user a Moderator. For more information on Moderators and Context-level permissions, please visit the{% endblocktrans %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
 <!-- Search -->
 <!-- As seen in: https://stackoverflow.com/a/56066906/12387341 -->
 <form method="get" class="form-inline mb-3">
     {{ filter.form.user__username }}
-    <button type="submit" id="searchBtn" class="btn btn-info"><i class="bi bi-search"></i> Search</button>
+    <button type="submit" id="searchBtn" class="btn btn-info"><i class="bi bi-search"></i> {% trans "Search" %}</button>
 </form>
   
 
 <!-- Organization member list -->
 <table class="table table-hover">
     <tr>
-        <th scope="col">Username</th>
+        <th scope="col">{% trans "Username" %}</th>
         <th scope="col">Email</th>
-        <th scope="col">Role</th>
+        <th scope="col">{% trans "Role" %}</th>
     </tr>
     {% for member in users %}
 
@@ -53,13 +47,13 @@
 
         {% empty %}
         <!-- TODO: Change this to something prettier eheh -->
-        <td><h2 class="text-secondary font-italic no-context-data">There are no available users.</h2></td>
+        <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no available users." %}</h2></td>
     {% endfor %}
 </table>
 
 <!-- Bottom button -->
 <div class="w-100 mb-4">
-    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-list' context.code %}">Back to Moderator list</a>
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-list' context.code %}">{% trans "Back to Moderators" %}</a>
 </div>
 
 <!-- Pagination -->
@@ -70,7 +64,7 @@
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -84,7 +78,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>
