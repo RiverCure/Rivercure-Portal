@@ -91,16 +91,16 @@ class ModeratorFilter(django_filters.FilterSet):
 
 
 class ModeratorContextFilter(django_filters.FilterSet):
-    Name = django_filters.CharFilter(label='Context Name',
+    Name = django_filters.CharFilter(label=_('Context Name'),
                                         field_name='context__Name',
                                         lookup_expr='icontains',
                                         widget=TextInput(attrs={
-                                                    'placeholder': 'Search by Context name...',
+                                                    'placeholder': _('Search by Context name...'),
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
     hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
-    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label='Organization', queryset=Organization.objects.all())
+    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label=_('Organization'), queryset=Organization.objects.all())
 
     class Meta:
         Model = e_Context

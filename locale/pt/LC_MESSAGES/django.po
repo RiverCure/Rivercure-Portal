@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 14:35+0100\n"
+"POT-Creation-Date: 2024-07-23 14:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Search by name..."
 msgstr "Procurar por nome..."
 
-#: context/filters.py:44 context/filters.py:184
+#: context/filters.py:44 context/filters.py:103 context/filters.py:184
 #: context/templates/context/context/citizen_home.html:229
 #: context/templates/context/context/public_context_detail.html:29
 #: contributions/templates/contributions/contribution_detail.html:98
@@ -32,11 +32,11 @@ msgstr "Procurar por nome..."
 msgid "Organization"
 msgstr "Organização"
 
-#: context/filters.py:175
+#: context/filters.py:94 context/filters.py:175
 msgid "Context Name"
 msgstr "Nome do Contexto"
 
-#: context/filters.py:179 contributions/filters.py:40
+#: context/filters.py:98 context/filters.py:179 contributions/filters.py:40
 msgid "Search by Context name..."
 msgstr "Procurar por nome do Contexto..."
 
@@ -121,6 +121,8 @@ msgstr "Gestor de Evento"
 #: context/templates/context/context/citizen_home.html:235
 #: context/templates/context/context/citizen_home.html:241
 #: context/templates/context/event/event_manager_my_context_list.html:29
+#: context/templates/context/moderator/moderator_my_context_list.html:3
+#: context/templates/context/moderator/moderator_my_context_list.html:36
 #: rivercureportal/templates/rivercureportal/base.html:72
 #: rivercureportal/templates/rivercureportal/base.html:78
 msgid "My Contexts"
@@ -255,29 +257,56 @@ msgstr ""
 "favor visite a"
 
 #: context/templates/context/event/event_manager_my_context_list.html:37
+#: context/templates/context/moderator/moderator_my_context_list.html:44
 #: contributions/templates/contributions/contribution_list.html:24
 msgid "Search and Filter"
 msgstr "Procurar e Filtrar"
 
 #: context/templates/context/event/event_manager_my_context_list.html:53
+#: context/templates/context/moderator/moderator_my_context_list.html:60
 #: contributions/templates/contributions/contribution_list.html:28
 #: contributions/templates/contributions/my_contributions_list.html:28
 msgid "Apply"
 msgstr "Aplicar"
 
 #: context/templates/context/event/event_manager_my_context_list.html:75
+#: context/templates/context/moderator/moderator_my_context_list.html:95
 msgid "There are no Contexts."
 msgstr "Não existem Contextos."
 
 #: context/templates/context/event/event_manager_my_context_list.html:86
+#: context/templates/context/moderator/moderator_my_context_list.html:106
 #: contributions/templates/contributions/contribution_list.html:73
 msgid "First Page"
 msgstr "Primeira Página"
 
 #: context/templates/context/event/event_manager_my_context_list.html:100
+#: context/templates/context/moderator/moderator_my_context_list.html:120
 #: contributions/templates/contributions/contribution_list.html:87
 msgid "Last Page"
 msgstr "Última Página"
+
+#: context/templates/context/moderator/moderator_my_context_list.html:39
+msgid ""
+"On this page you can see the Contexts in which you have the permission to "
+"moderate. For more information on Moderators and Context-level permissions, "
+"please visit the"
+msgstr ""
+"Nesta página, pode ver os Contextos em que tem permissão para moderar. Para "
+"mais informações sobre Moderadores e permissões ao nível do Contexto, por "
+"favor visite a"
+
+#: context/templates/context/moderator/moderator_my_context_list.html:84
+msgid "pending"
+msgstr "pendentes"
+
+#: context/templates/context/moderator/moderator_my_context_list.html:84
+msgid "of"
+msgstr "de"
+
+#: context/templates/context/moderator/moderator_my_context_list.html:84
+msgid "contributions"
+msgstr "contribuições"
 
 #: contributions/filters.py:11 contributions/filters.py:28
 #: contributions/forms.py:39
