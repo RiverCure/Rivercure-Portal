@@ -528,7 +528,7 @@ class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, Fi
 
         # Show Challenges from this user's Contexts
         user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, context__in=user_contexts)
 
         return challenge_list
     
@@ -537,7 +537,7 @@ class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, Fi
         context = super().get_context_data(**kwargs)
         
         user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, context__in=user_contexts)
         context['filter'] = MyContextsChallengesFilter(self.request.GET, queryset=context['challenge_list'])
         
         return context

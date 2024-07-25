@@ -5,7 +5,7 @@ import geojson
 import datetime
 
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
 from django.core import serializers
@@ -22,21 +22,29 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from ..filters import ContextFilter, ContextSensorFilter
 from io import BytesIO
 from zipfile import ZipFile
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.urls import reverse_lazy
-from context.forms import ContextDetailsForm, ContextInitialForm
-from organization.models import Membership, Organization
+
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
-from context.views.upload import alignment_creation, context_creation, refinement_creation
-from organization.authorization import belongs_to_organization
-from contributions.models import e_ContextContribution, ContributionStatus
+
 from django_filters.views import FilterView
+
 from django.db.models import Count, Case, When, Value 
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
 from rivercureproject import settings
+
+from challenges.models import e_Challenge, ChallengeState
+from organization.models import Membership, Organization
+from organization.authorization import belongs_to_organization
+from context.forms import ContextDetailsForm, ContextInitialForm
+from contributions.models import e_ContextContribution, ContributionStatus
+from rivercureportal.authorization import is_platform_admin
+
+from context.views.upload import alignment_creation, context_creation, refinement_creation
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -173,8 +181,13 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['is_admin'] = is_platform_admin(self.request.user)
+        context['is_context_event_man'] = context_event_manager_check(self.request.user, self.get_object())
+
         context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Contributions that belong to this context and are Accepted
         context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
+        context['challenges'] = e_Challenge.objects.filter(context=self.get_object().pk, is_public=True, state=ChallengeState.PUBLISHED) # Public, published Challenges
         context['MEDIA_URL'] = settings.MEDIA_URL
         return context
     

@@ -8,13 +8,14 @@ from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, re
 from django_filters.views import FilterView
 
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 
 from rivercureproject import settings
 
-from context.models import e_ContextEvent
+from context.models import e_ContextEvent, e_Context
 from context.models import ContextMembership
 from organization.models import Membership
 from rivercureportal.authorization import is_platform_admin
@@ -52,7 +53,7 @@ class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return context
 
     def form_invalid(self, form):
-        messages.error(self.request, 'There is an error in the submission form. Please check what field(s) need to be adjusted.')
+        messages.error(self.request, _('There is an error in the submission form. Please check what field(s) need to be adjusted.'))
         return super().form_invalid(form)
     
     def form_valid(self, form):
@@ -64,11 +65,60 @@ class ChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         # Set metadata
         new_challenge.created_by = self.request.user
         new_challenge.event = event
+        new_challenge.context = event.context
 
         new_challenge.save()
 
         # Send success message (to be shown in Challenge detail page)
-        messages.success(self.request, 'Your Challenge has been created successfully.')
+        messages.success(self.request, _('Your Challenge has been created successfully.'))
+
+        # TODO: Send confirmation email to user
+
+        return super().form_valid(form)
+
+
+class ChallengeContextCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = e_Challenge
+    form_class = ChallengeForm
+    template_name = 'challenges/challenge_form.html'
+    context_object_name = 'challenge'
+    pk_url_kwarg = 'context_id'
+
+    def test_func(self):
+        context = e_Context.objects.get(pk=self.kwargs['context_id'])
+        # Only Event Manager or Platform Admin can do this
+        return context_event_manager_check(self.request.user, context) or is_platform_admin(self.request.user)
+
+    def get_success_url(self):
+        return reverse('challenge-detail', args=(self.object.id, ))
+
+    def get_context_data(self, **kwargs):
+        context_id = self.kwargs['context_id']
+
+        context = super().get_context_data(**kwargs)
+
+        context['context'] = e_Context.objects.get(pk=context_id)
+        
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, _('There is an error in the submission form. Please check what field(s) need to be adjusted.'))
+        return super().form_invalid(form)
+    
+    def form_valid(self, form):
+
+        _context = e_Context.objects.get(pk=self.kwargs['context_id'])
+
+        new_challenge = form.save(commit=False)
+
+        # Set metadata
+        new_challenge.created_by = self.request.user
+        new_challenge.context = _context
+
+        new_challenge.save()
+
+        # Send success message (to be shown in Challenge detail page)
+        messages.success(self.request, _('Your Challenge has been created successfully.'))
 
         # TODO: Send confirmation email to user
 
@@ -90,7 +140,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         # If Challenge is not PUBLISHED
         if challenge.state != ChallengeState.PUBLISHED:
             # And if user is not Event Manager of this Context, or a Context Manager or Org Manager of this Organization, or a Platform Admin
-            if not (context_event_manager_check(self.request.user, challenge.event.context) or context_organization_edit_permission_check(self.request.user, challenge.event.context.organization) or is_platform_admin(self.request.user)):
+            if not (context_event_manager_check(self.request.user, challenge.context) or context_organization_edit_permission_check(self.request.user, challenge.context.organization) or is_platform_admin(self.request.user)):
                 # The user does not have access to the page
                 raise Http404()
 
@@ -104,7 +154,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         user_participations = e_ChallengeAnswer.objects.filter(challenge=challenge, created_by=self.request.user).count()
 
-        context['canManage'] = context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
+        context['canManage'] = context_event_manager_check(self.request.user, challenge.context) or is_platform_admin(self.request.user)
         context['user_participations_left'] = challenge.max_participations - user_participations
         context['user_participations'] = user_participations
         context['canParticipate'] = challenge.is_open() and user_participations < challenge.max_participations
@@ -116,7 +166,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         challenge = self.get_object()
         # Either Challenge is Public
         # Or user is part of its Organization
-        return challenge.is_public or context_organization_belong_check(self.request.user, challenge.event.context.organization)
+        return challenge.is_public or context_organization_belong_check(self.request.user, challenge.context.organization)
 
 
 
@@ -132,12 +182,16 @@ class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     #     context['context'] = get_object_or_404(e_Context, pk=self.kwargs['pk'])
     #     return context
 
+    def form_valid(self, form):
+        messages.success(self.request, _("The Challenge was updated successfully."))
+        return super(ChallengeUpdateView,self).form_valid(form)
+
     def get_success_url(self):
         return reverse('challenge-detail', args=(self.get_object().id, ))
 
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+        return context_event_manager_check(self.request.user, self.get_object().context) or is_platform_admin(self.request.user)
 
 
 
@@ -149,12 +203,12 @@ class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('my-contexts-challenges-list')
 
     def form_valid(self, form):
-        messages.success(self.request, "The Challenge was deleted successfully.")
+        messages.success(self.request, _("The Challenge was deleted successfully."))
         return super(ChallengeDeleteView,self).form_valid(form)
     
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+        return context_event_manager_check(self.request.user, self.get_object().context) or is_platform_admin(self.request.user)
 
 
 
@@ -175,7 +229,7 @@ class ChallengeManageView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def test_func(self):
         # Only Event Manager or Platform Admin can do this
-        return context_event_manager_check(self.request.user, self.get_object().event.context) or is_platform_admin(self.request.user)
+        return context_event_manager_check(self.request.user, self.get_object().context) or is_platform_admin(self.request.user)
 
 
 @login_required
@@ -183,17 +237,17 @@ def question_create(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', challenge.id)
 
     # Only Context EM and Platform Admin can do this
-    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', challenge.id)
 
     if request.method == 'POST':
@@ -240,7 +294,7 @@ def question_create(request, challenge_id):
                         new_option.save()
             
             # Send success message (to be shown in Challenge detail page)
-            messages.success(request, 'Your Question has been created successfully.')
+            messages.success(request, _('Your Question has been created successfully.'))
 
             return HttpResponseRedirect(reverse('challenge-manage', args=(challenge_id, )) )
     else:
@@ -262,16 +316,16 @@ def question_update(request, question_id):
     try:
         question = e_Question.objects.get(pk=question_id)
     except:
-        messages.error(request, 'Question does not exist')
+        messages.error(request, _('Question does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', question.challenge.id)
 
     # Only Context EM and Platform Admin can do this
-    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
+    if not (context_event_manager_check(request.user, question.challenge.context) or is_platform_admin(request.user)):
         return redirect('my-contexts-challenges-list')
 
     context = {'question': question,}
@@ -327,7 +381,7 @@ def question_update(request, question_id):
                         new_option.save()
             
             # Send success message (to be shown in Challenge detail page)
-            messages.success(request, 'Your Question has been updated successfully.')
+            messages.success(request, _('Your Question has been updated successfully.'))
 
             return HttpResponseRedirect(reverse('challenge-manage', args=(question.challenge.id, )) )
     else:
@@ -353,16 +407,16 @@ def question_delete(request, question_id):
     try:
         question = e_Question.objects.get(pk=question_id)
     except:
-        messages.error(request, 'Question does not exist')
+        messages.error(request, _('Question does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', question.challenge.id)
 
     # Only Context EM and Platform Admin can do this
-    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
+    if not (context_event_manager_check(request.user, question.challenge.context) or is_platform_admin(request.user)):
         return redirect('my-contexts-challenges-list')
     
     # Update challenge
@@ -388,17 +442,17 @@ def multiple_choice_option_delete(request, option_id):
     try:
         option = e_MultipleChoiceOption_Question.objects.get(pk=option_id)
     except:
-        messages.error(request, 'Multiple Choice Option does not exist')
+        messages.error(request, _('Multiple Choice Option does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not option.question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', option.question.challenge.id)
     
     # Only Event Manager or Platform Admin can do this
-    if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, option.question.challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', option.question.challenge.id)
     
     # Delete
@@ -407,23 +461,22 @@ def multiple_choice_option_delete(request, option_id):
 
     return redirect('question-update', question_id)
 
-# TODO: Can I fuse this and multiple_choice_option_delete?
 @login_required
 def true_false_option_delete(request, option_id):
     try:
         option = e_TrueFalse_Question.objects.get(pk=option_id)
     except:
-        messages.error(request, 'True or False Option does not exist')
+        messages.error(request, _('True or False Option does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not option.question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', option.question.challenge.id)
     
     # Only Event Manager or Platform Admin can do this
-    if not (context_event_manager_check(request.user, option.question.challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, option.question.challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', option.question.challenge.id)
     
     # Delete
@@ -438,22 +491,22 @@ def question_position_up(request, question_id):
     try:
         question = e_Question.objects.get(pk=question_id)
     except:
-        messages.error(request, 'Question does not exist')
+        messages.error(request, _('Question does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', question.challenge.id)
     
     # Don't allow if this is the 1st Question in the Challenge (question.position == 1)
     if question.position == 1:
-        messages.error(request, 'Question is already 1st')
+        messages.error(request, _('Question is already first'))
         return redirect('challenge-manage', question.challenge.id)
 
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, question.challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', question.challenge.id)
     
     # 1. Get question before this one
@@ -469,28 +522,27 @@ def question_position_up(request, question_id):
 
     return redirect('challenge-manage', question.challenge.id)
 
-# TODO: Fuse this with question_position_up? Like have 1 URL with question_id and up/down
 @login_required
 def question_position_down(request, question_id):
     try:
         question = e_Question.objects.get(pk=question_id)
     except:
-        messages.error(request, 'Question does not exist')
+        messages.error(request, _('Question does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # If Challenge is not a draft, don't allow!
     if not question.challenge.state == ChallengeState.DRAFT:
-        messages.error(request, 'Challenge is not a Draft')
+        messages.error(request, _('Challenge is not a Draft'))
         return redirect('challenge-detail', question.challenge.id)
     
     # Don't allow if this is the last Question in the Challenge (question.position == challenge.nr_questions)
     if question.position == question.challenge.nr_questions:
-        messages.error(request, 'Question is already last')
+        messages.error(request, _('Question is already last'))
         return redirect('challenge-manage', question.challenge.id)
 
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, question.challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, question.challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', question.challenge.id)
     
 
@@ -512,19 +564,19 @@ def challenge_participate(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list') # TODO: Change to PUBLIC CHALLENGES LIST!!!
     
     if not challenge.is_public:
-        if not context_organization_belong_check(request.user, challenge.event.context.organization):
-            messages.error(request, 'Challenge isn\'t public and you don\'t belong to its Organization!')
-            return redirect('event-challenge-list', challenge.event.context.code, challenge.event.id)
+        if not context_organization_belong_check(request.user, challenge.context.organization):
+            messages.error(request, _('Challenge isn\'t public and you don\'t belong to its Organization!'))
+            return redirect('rivercure-home') # TODO: Change to PUBLIC CHALLENGES LIST!!!
     
     # If Challenge is not open OR user has participated the max amount of times, don't allow
     participations = e_ChallengeAnswer.objects.filter(challenge=challenge, created_by=request.user)
     if (not challenge.is_open()) or (participations.count() >= challenge.max_participations):
-        messages.error(request, 'You can\'t participate in this Challenge!')
-        return redirect('event-challenge-list', challenge.event.context.code, challenge.event.id)
+        messages.error(request, _('You can\'t participate in this Challenge!'))
+        return redirect('challenge-detail', challenge_id)
 
 
     questions = e_Question.objects.filter(challenge=challenge) # TODO: Perhaps get this directly from challenge object?
@@ -565,11 +617,11 @@ def challenge_participate(request, challenge_id):
                     user_answer.save()
 
         # Send success message (to be shown in Challenge detail page)
-        messages.success(request, 'Your participation has been submitted successfully.')
+        messages.success(request, _('Your participation has been submitted successfully.'))
 
         return HttpResponseRedirect(reverse('challenge-detail', args=(challenge_id, )) )
     else:
-        print("GOTTEN")
+        print("hi")
     
     return render(request, 'challenges/challenge_participate.html', context)
 
@@ -579,12 +631,12 @@ def challenge_publish(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', challenge.id)
     
     try:
@@ -593,10 +645,10 @@ def challenge_publish(request, challenge_id):
         challenge.open_datetime = datetime.now()
         challenge.save()
     except:
-        messages.error(request, 'Challenge cannot be published')
+        messages.error(request, _('Challenge cannot be published'))
         return redirect('challenge-detail', challenge_id)
     
-    messages.success(request, 'Challenge is now published')
+    messages.success(request, _('Challenge is now published'))
     
     return redirect('challenge-detail', challenge_id)
 
@@ -605,12 +657,12 @@ def challenge_close(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', challenge.id)
     
     try:
@@ -618,10 +670,10 @@ def challenge_close(request, challenge_id):
         challenge.close_datetime = datetime.now()
         challenge.save()
     except:
-        messages.error(request, 'Challenge cannot be closed')
+        messages.error(request, _('Challenge cannot be closed'))
         return redirect('challenge-detail', challenge_id)
     
-    messages.success(request, 'Challenge is now closed')
+    messages.success(request, _('Challenge is now closed'))
     
     return redirect('challenge-detail', challenge_id)
 
@@ -630,12 +682,12 @@ def challenge_open(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', challenge.id)
     
     try:
@@ -644,10 +696,10 @@ def challenge_open(request, challenge_id):
         challenge.close_datetime = None
         challenge.save()
     except:
-        messages.error(request, 'Challenge cannot be opened')
+        messages.error(request, _('Challenge cannot be opened'))
         return redirect('challenge-detail', challenge_id)
     
-    messages.success(request, 'Challenge is now open')
+    messages.success(request, _('Challenge is now open'))
     
     return redirect('challenge-detail', challenge_id)
 
@@ -656,22 +708,22 @@ def challenge_archive(request, challenge_id):
     try:
         challenge = e_Challenge.objects.get(pk=challenge_id)
     except:
-        messages.error(request, 'Challenge does not exist')
+        messages.error(request, _('Challenge does not exist'))
         return redirect('my-contexts-challenges-list')
     
     # Only allow Context EM and Platform Admin to do this
-    if not (context_event_manager_check(request.user, challenge.event.context) or is_platform_admin(request.user)):
-        messages.error(request, 'You don\'t have permission to do this')
+    if not (context_event_manager_check(request.user, challenge.context) or is_platform_admin(request.user)):
+        messages.error(request, _('You don\'t have permission to do this'))
         return redirect('challenge-detail', challenge.id)
     
     try:
         challenge.to_archive()
         challenge.save()
     except:
-        messages.error(request, 'Challenge cannot be archived')
+        messages.error(request, _('Challenge cannot be archived'))
         return redirect('challenge-detail', challenge_id)
     
-    messages.success(request, 'Challenge is now archived')
+    messages.success(request, _('Challenge is now archived'))
     
     return redirect('challenge-detail', challenge_id)
 
@@ -688,7 +740,7 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
     def test_func(self):
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         # Only Event Manager or Platform Admin can see this page
-        return context_event_manager_check(self.request.user, challenge.event.context) or is_platform_admin(self.request.user)
+        return context_event_manager_check(self.request.user, challenge.context) or is_platform_admin(self.request.user)
     
     def get_queryset(self):
 
@@ -729,7 +781,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         try:
             challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         except:
-            messages.error(self.request, 'Challenge does not exist')
+            messages.error(self.request, _('Challenge does not exist'))
             return redirect('my-contexts-challenges-list') # TODO: Change to public challenges list
 
         # Show participations of this user for this Challenge
@@ -744,7 +796,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         try:
             challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         except:
-            messages.error(self.request, 'Challenge does not exist')
+            messages.error(self.request, _('Challenge does not exist'))
             return redirect('my-contexts-challenges-list') # TODO: Change to public challenges list
 
         context['challenge'] = challenge

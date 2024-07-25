@@ -19,9 +19,6 @@
 
 {% endblock scripts %}
 
-<!-- TODO: This page is linked to the concept of Event from RCP.
-     This means it isn't independent, and, so, this 'Challenges'
-     package isn't either. This means I should change this idea here. -->
 
 
 {% block content %}
@@ -31,17 +28,20 @@
     <h1>{{ event.context.Name }} Context </h1>
     <h2>'{{ event.Name }}' Event</h2>
     <p><strong>Organization:</strong> <em>{{ event.context.organization }}</em></p>
+{% elif context %}
+    <h1>{{ context.Name }} Context </h1>
+    <p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
 {% else %}
-    <h1>{{ challenge.event.context.Name }} Context </h1>
-    <h2>'{{ challenge.event.Name }}' Event</h2>
-    <p><strong>Organization:</strong> <em>{{ challenge.event.context.organization }}</em></p>
+    <h1>{{ challenge.context.Name }} Context </h1>
+    {% if challenge.event %}<h2>'{{ challenge.event.Name }}' Event</h2>{% endif %}
+    <p><strong>Organization:</strong> <em>{{ challenge.context.organization }}</em></p>
 {% endif %}
 <hr>
 
 
-<div class="content-section">
+<div class="card p-4 mb-4">
     <!-- Header -->
-    <p class="font-weight-light" align="justify">
+    <p class="font-weight-light m-0" align="justify">
         For more information about RiverCure and Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
     </p>
     <hr>
@@ -57,11 +57,13 @@
             Submit
         </button>
 
-        {% if event %}
+        {% comment %} {% if event %}
             <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.id %}">Cancel</a>
+            {% elif  %}
         {% else %}
             <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">Cancel</a>
-        {% endif %}
+        {% endif %} {% endcomment %}
+        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
 
     </form>
     

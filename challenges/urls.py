@@ -4,7 +4,8 @@ from .views import *
 
 urlpatterns = [
     # Challenges
-    path('event/<int:event_id>/new/', ChallengeCreateView.as_view(), name='challenge-create'),
+    path('event/<int:event_id>/new/', ChallengeCreateView.as_view(), name='challenge-event-create'),
+    path('context/<str:context_id>/new/', ChallengeContextCreateView.as_view(), name='challenge-context-create'),
     path('<int:challenge_id>/detail/', ChallengeDetailView.as_view(), name='challenge-detail'),
     path('<int:challenge_id>/update/', ChallengeUpdateView.as_view(), name='challenge-update'),
     path('<int:challenge_id>/delete/', ChallengeDeleteView.as_view(), name='challenge-delete'),
