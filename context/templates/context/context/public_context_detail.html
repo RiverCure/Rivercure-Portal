@@ -33,14 +33,10 @@
     <img src="{{ context.picture.url }}" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
     <div class="card-body">
         <p class="card-text">{{ context.description }}</p>
-        {% if context.hydroFeature %}<h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>{% endif %}
         <hr>
         <a class="btn btn-info" href="{% url 'contribution-create' context.code %}"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>
         <div class="float-right">
             <a class="btn btn-info" href="{% url 'context-detail' context.code %}"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
-            {% if context.hydroFeature %}
-                {% comment %} <a class="btn btn-info" href="{% url 'hydrofeature-detail' context.hydroFeature.pk %}">See hydrofeature</a> {% endcomment %}
-            {% endif %}
         </div>
     </div>
 </div>

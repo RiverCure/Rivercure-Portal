@@ -257,7 +257,6 @@
                                         Portal
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{% url 'hydrofeature-list' %}">Hydrofeatures DELETE</a>
                                         <a class="dropdown-item" href="{% url 'organization-list' %}">{% trans "Organizations" %}</a>
                                     </div>
                                 </li>
@@ -401,11 +400,6 @@
                         <div class="form-group mb-3">
                             <label for="organization" class="mb-2">Organization</label>
                             {{filter.form.organization}}
-                        </div>
-                        <!-- Hydrofeature -->
-                        <div class="form-group">
-                            <label for="hydrofeature" class="mb-2">Hydrofeature</label>
-                            {{filter.form.hydroFeature}}
                         </div>
                     </div>
                 </div>
