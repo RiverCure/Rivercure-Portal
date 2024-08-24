@@ -6,6 +6,8 @@ urlpatterns = [
     # Challenges
     path('event/<int:event_id>/new/', ChallengeCreateView.as_view(), name='challenge-event-create'),
     path('context/<str:context_id>/new/', ChallengeContextCreateView.as_view(), name='challenge-context-create'),
+    path('context/<str:context_id>/all/', ChallengeContextFilterView.as_view(), name='challenges-context-list'),
+    #path('context/<str:context_id>/all/', context_challenges_list, name='challenge-context-all'),
     path('<int:challenge_id>/detail/', ChallengeDetailView.as_view(), name='challenge-detail'),
     path('<int:challenge_id>/update/', ChallengeUpdateView.as_view(), name='challenge-update'),
     path('<int:challenge_id>/delete/', ChallengeDeleteView.as_view(), name='challenge-delete'),

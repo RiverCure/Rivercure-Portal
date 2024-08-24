@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-23 15:55+0100\n"
+"POT-Creation-Date: 2024-08-24 15:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,177 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: challenges/filters.py:41
+msgid "Title"
+msgstr ""
+
+#: challenges/filters.py:44
+msgid "Search by Challenge title..."
+msgstr ""
+
+#: challenges/filters.py:47 context/filters.py:199
+msgid "Event"
+msgstr ""
+
+#: challenges/filters.py:51 context/filters.py:198
+msgid "Difficulty Level"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:7
+msgid "Context Challenges"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:19
+#: context/templates/context/context/citizen_home.html:236
+#: context/templates/context/context/public_context_detail.html:99
+#: context/templates/context/event/event_manager_my_context_list.html:80
+#: rivercureportal/templates/rivercureportal/base.html:73
+msgid "Challenges"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:20
+msgid "On this page you can see this Context's Challenges."
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:24
+#: context/templates/context/event/event_manager_my_context_list.html:37
+#: context/templates/context/moderator/moderator_context_contribution_list.html:51
+#: context/templates/context/moderator/moderator_list.html:21
+#: context/templates/context/moderator/moderator_my_context_list.html:44
+#: contributions/templates/contributions/contribution_list.html:24
+#: contributions/templates/contributions/my_contributions_list.html:24
+msgid "Search and Filter"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:28
+#: context/templates/context/event/event_manager_my_context_list.html:53
+#: context/templates/context/moderator/moderator_context_contribution_list.html:80
+#: context/templates/context/moderator/moderator_list.html:30
+#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: contributions/templates/contributions/contribution_list.html:28
+#: contributions/templates/contributions/my_contributions_list.html:28
+msgid "Apply"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:42
+#: context/templates/context/context/public_context_detail.html:123
+msgid "Opened on"
+msgstr ""
+
+#: challenges/templates/challenges/context_challenges_list.html:50
+#: context/templates/context/context/public_context_detail.html:111
+msgid "There are no Challenges for this Context."
+msgstr ""
+
+#: challenges/views.py:56 challenges/views.py:105
+msgid ""
+"There is an error in the submission form. Please check what field(s) need to "
+"be adjusted."
+msgstr ""
+
+#: challenges/views.py:73 challenges/views.py:121
+msgid "Your Challenge has been created successfully."
+msgstr ""
+
+#: challenges/views.py:225
+msgid "The Challenge was updated successfully."
+msgstr ""
+
+#: challenges/views.py:245
+msgid "The Challenge was deleted successfully."
+msgstr ""
+
+#: challenges/views.py:279 challenges/views.py:606 challenges/views.py:673
+#: challenges/views.py:699 challenges/views.py:724 challenges/views.py:750
+#: challenges/views.py:823 challenges/views.py:838
+msgid "Challenge does not exist"
+msgstr ""
+
+#: challenges/views.py:284 challenges/views.py:363 challenges/views.py:454
+#: challenges/views.py:489 challenges/views.py:513 challenges/views.py:538
+#: challenges/views.py:574
+msgid "Challenge is not a Draft"
+msgstr ""
+
+#: challenges/views.py:289 challenges/views.py:494 challenges/views.py:518
+#: challenges/views.py:548 challenges/views.py:584 challenges/views.py:678
+#: challenges/views.py:704 challenges/views.py:729 challenges/views.py:755
+msgid "You don't have permission to do this"
+msgstr ""
+
+#: challenges/views.py:336
+msgid "Your Question has been created successfully."
+msgstr ""
+
+#: challenges/views.py:358 challenges/views.py:449 challenges/views.py:533
+#: challenges/views.py:569
+msgid "Question does not exist"
+msgstr ""
+
+#: challenges/views.py:423
+msgid "Your Question has been updated successfully."
+msgstr ""
+
+#: challenges/views.py:484
+msgid "Multiple Choice Option does not exist"
+msgstr ""
+
+#: challenges/views.py:508
+msgid "True or False Option does not exist"
+msgstr ""
+
+#: challenges/views.py:543
+msgid "Question is already first"
+msgstr ""
+
+#: challenges/views.py:579
+msgid "Question is already last"
+msgstr ""
+
+#: challenges/views.py:611
+msgid "Challenge isn't public and you don't belong to its Organization!"
+msgstr ""
+
+#: challenges/views.py:617
+msgid "You can't participate in this Challenge!"
+msgstr ""
+
+#: challenges/views.py:659
+msgid "Your participation has been submitted successfully."
+msgstr ""
+
+#: challenges/views.py:687
+msgid "Challenge cannot be published"
+msgstr ""
+
+#: challenges/views.py:690
+msgid "Challenge is now published"
+msgstr ""
+
+#: challenges/views.py:712
+msgid "Challenge cannot be closed"
+msgstr ""
+
+#: challenges/views.py:715
+msgid "Challenge is now closed"
+msgstr ""
+
+#: challenges/views.py:738
+msgid "Challenge cannot be opened"
+msgstr ""
+
+#: challenges/views.py:741
+msgid "Challenge is now open"
+msgstr ""
+
+#: challenges/views.py:762
+msgid "Challenge cannot be archived"
+msgstr ""
+
+#: challenges/views.py:765
+msgid "Challenge is now archived"
+msgstr ""
 
 #: context/filters.py:38
 msgid "Search by name..."
@@ -27,7 +198,7 @@ msgstr ""
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
-#: contributions/templates/contributions/contribution_detail.html:98
+#: contributions/templates/contributions/contribution_detail.html:99
 #: contributions/templates/contributions/contribution_form.html:166
 #: contributions/templates/contributions/contribution_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:66
@@ -75,7 +246,7 @@ msgstr ""
 
 #: context/filters.py:111
 #: context/templates/context/moderator/moderator_context_contribution_list.html:95
-#: contributions/templates/contributions/contribution_detail.html:127
+#: contributions/templates/contributions/contribution_detail.html:128
 msgid "State"
 msgstr ""
 
@@ -123,14 +294,6 @@ msgstr ""
 msgid "Search by title..."
 msgstr ""
 
-#: context/filters.py:198
-msgid "Difficulty Level"
-msgstr ""
-
-#: context/filters.py:199
-msgid "Event"
-msgstr ""
-
 #: context/filters.py:202
 msgid "Search by Event name..."
 msgstr ""
@@ -159,7 +322,8 @@ msgstr ""
 #: context/templates/context/context/citizen_home.html:156
 #: context/templates/context/context/citizen_home.html:454
 #: context/templates/context/context/public_context_detail.html:40
-#: contributions/templates/contributions/contribution_detail.html:395
+#: context/templates/context/event/event_manager_my_context_list.html:81
+#: contributions/templates/contributions/contribution_detail.html:396
 msgid "Details"
 msgstr ""
 
@@ -198,11 +362,6 @@ msgstr ""
 #: rivercureportal/templates/rivercureportal/base.html:72
 #: rivercureportal/templates/rivercureportal/base.html:78
 msgid "My Contexts"
-msgstr ""
-
-#: context/templates/context/context/citizen_home.html:236
-#: rivercureportal/templates/rivercureportal/base.html:73
-msgid "Challenges"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:240
@@ -281,7 +440,8 @@ msgid "Contributions"
 msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:60
-#: context/templates/context/context/public_context_detail.html:103
+#: context/templates/context/context/public_context_detail.html:105
+#: context/templates/context/context/public_context_detail.html:140
 msgid "See more"
 msgstr ""
 
@@ -291,31 +451,36 @@ msgid ""
 msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:80
-#: contributions/templates/contributions/contribution_detail.html:126
+#: contributions/templates/contributions/contribution_detail.html:127
 #: contributions/templates/contributions/contribution_list.html:52
 #: contributions/templates/contributions/my_contributions_list.html:46
 msgid "Submitted on"
 msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:91
-#: context/templates/context/context/public_context_detail.html:135
-#: contributions/templates/contributions/contribution_detail.html:304
+#: context/templates/context/context/public_context_detail.html:172
+#: contributions/templates/contributions/contribution_detail.html:305
 msgid "Scroll horizontally to see more"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:100
+#: context/templates/context/context/public_context_detail.html:103
+msgid "Add Challenge"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:137
+#: context/templates/context/event/event_manager_my_context_list.html:79
 msgid "Events"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:107
+#: context/templates/context/context/public_context_detail.html:144
 msgid "There are no Events for this Context."
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:124
+#: context/templates/context/context/public_context_detail.html:161
 msgid "Started on"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:142
+#: context/templates/context/context/public_context_detail.html:179
 msgid "Back to Home"
 msgstr ""
 
@@ -326,29 +491,12 @@ msgid ""
 "visit the"
 msgstr ""
 
-#: context/templates/context/event/event_manager_my_context_list.html:37
-#: context/templates/context/moderator/moderator_context_contribution_list.html:51
-#: context/templates/context/moderator/moderator_list.html:21
-#: context/templates/context/moderator/moderator_my_context_list.html:44
-#: contributions/templates/contributions/contribution_list.html:24
-msgid "Search and Filter"
-msgstr ""
-
-#: context/templates/context/event/event_manager_my_context_list.html:53
-#: context/templates/context/moderator/moderator_context_contribution_list.html:80
-#: context/templates/context/moderator/moderator_list.html:30
-#: context/templates/context/moderator/moderator_my_context_list.html:60
-#: contributions/templates/contributions/contribution_list.html:28
-#: contributions/templates/contributions/my_contributions_list.html:28
-msgid "Apply"
-msgstr ""
-
-#: context/templates/context/event/event_manager_my_context_list.html:75
+#: context/templates/context/event/event_manager_my_context_list.html:88
 #: context/templates/context/moderator/moderator_my_context_list.html:95
 msgid "There are no Contexts."
 msgstr ""
 
-#: context/templates/context/event/event_manager_my_context_list.html:86
+#: context/templates/context/event/event_manager_my_context_list.html:100
 #: context/templates/context/moderator/moderator_add_list.html:67
 #: context/templates/context/moderator/moderator_context_contribution_list.html:138
 #: context/templates/context/moderator/moderator_list.html:78
@@ -357,7 +505,7 @@ msgstr ""
 msgid "First Page"
 msgstr ""
 
-#: context/templates/context/event/event_manager_my_context_list.html:100
+#: context/templates/context/event/event_manager_my_context_list.html:114
 #: context/templates/context/moderator/moderator_add_list.html:81
 #: context/templates/context/moderator/moderator_context_contribution_list.html:152
 #: context/templates/context/moderator/moderator_list.html:92
@@ -526,7 +674,7 @@ msgid "Text description of the observation you made."
 msgstr ""
 
 #: contributions/forms.py:36
-#: contributions/templates/contributions/contribution_detail.html:332
+#: contributions/templates/contributions/contribution_detail.html:333
 msgid "Description"
 msgstr ""
 
@@ -545,12 +693,12 @@ msgid "Images and videos"
 msgstr ""
 
 #: contributions/forms.py:45
-#: contributions/templates/contributions/contribution_detail.html:337
+#: contributions/templates/contributions/contribution_detail.html:338
 msgid "Transit Time of Floating Objects"
 msgstr ""
 
 #: contributions/forms.py:48
-#: contributions/templates/contributions/contribution_detail.html:338
+#: contributions/templates/contributions/contribution_detail.html:339
 msgid "Water Height"
 msgstr ""
 
@@ -559,7 +707,7 @@ msgid "Height in meters."
 msgstr ""
 
 #: contributions/forms.py:51
-#: contributions/templates/contributions/contribution_detail.html:341
+#: contributions/templates/contributions/contribution_detail.html:342
 msgid "Velocity"
 msgstr ""
 
@@ -568,7 +716,7 @@ msgid "Velocity in km/h."
 msgstr ""
 
 #: contributions/forms.py:55
-#: contributions/templates/contributions/contribution_detail.html:342
+#: contributions/templates/contributions/contribution_detail.html:343
 msgid "Tornado Type"
 msgstr ""
 
@@ -599,12 +747,12 @@ msgid "Pending"
 msgstr ""
 
 #: contributions/models.py:19
-#: contributions/templates/contributions/contribution_detail.html:163
+#: contributions/templates/contributions/contribution_detail.html:164
 msgid "Accepted"
 msgstr ""
 
 #: contributions/models.py:20
-#: contributions/templates/contributions/contribution_detail.html:195
+#: contributions/templates/contributions/contribution_detail.html:196
 msgid "Rejected"
 msgstr ""
 
@@ -652,190 +800,190 @@ msgstr ""
 msgid "On Land"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:124
-#: contributions/templates/contributions/contribution_detail.html:512
+#: contributions/templates/contributions/contribution_detail.html:125
+#: contributions/templates/contributions/contribution_detail.html:513
 msgid "Contribution"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:140
-#: contributions/templates/contributions/contribution_detail.html:524
+#: contributions/templates/contributions/contribution_detail.html:141
+#: contributions/templates/contributions/contribution_detail.html:525
 msgid "Rejection reason"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:146
+#: contributions/templates/contributions/contribution_detail.html:147
 msgid "Back to Contribution list"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:150
+#: contributions/templates/contributions/contribution_detail.html:151
 msgid "Accept"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:157
+#: contributions/templates/contributions/contribution_detail.html:158
 msgid "Accept Contribution"
-msgstr ""
-
-#: contributions/templates/contributions/contribution_detail.html:163
-#: contributions/templates/contributions/contribution_detail.html:195
-msgid "Are you sure you want to mark this Contribution as"
 msgstr ""
 
 #: contributions/templates/contributions/contribution_detail.html:164
 #: contributions/templates/contributions/contribution_detail.html:196
+msgid "Are you sure you want to mark this Contribution as"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_detail.html:165
+#: contributions/templates/contributions/contribution_detail.html:197
 msgid "This action is irreversible!"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:167
-#: contributions/templates/contributions/contribution_detail.html:199
+#: contributions/templates/contributions/contribution_detail.html:168
+#: contributions/templates/contributions/contribution_detail.html:200
 msgid ""
 "To read more about Contributions and the Moderation process, please visit the"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:171
-#: contributions/templates/contributions/contribution_detail.html:207
-#: contributions/templates/contributions/contribution_detail.html:458
+#: contributions/templates/contributions/contribution_detail.html:172
+#: contributions/templates/contributions/contribution_detail.html:208
+#: contributions/templates/contributions/contribution_detail.html:459
 #: contributions/templates/contributions/contribution_form.html:189
 #: contributions/templates/contributions/contribution_form.html:214
 msgid "Cancel"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:172
-#: contributions/templates/contributions/contribution_detail.html:209
-#: contributions/templates/contributions/contribution_detail.html:460
+#: contributions/templates/contributions/contribution_detail.html:173
+#: contributions/templates/contributions/contribution_detail.html:210
+#: contributions/templates/contributions/contribution_detail.html:461
 #: contributions/templates/contributions/contribution_form.html:215
 msgid "Confirm"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:181
+#: contributions/templates/contributions/contribution_detail.html:182
 msgid "Reject"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:189
+#: contributions/templates/contributions/contribution_detail.html:190
 msgid "Reject Contribution"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:217
+#: contributions/templates/contributions/contribution_detail.html:218
 msgid "Validate Next Contribution"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:223
+#: contributions/templates/contributions/contribution_detail.html:224
 msgid "Delete"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:236
+#: contributions/templates/contributions/contribution_detail.html:237
 msgid "Uploaded Media"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:319
+#: contributions/templates/contributions/contribution_detail.html:320
 msgid "Observation Details"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:338
+#: contributions/templates/contributions/contribution_detail.html:339
 msgid "meters"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:386
+#: contributions/templates/contributions/contribution_detail.html:387
 msgid "Observed on"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:393
+#: contributions/templates/contributions/contribution_detail.html:394
 msgid ""
 "Address will be available shortly after Contribution is accepted. In the "
 "meantime, check the details."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:398
+#: contributions/templates/contributions/contribution_detail.html:399
 msgid "Latitude"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:401
+#: contributions/templates/contributions/contribution_detail.html:402
 msgid "Longitude"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:420
+#: contributions/templates/contributions/contribution_detail.html:421
 msgid "See Context"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:426
+#: contributions/templates/contributions/contribution_detail.html:427
 msgid "Report"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:434
+#: contributions/templates/contributions/contribution_detail.html:435
 msgid "Report Contribution"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:440
+#: contributions/templates/contributions/contribution_detail.html:441
 msgid ""
 "Are you sure you want to <span class='text-danger'>report</span> this "
 "Contribution?"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:441
+#: contributions/templates/contributions/contribution_detail.html:442
 msgid "Make sure you are following the"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:441
+#: contributions/templates/contributions/contribution_detail.html:442
 msgid "Platform Guidelines"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:443
+#: contributions/templates/contributions/contribution_detail.html:444
 msgid ""
 "To read more about reporting Contributions and the Moderation process, "
 "please visit the"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:451
+#: contributions/templates/contributions/contribution_detail.html:452
 msgid ""
 "Please write the <span class='font-weight-bold'>reason</span> for reporting "
 "this Contribution."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:476
+#: contributions/templates/contributions/contribution_detail.html:477
 msgid "Validation History"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:477
+#: contributions/templates/contributions/contribution_detail.html:478
 msgid ""
 "This is the history of the states this Contribution has been in, from most "
 "recent to oldest. Scroll to see more, and click on one to see details."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:498
+#: contributions/templates/contributions/contribution_detail.html:499
 msgid "Latest Validation"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:501
+#: contributions/templates/contributions/contribution_detail.html:502
 msgid "User Submission"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:519
+#: contributions/templates/contributions/contribution_detail.html:520
 msgid "Validated on"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:520
+#: contributions/templates/contributions/contribution_detail.html:521
 msgid "Validated by"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:529
-#: contributions/templates/contributions/contribution_detail.html:585
+#: contributions/templates/contributions/contribution_detail.html:530
+#: contributions/templates/contributions/contribution_detail.html:586
 msgid "Close"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:550
+#: contributions/templates/contributions/contribution_detail.html:551
 msgid ""
 "Reports made by users. Scroll to see more, and click on one to see details."
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:562
-#: contributions/templates/contributions/contribution_detail.html:575
+#: contributions/templates/contributions/contribution_detail.html:563
+#: contributions/templates/contributions/contribution_detail.html:576
 msgid "Reported by"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:563
-#: contributions/templates/contributions/contribution_detail.html:582
+#: contributions/templates/contributions/contribution_detail.html:564
+#: contributions/templates/contributions/contribution_detail.html:583
 msgid "Reported on"
 msgstr ""
 
-#: contributions/templates/contributions/contribution_detail.html:564
+#: contributions/templates/contributions/contribution_detail.html:565
 msgid "Read"
 msgstr ""
 

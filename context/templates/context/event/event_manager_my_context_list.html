@@ -34,7 +34,7 @@
 
 <div class="mb-3">
     <!-- Search and Filter Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
     
     {% comment %} <!-- Sort Button -->
     <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
@@ -49,7 +49,7 @@
 <div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
+        <button type="submit" class="btn btn-outline-primary"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 
@@ -59,7 +59,7 @@
 <!-- List of Contexts-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for context in contexts %}
-        <a href="{% url 'event-list' context.context.code %}">
+        {% comment %} <a href="{% url 'event-list' context.context.code %}">
             <div class="card my-card-hover mb-3 my-context-card">
                 <img src={{ context.context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
                 <div class="card-body">
@@ -67,12 +67,25 @@
                     <h6 class="card-text text-muted"><em>{{ context.context.hydroFeature }}</em></h6>
                 </div>
             </div>
-        </a>
+        </a> {% endcomment %}
+
+        <div class="card mb-4" style="width: 26rem;">
+            <img src="{{ context.context.picture.url }}" class="card-img-top my-card-img" alt="Context Picture">
+            <div class="card-body">
+                <h5 class="card-title mb-3">{{context.context.Name}}</h5>
+                <div class="d-flex">
+                    <a href="{% url 'event-list' context.context.code %}" class="btn btn-info btn-block mr-2">{% trans "Events" %}</a>
+                    <a href="{% url 'challenges-context-list' context.context.code %}" class="btn btn-info btn-block mt-0 mr-2">{% trans "Challenges" %}</a>
+                    <a href="{% url 'public-context-detail' context.context.code %}" class="btn btn-info btn-block mt-0"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
+                </div>
+            </div>
+        </div>
     {% endfor %}
 </div>
 {% if contexts.count == 0 %}
     <p class="font-weight-light my-2 text-center">{% trans "There are no Contexts." %}</p>
 {% endif %}
+
 
 
 <!-- Pagination -->

@@ -24,7 +24,7 @@ from context.views.authorization import context_organization_edit_permission_che
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
-from .filters import MyChallengeParticipationsFilter, ChallengeParticipationsFilter
+from .filters import MyChallengeParticipationsFilter, ChallengeParticipationsFilter, ContextChallengeFilter
 
 
 
@@ -120,10 +120,49 @@ class ChallengeContextCreateView(LoginRequiredMixin, UserPassesTestMixin, Create
         # Send success message (to be shown in Challenge detail page)
         messages.success(self.request, _('Your Challenge has been created successfully.'))
 
-        # TODO: Send confirmation email to user
-
         return super().form_valid(form)
 
+
+class ChallengeContextFilterView(LoginRequiredMixin, FilterView):
+    model = e_Challenge
+    template_name = 'challenges/context_challenges_list.html'
+    filterset_class = ContextChallengeFilter
+    context_object_name = 'challenges'
+    pk_url_kwarg = 'context_id'
+    paginate_by = 9
+
+    def get_queryset(self):
+        context = e_Context.objects.get(pk=self.kwargs['context_id'])
+
+        # Show ALL (challenges of this context) to admin, org/context man and quiz man
+        if (is_platform_admin(self.request.user) or context_organization_edit_permission_check(self.request.user, context.organization) or context_event_manager_check(self.request.user, context)):
+            challenges = e_Challenge.objects.filter(context=context)
+        # Show published challenges from user's org + published public challenges
+        else:
+            is_user_in_org = context_organization_belong_check(self.request.user, context.organization)
+            if is_user_in_org:
+                # Then show every Published Challenge of this Context
+                challenges = e_Challenge.objects.filter(context=context, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
+            else:
+                # Otherwise, only show Published Public Challenges
+                challenges = e_Challenge.objects.filter(context=context, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
+        
+        # filter = ContextChallengeFilter(self.request.GET, queryset=challenges)
+
+        return challenges
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        _context = e_Context.objects.get(pk=self.kwargs['context_id'])
+
+        context['context'] = _context
+        context['filter'] = ContextChallengeFilter(self.request.GET, queryset=context['challenges'])
+
+        return context
+    
+
+    
 
 
 class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

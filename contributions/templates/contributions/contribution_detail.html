@@ -34,8 +34,9 @@
             const map = e.detail.map;
             console.log(e.detail.map);
 
-            var lat = {{ contribution.get_lat }};
-            var long = {{ contribution.get_long }};
+            // TODO: fix!!
+            let lat = parseFloat("{{ contribution.get_lat }}".replace(",", "."));
+            let long = parseFloat("{{ contribution.get_long }}".replace(",", "."));
 
             map.setView([lat, long], 17);
             L.marker([lat, long]).addTo(map);
