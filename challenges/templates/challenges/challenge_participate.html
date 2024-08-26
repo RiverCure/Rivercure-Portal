@@ -1,5 +1,5 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Challenge "{{ challenge.title }}" {% endblock %}
+{% block title %} Quiz "{{ challenge.title }}" {% endblock %}
 {% load auth_extras %}
 {% load my_tags %}
 {% load static %}
@@ -28,7 +28,7 @@
 
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col">
-            <h2 class="my-3">Challenge "{{ challenge.title|title }}"</h2>
+            <h2 class="my-3">Quiz "{{ challenge.title|title }}"</h2>
         </div>
     </div>
 
@@ -95,7 +95,7 @@
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
     <div class="col">
         <!-- See Challenge -->
-        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}">See Challenge</a>
+        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}">See Quiz</a>
         
     </div>
 </div>

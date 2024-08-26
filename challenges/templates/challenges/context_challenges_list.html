@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %} {% trans "Context Challenges" %} {% endblock %}
+{% block title %} {% trans "Context Quizzes" %} {% endblock %}
 
 {% block scripts %}
 
@@ -16,8 +16,8 @@
 
 {% block content %}
 
-<h1>{{ context.Name }} - {% trans "Challenges" %}</h1>
-<p class="font-weight-light" align="justify">{% trans "On this page you can see this Context's Challenges." %}</p>
+<h1>{{ context.Name }} - {% trans "Quizzes" %}</h1>
+<p class="font-weight-light" align="justify">{% trans "On this page you can see this Context's Quizzes." %}</p>
 <hr>
 
 <!-- Filter -->
@@ -47,7 +47,7 @@
 </div>
 <!-- If list empty -->
 {% if challenge.count == 0 %}
-    <p class="font-weight-light my-2 text-center">{% trans "There are no Challenges for this Context." %}</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Quizzes for this Context." %}</p>
 {% endif %}
 
 {% endblock content %}

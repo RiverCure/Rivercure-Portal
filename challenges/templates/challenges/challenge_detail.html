@@ -47,7 +47,7 @@
             {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform" %}{% else %}{% trans "Organization" %}{% endif %} </p>{% endif %}
             {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
             {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Automatically closes on" %} {{ challenge.automatic_close_datetime }}.</p>{% endif %}
-            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Challenge is closed." %}</p>{% endif %}
+            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Quiz is closed." %}</p>{% endif %}
         </div>
     </div>
 
@@ -81,17 +81,17 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="publishModalLabel">{% trans "Publish Challenge" %} "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="publishModalLabel">{% trans "Publish Quiz" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    {% blocktrans %}Are you sure you want to <span class="text-success">publish</span> this Challenge? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!{% endblocktrans %}
+                                    {% blocktrans %}Are you sure you want to <span class="text-success">publish</span> this Quiz? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -114,17 +114,17 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="closeModalLabel">{% trans "Close Challenge" %} "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="closeModalLabel">{% trans "Close Quiz" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    {% blocktrans %}Are you sure you want to <span class="text-primary">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.{% endblocktrans %}
+                                    {% blocktrans %}Are you sure you want to <span class="text-primary">close</span> this Quiz? The Quiz will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -147,17 +147,17 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="openModalLabel">{% trans "Open Challenge" %} "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="openModalLabel">{% trans "Open Quiz" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    {% blocktrans %}Are you sure you want to <span class="text-primary">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.{% endblocktrans %}
+                                    {% blocktrans %}Are you sure you want to <span class="text-primary">open</span> this Quiz? Users will be able to <span class='font-weight-bold'>participate</span> in it.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
@@ -180,17 +180,17 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="archiveModalLabel">{% trans "Archive Challenge" %} {{challenge.title}}</h5>
+                                <h5 class="modal-title" id="archiveModalLabel">{% trans "Archive Quiz" %} {{challenge.title}}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    {% blocktrans %}Are you sure you want to <span class="text-warning">archive</span> this Challenge? Once archived, the Challenge will <span class='font-weight-bold'>no longer be available</span> to users.{% endblocktrans %}
+                                    {% blocktrans %}Are you sure you want to <span class="text-warning">archive</span> this Quiz? Once archived, the Challenge will <span class='font-weight-bold'>no longer be available</span> to users.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">

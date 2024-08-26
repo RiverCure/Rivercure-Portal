@@ -1,5 +1,5 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Challenges {% endblock %}
+{% block title %} Quizzes {% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
@@ -12,8 +12,8 @@
 
 {% block content %}
 
-<h1 class="mt-2">Challenges</h1>
-<p class="font-weight-light" align="justify">On this page you can see the Challenges from all your Contexts.</p>
+<h1 class="mt-2">Quizzes</h1>
+<p class="font-weight-light" align="justify">On this page you can see the Quizzes from all your Contexts.</p>
 <hr>
 
 <!-- Filter -->
@@ -53,7 +53,7 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Challenges.</p>
+    <p class="font-weight-light my-2 text-center">There are no Quizzes.</p>
 {% endif %}
 
 

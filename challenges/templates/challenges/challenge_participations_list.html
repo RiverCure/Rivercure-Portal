@@ -1,5 +1,5 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} My Participations - Challenge "{{challenge.title}}"{% endblock %}
+{% block title %} My Participations - Quiz "{{challenge.title}}"{% endblock %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
 {% load static %}
@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<h1 class="mt-2 mb-0">Challenge "{{challenge.title}}" - Participations</h1>
+<h1 class="mt-2 mb-0">Quiz "{{challenge.title}}" - Participations</h1>
 
 <!-- Filter -->
 <button class="btn btn-info dropdown-toggle mt-3" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
@@ -78,6 +78,6 @@
 </div>
 
 <!-- Footer (Bottom Buttons) -->
-<a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}" style="float: right;">See Challenge</a>
+<a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}" style="float: right;">See Quiz</a>
 
 {% endblock content %}

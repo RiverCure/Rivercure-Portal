@@ -231,12 +231,6 @@
                                             {% if request.session.organizationCode %}
                                             <a class="dropdown-item" href="{% url 'org-challenge-list' request.session.organizationCode %}">{% trans "Quizzes" %}</a>
                                             {% endif %}
-                                            {% if user|is_quiz_manag %}
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item disabled" href="#">{% trans "Quiz Manager" %} DELETE</a>
-                                                <a class="dropdown-item" href="{% url 'quiz-manager-context-list' %}">{% trans "My Contexts" %}</a>
-                                                <a class="dropdown-item" href="{% url 'quiz-manager-my-challenges-list' %}">{% trans "Challenges" %}</a>
-                                            {% endif %}
                                             {% if user|is_mod %}
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item disabled" href="#">{% trans "Moderator" %}</a>
