@@ -13,7 +13,7 @@ from django_filters.views import FilterView
 
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.forms import EventForm
-from context.filters import EventFilter, EventManagerFilter, EventManagerAddFilter, EventChallengeListFilter
+from context.filters import EventFilter, QuizManagerFilter, QuizManagerAddFilter, EventChallengeListFilter
 from context.tasks import simulate_task
 from context.views.context import zip_file
 from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
@@ -23,8 +23,9 @@ from sensors.models import Sensor
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 from challenges.models import e_Challenge, ChallengeState
+from organization.authorization import is_org_quiz_manager
 
-from ..filters import EventManagerContextFilter, MyContextsChallengesFilter
+from ..filters import QuizManagerContextFilter, MyChallengesFilter
 
 from .authorization import *
 from .prepare_files import *
@@ -95,7 +96,7 @@ class EventDetailView(LoginRequiredMixin, DetailView):
             # Otherwise, only show Public Challenges
             context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
         # context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
-        context['isEventManager'] = context_event_manager_check(self.request.user, event.context)
+        context['isQuizMan'] = is_org_quiz_manager(self.request.user, event.context.organization)
 
         return context
 
@@ -131,6 +132,7 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
         event_id = self.kwargs['event_id']
 
         context['event'] = e_ContextEvent.objects.get(pk=event_id)
+        context['isQuizMan'] = is_org_quiz_manager(self.request.user, context['event'].context.organization)
 
         is_user_in_org = context_organization_belong_check(self.request.user, context['event'].context.organization)
         if is_user_in_org:
@@ -283,115 +285,115 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
 
-# TODO: Change to FilterView
-class ContextEventManagersListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = User
-    template_name = 'context/event/event_manager_list.html'
-    context_object_name = 'users'
-    ordering = ['first_name', 'last_name'] # TODO: Change to something else?
-    pk_url_kwarg = 'contextCode'
-    filterset_class = EventManagerFilter
-    paginate_by = 5
+# # TODO: Change to FilterView
+# class ContextQuizManagersListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+#     model = User
+#     template_name = 'context/quiz/quiz_manager_list.html'
+#     context_object_name = 'users'
+#     ordering = ['first_name', 'last_name'] # TODO: Change to something else?
+#     pk_url_kwarg = 'contextCode'
+#     filterset_class = QuizManagerFilter
+#     paginate_by = 5
 
-    def get_queryset(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
-        members = ContextMembership.objects.filter(context=_context, permission='context_eventManager')
+#     def get_queryset(self):
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+#         members = ContextMembership.objects.filter(context=_context, permission='context_quizManager')
 
-        return members
+#         return members
 
-    def get_context_data(self, **kwargs):
-        context_code = self.kwargs['contextCode']
-        _context = e_Context.objects.get(pk=context_code)
+#     def get_context_data(self, **kwargs):
+#         context_code = self.kwargs['contextCode']
+#         _context = e_Context.objects.get(pk=context_code)
 
-        context = super(ContextEventManagersListView, self).get_context_data(**kwargs)
-        context['context'] = _context
-        context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
-        members = ContextMembership.objects.filter(context=context_code, permission='context_eventManager')
-        context['filter'] = EventManagerFilter(self.request.GET, queryset=members)
-        return context
+#         context = super(ContextQuizManagersListView, self).get_context_data(**kwargs)
+#         context['context'] = _context
+#         context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
+#         members = ContextMembership.objects.filter(context=context_code, permission='context_quizManager')
+#         context['filter'] = QuizManagerFilter(self.request.GET, queryset=members)
+#         return context
 
-    # Only users who belong to this Organization can see this
-    def test_func(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
-        return belongs_to_organization(self.request.user, _context.organization)
+#     # Only users who belong to this Organization can see this
+#     def test_func(self):
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+#         return belongs_to_organization(self.request.user, _context.organization)
 
 
-class ContextEventManagerAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = User
-    template_name = 'context/event/event_manager_add_list.html'
-    context_object_name = 'users'
-    ordering = ['first_name', 'last_name'] # TODO: Working?
-    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
-    filterset_class = EventManagerAddFilter
-    paginate_by = 5
+# class ContextQuizManagerAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+#     model = User
+#     template_name = 'context/quiz/quiz_manager_add_list.html'
+#     context_object_name = 'users'
+#     ordering = ['first_name', 'last_name'] # TODO: Working?
+#     pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+#     filterset_class = QuizManagerAddFilter
+#     paginate_by = 5
 
-    def get_queryset(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
+#     def get_queryset(self):
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
 
-        # Only show organization members that are not already event managers for that context
-        event_managers = ContextMembership.objects.filter(context=_context, permission='context_eventManager').values('user')
-        members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=event_managers)
+#         # Only show organization members that are not already event managers for that context
+#         quiz_managers = ContextMembership.objects.filter(context=_context, permission='context_quizManager').values('user')
+#         members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=quiz_managers)
 
-        return members
+#         return members
 
-    def get_context_data(self, **kwargs):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+#     def get_context_data(self, **kwargs):
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
 
-        context = super(ContextEventManagerAddListView, self).get_context_data(**kwargs)
-        context['context'] =  _context
+#         context = super(ContextQuizManagerAddListView, self).get_context_data(**kwargs)
+#         context['context'] =  _context
 
-        # Only show organization members that are not already event managers for that context
-        event_managers = ContextMembership.objects.filter(context=_context, permission='context_eventManager').values('user')
-        org_members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=event_managers)
-        # Filter
-        context['filter'] = EventManagerAddFilter(self.request.GET, queryset=org_members)
+#         # Only show organization members that are not already event managers for that context
+#         quiz_managers = ContextMembership.objects.filter(context=_context, permission='context_quizManager').values('user')
+#         org_members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=quiz_managers)
+#         # Filter
+#         context['filter'] = QuizManagerAddFilter(self.request.GET, queryset=org_members)
 
-        return context
+#         return context
 
-    def test_func(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
-        return context_organization_edit_permission_check(self.request.user, _context.organization)
+#     def test_func(self):
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+#         return context_organization_edit_permission_check(self.request.user, _context.organization)
 
-@login_required
-def contextEventManagerAdd(request, contextCode, userId):
-    _context = get_object_or_404(e_Context, pk=contextCode)
-    user = get_object_or_404(User, pk=userId)
-    organization = _context.organization
+# @login_required
+# def contextQuizManagerAdd(request, contextCode, userId):
+#     _context = get_object_or_404(e_Context, pk=contextCode)
+#     user = get_object_or_404(User, pk=userId)
+#     organization = _context.organization
 
-    # Make sure only Organization Manager and Context Manager can do this
-    # And that the user belongs to the Org
-    if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
-        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+#     # Make sure only Organization Manager and Context Manager can do this
+#     # And that the user belongs to the Org
+#     if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
+#         return HttpResponseRedirect(reverse('quiz-manager-list', args=[contextCode]))
     
-    # Make sure user is not already an Event Manager
-    if context_event_manager_check(user, _context):
-        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+#     # Make sure user is not already a Quiz Manager
+#     if context_quiz_manager_check(user, _context):
+#         return HttpResponseRedirect(reverse('quiz-manager-list', args=[contextCode]))
     
-    if user and _context:
-        member = ContextMembership(user=user, context=_context, permission='context_eventManager')
-        member.save()
+#     if user and _context:
+#         member = ContextMembership(user=user, context=_context, permission='context_quizManager')
+#         member.save()
 
-        # TODO: Send notifs
+#         # TODO: Send notifs
 
-    return redirect('event-manager-list', contextCode)
+#     return redirect('quiz-manager-list', contextCode)
 
-@login_required
-def contextEventManagerRemove(request, contextCode, userId):
-    _context = get_object_or_404(e_Context, pk=contextCode)
+# @login_required
+# def contextQuizManagerRemove(request, contextCode, userId):
+#     _context = get_object_or_404(e_Context, pk=contextCode)
 
-    # Make sure only Organization Manager and Context Manager can do this
-    if not context_organization_edit_permission_check(request.user, _context.organization.id):
-        return HttpResponseRedirect(reverse('event-manager-list', args=[contextCode]))
+#     # Make sure only Organization Manager and Context Manager can do this
+#     if not context_organization_edit_permission_check(request.user, _context.organization.id):
+#         return HttpResponseRedirect(reverse('quiz-manager-list', args=[contextCode]))
     
-    user = get_object_or_404(User, pk=userId)
-    context_membership_user = get_object_or_404(ContextMembership, user=user, context=_context, permission='context_eventManager')
+#     user = get_object_or_404(User, pk=userId)
+#     context_membership_user = get_object_or_404(ContextMembership, user=user, context=_context, permission='context_quizManager')
 
-    if context_membership_user:
-        context_membership_user.delete()
+#     if context_membership_user:
+#         context_membership_user.delete()
 
-        # TODO: Send notifs
+#         # TODO: Send notifs
     
-    return redirect('event-manager-list', contextCode)
+#     return redirect('quiz-manager-list', contextCode)
 
 
 def request_simulation(request, pk, event_id):
@@ -492,56 +494,56 @@ def cancel_simulation(request, pk, event_id):
 
 
 
-class EventManagerContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = e_Context
-    template_name = 'context/event/event_manager_my_context_list.html'
-    context_object_name = 'contexts'
-    filterset_class = EventManagerContextFilter
-    paginate_by = 6
+# class QuizManagerContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+#     model = e_Context
+#     template_name = 'context/quiz/quiz_manager_my_context_list.html'
+#     context_object_name = 'contexts'
+#     filterset_class = QuizManagerContextFilter
+#     paginate_by = 6
 
-    def get_queryset(self):
-        # Get Contexts for which this user is an Event Manager
-        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager')
-        return contexts
+#     def get_queryset(self):
+#         # Get Contexts for which this user is a Quiz Manager
+#         contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_quizManager')
+#         return contexts
 
-    def get_context_data(self, **kwargs):
-        context = super(EventManagerContextsListView, self).get_context_data(**kwargs)
-        # Filter
-        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager')
-        context['filter'] = EventManagerContextFilter(self.request.GET, queryset=contexts)
+#     def get_context_data(self, **kwargs):
+#         context = super(QuizManagerContextsListView, self).get_context_data(**kwargs)
+#         # Filter
+#         contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_quizManager')
+#         context['filter'] = QuizManagerContextFilter(self.request.GET, queryset=contexts)
 
-        return context
+#         return context
 
-    def test_func(self):
-        # User must be an Event Manager (in some Context)
-        return general_event_manager_check(self.request.user)
+#     def test_func(self):
+#         # User must be a Quiz Manager (in some Context)
+#         return general_quiz_manager_check(self.request.user)
     
     
-class MyContextsChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = e_Challenge
-    template_name = 'challenges/my_challenges_list.html'
-    filterset_class = MyContextsChallengesFilter
-    context_object_name = 'challenges'
-    paginate_by = 9
+# class QuizManagerChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+#     model = e_Challenge
+#     template_name = 'challenges/my_challenges_list.html'
+#     filterset_class = MyChallengesFilter
+#     context_object_name = 'challenges'
+#     paginate_by = 9
 
-    def get_queryset(self):
+#     def get_queryset(self):
 
-        # Show Challenges from this user's Contexts
-        user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        challenge_list = e_Challenge.objects.filter(created_by=self.request.user, context__in=user_contexts)
+#         # Show Challenges from this user's Contexts
+#         user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_quizManager').values_list('context')
+#         challenge_list = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
 
-        return challenge_list
+#         return challenge_list
     
-    def get_context_data(self, **kwargs):
+#     def get_context_data(self, **kwargs):
 
-        context = super().get_context_data(**kwargs)
+#         context = super().get_context_data(**kwargs)
         
-        user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_eventManager').values_list('context')
-        context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, context__in=user_contexts)
-        context['filter'] = MyContextsChallengesFilter(self.request.GET, queryset=context['challenge_list'])
+#         user_contexts = user_contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_quizManager').values_list('context')
+#         context['challenge_list'] = e_Challenge.objects.filter(created_by=self.request.user, event__context__in=user_contexts)
+#         context['filter'] = MyChallengesFilter(self.request.GET, queryset=context['challenge_list'])
         
-        return context
+#         return context
 
-    def test_func(self):
-        # Only Event Manager gets access to this page
-        return general_event_manager_check(self.request.user)
+#     def test_func(self):
+#         # Only Quiz Manager gets access to this page
+#         return general_quiz_manager_check(self.request.user)

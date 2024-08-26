@@ -46,10 +46,6 @@ urlpatterns = [
     path('<str:pk>/events/<int:event_id>/challenges/', EventChallengesFilterView.as_view(), name='event-challenge-list'),
     path('<str:pk>/events/<int:event_id>/run/', request_simulation, name='event-run'),
     path('<str:contextCode>/events/', ContextEventListView.as_view(), name='event-list'),
-    path('<str:contextCode>/events/managers/', ContextEventManagersListView.as_view(), name='event-manager-list'),
-    path('<str:contextCode>/events/managers/add/', ContextEventManagerAddListView.as_view(), name='event-manager-list-add'),
-    path('<str:contextCode>/events/managers/add/<int:userId>/', contextEventManagerAdd, name='event-manager-add'),
-    path('<str:contextCode>/events/managers/remove/<int:userId>/', contextEventManagerRemove, name='event-manager-remove'),
     path('<str:pk>/events/new/', EventCreateView.as_view(), name='event-create'),
     path('<str:pk>/event/<int:event_id>/update/', EventUpdateView.as_view(), name='event-update'),
     path('<str:pk>/event/<int:event_id>/cancel/', cancel_simulation, name='event-cancel'),
@@ -59,7 +55,11 @@ urlpatterns = [
     path('event-status/<str:event_id>/regenerate-confirm', regenerate_event_confirm, name='event-regenerate-confirm'),
     path('event-status/<str:event_id>/cancel-confirm', cancel_event_confirm, name='event-cancel-confirm'),
     path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
-    # Event Managers
-    path('event-managers/my-contexts/', EventManagerContextsListView.as_view(), name='event-manager-context-list'),
-    path('event-managers/my-challenges/', MyContextsChallengesFilterView.as_view(), name='my-contexts-challenges-list'),
+    # Quiz Managers
+    # path('<str:contextCode>/quiz/managers/', ContextQuizManagersListView.as_view(), name='quiz-manager-list'),
+    # path('<str:contextCode>/quiz/managers/add/', ContextQuizManagerAddListView.as_view(), name='quiz-manager-list-add'),
+    # path('<str:contextCode>/quiz/managers/add/<int:userId>/', contextQuizManagerAdd, name='quiz-manager-add'),
+    # path('<str:contextCode>/quiz/managers/remove/<int:userId>/', contextQuizManagerRemove, name='quiz-manager-remove'),
+    # path('quiz-managers/my-contexts/', QuizManagerContextsListView.as_view(), name='quiz-manager-context-list'),
+    # path('quiz-managers/my-challenges/', QuizManagerChallengesFilterView.as_view(), name='quiz-manager-my-challenges-list'),
 ]

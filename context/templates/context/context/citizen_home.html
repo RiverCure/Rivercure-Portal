@@ -228,11 +228,14 @@
                                             <a class="dropdown-item disabled" href="#">{% trans "Organization" %}</a>
                                             <a class="dropdown-item" href="{% url 'context-list' %}">{% trans "Contexts" %}</a>
                                             <a class="dropdown-item" href="{% url 'sensor-list' %}">{% trans "Sensors" %}</a>
-                                            {% if user|is_event_manag %}
+                                            {% if request.session.organizationCode %}
+                                            <a class="dropdown-item" href="{% url 'org-challenge-list' request.session.organizationCode %}">{% trans "Quizzes" %}</a>
+                                            {% endif %}
+                                            {% if user|is_quiz_manag %}
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item disabled" href="#">{% trans "Event Manager" %}</a>
-                                                <a class="dropdown-item" href="{% url 'event-manager-context-list' %}">{% trans "My Contexts" %}</a>
-                                                <a class="dropdown-item" href="{% url 'my-contexts-challenges-list' %}">{% trans "Challenges" %}</a>
+                                                <a class="dropdown-item disabled" href="#">{% trans "Quiz Manager" %} DELETE</a>
+                                                <a class="dropdown-item" href="{% url 'quiz-manager-context-list' %}">{% trans "My Contexts" %}</a>
+                                                <a class="dropdown-item" href="{% url 'quiz-manager-my-challenges-list' %}">{% trans "Challenges" %}</a>
                                             {% endif %}
                                             {% if user|is_mod %}
                                                 <div class="dropdown-divider"></div>
@@ -258,6 +261,7 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" href="{% url 'organization-list' %}">{% trans "Organizations" %}</a>
+                                        <a class="dropdown-item" href="{% url 'public-challenge-list' %}">{% trans "Quizzes" %}</a>
                                     </div>
                                 </li>
                                 {% comment %} <div class="nav-item">

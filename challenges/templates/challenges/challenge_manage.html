@@ -18,8 +18,7 @@
 <!-- Header -->
 <div class="row">
     <div class="col">
-        <h1 class="mt-2">{{ challenge.context.Name }} Context </h1>
-        <p><strong>Organization:</strong> <em>{{ challenge.context.organization }}</em></p>
+        <p><strong>Organization:</strong> <em>{{ challenge.organization }}</em></p>
         <hr>
     </div>
 </div>
@@ -29,7 +28,7 @@
 
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col">
-            <h2 class="my-3">Challenge "{{ challenge.title }}" - Questions</h2>
+            <h2 class="my-3">Quiz "{{ challenge.title }}" - Questions</h2>
 
             {% if challenge.can_manage_questions %}
                 <hr>

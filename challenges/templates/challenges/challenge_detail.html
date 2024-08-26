@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Challenge "{{ challenge.title }}"" {% endblock %}
+{% block title %} Quiz "{{ challenge.title }}" {% endblock %}
+{% load i18n %}
 {% load challenge_extras %}
 {% load auth_extras %}
 {% load my_tags %}
@@ -19,8 +20,8 @@
 <!-- Header -->
 <div class="row">
     <div class="col">
-        <h1 class="mt-2">{{ challenge.context.Name }} context </h1>
-        <p><strong>Organization:</strong> <em>{{ challenge.context.organization }}</em></p>
+        <p><strong>{% trans "Organization" %}:</strong> <em>{{ challenge.organization }}</em></p>
+        {% if challenge.event %}<p>'{{ challenge.event.Name }}' Event</p>{% endif %}
         <hr>
     </div>
 </div>
@@ -31,7 +32,7 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card{% if canManage %}-top{% endif %}">
         <div class="col">
             <h2 class="mt-3">
-                Challenge "{{ challenge.title }}"
+                {% trans "Quiz" %} "{{ challenge.title }}"
                 {% if canManage %}
                     <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
                 {% endif %}
@@ -40,13 +41,13 @@
                 {% endif %}
             </h2>
             <hr>
-            <h4 class="font-weight-light mb-3"><strong>Difficulty:</strong> <span class="badge badge-info">{{ challenge.difficulty_level|title }}</span></h4>
-            <h4 class="font-weight-light"><strong>Max Score:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
+            <h4 class="font-weight-light mb-3"><strong>{% trans "Difficulty" %}:</strong> <span class="text-info">{{ challenge.difficulty_level|title }}</span></h4>
+            <h4 class="font-weight-light"><strong>{% trans "Max Score" %}:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
             <hr>
-            {% if canManage %}<p class="font-weight-light"><strong>Visibility:</strong> {% if challenge.is_public %}Platform{% else %}Organization{% endif %} </p>{% endif %}
-            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> Last opened on {{ challenge.open_datetime }}{% if challenge.close_datetime %} and closed on {{challenge.close_datetime}}{% endif %}</p>{% endif %}
-            {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Automatically closes on {{ challenge.automatic_close_datetime }}.</p>{% endif %}
-            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> Correct answers will only be published when Challenge is closed.</p>{% endif %}
+            {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform" %}{% else %}{% trans "Organization" %}{% endif %} </p>{% endif %}
+            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
+            {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Automatically closes on" %} {{ challenge.automatic_close_datetime }}.</p>{% endif %}
+            {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Challenge is closed." %}</p>{% endif %}
         </div>
     </div>
 
@@ -60,42 +61,42 @@
         <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
             <!-- Buttons about Challenge -->
             <!-- Information -->
-            <p class="font-weight-light justify mt-2">Created on {{ challenge.creation_datetime }} by <span class="text-info">{{ challenge.created_by }}</span></p>
+            <p class="font-weight-light justify mt-2">{% trans "Created on" %} {{ challenge.creation_datetime }} {% trans "by" %} <span class="text-info">{{ challenge.created_by }}</span></p>
             <hr>
 
 
             <!-- Edit -->
-            <a class="btn btn-info" href="{% url 'challenge-update' challenge.id %}" role="button"><i class="bi bi-pencil"></i> Edit</a>
+            <a class="btn btn-info" href="{% url 'challenge-update' challenge.id %}" role="button"><i class="bi bi-pencil"></i> {% trans "Edit" %}</a>
             <!-- Questions -->
-            <a class="btn btn-info" href="{% url 'challenge-manage' challenge.id %}"><i class="bi bi-pencil"></i> Manage Questions</a>
+            <a class="btn btn-info" href="{% url 'challenge-manage' challenge.id %}"><i class="bi bi-pencil"></i> {% trans "Manage Questions" %}</a>
 
             <!-- Publish -->
             {% if challenge.can_publish %}
                 <!-- Publish Modal Button-->
                 <button type="button" class="my-2 btn btn-success" data-toggle="modal" data-target="#publishModal">
-                    <i class="bi bi-check-circle"></i> Publish
+                    <i class="bi bi-check-circle"></i> {% trans "Publish" %}
                 </button>
                 <!-- Publish Modal -->
                 <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="publishModalLabel">Publish Challenge "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="publishModalLabel">{% trans "Publish Challenge" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-success">publish</span> this Challenge? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!
+                                    {% blocktrans %}Are you sure you want to <span class="text-success">publish</span> this Challenge? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-success my-3 mr-3" href="{% url 'challenge-publish' challenge.id %}">Confirm</a>
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                <a class="btn btn-success my-3 mr-3" href="{% url 'challenge-publish' challenge.id %}">{% trans "Confirm" %}</a>
                             </div>
                         </div>
                     </div>
@@ -106,29 +107,29 @@
             {% if challenge.can_close %}
                 <!-- Close Modal Button-->
                 <button type="button" class="my-2 btn btn-primary" data-toggle="modal" data-target="#closeModal">
-                    <i class="bi bi-door-closed"></i> Close
+                    <i class="bi bi-door-closed"></i> {% trans "Close" %}
                 </button>
                 <!-- Close Modal -->
                 <div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="closeModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="closeModalLabel">Close Challenge "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="closeModalLabel">{% trans "Close Challenge" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-primary">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.
+                                    {% blocktrans %}Are you sure you want to <span class="text-primary">close</span> this Challenge? The Challenge will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-close' challenge.id %}">Confirm</a>
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-close' challenge.id %}">{% trans "Confirm" %}</a>
                             </div>
                         </div>
                     </div>
@@ -139,29 +140,29 @@
             {% if challenge.can_open %}
                 <!-- Open Modal Button-->
                 <button type="button" class="my-2 btn btn-primary" data-toggle="modal" data-target="#openModal">
-                    <i class="bi bi-door-open"></i> Open
+                    <i class="bi bi-door-open"></i> {% trans "Open" %}
                 </button>
                 <!-- Open Modal -->
                 <div class="modal fade" id="openModal" tabindex="-1" role="dialog" aria-labelledby="openModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="openModalLabel">Open Challenge "{{challenge.title}}"</h5>
+                                <h5 class="modal-title" id="openModalLabel">{% trans "Open Challenge" %} "{{challenge.title}}"</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-primary">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.
+                                    {% blocktrans %}Are you sure you want to <span class="text-primary">open</span> this Challenge? Users will be able to <span class='font-weight-bold'>participate</span> in it.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-open' challenge.id %}">Confirm</a>
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                <a class="btn btn-primary my-3 mr-3" href="{% url 'challenge-open' challenge.id %}">{% trans "Confirm" %}</a>
                             </div>
                         </div>
                     </div>
@@ -172,29 +173,29 @@
             {% if challenge.can_archive %}
                 <!-- Archive Modal Button-->
                 <button type="button" class="my-2 btn btn-warning" data-toggle="modal" data-target="#archiveModal">
-                    <i class="bi bi-archive"></i> Archive
+                    <i class="bi bi-archive"></i> {% trans "Archive" %}
                 </button>
                 <!-- Archive Modal -->
                 <div class="modal fade" id="archiveModal" tabindex="-1" role="dialog" aria-labelledby="archiveModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="archiveModalLabel">Archive Challenge {{challenge.title}}</h5>
+                                <h5 class="modal-title" id="archiveModalLabel">{% trans "Archive Challenge" %} {{challenge.title}}</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <p class="justify">
-                                    Are you sure you want to <span class="text-warning">archive</span> this Challenge? Once archived, the Challenge will <span class='font-weight-bold'>no longer be available</span> to users.
+                                    {% blocktrans %}Are you sure you want to <span class="text-warning">archive</span> this Challenge? Once archived, the Challenge will <span class='font-weight-bold'>no longer be available</span> to users.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
-                                    To read more about Challenges, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                                    {% trans "To read more about Challenges, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                                 </p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-warning my-3 mr-3" href="{% url 'challenge-archive' challenge.id %}">Confirm</a>
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                <a class="btn btn-warning my-3 mr-3" href="{% url 'challenge-archive' challenge.id %}">{% trans "Confirm" %}</a>
                             </div>
                         </div>
                     </div>
@@ -204,13 +205,11 @@
 
             <!-- Delete -->
             {% if challenge.can_delete %}
-                <a class="my-2 btn btn-danger" href="{% url 'challenge-delete' challenge.id %}" ><i class="bi bi-trash"></i> Delete</a>
+                <a class="my-2 btn btn-danger" href="{% url 'challenge-delete' challenge.id %}" ><i class="bi bi-trash"></i> {% trans "Delete" %}</a>
             {% endif %}
 
             <div class="my-2 d-flex justify-content-between">
-                {% if challenge.event %}
-                <p class="m-0 font-weight-lighter text-muted">Event: {{challenge.event.Name|title}}</p>
-                {% endif %}
+                {% if challenge.event %}<p class="m-0 font-weight-lighter text-muted">Event: {{challenge.event.Name|title}}</p>{% endif %}
                 <p class="m-0 font-weight-lighter text-muted">ID: {{challenge.id}}</p>
             </div>
             
@@ -269,12 +268,12 @@
 <!-- Footer (Bottom Buttons) -->
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
     <div class="col">
+        <!-- Go back -->
+        <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a>
         {% if challenge.event %}
-        <!-- See Event -->
-        <a class="btn btn-secondary my-3" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">See Event</a>
+            <!-- See Event -->
+            <a class="btn btn-secondary my-3" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">See Event</a>
         {% endif %}
-        <!-- See Context -->
-        <a class="btn btn-secondary my-3" href="{% url 'public-context-detail' challenge.context.code %}">See Context</a>
     </div>
 </div>
 

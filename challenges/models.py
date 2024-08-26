@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 
 from django_fsm import FSMField, transition
 
+from organization.models import Organization
+
 
 
 ## Choices
@@ -36,8 +38,8 @@ class e_Challenge(models.Model):
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    context = models.ForeignKey('context.e_Context', on_delete=models.CASCADE, null=True) # TODO: When finalizing, delete null=True, because this can never be null
-    event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True) # Can be null
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    event = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True) # Challenge can be Organization or Event-level. So, this can be null
     nr_questions = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     state = FSMField(choices=ChallengeState.choices, default=ChallengeState.DRAFT, protected=True) # When first created, the Challenge is in Draft state
 

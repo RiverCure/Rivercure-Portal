@@ -51,12 +51,12 @@ def context_organization_belong_check(user, organization):
     except:
         return False
 
-def context_event_manager_check(user, context):
+def context_quiz_manager_check(user, context):
     """
-    Checks if the user is an event manager of a context
+    Checks if the user is a quiz manager of a context
     """
     try:
-        return ContextMembership.objects.filter(user=user, context=context, permission='context_eventManager').exists()
+        return ContextMembership.objects.filter(user=user, context=context, permission='context_quizManager').exists()
     except:
         return False
 
@@ -80,11 +80,11 @@ def general_moderator_check(user):
         return False
 
 
-def general_event_manager_check(user):
+def general_quiz_manager_check(user):
     """
-    Checks if the user is a (Context) Event Manager
+    Checks if the user is a (Context) Quiz Manager
     """
     try:
-        return ContextMembership.objects.filter(user=user, permission='context_eventManager').exists()
+        return ContextMembership.objects.filter(user=user, permission='context_quizManager').exists()
     except:
         return False

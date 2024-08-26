@@ -4,10 +4,10 @@ from .views import *
 
 urlpatterns = [
     # Challenges
-    path('event/<int:event_id>/new/', ChallengeCreateView.as_view(), name='challenge-event-create'),
-    path('context/<str:context_id>/new/', ChallengeContextCreateView.as_view(), name='challenge-context-create'),
-    path('context/<str:context_id>/all/', ChallengeContextFilterView.as_view(), name='challenges-context-list'),
-    #path('context/<str:context_id>/all/', context_challenges_list, name='challenge-context-all'),
+    path('event/<int:event_id>/new/', EventChallengeCreateView.as_view(), name='event-challenge-create'),
+    path('org/<int:org_id>/new/', OrganizationChallengeCreateView.as_view(), name='org-challenge-create'),
+    path('org/<int:org_id>/all/', OrganizationChallengesFilterView.as_view(), name='org-challenge-list'),
+    path('all/public/', PublicChallengesFilterView.as_view(), name='public-challenge-list'),
     path('<int:challenge_id>/detail/', ChallengeDetailView.as_view(), name='challenge-detail'),
     path('<int:challenge_id>/update/', ChallengeUpdateView.as_view(), name='challenge-update'),
     path('<int:challenge_id>/delete/', ChallengeDeleteView.as_view(), name='challenge-delete'),

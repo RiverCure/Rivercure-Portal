@@ -13,6 +13,9 @@ def belongs_to_organization(user, organization):
 
 
 def is_org_manager(user: User, organization: Organization) -> bool:
+    """
+    Checks whether user is Manager in specific organization
+    """
     try:
         return Membership.objects.filter(organization=organization, user=user, permission='org_manager').exists()
     except:
@@ -20,21 +23,30 @@ def is_org_manager(user: User, organization: Organization) -> bool:
 
 
 def is_sensor_manager(user: User, organization: Organization) -> bool:
+    """
+    Checks whether user is Sensor Manager in specific organization
+    """
     try:
         return Membership.objects.filter(organization=organization, user=user, permission='org_sensorManager').exists()
     except:
         return False
 
 
-def is_org_manager_check(user: User, organization_id: int) -> bool:
+def is_org_manager_or_sensor_manager(user: User, organization: Organization) -> bool:
+    """
+    Checks whether user is Manager or Sensor Manager in specific organization
+    """
     try:
-        return Membership.objects.filter(organization=organization_id, user=user, permission='org_manager').exists()
+        return Membership.objects.filter(organization_id=organization.id, user=user, permission='org_manager').exists() or Membership.objects.filter(organization_id=organization.id, user=user, permission='org_sensorManager').exists()
     except:
         return False
 
 
-def is_org_manager_or_sensor_manager(user: User, organization: Organization) -> bool:
+def is_org_quiz_manager(user: User, organization: Organization) -> bool:
+    """
+    Checks whether user is Quiz Manager in specific organization
+    """
     try:
-        return Membership.objects.filter(organization_id=organization.id, user=user, permission='org_manager').exists() or Membership.objects.filter(organization_id=organization.id, user=user, permission='org_sensorManager').exists()
+        return  Membership.objects.filter(organization=organization, user=user, permission='org_quizManager').exists()
     except:
         return False

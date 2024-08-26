@@ -131,9 +131,9 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
         fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'createdBy__username']
 
 ##############
-# Event Managers 
+# Quiz Managers 
 ##############
-class EventManagerFilter(django_filters.FilterSet): # TODO: Since this is repeated code from ManagerFilter, maybe let's combine both into one single MemberFilter filter instead?
+class QuizManagerFilter(django_filters.FilterSet): # TODO: Since this is repeated code from ManagerFilter, maybe let's combine both into one single MemberFilter filter instead?
     user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
                                                     'placeholder': 'Search by username...',
@@ -158,7 +158,7 @@ class EventManagerFilter(django_filters.FilterSet): # TODO: Since this is repeat
         fields = ['user__username', 'user__email', 'grant_date']
         
         
-class EventManagerAddFilter(django_filters.FilterSet):
+class QuizManagerAddFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
                                                     'placeholder': 'Search by username...',
@@ -171,7 +171,7 @@ class EventManagerAddFilter(django_filters.FilterSet):
         fields = ['user__username']
 
 # TODO: This is the same as ModeratorContextFilter. Merge
-class EventManagerContextFilter(django_filters.FilterSet):
+class QuizManagerContextFilter(django_filters.FilterSet):
     Name = django_filters.CharFilter(label=_('Context Name'),
                                         field_name='context__Name',
                                         lookup_expr='icontains',
@@ -180,14 +180,13 @@ class EventManagerContextFilter(django_filters.FilterSet):
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
-    hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
     organization = django_filters.ModelChoiceFilter(field_name='context__organization', label=_('Organization'), queryset=Organization.objects.all())
 
     class Meta:
         Model = e_Context
-        fields = ['Name', 'hydroFeature', 'organization']
+        fields = ['Name', 'organization']
 
-class MyContextsChallengesFilter(django_filters.FilterSet):
+class MyChallengesFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label=_('Challenge Title'),
                                       lookup_expr='icontains',
                                       widget=TextInput(attrs={

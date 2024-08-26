@@ -36,30 +36,22 @@ class ChallengeParticipationsFilter(django_filters.FilterSet):
         Model = e_ChallengeAnswer
         fields = ['created_by','creation_datetime']
 
-
-class ContextChallengeFilter(django_filters.FilterSet):
+class ChallengesFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label=_('Title'),
                                       field_name='challenge__title', lookup_expr='icontains',
                                       widget=TextInput(attrs={
-                                                    'placeholder': _('Search by Challenge title...'),
+                                                    'placeholder': _('Search by Quiz title...'),
                                                     'type': 'search',
                                                 }))
-    event = django_filters.ModelChoiceFilter(label=_('Event'),
-                                             queryset=e_ContextEvent.objects.all(), # TODO: Change to only Context's events
-                                             widget=Select(attrs={'class': 'form-control',}))
+    event = django_filters.CharFilter(label=_('Event'),
+                                      field_name='event__title', lookup_expr='icontains',
+                                      widget=TextInput(attrs={
+                                                    'placeholder': _('Search by Event title...'),
+                                                    'type': 'search',
+                                                }))
     difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL,
                                                    label=_('Difficulty Level'))
     
-    # def __init__(self, *args, **kwargs):
-    #     print(kwargs)
-    #     self._context = kwargs.pop('ch_context', None)
-    #     super(ContextChallengeFilter, self).__init__(*args, **kwargs)
-
-    #     self.filters['event'].extra.update({
-    #         'queryset': e_ContextEvent.objects.filter(context=self._context)
-    #     })
-    #     print(self._context)
-
     class Meta:
-        Model = e_Challenge
-        fields = ['title', 'event', 'difficulty_level']
+            Model = e_Challenge
+            fields = ['title', 'event', 'difficulty_level']

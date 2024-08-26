@@ -1,7 +1,9 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Challenges {% endblock %}
+{% block title %} Public Quizzes {% endblock %}
 {% load crispy_forms_tags %}
+{% load challenge_extras %}
 {% load my_tags %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -12,40 +14,42 @@
 
 {% block content %}
 
-<h1 class="mt-2">Challenges</h1>
-<p class="font-weight-light" align="justify">On this page you can see the Challenges from all your Contexts.</p>
+<h1 class="mt-2">Quizzes</h1>
+<p class="font-weight-light" align="justify">{% trans "On this page you can see all the Public Quizzes." %}</p>
 <hr>
 
-<!-- Filter -->
-<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
-<div id="filter-menu" class="collapse card my-card-hover card-body">
+<!-- Top Buttons -->
+<div class="d-flex">
+    <button class="btn btn-info dropdown-toggle mr-3" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+    {% if isQuizMan %}<a class="btn btn-success" href="{% url 'org-challenge-create' org %}"><i class="bi bi-plus"></i> {% trans "Add Quiz" %}</a>{% endif %}
+</div>
+
+<div id="filter-menu" class="collapse card my-card-hover card-body mt-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
+
 <hr>
 
-<!-- TODO: Make a nice design for these cards (same design as in Event detail page) -->
+
 <!-- List of Challenges-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for challenge in challenges %}
         <a href="{% url 'challenge-detail' challenge.id %}">
             <div class="card my-card-hover my-2 my-context-card">
-                {% comment %} {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% else %}
-                    <div class="my-card-contribution-no-thumbnail-img"></div>
-                {% endif %} {% endcomment %}
-                {% comment %} {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% else %}
-                    <img src="{{MEDIA_URL}}/contributions/situation_default_imgs/{{contribution.situationObserved|get_situation_default_image}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% endif %} {% endcomment %}
-                {% comment %} <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image"> {% endcomment %}
-                <div class="card-body pt-0">
+                <div class="card-body">
                     <h5 class="card-title">{{ challenge.title|title }}</h5>
-                    <small class="text-body-secondary card-contributions text-muted">Created by {{ challenge.created_by }}</small>
+                    <div class="d-flex">
+                        <span class="badge {{challenge.state|bootstrap_badge_publish_state}}">{{ challenge.publish_state|title }}</span>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <div class="d-flex justify-content-between">
+                        <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
+                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                    </div>
                 </div>
             </div>
         </a>
@@ -53,7 +57,7 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Challenges.</p>
+    <p class="font-weight-light my-2 text-center">There are no Quizzes.</p>
 {% endif %}
 
 

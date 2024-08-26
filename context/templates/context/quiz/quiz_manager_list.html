@@ -8,20 +8,20 @@
 
 {% block content %}
 <!-- Header -->
-<h1>{{ context.Name }} Event Managers </h1>
+<h1>{{ context.Name }} Quiz Managers </h1>
 <p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
 <hr>
 
 <p class="font-weight-light" align="justify">
-    On this page you can see the Event Managers of the {{ context.Name }} Context.
-    For more information on Event Managers and context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+    On this page you can see the Quiz Managers of the {{ context.Name }} Context.
+    For more information on Quiz Managers and Context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
 <!-- Top buttons -->
 <div class="mb-3">
     <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
     {% if canEdit %}
-        <a class="btn btn-success" href="{% url 'event-manager-list-add' context.code %}"><i class="bi bi-plus"></i> Add Event Manager</a>
+        <a class="btn btn-success" href="{% url 'quiz-manager-list-add' context.code %}"><i class="bi bi-plus"></i> Add Quiz Manager</a>
     {% endif %}
 </div>
 
@@ -47,7 +47,7 @@
                 <td>
                     {{ member.grant_date }}
                     <!-- Remove access -->
-                    <a class="pl-2" href="{% url 'event-manager-remove' contextCode=context.code userId=member.user.id %}">
+                    <a class="pl-2" href="{% url 'quiz-manager-remove' contextCode=context.code userId=member.user.id %}">
                         <i class="bi bi-x-circle text-danger"></i>
                     </a>
                 </td>

@@ -28,7 +28,7 @@ CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('Q', 'Discharge'), ('Z', 'Elevation'), (
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
-Permissions = (('context_eventManager', 'Context Event Manager'), ('context_moderator', 'Moderator'))
+Permissions = (('context_moderator', 'Moderator'),)
 
 
 def create_picture_file_name(instance, filename):
@@ -100,7 +100,7 @@ class e_Context(models.Model):
 
 
 
-# Keep track of Moderators and Event Managers of a Context
+# Keep track of Moderators and Quiz Managers of a Context
 class ContextMembership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
@@ -113,7 +113,7 @@ class ContextMembership(models.Model):
     
     # @property
     # def permission_name(self):
-    #     if self.permission == 'context_eventManager':
+    #     if self.permission == 'context_quizManager':
     #         return 'Context Event Manager'
     #     else:
     #         return 'Moderator'

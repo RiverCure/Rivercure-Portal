@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
 {% load auth_extras %}
+{% load challenge_extras %}
 {% load static %}
 {% block title %} Context event detail {% endblock %}
 
@@ -89,17 +90,17 @@
 <div class="container-fluid">
     <div class="row mt-5">
         <div class="col">
-            <h1 class="">Challenges</h1>
+            <h1 class="">Quizzes</h1>
         </div>
         <div class="col text-center my-auto">
             <div class="d-flex justify-content-end">
-                {% if isEventManager or user|has_group:"Admin" %}<a class="btn btn-success ml-2" href="{% url 'challenge-event-create' event.id %}"><i class="bi bi-plus"></i> Add Challenge</a>{% endif %}
+                {% if isQuizMan or user|has_group:"Admin" %}<a class="btn btn-success ml-2" href="{% url 'event-challenge-create' event.id %}"><i class="bi bi-plus"></i> Add Quiz</a>{% endif %}
                 <a class="btn btn-secondary ml-2" href="{% url 'event-challenge-list' event.context.code event.id %}">See more <i class="bi bi-chevron-right"></i></a>
             </div>
         </div>
     </div>
     {% if challenges.count == 0 %}
-        <p class="font-weight-light my-2 text-center">There are no published Challenges for this Context.</p>
+        <p class="font-weight-light my-2 text-center">There are no published Quizzes for this Context.</p>
     {% endif %}
 
     <!-- TODO: Do a nice design for this card -->
@@ -107,14 +108,19 @@
         {% for challenge in challenges|slice:":5" %}
             <div class="col-4">
                 <a href="{% url 'challenge-detail' challenge.id %}">
-                    <div class="card my-card-hover">
-                        {% comment %} <img src="" class="card-img-top" alt="Contribution image"> {% endcomment %}
+                    <div class="card my-card-hover my-2 my-context-card">
                         <div class="card-body">
                             <h5 class="card-title">{{ challenge.title|title }}</h5>
+                            <div class="d-flex">
+                                <span class="badge {{challenge.state|bootstrap_badge_publish_state}}">{{ challenge.publish_state|title }}</span>
+                            </div>
                         </div>
-                        <div class="card-footer">
-                            <small class="text-body-secondary text-muted">Created by {{ challenge.created_by }}</small>
-                        </div>            
+                        <div class="card-footer text-muted">
+                            <div class="d-flex justify-content-between">
+                                <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
+                                {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                            </div>
+                        </div>
                     </div>
                 </a>
             </div>

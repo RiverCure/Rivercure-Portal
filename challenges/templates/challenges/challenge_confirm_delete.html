@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Delete Challenge {% endblock %}
+{% block title %} Delete Quiz {% endblock %}
+{% load i18n %}
 {% load static %}
 
 
@@ -15,8 +16,7 @@
 <!-- Header -->
 <div class="row">
     <div class="col">
-        <h1 class="mt-2">{{ challenge.context.Name }} context </h1>
-        <p><strong>Organization:</strong> <em>{{ challenge.context.organization }}</em></p>
+        <p><strong>{% trans "Organization" %}:</strong> <em>{{ challenge.organization }}</em></p>
         <hr>
     </div>
 </div>
@@ -25,12 +25,12 @@
     <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Delete Challenge "{{challenge.title}}"</legend>
-            <h2>Are you sure you want to delete this Challenge?</h2>
+            <legend class="border-bottom mb-4">{% trans "Delete Quiz" %} "{{challenge.title}}"</legend>
+            <h2>{% trans "Are you sure you want to delete this Quiz?" %}</h2>
         </fieldset>
         <div class="form-group">
-            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i> Yes, delete</button>
-            <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">Cancel</a>
+            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i> {% trans "Yes, delete" %}</button>
+            <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">{% trans "Cancel" %}</a>
         </div>
     </form>
 </div>

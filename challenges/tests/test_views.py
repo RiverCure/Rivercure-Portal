@@ -71,7 +71,7 @@ class ChallengeCreateViewTest(TestCase):
         cls.context = e_Context.objects.create(code='testContext', Name='Test Context', organization=cls.organization, creator=cls.org_manager, create_date=datetime.now(tz=timezone.utc))
 
         # Give Event Manager permission to event_manager
-        ContextMembership.objects.create(user=cls.event_manager, context=cls.context, permission='context_eventManager')
+        ContextMembership.objects.create(user=cls.event_manager, context=cls.context, permission='context_quizManager')
 
         # Create Event
         cls.event = e_ContextEvent.objects.create(context=cls.context, Name='Test Event', type='flood', state='announced', startTime=time(0,0,0), endTime=time(0,0,0))
@@ -121,7 +121,7 @@ class ChallengeCreateViewTest(TestCase):
     #     self.context = e_Context.objects.create(code='testContext', Name='Test Context', organization=self.organization, creator=self.org_manager, create_date=datetime.now(tz=timezone.utc))
 
     #     # event_manager needs to be Event Manager in Organization
-    #     ContextMembership.objects.create(user=self.event_manager, context=self.context, permission='context_eventManager')
+    #     ContextMembership.objects.create(user=self.event_manager, context=self.context, permission='context_quizManager')
 
     #     # Create Event
     #     self.event = e_ContextEvent.objects.create(context=self.context, Name='Test Event', type='flood', state='announced', startTime=time(0,0,0), endTime=time(0,0,0))

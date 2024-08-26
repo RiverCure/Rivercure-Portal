@@ -21,7 +21,7 @@ def has_org(user):
 def is_mod(user):
     return ContextMembership.objects.filter(user=user, permission='context_moderator').exists()
 
-# Check if user is an Event Manager (in whatever context)
-@register.filter(name='is_event_manag')
-def is_event_manag(user):
-    return ContextMembership.objects.filter(user=user, permission='context_eventManager').exists()
+# Check if user is a Quiz Manager
+@register.filter(name='is_quiz_manag')
+def is_quiz_manag(user):
+    return ContextMembership.objects.filter(user=user, permission='context_quizManager').exists()
