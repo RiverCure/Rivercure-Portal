@@ -87,7 +87,7 @@ class ContextListView(LoginRequiredMixin, ListView):
 
 class PublicContextListView(FilterView):
     model = e_Context
-    template_name = 'context/context/citizen_home.html'
+    template_name = 'context/context/citizen_home2.html'
     filterset_class = ContextFilter
     context_object_name = 'public_contexts'
     # paginate_by = 9

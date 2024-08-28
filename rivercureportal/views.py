@@ -9,6 +9,7 @@ from contributions.models import ContributionStatus
 from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
 from contributions.models  import e_ContextContribution
 from organization.models import Organization
+from common.utils import is_mobile
 
 from context.views.mesh import check_celery
 
@@ -80,6 +81,7 @@ def about(request):
         'contexts': e_Context.objects.filter(isPublic=True).count(), # Total number of Public Contexts
         'users': User.objects.all().count(), # Total number of users
         'orgs': Organization.objects.all().count(), # Total number of organizations
+        'is_mobile': is_mobile(request)
     }
 
     return render(request, 'rivercureportal/about.html', context)

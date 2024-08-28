@@ -33,15 +33,14 @@
     </form>
 </div>
 
-<hr>
+<hr class="mb-2">
 
 
-<!-- TODO: Make a nice design for these cards -->
 <!-- List of Challenges-->
-<div class="d-flex flex-row flex-wrap justify-content-between">
+<div class="d-flex flex-row flex-wrap justify-content-between mb-2">
     {% for challenge in challenges %}
         <a href="{% url 'challenge-detail' challenge.id %}">
-            <div class="card my-card-hover my-2 my-context-card">
+            <div class="card my-card-hover my-2 my-context-card" style="width: 20rem;">
                 <div class="card-body">
                     <h5 class="card-title">{{ challenge.title|title }}</h5>
                     <div class="d-flex">

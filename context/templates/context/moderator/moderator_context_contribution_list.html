@@ -45,27 +45,27 @@
 <p class="font-weight-light" align="justify">{% blocktrans with context_name=context.Name%}On this page you can see a Moderator-specific view of the Contributions of {{context_name}}. For more information on Moderators and Contributions, please visit the{% endblocktrans %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
 </p>
 
-<div class="mb-3">
-    <!-- Search and Filter Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
-
-    <!-- Sort Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Sort By" %}</button>
-    <!-- Sort Menu-->
-    <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
-        {% comment %} <a class="dropdown-item" href="?sort=date_asc&{{params}}"><i class="bi bi-sort-up"></i> Ascending Date</a> {% endcomment %}
-        {% comment %} <a class="dropdown-item" href="?sort=date_desc&{{params}}"><i class="bi bi-sort-down"></i> Descending Date</a> {% endcomment %}
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> {% trans "Ascending Date" %}</a>
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> {% trans "Descending Date" %}</a>
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+    <div>
+        <!-- Search and Filter Button -->
+        <button class="btn btn-info dropdown-toggle mb-2" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+    
+        <!-- Sort Button -->
+        <button class="btn btn-info dropdown-toggle mb-2" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Sort By" %}</button>
+        <!-- Sort Menu-->
+        <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+            {% comment %} <a class="dropdown-item" href="?sort=date_asc&{{params}}"><i class="bi bi-sort-up"></i> Ascending Date</a> {% endcomment %}
+            {% comment %} <a class="dropdown-item" href="?sort=date_desc&{{params}}"><i class="bi bi-sort-down"></i> Descending Date</a> {% endcomment %}
+            <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> {% trans "Ascending Date" %}</a>
+            <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> {% trans "Descending Date" %}</a>
+        </div>
     </div>
 
-    <div style="float: right;">
-        <!-- Actions -->
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Actions" %}</button>
-        <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
-            <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> {% trans "Accept Selected" %}</button>
-            <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> {% trans "Reject Selected" %}</button>
-        </div>
+    <!-- Actions -->
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Actions" %}</button>
+    <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
+        <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> {% trans "Accept Selected" %}</button>
+        <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> {% trans "Reject Selected" %}</button>
     </div>
 
 </div>
@@ -78,80 +78,112 @@
     </form>
 </div>
 
-<!-- Batch Accept Form -->
-<form action="{% url 'contribution-batch-handle' context.code %}" method="POST" id="batchHandleForm">
-    {% csrf_token %}
+{% if is_mobile %}
+    <!-- Batch Accept Form -->
+    <form action="{% url 'contribution-batch-handle' context.code %}" method="POST" id="batchHandleForm">
+        {% csrf_token %}
 
-    <!-- Contribution list -->
-    <table class="table table-hover">
-        <tr>
-            <th scope="col">{% trans "Contribution ID" %}</th>
-            <th scope="col">{% trans "Situation" %}</th>
-            <th scope="col">{% trans "Date Submitted" %}</th>
-            <th scope="col">{% trans "Author" %}</th>
-            <th scope="col">{% trans "State" %}</th>
-            <th scope="col">{% trans "File(s) Size" %}</th>
-            <th scope="col">{% trans "Select" %}</th>
-        </tr>
-        {% for contribution in contributions %}
-                <tr>
-                    <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
-                    <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.total_file_size|floatformat:3 }} Mb</a></td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">
-                        </div>
-                        {% comment %} <input type="checkbox" class="form-check-input mx-auto contribution-select" id="select-{{contribution.pk}}">
-                        <label class="form-check-label" for="check-{{contribution.pk}}"></label> {% endcomment %}
-                    </td>
-                </tr>
+        <!-- Contribution list -->
+        <table class="table table-hover">
+            <tr>
+                <th scope="col">{% trans "ID" %}</th>
+                <th scope="col">{% trans "Author" %}</th>
+                <th scope="col">{% trans "State" %}</th>
+                <th scope="col">{% trans "Select" %}</th>
+            </tr>
+            {% for contribution in contributions %}
+                    <tr>
+                        <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">
+                            </div>
+                        </td>
+                    </tr>
 
-            {% empty %}
-            <!-- TODO: Change this to something prettier eheh -->
-            <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no Contributions." %}</h2></td>
-        {% endfor %}
-    </table>
+                {% empty %}
+                <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no Contributions." %}</h2></td>
+            {% endfor %}
+        </table>
 
-</form>
+    </form>
+{% else %}
+    <!-- Batch Accept Form -->
+    <form action="{% url 'contribution-batch-handle' context.code %}" method="POST" id="batchHandleForm">
+        {% csrf_token %}
 
-<!-- Bottom button -->
-<div class="w-100 mb-4">
-    <a class="btn btn-secondary" style="float: right;" href="{% url 'moderator-context-list' %}">{% trans "Back to Contexts" %}</a>
+        <!-- Contribution list -->
+        <table class="table table-hover">
+            <tr>
+                <th scope="col">{% trans "Contribution ID" %}</th>
+                <th scope="col">{% trans "Situation" %}</th>
+                <th scope="col">{% trans "Date Submitted" %}</th>
+                <th scope="col">{% trans "Author" %}</th>
+                <th scope="col">{% trans "State" %}</th>
+                <th scope="col">{% trans "File(s) Size" %}</th>
+                <th scope="col">{% trans "Select" %}</th>
+            </tr>
+            {% for contribution in contributions %}
+                    <tr>
+                        <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.total_file_size|floatformat:3 }} Mb</a></td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">
+                            </div>
+                            {% comment %} <input type="checkbox" class="form-check-input mx-auto contribution-select" id="select-{{contribution.pk}}">
+                            <label class="form-check-label" for="check-{{contribution.pk}}"></label> {% endcomment %}
+                        </td>
+                    </tr>
+
+                {% empty %}
+                <!-- TODO: Change this to something prettier eheh -->
+                <td><h2 class="text-secondary font-italic no-context-data">{% trans "There are no Contributions." %}</h2></td>
+            {% endfor %}
+        </table>
+
+    </form>
+{% endif %}
+
+<div class="d-flex {% if is_mobile %}justify-content-center{% else %}justify-content-between{% endif %} flex-wrap mb-2">
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="d-flex justify-content-center mb-2">
+            <ul class="pagination">
+                {% if page_obj.has_previous and page_obj.number != 2 %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
+                {% endif %}
+
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+
+                {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+    <!-- Bottom button -->
+    <a class="btn btn-secondary mb-2" href="{% url 'moderator-context-list' %}">{% trans "Back to Contexts" %}</a>
 </div>
 
-<!-- Pagination -->
-<div class="row">
-    <div class="col">
-        {% if is_paginated %}
-            <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
-                <ul class="pagination">
-                    {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
-                    {% endif %}
-
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
-                    {% endif %}
-                    
-                    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
-                    {% endif %}
-
-                    {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
-</div>
 
 
 {% endblock content %}

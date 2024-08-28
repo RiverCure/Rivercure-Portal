@@ -23,6 +23,8 @@ from organization.authorization import belongs_to_organization
 from contributions.models import e_ContextContribution, ContributionStatus
 from contributions.views import accept_contribution, reject_contribution
 
+from common.utils import is_mobile
+
 class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
     template_name = 'context/moderator/moderator_list.html'
@@ -158,6 +160,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     def test_func(self):
         # User must be a Moderator (in some Context)
         return general_moderator_check(self.request.user)
+    
 
 
 # TODO: Should I change this to be in contributions app ?
@@ -215,6 +218,7 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
         context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
 
         # context['request'] = self.request
+        context['is_mobile'] = is_mobile(self.request)
 
         return context
 

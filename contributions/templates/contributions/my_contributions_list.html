@@ -28,21 +28,22 @@
         <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
-<hr>
+<hr class="mb-2">
 
 <!-- List of Contributions-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for contribution in contributions %}
         <a href="{% url 'contribution-detail' contribution.pk %}">
-            <div class="card my-card-hover my-2 my-context-card">
+            <div class="card my-card-hover my-2" style="width: 17.5rem;">
                 {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail" style="border-radius: 0.4em 0.4em 0 0;">
                 {% else %}
-                    <div class="my-card-contribution-no-thumbnail-img"></div>
+                    <div class="my-card-contribution-no-thumbnail-img" style="border-radius: 0.4em 0.4em 0 0;"></div>
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                    <h6 class="font-weight-light"><span class="text-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.state|title }}</span></h6>
+                    {% comment %} <h6 class="font-weight-light"><span class="text-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.state|title }}</span></h6> {% endcomment %}
+                    <h6 class="font-weight-light"> <span class="badge badge-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.state|title }}</span></h6>
                     <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
                 </div>
             </div>
@@ -59,7 +60,7 @@
     <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
         <ul class="pagination">
             {% if page_obj.has_previous and page_obj.number != 2 %}
-                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
             {% endif %}
 
             {% if page_obj.has_previous %}
@@ -73,7 +74,7 @@
             {% endif %}
 
             {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
             {% endif %}
         </ul>
     </nav>

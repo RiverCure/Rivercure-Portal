@@ -35,7 +35,7 @@ class EventFilter(django_filters.FilterSet):
 class ContextFilter(django_filters.FilterSet):
     Name = django_filters.CharFilter(label='Context Name', lookup_expr='icontains',
                                      widget=TextInput(attrs={
-                                                    'placeholder': _('Search by name...'),
+                                                    'placeholder': _('Search...'),
                                                     'type': 'search',
                                                     'class': 'form-control',
                                                 }))
