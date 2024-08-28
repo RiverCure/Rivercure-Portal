@@ -1,15 +1,18 @@
-from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, CreateView, DetailView, DeleteView
-from django.contrib.gis.geos import Point
 from django_filters.views import FilterView
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
+from django.core import serializers
+
 from django.core.files import File
+from django.views.generic import ListView, CreateView, DetailView, DeleteView
+
+from django.db.models.base import Model as Model
+from django.contrib.gis.geos import Point
+from django.db.models.query import QuerySet
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from rivercureportal.authorization import is_platform_admin
 
@@ -51,6 +54,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['context'] = get_object_or_404(e_Context, code=context_code)
         context['context_code'] = self.kwargs['contextCode']
+        # Serialize Context into JSON
+        context['context_json'] = serializers.serialize('json', [context['context']], fields=('code', 'geomExternalBoundary'))
         
         return context
 

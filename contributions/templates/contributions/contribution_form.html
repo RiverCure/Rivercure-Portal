@@ -10,7 +10,6 @@
 {% block scripts %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
 
 {% leaflet_js plugins="ALL" %}
 {% leaflet_css plugins="ALL" %}
@@ -95,26 +94,56 @@
         window.addEventListener("map:init", e => {
 
             const map = e.detail.map;
-
+            
+            // 1. Center map according to domain
+            const context_json = {{context_json|safe}};
+            const geomExternalBoundary = context_json["0"]["fields"]["geomExternalBoundary"];
+            //if (geomExternalBoundary !== null) {
+            // Draw domain and center map
+            let domain = L.polygon(MyFunctions.coordStringToArray(geomExternalBoundary), {
+                color: '#C0C0C0', // TODO: change this colour
+            });
+            map.fitBounds(domain.getBounds());
+            domain.addTo(map);
+            //}
+            
+            /*
             // Try to find the user's current location
-            map.locate({setView: true, maxZoom: 17});
-
-            var marker = L.marker([0,0]).addTo(map);
+            map.locate({setView: false});
+            
             // On success (of finding user's location)
             map.on('locationfound', function (e) {
-                marker.setLatLng(e.latlng);
+                // Put a marker
+                var userLocationIcon = L.icon({
+                    iconUrl: '{% static 'rivercureportal/icons/user-location.png' %}',
+                    iconSize: [35, 35],
+                    iconAnchor: [15, 30],
+                    popupAnchor: [-3, -76],
+                });
+                var userMarker = L.marker([0,0], {icon: userLocationIcon}).addTo(map);
+                userMarker.setLatLng(e.latlng);
             });
-
+            */
+                
+            /*
             // On error (of finding user's location)
             map.on('locationerror', function (e) {
-                marker.setLatLng([38.722252, -9.139337]); // TODO: Change default location to what is in LEAFLET_SETTINGS
+                marker.setLatLng([38.722252, -9.139337]);
                 map.setZoom(17);
             });
+            */
 
             var lat = document.querySelector('#id_lat');
             var lng = document.querySelector('#id_lng');
             let lat_initial = lat.value == '' ? 0 : lat.value;
             let lng_initial = lng.value == '' ? 0 : lng.value;
+
+            // Draw marker in center of map
+            var marker = L.marker([0,0]).addTo(map);
+            marker.setLatLng(map.getCenter());
+            // And set the lat and lang as the markers position (aka map center)
+            lat.value = map.getCenter().lat;
+            lng.value = map.getCenter().lng;
 
             // Update position of the marker to be the center while the map is being moved
             map.on('move',function(e){
@@ -123,7 +152,6 @@
 
             // Get latlng of center of the map (which is where the marker is fixed)
             map.on("moveend", function () {
-                console.log(map.getCenter());
                 marker.setLatLng(map.getCenter());
 
                 lat.value = map.getCenter().lat;
@@ -134,12 +162,6 @@
             // Using leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
             L.Control.geocoder({
                 defaultMarkGeocode: false
-            }).on('markgeocode', function(e) {
-                var bbox = e.geocode.bbox;
-                console.log("bonjour");
-                console.log(bbox);
-                map.fitBounds(bbox);
-                map.setZoom(17);
             }).addTo(map);
 
             // Add current position control to map
@@ -147,11 +169,48 @@
                 initialZoomLevel: 17,
                 flyTo: true,
                 drawCircle: false,
-                drawMarker: false
+                drawMarker: true
             }).addTo(map);
 
+            // -- Add control that centers map back to Context
+            L.Control.CenterContext = L.Control.extend({
+                onAdd: function(map) {
+                    // Create the control
+                    var mainDiv = L.DomUtil.create('div', 'leaflet-bar');
+
+                    var btn = L.DomUtil.create('a', 'leaflet-bar-part leaflet-bar-part-single', mainDiv);
+                    btn.id = "center-context-control";
+                    btn.title = "Re-center map back to Context";
+                    btn.role = "button";
+
+                    var icon = L.DomUtil.create('i', 'bi bi-crosshair', btn);
+                    icon.style = "font-size: 1.3em;"
+
+                    // When clicking the control, re-center map back to Context
+                    L.DomEvent.on(
+                        mainDiv,
+                        'click',
+                        function(e) {
+                            map.fitBounds(domain.getBounds());
+                        }
+                    );
+
+                    return mainDiv;
+                },
+                
+                onRemove: function(map) {
+                    // Nothing to do here
+                }
+            });
+            
+            L.control.CenterContext = function(opts) {
+                return new L.Control.CenterContext(opts);
+            }
+            
+            L.control.CenterContext({ position: 'topleft' }).addTo(map);
+
         });
-    })
+    });
 
 </script>
 
