@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-02 14:33+0100\n"
+"POT-Creation-Date: 2024-09-02 14:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -241,8 +241,19 @@ msgstr "Minhas Participações"
 msgid "Participations"
 msgstr "Participações"
 
+#: challenges/templates/challenges/challenge_participations_list.html:19
+#: challenges/templates/challenges/org_challenges_list.html:25
+#: challenges/templates/challenges/public_challenges_list.html:23
+#: context/templates/context/moderator/moderator_context_contribution_list.html:52
+#: context/templates/context/moderator/moderator_list.html:21
+#: context/templates/context/moderator/moderator_my_context_list.html:44
+#: context/templates/context/quiz/quiz_manager_my_context_list.html:37
+#: contributions/templates/contributions/contribution_list.html:24
+#: contributions/templates/contributions/my_contributions_list.html:24
+msgid "Search and Filter"
+msgstr "Procurar e Filtrar"
+
 #: challenges/templates/challenges/challenge_participations_list.html:23
-#: challenges/templates/challenges/context_challenges_list.html:28
 #: challenges/templates/challenges/org_challenges_list.html:32
 #: challenges/templates/challenges/public_challenges_list.html:30
 #: context/templates/context/moderator/moderator_context_contribution_list.html:80
@@ -287,48 +298,6 @@ msgstr "Última Página"
 #: challenges/templates/challenges/challenge_participations_list.html:80
 msgid "See Quiz"
 msgstr "Ver Quiz"
-
-#: challenges/templates/challenges/context_challenges_list.html:7
-#, fuzzy
-#| msgid "Contexts"
-msgid "Context Quizzes"
-msgstr "Contextos"
-
-#: challenges/templates/challenges/context_challenges_list.html:19
-#: context/templates/context/context/citizen_home.html:238
-#: context/templates/context/context/citizen_home.html:265
-#: rivercureportal/templates/rivercureportal/base.html:70
-#: rivercureportal/templates/rivercureportal/base.html:97
-msgid "Quizzes"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:20
-#, fuzzy
-#| msgid "On this page you can see this Context's Challenges."
-msgid "On this page you can see this Context's Quizzes."
-msgstr "Nesta página, pode ver os Desafios deste Contexto."
-
-#: challenges/templates/challenges/context_challenges_list.html:24
-#: challenges/templates/challenges/org_challenges_list.html:25
-#: challenges/templates/challenges/public_challenges_list.html:23
-#: context/templates/context/moderator/moderator_context_contribution_list.html:52
-#: context/templates/context/moderator/moderator_list.html:21
-#: context/templates/context/moderator/moderator_my_context_list.html:44
-#: context/templates/context/quiz/quiz_manager_my_context_list.html:37
-#: contributions/templates/contributions/contribution_list.html:24
-#: contributions/templates/contributions/my_contributions_list.html:24
-msgid "Search and Filter"
-msgstr "Procurar e Filtrar"
-
-#: challenges/templates/challenges/context_challenges_list.html:42
-msgid "Opened on"
-msgstr "Aberto a"
-
-#: challenges/templates/challenges/context_challenges_list.html:50
-#, fuzzy
-#| msgid "There are no Events for this Context."
-msgid "There are no Quizzes for this Context."
-msgstr "Não existem Eventos para este Contexto."
 
 #: challenges/templates/challenges/org_challenges_list.html:20
 msgid "On this page you can see all the Quizzes from Organization"
@@ -618,6 +587,13 @@ msgstr "Contextos"
 #: rivercureportal/templates/rivercureportal/base.html:68
 msgid "Sensors"
 msgstr "Sensores"
+
+#: context/templates/context/context/citizen_home.html:238
+#: context/templates/context/context/citizen_home.html:265
+#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:97
+msgid "Quizzes"
+msgstr ""
 
 #: context/templates/context/context/citizen_home.html:242
 #: rivercureportal/templates/rivercureportal/base.html:74
@@ -1587,6 +1563,24 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
+
+#, fuzzy
+#~| msgid "Contexts"
+#~ msgid "Context Quizzes"
+#~ msgstr "Contextos"
+
+#, fuzzy
+#~| msgid "On this page you can see this Context's Challenges."
+#~ msgid "On this page you can see this Context's Quizzes."
+#~ msgstr "Nesta página, pode ver os Desafios deste Contexto."
+
+#~ msgid "Opened on"
+#~ msgstr "Aberto a"
+
+#, fuzzy
+#~| msgid "There are no Events for this Context."
+#~ msgid "There are no Quizzes for this Context."
+#~ msgstr "Não existem Eventos para este Contexto."
 
 #, fuzzy
 #~| msgid "Search by title..."

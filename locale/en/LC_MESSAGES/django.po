@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-02 14:33+0100\n"
+"POT-Creation-Date: 2024-09-02 14:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -228,8 +228,19 @@ msgstr ""
 msgid "Participations"
 msgstr ""
 
+#: challenges/templates/challenges/challenge_participations_list.html:19
+#: challenges/templates/challenges/org_challenges_list.html:25
+#: challenges/templates/challenges/public_challenges_list.html:23
+#: context/templates/context/moderator/moderator_context_contribution_list.html:52
+#: context/templates/context/moderator/moderator_list.html:21
+#: context/templates/context/moderator/moderator_my_context_list.html:44
+#: context/templates/context/quiz/quiz_manager_my_context_list.html:37
+#: contributions/templates/contributions/contribution_list.html:24
+#: contributions/templates/contributions/my_contributions_list.html:24
+msgid "Search and Filter"
+msgstr ""
+
 #: challenges/templates/challenges/challenge_participations_list.html:23
-#: challenges/templates/challenges/context_challenges_list.html:28
 #: challenges/templates/challenges/org_challenges_list.html:32
 #: challenges/templates/challenges/public_challenges_list.html:30
 #: context/templates/context/moderator/moderator_context_contribution_list.html:80
@@ -273,42 +284,6 @@ msgstr ""
 
 #: challenges/templates/challenges/challenge_participations_list.html:80
 msgid "See Quiz"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:7
-msgid "Context Quizzes"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:19
-#: context/templates/context/context/citizen_home.html:238
-#: context/templates/context/context/citizen_home.html:265
-#: rivercureportal/templates/rivercureportal/base.html:70
-#: rivercureportal/templates/rivercureportal/base.html:97
-msgid "Quizzes"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:20
-msgid "On this page you can see this Context's Quizzes."
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:24
-#: challenges/templates/challenges/org_challenges_list.html:25
-#: challenges/templates/challenges/public_challenges_list.html:23
-#: context/templates/context/moderator/moderator_context_contribution_list.html:52
-#: context/templates/context/moderator/moderator_list.html:21
-#: context/templates/context/moderator/moderator_my_context_list.html:44
-#: context/templates/context/quiz/quiz_manager_my_context_list.html:37
-#: contributions/templates/contributions/contribution_list.html:24
-#: contributions/templates/contributions/my_contributions_list.html:24
-msgid "Search and Filter"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:42
-msgid "Opened on"
-msgstr ""
-
-#: challenges/templates/challenges/context_challenges_list.html:50
-msgid "There are no Quizzes for this Context."
 msgstr ""
 
 #: challenges/templates/challenges/org_challenges_list.html:20
@@ -584,6 +559,13 @@ msgstr ""
 #: context/templates/context/context/citizen_home.html:236
 #: rivercureportal/templates/rivercureportal/base.html:68
 msgid "Sensors"
+msgstr ""
+
+#: context/templates/context/context/citizen_home.html:238
+#: context/templates/context/context/citizen_home.html:265
+#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:97
+msgid "Quizzes"
 msgstr ""
 
 #: context/templates/context/context/citizen_home.html:242
