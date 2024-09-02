@@ -87,28 +87,29 @@ class EventDetailView(LoginRequiredMixin, DetailView):
 
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
 
-        # Challenges
-        is_user_in_org = context_organization_belong_check(self.request.user, event.context.organization)
-        if is_user_in_org:
-            # Then show every Challenge of this event
-            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        # If user belongs to Org
+        if context_organization_belong_check(self.request.user, event.context.organization):
+            # If Quiz Manager, see every Challenge of this Event
+            if is_org_quiz_manager(self.request.user, event.context.organization):
+                context['challenges'] = e_Challenge.objects.filter(event=event.id).order_by('-creation_datetime')
+            else:
+                # Else, show every Published Challenge of this event
+                context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
         else:
-            # Otherwise, only show Public Challenges
-            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
-        # context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+            # Otherwise, only show Published Public Challenges
+            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
         context['isQuizMan'] = is_org_quiz_manager(self.request.user, event.context.organization)
 
         return context
 
 
-# TODO: See if this is working
 class EventChallengesFilterView(LoginRequiredMixin, FilterView):
     model = e_Challenge
     template_name = 'context/event/challenge_list.html'
     filterset_class = EventChallengeListFilter
     pk_url_kwarg = 'event_id'
     context_object_name = 'challenges'
-    paginate_by = 9
+    paginate_by = 9 # TODO: See if this is working
 
     def get_queryset(self):
 
@@ -134,14 +135,21 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
         context['event'] = e_ContextEvent.objects.get(pk=event_id)
         context['isQuizMan'] = is_org_quiz_manager(self.request.user, context['event'].context.organization)
 
-        is_user_in_org = context_organization_belong_check(self.request.user, context['event'].context.organization)
-        if is_user_in_org:
-            # Then show every Challenge of this event
-            context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime') # Only show published Challenges
+        # If user belongs to Org
+        if context_organization_belong_check(self.request.user, context['event'].context.organization):
+            # If Quiz Manager, see every Challenge of this Event
+            if is_org_quiz_manager(self.request.user, context['event'].context.organization):
+                context['challenge_list'] = e_Challenge.objects.filter(event=event_id).order_by('-creation_datetime')
+            else:
+                # Else, show every Published Challenge of this event
+                context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
         else:
-            # Otherwise, only show Public Challenges
-            context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime') # Only show published Challenges
-        # context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED)
+            # Otherwise, only show Published Public Challenges
+            context['challenge_list'] = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
+        
+        # TODO: Remove this and only use the get_queryset. I think what happens there overrides what happens
+        # in get_context_data. So do all of this in get_queryset and remove the filter -> because this is
+        # a FilterView, we don't need to pass it through the context
         context['filter'] = EventChallengeListFilter(self.request.GET, queryset=context['challenge_list'])
         
         return context

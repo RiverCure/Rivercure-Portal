@@ -113,6 +113,7 @@
                             <h5 class="card-title">{{ challenge.title|title }}</h5>
                             <div class="d-flex">
                                 <span class="badge {{challenge.state|bootstrap_badge_publish_state}}">{{ challenge.publish_state|title }}</span>
+                                <span class="badge badge-info ml-1">{{ challenge.difficulty_level|title }}</span>
                             </div>
                         </div>
                         <div class="card-footer text-muted">

@@ -1,7 +1,8 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} My Participations - Quiz "{{challenge.title}}"{% endblock %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
+{% block title %} {% trans "My Participations" %} - Quiz "{{challenge.title}}"{% endblock %}
 {% load static %}
 
 {% block scripts %}
@@ -12,19 +13,18 @@
 
 {% block content %}
 
-<h1 class="mt-2 mb-0">Quiz "{{challenge.title}}" - Participations</h1>
+<h1 class="mt-2 mb-0">Quiz "{{challenge.title}}" - {% trans "Participations" %}</h1>
 
 <!-- Filter -->
-<button class="btn btn-info dropdown-toggle mt-3" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
-<div id="filter-menu" class="collapse card my-card-hover card-body">
+<button class="btn btn-info dropdown-toggle mt-3" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+<div id="filter-menu" class="collapse card my-card-hover card-body mt-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 <hr>
 
-<!-- TODO: Make a nice design for these cards -->
 <!-- List of Participations-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for participation in participations %}
@@ -34,7 +34,7 @@
                     <div class="text-center">
                         <img src="{{MEDIA_URL}}{{participation.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                         <h5 class="font-weight-light pt-2 mb-2"> {{ participation.created_by }}</h5>
-                        <small class="text-body-secondary card-contributions text-muted">Submitted on {{ participation.creation_datetime }}</small>
+                        <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ participation.creation_datetime }}</small>
                     </div>
                 </div>
             </div>
@@ -48,14 +48,13 @@
 
 
 <!-- Pagination -->
-<!-- TODO: See if pagination is working well -->
 <div class="row">
     <div class="col">
         {% if is_paginated %}
             <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
                 <ul class="pagination">
                     {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
                     {% endif %}
 
                     {% if page_obj.has_previous %}
@@ -69,7 +68,7 @@
                     {% endif %}
 
                     {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -78,6 +77,6 @@
 </div>
 
 <!-- Footer (Bottom Buttons) -->
-<a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}" style="float: right;">See Quiz</a>
+<a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}" style="float: right;">{% trans "See Quiz" %}</a>
 
 {% endblock content %}

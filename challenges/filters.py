@@ -38,13 +38,13 @@ class ChallengeParticipationsFilter(django_filters.FilterSet):
 
 class ChallengesFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label=_('Title'),
-                                      field_name='challenge__title', lookup_expr='icontains',
+                                      field_name='title', lookup_expr='icontains',
                                       widget=TextInput(attrs={
-                                                    'placeholder': _('Search by Quiz title...'),
+                                                    'placeholder': _('Search by Quiz name...'),
                                                     'type': 'search',
                                                 }))
     event = django_filters.CharFilter(label=_('Event'),
-                                      field_name='event__title', lookup_expr='icontains',
+                                      field_name='event__Name', lookup_expr='icontains',
                                       widget=TextInput(attrs={
                                                     'placeholder': _('Search by Event title...'),
                                                     'type': 'search',

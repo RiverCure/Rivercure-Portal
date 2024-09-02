@@ -74,8 +74,6 @@ class EventChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVi
         # Send success message (to be shown in Challenge detail page)
         messages.success(self.request, _('Your Quiz has been created successfully.'))
 
-        # TODO: Send confirmation email to user
-
         return super().form_valid(form)
 
 # Page to create Challenge for Organization
@@ -135,12 +133,18 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
     filterset_class = ChallengesFilter
     context_object_name = 'challenges'
     pk_url_kwarg = 'org_id'
-    paginate_by = 9
+    paginate_by = 9 # TODO: test this
 
     def get_queryset(self):
-        # Show all Challenges from this Organization
         organization = Organization.objects.get(code=self.kwargs['org_id'])
-        challenges = e_Challenge.objects.filter(organization=organization)
+
+        # If Quiz Manager of Org, see all Quizzes of Org
+        if is_org_quiz_manager(self.request.user, organization):
+            challenges = e_Challenge.objects.filter(organization=organization)
+        # Else, see Published Quizzes of Org
+        else:
+            challenges = e_Challenge.objects.filter(organization=organization, state=ChallengeState.PUBLISHED)
+
 
         return challenges
     
@@ -148,12 +152,9 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
         context = super().get_context_data(**kwargs)
 
         organization = Organization.objects.get(code=self.kwargs['org_id'])
-        challenges = e_Challenge.objects.filter(organization=organization)
 
         context['org'] = organization
-        context['challenges'] = challenges
         context['isQuizMan'] = is_org_quiz_manager(self.request.user, organization)
-        #context['filter'] = OrganizationChallengesFilterView(self.request.GET, queryset=context['challenges'])
 
         return context
 
@@ -613,7 +614,7 @@ def challenge_participate(request, challenge_id):
         return redirect('challenge-detail', challenge_id)
 
 
-    questions = e_Question.objects.filter(challenge=challenge) # TODO: Perhaps get this directly from challenge object?
+    questions = e_Question.objects.filter(challenge=challenge)
 
     context = {'challenge': challenge,
                'questions': questions}
@@ -808,8 +809,6 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
     pk_url_kwarg = 'challenge_id'
     paginate_by = 9
 
-    # TODO: Only show if 1. Challenge is Published 2. Challenge is Public OR user is in Challenge's organization
-
     def get_queryset(self):
 
         try:
@@ -842,21 +841,15 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         return context
 
 
-class ParticipationDetailView(LoginRequiredMixin, DetailView): #UserPassesTestMixin
+class ParticipationDetailView(LoginRequiredMixin, DetailView):
     model = e_ChallengeAnswer
     template_name = 'challenges/challenge_participation_detail.html'
     pk_url_kwarg = 'participation_id'
     context_object_name = 'participation'
 
-    # def test_func(self):
-    #     participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
-    #     # Only members of Org and Platform Admin can see this page
-    #     return context_organization_belong_check(self.request.user, participation.challenge.event.context.organization) or is_platform_admin(self.request.user)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # TODO: Do we need try-except in CBVs?
         participation = e_ChallengeAnswer.objects.get(pk=self.kwargs['participation_id'])
         context['challenge_questions'] = e_Question.objects.filter(challenge=participation.challenge)
 

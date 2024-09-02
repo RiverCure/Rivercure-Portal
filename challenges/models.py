@@ -1,5 +1,6 @@
 # from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
@@ -12,7 +13,7 @@ from organization.models import Organization
 
 ## Choices
 class ChallengeState(models.TextChoices):
-    DRAFT = "DRAFT", "Draft"
+    DRAFT = "DRAFT", _("Draft")
     DELETED = "DELETED", "Deleted"
     PUBLISHED = "PUBLISHED", "Published"
     ARCHIVED = "ARCHIVED", "Archived"
@@ -22,7 +23,6 @@ class ChallengePublishState(models.TextChoices):
     CLOSED = "CLOSED", "Closed"
 
 
-# TODO: Turn this into a TextChoice
 DIFFICULTY_LEVEL = (('easy', 'Easy'), ('intermediate', 'Intermediate'), ('hard', 'Hard'))
 
 
@@ -92,7 +92,7 @@ class e_Challenge(models.Model):
         """
         return self.state == ChallengeState.PUBLISHED
     
-    def can_manage_questions(self): # TODO: Substitute this for more general is_draft() method?
+    def can_manage_questions(self):
         """
         Returns whether Challenge can have its Questions managed
         
@@ -156,8 +156,6 @@ class e_Question(models.Model):
     challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_by')
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    last_edited_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='last_edited_by', blank=True) # TODO: Delete?
-    last_edit_datetime = models.DateTimeField(null=True, blank=True) # TODO: Delete?
     type = models.CharField(choices=Question_Type.choices)
     position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
