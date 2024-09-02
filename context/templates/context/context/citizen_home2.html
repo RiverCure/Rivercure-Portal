@@ -169,6 +169,7 @@
 
     #my_map {
         margin: 0px;
+        height: 84vh;
     }
 
     .hidden {
@@ -271,7 +272,7 @@
     </div>
 </div>
 
-<!-- Footer -->
+{% comment %} <!-- Footer -->
 <div class="footer p-4">
     <div class="d-flex justify-content-center">
         <p class="m-0">
@@ -280,17 +281,6 @@
             <a href="{% url 'rivercure-about' %}"  class="text-light">{% trans "About" %}</a>
         </p>
     </div>
-    {% comment %} <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-        <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link px-2 text-light">{% trans "Contact" %}</a></li>
-        <li class="nav-item"><a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank" class="nav-link px-2 text-light">Wiki</a></li>
-        <li class="nav-item"><a href="{% url 'rivercure-about' %}" class="nav-link px-2 text-light">{% trans "About" %}</a></li>
-    </ul> {% endcomment %}
-    {% comment %} <div class="d-flex justify-content-between align-items-center">
-        <img src="{% static '/rivercureportal/logos/2022_FCT_Logo_B_horizontal_branco.png' %}" class="" style="width: 18rem;" alt="FCT Logo">
-        <img src="{% static '/rivercureportal/logos/IST_A_RGB_NEG.png' %}" class="" style="width: 18rem;" alt="IST Logo">
-        <img src="{% static '/rivercureportal/logos/INESC-ID-new-logo_version-01B.png' %}" class="" style="width: 14rem;" alt="INESC Logo">
-        <img src="{% static '/rivercureportal/logos/lnec-logo-png-transparent.png' %}" class="" style="width: 12rem;" alt="LNEC Logo">
-    </div> {% endcomment %}
-</div>
+</div> {% endcomment %}
 
 {% endblock landing_page %}

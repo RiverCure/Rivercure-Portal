@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Event '{{event.Name}}' - Quizzes {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Event" %} '{{event.Name}}' - Quizzes {% endblock %}
 {% load crispy_forms_tags %}
 {% load challenge_extras %}
 {% load auth_extras %}
@@ -15,20 +16,20 @@
 
 {% block content %}
 
-<h1 class="mt-2">{{ event.context.Name }} Event '{{ event.Name }}' - Quizzes </h1>
-<p class="font-weight-light" align="justify">On this page you can see the Quizzes published in this Event.</p>
+<h1 class="mt-2">{{ event.context.Name }} {% trans "Event" %} '{{ event.Name }}' - Quizzes </h1>
+<p class="font-weight-light" align="justify">{% trans "On this page you can see the Quizzes published for this Event." %}</p>
 <hr>
 
 <!-- Filter -->
-<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
-<div id="filter-menu" class="collapse card my-card-hover card-body">
+<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+<div id="filter-menu" class="collapse card my-card-hover card-body my-3">
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
     </form>
 </div>
 
-{% if isQuizMan or user|has_group:"Admin" %}<a class="btn btn-success ml-2" href="{% url 'event-challenge-create' event.id %}"><i class="bi bi-plus"></i> Add Quiz</a>{% endif %}
+{% if isQuizMan or user|has_group:"Admin" %}<a class="btn btn-success ml-2" href="{% url 'event-challenge-create' event.id %}"><i class="bi bi-plus"></i> {% trans "Add Quiz" %}</a>{% endif %}
 
 <hr>
 
@@ -46,8 +47,8 @@
                 </div>
                 <div class="card-footer text-muted">
                     <div class="d-flex justify-content-between">
-                        <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
-                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                        <p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Created by" %} {{ challenge.created_by }}</p>
+                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Event" %}: {{ challenge.event.Name }}</p>{% endif %}
                     </div>
                 </div>
             </div>
@@ -56,39 +57,39 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no published Quizzes in this Event yet.</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no published Quizzes in this Event yet." %}</p>
 {% endif %}
 
-<!-- Bottom button -->
-<a class="btn btn-secondary my-3" style="float: right;" href="{% url 'event-detail' event.context.code event.id %}">Back to Event</a>
 
-<!-- Pagination -->
-<div class="row">
-    <div class="col">
-        {% if is_paginated %}
-            <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
-                <ul class="pagination">
-                    {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
-                    {% endif %}
-
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
-                    {% endif %}
-                    
-                    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
-                    {% endif %}
-
-                    {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <!-- Bottom button -->
+    <a class="btn btn-secondary" href="{% url 'event-detail' event.context.code event.id %}">{% trans "See Event" %}</a>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
+            <ul class="pagination">
+                {% if page_obj.has_previous and page_obj.number != 2 %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
+                {% endif %}
+    
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+    
+                {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 </div>
+
 
 {% endblock content %}

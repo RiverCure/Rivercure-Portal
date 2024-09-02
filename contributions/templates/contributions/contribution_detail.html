@@ -82,6 +82,11 @@
         border: 2px solid rgb(221, 221, 221); {% endcomment %}
     }
 
+    #my_map_mobile {
+        margin: 0;
+        border-radius: 1rem 1rem 0 0;
+    }
+
     /* Make img show full size */
     .img-inside-modal {
         width: 100%;
@@ -241,12 +246,12 @@
             {% for media in contribution_media_list %}
 
                 <!-- Media (in carousel) -->
-                <div class="col-4 p-0 {% if not forloop.first %}ml-2{% endif %} my-fade-out">
+                <div class="p-0 {% if not forloop.first %}ml-2{% endif %} my-fade-out">
                     <a data-toggle="modal" data-target="#mediaModal{{ forloop.counter }}">
 
                         <!-- Image -->
                         {% if media.is_video_or_image == "image" %}
-                            <img src="{{MEDIA_URL}}{{ media.file }}" class="rounded img-fluid my-image-carousel-thumbnail" alt="">
+                            <img src="{{MEDIA_URL}}{{ media.file }}" class="rounded my-image-carousel-thumbnail" style="width: 22rem;" alt="">
                         <!-- Video -->
                         {% elif media.is_video_or_image == "video" %}
                             <div class="rounded my-video-carousel-thumbnail">
@@ -257,8 +262,6 @@
                                     <i class="bi bi-play-circle-fill text-white"></i>
                                 </h1>
                             </div>
-                        {% else %}
-                            <p>Error!</p> <!-- TODO: What to do here? -->
                         {% endif %}
 
                     </a>
@@ -311,6 +314,84 @@
 
 
 <!-- Observation information -->
+{% if is_mobile %}
+<!-- If on mobile -->
+
+<!-- Details -->
+<div class="row mt-3 mx-0 my-contribution-detail-meta-info-card-top">
+    <div class="col p-0 d-flex flex-column">
+
+        <div class="px-3">
+            <h3 class="mt-3">{% trans "Observation Details" %}</h3>
+            <hr>
+        </div>
+
+        <!-- Situation -->
+        <div class="text-center">
+            <img src="{{MEDIA_URL}}/contributions/situation_icons/{{contribution.situationObserved|lower}}.png" class="my-contribution-detail-situation-img mt-3" alt="Situation type icon">
+            <h4 class="font-weight-light pt-2"> {{ contribution.situationObserved|title }} </h4>
+        </div>
+
+        <!-- Description -->
+        <div class="pb-2 px-3">
+            <hr>
+            <h5>{% trans "Description" %}</h5>
+            <p class="font-weight-light" align="justify">{{ contribution.observationDescription }}</p>
+
+            {% if contribution.situationObserved == "FLOOD" %}
+            <hr>
+            <p>{% trans "Transit Time of Floating Objects" %}: <span class="font-weight-light">{{contribution.floating_objects_time}}</span></p>
+            <p>{% trans "Water Height" %}: <span class="font-weight-light">{{contribution.water_height}} {% trans "meters" %}</span></p>
+            {% elif contribution.situationObserved == "TORNADO" %}
+            <hr>
+            <p>{% trans "Velocity" %}: <span class="font-weight-light">{{contribution.velocity}} km/h</span></p>
+            <p>{% trans "Tornado Type" %}: <span class="font-weight-light">{{contribution.tornado_type}}</span></p>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+<!-- Details Footer -->
+<div class="row mx-0 ">
+    <div class="col d-flex flex-column justify-content-center p-0 border-right my-contribution-detail-footer my-border-radius-bottom my-contribution-detail-meta-info-card-footer-left">
+        <!-- Observation date / Footer -->
+        <div class="my-border-radius-bottom-left">
+            <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Map -->
+<div class="row mt-3 mx-0 my-contribution-detail-meta-info-card-top">
+    <div class="col p-0">
+        <div id="map-container">
+            {% leaflet_map "my_map_mobile" %}
+        </div>
+    </div>
+</div>
+<!-- Map Footer -->
+<div class="row mx-0 ">
+    <div class="col p-0 my-contribution-detail-footer my-border-radius-bottom border-left my-contribution-detail-meta-info-card-footer-right">
+        <!-- Map Footer -->
+        <div class="d-flex justify-content-between">
+            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}}{% else %}{% trans "Address will be available shortly after Contribution is accepted. In the meantime, check the details." %}{% endif %}</p>
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-info" type="button" id="dropdownMapDetails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Details" %}</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMapDetails" style="background-color: #f8f8f8;">
+                    <div class="p-2 text-center">
+                        <h6>{% trans "Latitude" %}</h6>
+                        <p class="font-weight-light m-0">{{ contribution.get_lat }}</p>
+                        <div class="dropdown-divider"></div>
+                        <h6>{% trans "Longitude" %}</h6>
+                        <p class="font-weight-light m-0">{{ contribution.get_long }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- If not on mobile -->
 <div class="row mt-3 mx-0 my-contribution-detail-meta-info-card-top">
     <!-- Details -->
     <div class="col p-0 d-flex flex-column border-right">
@@ -405,6 +486,7 @@
     </div>
 
 </div>
+{% endif %}
 
 
 

@@ -4,6 +4,8 @@ from django_filters.views import FilterView
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core import serializers
+from common.utils import is_mobile
+
 
 from django.core.files import File
 from django.views.generic import ListView, CreateView, DetailView, DeleteView
@@ -176,6 +178,7 @@ class ContributionListView(FilterView):
         context['context'] = get_object_or_404(e_Context, code=context_code)
         context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
         context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
+        context['is_mobile'] = is_mobile(self.request)
         
         return context
 
@@ -221,6 +224,7 @@ class ContributionDetailView(DetailView):
         context['reports'] = e_ContributionReport.objects.filter(contribution=self.get_object().pk).order_by('-report_datetime')
         context['validations'] = e_ContributionValidation.objects.filter(contribution=self.get_object().pk).order_by('-validation_datetime')
         context['nextContribution'] = e_ContextContribution.objects.filter(context=self.get_object().context.code, state=ContributionStatus.PENDING).order_by('creationDateTime').first()
+        context['is_mobile'] = is_mobile(self.request)
         return context
     
 
