@@ -81,7 +81,6 @@ class ChallengeCreateViewTest(TestCase):
         cls.url_challenge_create = reverse('challenge-create', args=[cls.event.id])
 
 
-    # TODO: Can't I just move this into setUpTestData ?
     def setUp(self):
         # Loggin all users into different clients (then use correct client for each)
 

@@ -29,7 +29,7 @@ class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
     template_name = 'context/moderator/moderator_list.html'
     context_object_name = 'users'
-    ordering = ['first_name', 'last_name'] # TODO: Working?
+    ordering = ['first_name', 'last_name']
     pk_url_kwarg = 'contextCode'
     filterset_class = ModeratorFilter
     paginate_by = 5
@@ -59,13 +59,13 @@ class ModeratorAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
     template_name = 'context/moderator/moderator_add_list.html'
     context_object_name = 'users'
-    ordering = ['first_name', 'last_name'] # TODO: Working?
+    ordering = ['first_name', 'last_name']
     pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
     filterset_class = ModeratorAddFilter
     paginate_by = 5
 
     def get_queryset(self):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
         # Only show organization members that are not already context moderator's for that context
         moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
         members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
@@ -163,7 +163,6 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     
 
 
-# TODO: Should I change this to be in contributions app ?
 class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_ContextContribution
     template_name = 'context/moderator/moderator_context_contribution_list.html'

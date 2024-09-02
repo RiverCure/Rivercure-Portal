@@ -123,33 +123,6 @@ class ContextMembership(models.Model):
         return f"{self.permission} {self.user} ({self.context})"
 
 
-# # To keep track of Moderators for a Context
-# class ModeratorMembership(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
-#     access_grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
-
-#     class Meta:
-#         verbose_name = 'Context Moderator'
-#         verbose_name_plural = 'Context Moderators'
-    
-#     def __str__(self):
-#         return f"Moderator {self.user} - {self.context}"
-
-# # To keep track of Event Managers for a Context (given that this is now a Context-level permission)
-# class EventManagerMembership(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
-#     access_grant_date = models.DateTimeField(auto_now_add=True) # TODO: Do like this or like in Membership?
-
-#     class Meta:
-#         verbose_name = 'Context Event Manager'
-#         verbose_name_plural = 'Context Event Manger'
-    
-#     def __str__(self):
-#         return f"Event Manager {self.user} - {self.context}"
-
-
 class e_ContextDTM(models.Model):
     context = models.OneToOneField('e_Context', on_delete=models.CASCADE, related_name='context_dtm')
     # This field corresponds to the context DTM (.tiff file)

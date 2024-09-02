@@ -32,7 +32,6 @@
 
 <hr>
 
-<!-- TODO: Make a nice design for these cards (same design as in Event detail page) -->
 <!-- List of Challenges-->
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for challenge in challenges %}
@@ -64,7 +63,6 @@
 <a class="btn btn-secondary my-3" style="float: right;" href="{% url 'event-detail' event.context.code event.id %}">Back to Event</a>
 
 <!-- Pagination -->
-<!-- TODO: See if pagination is working well -->
 <div class="row">
     <div class="col">
         {% if is_paginated %}

@@ -31,10 +31,9 @@ from rivercureproject import settings
 from context.views.mesh import check_celery
 
 
-# TODO: Do something with this!! Close off this URL for only some users
-class AllContributionsListView(LoginRequiredMixin, ListView):
-    model = e_ContextContribution
-    template_name = 'contributions/contribution_list.html'
+# class AllContributionsListView(LoginRequiredMixin, ListView):
+#     model = e_ContextContribution
+#     template_name = 'contributions/contribution_list.html'
 
 
 

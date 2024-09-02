@@ -101,7 +101,7 @@
             //if (geomExternalBoundary !== null) {
             // Draw domain and center map
             let domain = L.polygon(MyFunctions.coordStringToArray(geomExternalBoundary), {
-                color: '#C0C0C0', // TODO: change this colour
+                color: '#C0C0C0',
             });
             map.fitBounds(domain.getBounds());
             domain.addTo(map);

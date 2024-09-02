@@ -5,6 +5,6 @@ def author_of_contribution_check(user, contribution):
     Checks if the user is the author of the Contribution
     """
     try:
-        return e_ContextContribution.objects.filter(createdBy=user, pk=contribution.pk).exists() # TODO: Best way to do this query?
+        return e_ContextContribution.objects.filter(createdBy=user, pk=contribution.pk).exists()
     except:
         return False

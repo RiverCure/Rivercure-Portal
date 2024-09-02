@@ -14,8 +14,6 @@
 
 {% block content %}
 
-<!-- TODO: Should be in org app? -->
-
 <h1 class="mt-2">Organization {{org}} - Quizzes</h1>
 <p class="font-weight-light" align="justify">{% trans "On this page you can see all the Quizzes from Organization" %} {{org.name}}.</p>
 <hr>
@@ -66,7 +64,6 @@
 
 
 <!-- Pagination -->
-<!-- TODO: See if pagination is working well -->
 <div class="row">
     <div class="col">
         {% if is_paginated %}

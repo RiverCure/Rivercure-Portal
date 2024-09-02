@@ -298,7 +298,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 #     model = User
 #     template_name = 'context/quiz/quiz_manager_list.html'
 #     context_object_name = 'users'
-#     ordering = ['first_name', 'last_name'] # TODO: Change to something else?
+#     ordering = ['first_name', 'last_name']
 #     pk_url_kwarg = 'contextCode'
 #     filterset_class = QuizManagerFilter
 #     paginate_by = 5
