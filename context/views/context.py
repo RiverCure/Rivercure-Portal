@@ -85,7 +85,7 @@ class ContextListView(LoginRequiredMixin, ListView):
         return context
 
 
-class PublicContextListView(FilterView):
+class PublicContextFilterView(FilterView):
     model = e_Context
     template_name = 'context/context/citizen_home2.html'
     filterset_class = ContextFilter
@@ -183,7 +183,7 @@ class PublicContextDetailView(UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         context['is_admin'] = is_platform_admin(self.request.user)
-        context['is_context_event_man'] = context_quiz_manager_check(self.request.user, self.get_object())
+        # context['is_context_event_man'] = context_quiz_manager_check(self.request.user, self.get_object())
 
         context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Contributions that belong to this context and are Accepted
         context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context

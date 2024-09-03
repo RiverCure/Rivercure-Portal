@@ -142,10 +142,10 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
 
         # If Quiz Manager of Org, see all Quizzes of Org
         if is_org_quiz_manager(self.request.user, organization):
-            challenges = e_Challenge.objects.filter(organization=organization)
+            challenges = e_Challenge.objects.filter(organization=organization).order_by('-creation_datetime')
         # Else, see Published Quizzes of Org
         else:
-            challenges = e_Challenge.objects.filter(organization=organization, state=ChallengeState.PUBLISHED)
+            challenges = e_Challenge.objects.filter(organization=organization, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
 
 
         return challenges
@@ -176,7 +176,7 @@ class PublicChallengesFilterView(FilterView):
 
     def get_queryset(self):
         # Show all Published Public Challenges
-        challenges = e_Challenge.objects.filter(state=ChallengeState.PUBLISHED, is_public=True)
+        challenges = e_Challenge.objects.filter(state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
 
         return challenges
     
@@ -793,7 +793,7 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
 
         # Show participations of all users for this Challenge
-        participations = e_ChallengeAnswer.objects.filter(challenge=challenge)
+        participations = e_ChallengeAnswer.objects.filter(challenge=challenge).order_by('-creation_datetime')
 
         return participations
     
@@ -804,8 +804,6 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         context['challenge'] = challenge
         # Show participations of all users for this Challenge
-        context['participation_list'] = e_ChallengeAnswer.objects.filter(challenge=challenge)
-        context['filter'] = ChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['is_mobile'] = is_mobile(self.request)
         
@@ -830,7 +828,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
             return redirect('public-challenge-list')
 
         # Show participations of this user for this Challenge
-        participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
+        participations = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge).order_by('-creation_datetime')
 
         return participations
     
@@ -846,8 +844,8 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
 
         context['challenge'] = challenge
         # Show participations of this user for this Challenge
-        context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
-        context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations']) # TODO: I don't think this is doing anything
+        # context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
+        # context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations']) # TODO: I don't think this is doing anything
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['is_mobile'] = is_mobile(self.request)
         

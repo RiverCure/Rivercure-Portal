@@ -25,7 +25,7 @@ from contributions.views import accept_contribution, reject_contribution
 
 from common.utils import is_mobile
 
-class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+class ModeratorFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
     template_name = 'context/moderator/moderator_list.html'
     context_object_name = 'users'
@@ -44,7 +44,7 @@ class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
         context_code = self.kwargs['contextCode']
         _context = e_Context.objects.get(pk=context_code)
 
-        context = super(ModeratorListView, self).get_context_data(**kwargs)
+        context = super(ModeratorFilterView, self).get_context_data(**kwargs)
         context['context'] = _context
         context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
         members = ContextMembership.objects.filter(context=context_code, permission='context_moderator')
@@ -55,7 +55,7 @@ class ModeratorListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
         return belongs_to_organization(self.request.user, _context.organization)
 
-class ModeratorAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+class ModeratorAddFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = User
     template_name = 'context/moderator/moderator_add_list.html'
     context_object_name = 'users'
@@ -75,7 +75,7 @@ class ModeratorAddListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     def get_context_data(self, **kwargs):
         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
 
-        context = super(ModeratorAddListView, self).get_context_data(**kwargs)
+        context = super(ModeratorAddFilterView, self).get_context_data(**kwargs)
         context['context'] =  _context
         # Only show organization members that are not already context moderator's for that context
         moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
@@ -132,7 +132,7 @@ def contextModeratorRemove(request, contextCode, userId):
     return redirect('moderator-list', contextCode)
 
 # TODO: Mudar nomes em que está ListView (e na verdade é uma FilterView) para FilterView
-class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+class ModeratorContextsFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_Context
     template_name = 'context/moderator/moderator_my_context_list.html'
     context_object_name = 'contexts'
@@ -148,7 +148,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
         return contexts
 
     def get_context_data(self, **kwargs):
-        context = super(ModeratorContextsListView, self).get_context_data(**kwargs)
+        context = super(ModeratorContextsFilterView, self).get_context_data(**kwargs)
         # Filter
         pendingContributions = Count("context__e_contextcontribution", filter=Q(context__e_contextcontribution__state=ContributionStatus.PENDING))
         contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
@@ -164,7 +164,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
     
 
 
-class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+class ModeratorContextContributionFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_ContextContribution
     template_name = 'context/moderator/moderator_context_contribution_list.html'
     context_object_name = 'contributions'
@@ -197,7 +197,7 @@ class ModeratorContextContributionListView(LoginRequiredMixin, UserPassesTestMix
         return contributions
 
     def get_context_data(self, **kwargs):
-        context = super(ModeratorContextContributionListView, self).get_context_data(**kwargs)
+        context = super(ModeratorContextContributionFilterView, self).get_context_data(**kwargs)
         context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
 
         # Get Contributions

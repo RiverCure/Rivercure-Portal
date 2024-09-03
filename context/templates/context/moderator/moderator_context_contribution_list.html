@@ -51,22 +51,23 @@
         <button class="btn btn-info dropdown-toggle mb-2" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
     
         <!-- Sort Button -->
-        <button class="btn btn-info dropdown-toggle mb-2" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Sort By" %}</button>
-        <!-- Sort Menu-->
-        <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
-            {% comment %} <a class="dropdown-item" href="?sort=date_asc&{{params}}"><i class="bi bi-sort-up"></i> Ascending Date</a> {% endcomment %}
-            {% comment %} <a class="dropdown-item" href="?sort=date_desc&{{params}}"><i class="bi bi-sort-down"></i> Descending Date</a> {% endcomment %}
-            <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> {% trans "Ascending Date" %}</a>
-            <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> {% trans "Descending Date" %}</a>
+        <div class="dropdown d-inline">
+            <button class="btn btn-info dropdown-toggle mb-2" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Sort By" %}</button>
+            <div id="sortDropdownMenuButton" class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+                <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> {% trans "Ascending Date" %}</a>
+                <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> {% trans "Descending Date" %}</a>
+            </div>
         </div>
     </div>
 
     <!-- Actions -->
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Actions" %}</button>
-    <div class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
-        <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> {% trans "Accept Selected" %}</button>
-        <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> {% trans "Reject Selected" %}</button>
-    </div>
+     <div class="dropdown">
+         <button class="btn btn-secondary dropdown-toggle" type="button" id="actionsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Actions" %}</button>
+         <div id="actionsDropdownMenuButton" class="dropdown-menu" aria-labelledby="actionsDropdownMenuButton">
+             <button class="dropdown-item text-success" type="submit" form="batchHandleForm" name="batch-accept"><i class="bi bi-check"></i> {% trans "Accept Selected" %}</button>
+             <button class="dropdown-item text-danger" type="submit" form="batchHandleForm" name="batch-reject"><i class="bi bi-x"></i> {% trans "Reject Selected" %}</button>
+         </div>
+     </div>
 
 </div>
 

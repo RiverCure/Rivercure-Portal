@@ -155,7 +155,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
 
 
-class ContributionListView(FilterView):
+class ContributionFilterView(FilterView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_list.html'
     filterset_class = ContributionFilter
@@ -166,6 +166,7 @@ class ContributionListView(FilterView):
     def get_queryset(self):
 
         context_code = self.kwargs['contextCode']
+        
         contribution_list = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
 
         return contribution_list
@@ -176,8 +177,8 @@ class ContributionListView(FilterView):
         context = super().get_context_data(**kwargs)
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['context'] = get_object_or_404(e_Context, code=context_code)
-        context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
-        context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
+        # context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
+        # context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
         context['is_mobile'] = is_mobile(self.request)
         
         return context
@@ -228,7 +229,7 @@ class ContributionDetailView(DetailView):
         return context
     
 
-class MyContributionsListView(LoginRequiredMixin, FilterView):
+class MyContributionsFilterView(LoginRequiredMixin, FilterView):
     model = e_ContextContribution
     template_name = 'contributions/my_contributions_list.html'
     context_object_name = 'contributions'
@@ -248,8 +249,8 @@ class MyContributionsListView(LoginRequiredMixin, FilterView):
 
         context = super().get_context_data(**kwargs)
         context['MEDIA_URL'] = settings.MEDIA_URL
-        context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
-        context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
+        # context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
+        # context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context
 

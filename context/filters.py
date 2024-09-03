@@ -99,12 +99,11 @@ class ModeratorContextFilter(django_filters.FilterSet):
                                                     'class': 'form-control',
                                                     'type': 'search',
                                                 }))
-    hydroFeature = django_filters.ModelChoiceFilter(field_name='context__hydroFeature', label='HydroFeature', queryset=e_HydroFeature.objects.all())
     organization = django_filters.ModelChoiceFilter(field_name='context__organization', label=_('Organization'), queryset=Organization.objects.all())
 
     class Meta:
         Model = e_Context
-        fields = ['Name', 'hydroFeature', 'organization']
+        fields = ['Name', 'organization']
 
 
 class ModeratorContextContributionFilter(django_filters.FilterSet):

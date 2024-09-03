@@ -8,7 +8,7 @@ router.register(r'context', ContextViewSet)
 urlpatterns = [
     path('', ContextListView.as_view(), name='context-list'),
     path('new/', ContextCreateView.as_view(), name='context-create'),
-    path('public/', PublicContextListView.as_view(), name='public-contexts'),
+    path('public/', PublicContextFilterView.as_view(), name='public-contexts'),
     path('public/<str:contextCode>', PublicContextDetailView.as_view(), name='public-context-detail'),
     path('<str:contextCode>', ContextDetailView.as_view(), name='context-detail'),
     path('<str:contextCode>/update/', ContextUpdateView.as_view(), name='context-update'),
@@ -21,10 +21,10 @@ urlpatterns = [
          download_preprocessing_results, name='context-preprocessing-results-download'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
     # Moderator
-    path('moderators/my-contexts/', ModeratorContextsListView.as_view(), name='moderator-context-list'),
-    path('<str:contextCode>/moderators', ModeratorListView.as_view(), name='moderator-list'),
-    path('<str:contextCode>/moderators/contributions', ModeratorContextContributionListView.as_view(), name='moderator-context-contribution-list'), # TODO: Should I just reuse the already existing page with contribution list of a context? aka contribution-list
-    path('<str:contextCode>/moderators/add/', ModeratorAddListView.as_view(), name='moderator-list-add'),
+    path('moderators/my-contexts/', ModeratorContextsFilterView.as_view(), name='moderator-context-list'),
+    path('<str:contextCode>/moderators', ModeratorFilterView.as_view(), name='moderator-list'),
+    path('<str:contextCode>/moderators/contributions', ModeratorContextContributionFilterView.as_view(), name='moderator-context-contribution-list'), # TODO: Should I just reuse the already existing page with contribution list of a context? aka contribution-list
+    path('<str:contextCode>/moderators/add/', ModeratorAddFilterView.as_view(), name='moderator-list-add'),
     path('<str:contextCode>/moderators/<int:userId>/add/', contextModeratorAdd, name='moderator-user-add'),
     path('<str:contextCode>/moderators/<int:userId>/remove/', contextModeratorRemove, name='moderator-remove'),
     path('<str:contextCode>/moderators/batch-handle/', batchHandle, name='contribution-batch-handle'),
