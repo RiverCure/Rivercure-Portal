@@ -267,6 +267,10 @@
                 </div>
             {% endfor %}
         </div>
+        <!-- If list empty -->
+        {% if public_contexts.count == 0 %}
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Contexts." %}</p>
+        {% endif %}
 
 
     </div>

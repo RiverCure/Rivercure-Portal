@@ -177,8 +177,6 @@ class ContributionFilterView(FilterView):
         context = super().get_context_data(**kwargs)
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['context'] = get_object_or_404(e_Context, code=context_code)
-        # context['contribution_list'] = e_ContextContribution.objects.filter(context=context_code, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Only show Accepted Contributions
-        # context['filter'] = ContributionFilter(self.request.GET, queryset=context['contribution_list'])
         context['is_mobile'] = is_mobile(self.request)
         
         return context
@@ -238,19 +236,14 @@ class MyContributionsFilterView(LoginRequiredMixin, FilterView):
 
     def get_queryset(self):
 
-        user = self.request.user
-
-        contribution_list = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
+        contribution_list = e_ContextContribution.objects.filter(createdBy=self.request.user).order_by('-creationDateTime')
 
         return contribution_list
     
     def get_context_data(self, **kwargs):
-        user = self.request.user
-
         context = super().get_context_data(**kwargs)
+        
         context['MEDIA_URL'] = settings.MEDIA_URL
-        # context['contribution_list'] = e_ContextContribution.objects.filter(createdBy=user).order_by('-creationDateTime')
-        # context['filter'] = MyContributionsFilter(self.request.GET, queryset=context['contribution_list'])
         
         return context
 

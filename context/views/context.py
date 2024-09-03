@@ -105,19 +105,9 @@ class PublicContextFilterView(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # context['context_list'] = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions')
-
-        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
-        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
-        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
-        # TODO: Filtering: Is this working well? Should I change context_list to public_contexts? Is it indifferent?
-        context['context_list'] = e_Context.objects.exclude(isPublic=False).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
-        context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         
         # List of all public contexts (for JS)
         public_contexts = e_Context.objects.exclude(isPublic=False)
-        # context['public_contexts_list'] = list(public_contexts.values('code', 'Name', 'description', 'picture'))
         context['public_contexts_json'] = serializers.serialize('json', list(public_contexts), fields=('code', 'Name', 'description', 'geomExternalBoundary', 'CLExternalBoundary', 'picture'))
 
         return context

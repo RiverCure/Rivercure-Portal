@@ -47,8 +47,7 @@ class ModeratorFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
         context = super(ModeratorFilterView, self).get_context_data(**kwargs)
         context['context'] = _context
         context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
-        members = ContextMembership.objects.filter(context=context_code, permission='context_moderator')
-        context['filter'] = ModeratorFilter(self.request.GET, queryset=members)
+        
         return context
     
     def test_func(self):
@@ -73,15 +72,10 @@ class ModeratorAddFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView
         return members
 
     def get_context_data(self, **kwargs):
-        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
-
         context = super(ModeratorAddFilterView, self).get_context_data(**kwargs)
+        
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
         context['context'] =  _context
-        # Only show organization members that are not already context moderator's for that context
-        moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
-        org_members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
-        # Filter
-        context['filter'] = ModeratorAddFilter(self.request.GET, queryset=org_members)
 
         return context
 
@@ -149,17 +143,13 @@ class ModeratorContextsFilterView(LoginRequiredMixin, UserPassesTestMixin, Filte
 
     def get_context_data(self, **kwargs):
         context = super(ModeratorContextsFilterView, self).get_context_data(**kwargs)
-        # Filter
-        pendingContributions = Count("context__e_contextcontribution", filter=Q(context__e_contextcontribution__state=ContributionStatus.PENDING))
-        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
-        # contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
-        context['filter'] = ModeratorContextFilter(self.request.GET, queryset=contexts)
+
         context['is_mobile'] = is_mobile(self.request)
 
         return context
 
     def test_func(self):
-        # User must be a Moderator (in some Context)
+        # User must be a Moderator
         return general_moderator_check(self.request.user)
     
 
@@ -198,26 +188,8 @@ class ModeratorContextContributionFilterView(LoginRequiredMixin, UserPassesTestM
 
     def get_context_data(self, **kwargs):
         context = super(ModeratorContextContributionFilterView, self).get_context_data(**kwargs)
+        
         context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
-
-        # Get Contributions
-        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
-            When(state=ContributionStatus.PENDING, then=Value(True)))
-        ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
-
-        # Sort / Order
-        sort_field = self.request.GET.get('sort') # Get sort from URL (so like: base_url?sort=sort_field)
-        # If there IS a sort field in the URL, then get new ordered queryset
-        if sort_field:
-            if sort_field == 'date_asc':
-                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('creationDateTime')
-            elif sort_field == 'date_desc':
-                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('-creationDateTime')
-
-        # Filter
-        context['filter'] = ModeratorContextContributionFilter(self.request.GET, queryset=contributions)
-
-        # context['request'] = self.request
         context['is_mobile'] = is_mobile(self.request)
 
         return context

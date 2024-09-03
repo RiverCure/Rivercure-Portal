@@ -72,7 +72,7 @@ def context_moderator_check(user, context):
 
 def general_moderator_check(user):
     """
-    Checks if the user is a moderator
+    Checks if the user is a moderator (in some Context)
     """
     try:
         return ContextMembership.objects.filter(user=user, permission='context_moderator').exists()

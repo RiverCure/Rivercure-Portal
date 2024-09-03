@@ -147,7 +147,6 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
         else:
             challenges = e_Challenge.objects.filter(organization=organization, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
 
-
         return challenges
     
     def get_context_data(self, **kwargs):
@@ -803,7 +802,6 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
 
         challenge = e_Challenge.objects.get(pk=self.kwargs['challenge_id'])
         context['challenge'] = challenge
-        # Show participations of all users for this Challenge
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['is_mobile'] = is_mobile(self.request)
         
@@ -843,9 +841,6 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
             return redirect('public-challenge-list')
 
         context['challenge'] = challenge
-        # Show participations of this user for this Challenge
-        # context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
-        # context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations']) # TODO: I don't think this is doing anything
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['is_mobile'] = is_mobile(self.request)
         
