@@ -1,15 +1,20 @@
-from django.contrib.gis.db import models
-from django.utils import timezone
-from datetime import datetime, date
-from rivercureportal.models import e_HydroFeature
-from datetime import date
-from uuid import uuid4
 import os
-from django.contrib.auth.models import User
-from sensors.models import Sensor
-from raster.models import RasterLayer
-from organization.models import Organization
+
+from uuid import uuid4
+from datetime import datetime, date
+
+from common.utils import resize_image
+
+from django.utils import timezone
 from django.contrib import admin
+
+from django.contrib.gis.db import models
+from django.contrib.auth.models import User
+
+from raster.models import RasterLayer
+from sensors.models import Sensor
+from rivercureportal.models import e_HydroFeature
+from organization.models import Organization
 
 EVENTKIND_CHOICES = (('flood', 'Flood'),  ('heavyPrecipitation', 'HeavyPrecipitation'),
                      ('hydrologicalDrought', 'Hydrological Drought'),  ('meteorological Drought', 'Meteorological Drought'),
@@ -71,7 +76,7 @@ class e_Context(models.Model):
     hasMesh = models.BooleanField(default=False)
 
     # Picture
-    picture = models.ImageField(default='river.png', upload_to=create_picture_file_name) # TODO: Pôr uma default image melhor TODO: Dar resize da foto TODO: Permitir meter foto no form de criação + update
+    picture = models.ImageField(default='default_context_pic.png', upload_to=create_picture_file_name)
 
     # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)
@@ -97,6 +102,15 @@ class e_Context(models.Model):
 
     def __str__(self):
         return self.tag
+    
+    #SAVE ALWAYS RUNS BUT WE'RE ADDING THE RESIZE FUNCTION
+    def save(self, *args, **kwargs):
+        # Save
+        super().save()
+
+        # Resize Context picture
+        resize_image(self.picture, 1400, 900)
+
 
 
 

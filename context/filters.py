@@ -132,7 +132,7 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
 ##############
 # Quiz Managers 
 ##############
-class QuizManagerFilter(django_filters.FilterSet): # TODO: Since this is repeated code from ManagerFilter, maybe let's combine both into one single MemberFilter filter instead?
+class QuizManagerFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
                                                     'placeholder': 'Search by username...',
@@ -169,7 +169,6 @@ class QuizManagerAddFilter(django_filters.FilterSet):
         Model = User
         fields = ['user__username']
 
-# TODO: This is the same as ModeratorContextFilter. Merge
 class QuizManagerContextFilter(django_filters.FilterSet):
     Name = django_filters.CharFilter(label=_('Context Name'),
                                         field_name='context__Name',

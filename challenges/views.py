@@ -665,8 +665,6 @@ def challenge_participate(request, challenge_id):
         messages.success(request, _('Your participation has been submitted successfully.'))
 
         return HttpResponseRedirect(reverse('challenge-detail', args=(challenge_id, )) )
-    else:
-        print("hi") # TODO: what is this
     
     return render(request, 'challenges/challenge_participate.html', context)
 

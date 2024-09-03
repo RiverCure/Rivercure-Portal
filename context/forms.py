@@ -44,11 +44,13 @@ class ContextInitialForm(forms.ModelForm):
         fields = ['code', 'Name', 'hydroFeature', 'organization', 'isPublic', 'description', 'picture']
     
     def clean_picture(self):
-        picture = self.cleaned_data['picture']
 
-        # Only accept a total size of 10mb
-        if picture.size > 10485760:
-            raise ValidationError("Size of file is too large ( > 10mb ).")
+        picture = self.cleaned_data['picture']
+        
+        if picture:
+            # Only accept a total size of 10mb
+            if picture.size > 10485760:
+                raise ValidationError("Size of file is too large ( > 10mb ).")
         
         return picture
 
