@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from common.utils import is_mobile
+
 from django.db.models.query import QuerySet
 from django.urls import reverse, reverse_lazy
 from django.http import Http404, HttpResponse
@@ -155,6 +157,7 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
 
         context['org'] = organization
         context['isQuizMan'] = is_org_quiz_manager(self.request.user, organization)
+        context['is_mobile'] = is_mobile(self.request)
 
         return context
 
@@ -176,6 +179,13 @@ class PublicChallengesFilterView(FilterView):
         challenges = e_Challenge.objects.filter(state=ChallengeState.PUBLISHED, is_public=True)
 
         return challenges
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['is_mobile'] = is_mobile(self.request)
+
+        return context
 
 
 class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -196,6 +206,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['user_participations'] = user_participations
         context['canParticipate'] = challenge.is_open() and user_participations < challenge.max_participations
         context['MEDIA_URL'] = settings.MEDIA_URL
+        context['is_mobile'] = is_mobile(self.request)
 
         return context
     
@@ -796,6 +807,7 @@ class ChallengeParticipationsFilterView(LoginRequiredMixin, UserPassesTestMixin,
         context['participation_list'] = e_ChallengeAnswer.objects.filter(challenge=challenge)
         context['filter'] = ChallengeParticipationsFilter(self.request.GET, queryset=context['participations'])
         context['MEDIA_URL'] = settings.MEDIA_URL
+        context['is_mobile'] = is_mobile(self.request)
         
         return context
 
@@ -837,6 +849,7 @@ class MyChallengeParticipationsFilterView(LoginRequiredMixin, FilterView):
         context['participation_list'] = e_ChallengeAnswer.objects.filter(created_by=self.request.user, challenge=challenge)
         context['filter'] = MyChallengeParticipationsFilter(self.request.GET, queryset=context['participations']) # TODO: I don't think this is doing anything
         context['MEDIA_URL'] = settings.MEDIA_URL
+        context['is_mobile'] = is_mobile(self.request)
         
         return context
 

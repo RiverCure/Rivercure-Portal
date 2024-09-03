@@ -29,7 +29,7 @@
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for participation in participations %}
         <a href="{% url 'participation-detail' participation.id %}">
-            <div class="card my-card-hover my-2 my-context-card">
+            <div class="card my-card-hover my-2 my-context-card" {% if is_mobile %}style="width: 75vw;"{% endif %}>
                 <div class="card-body pt-0">
                     <div class="text-center">
                         <img src="{{MEDIA_URL}}{{participation.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
@@ -43,40 +43,41 @@
 </div>
 <!-- If list empty -->
 {% if participations.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no participations.</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no participations." %}</p>
 {% endif %}
 
 
-<!-- Pagination -->
-<div class="row">
-    <div class="col">
-        {% if is_paginated %}
-            <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
-                <ul class="pagination">
-                    {% if page_obj.has_previous and page_obj.number != 2 %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
-                    {% endif %}
 
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
-                    {% endif %}
-                    
-                    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
 
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
-                    {% endif %}
+<div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
+    <!-- Bottom Button -->
+    <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}">{% trans "See Quiz" %}</a>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="d-flex justify-content-center">
+            <ul class="pagination">
+                {% if page_obj.has_previous and page_obj.number != 2 %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
+                {% endif %}
 
-                    {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+
+                {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 </div>
 
-<!-- Footer (Bottom Buttons) -->
-<a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}" style="float: right;">{% trans "See Quiz" %}</a>
 
 {% endblock content %}

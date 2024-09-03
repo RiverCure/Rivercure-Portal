@@ -154,6 +154,7 @@ class ModeratorContextsListView(LoginRequiredMixin, UserPassesTestMixin, FilterV
         contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
         # contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
         context['filter'] = ModeratorContextFilter(self.request.GET, queryset=contexts)
+        context['is_mobile'] = is_mobile(self.request)
 
         return context
 

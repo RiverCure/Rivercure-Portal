@@ -34,7 +34,7 @@
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for contribution in contributions %}
         <a href="{% url 'contribution-detail' contribution.pk %}">
-            <div class="card my-card-hover my-2" style="width: 17.5rem;">
+            <div class="card my-card-hover my-2">
                 {% if contribution.thumbnail %}
                     <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail" style="border-radius: 0.4em 0.4em 0 0;">
                 {% else %}

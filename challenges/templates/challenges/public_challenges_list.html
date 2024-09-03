@@ -38,7 +38,7 @@
 <div class="d-flex flex-row flex-wrap justify-content-between">
     {% for challenge in challenges %}
         <a href="{% url 'challenge-detail' challenge.id %}">
-            <div class="card my-card-hover my-2 my-context-card" style="width: 20rem;">
+            <div class="card my-card-hover my-2 my-context-card" {% if is_mobile %}style="width: 75vw;"{% endif %}>
                 <div class="card-body">
                     <h5 class="card-title">{{ challenge.title|title }}</h5>
                     <div class="d-flex">
@@ -47,8 +47,8 @@
                 </div>
                 <div class="card-footer text-muted">
                     <div class="d-flex justify-content-between">
-                        <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
-                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                        <p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Created by" %} {{ challenge.created_by }}</p>
+                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Event" %}: {{ challenge.event.Name }}</p>{% endif %}
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Quizzes.</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Quizzes." %}</p>
 {% endif %}
 
 

@@ -67,6 +67,7 @@
 
             <!-- Edit -->
             <a class="btn btn-info" href="{% url 'challenge-update' challenge.id %}" role="button"><i class="bi bi-pencil"></i> {% trans "Edit" %}</a>
+            {% if is_mobile %}<div class="mt-2"></div>{% endif %}
             <!-- Questions -->
             <a class="btn btn-info" href="{% url 'challenge-manage' challenge.id %}"><i class="bi bi-pencil"></i> {% trans "Manage Questions" %}</a>
 
@@ -229,6 +230,7 @@
 
             <div>
                 <a class="btn btn-primary {% if not canParticipate %}disabled{% endif %}" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
+                {% if is_mobile %}<div class="mt-2"></div>{% endif %}
                 <a class="btn btn-info" href="{% url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> My Participation(s)</a>
             </div>
 
