@@ -41,16 +41,6 @@ def context_organization_event_permission_check(user, organization):
     except:
         return False
 
-def context_organization_belong_check(user, organization):
-    """
-    Checks if the user belongs to an organization
-    """
-    
-    try:
-        return Membership.objects.filter(user=user, organization=organization, access_granted=True).exists()
-    except:
-        return False
-
 def context_quiz_manager_check(user, context):
     """
     Checks if the user is a quiz manager of a context

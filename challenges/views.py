@@ -24,7 +24,7 @@ from organization.models import Membership, Organization
 from organization.authorization import belongs_to_organization, is_org_quiz_manager
 from rivercureportal.authorization import is_platform_admin
 
-from context.views.authorization import context_organization_edit_permission_check, context_quiz_manager_check, general_quiz_manager_check, context_organization_belong_check
+from context.views.authorization import context_organization_edit_permission_check, context_quiz_manager_check, general_quiz_manager_check
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
@@ -135,7 +135,7 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
     filterset_class = ChallengesFilter
     context_object_name = 'challenges'
     pk_url_kwarg = 'org_id'
-    paginate_by = 9 # TODO: test this
+    paginate_by = 9
 
     def get_queryset(self):
         organization = Organization.objects.get(code=self.kwargs['org_id'])
@@ -213,7 +213,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         challenge = self.get_object()
         # Either Challenge is Public
         # Or user is part of its Organization
-        return challenge.is_public or context_organization_belong_check(self.request.user, challenge.organization)
+        return challenge.is_public or belongs_to_organization(self.request.user, challenge.organization)
 
 
 
@@ -613,7 +613,7 @@ def challenge_participate(request, challenge_id):
         return redirect('public-challenge-list')
     
     if not challenge.is_public:
-        if not context_organization_belong_check(request.user, challenge.context.organization):
+        if not belongs_to_organization(request.user, challenge.context.organization):
             messages.error(request, _('Quiz isn\'t public and you don\'t belong to its Organization!'))
             return redirect('public-challenge-list')
     

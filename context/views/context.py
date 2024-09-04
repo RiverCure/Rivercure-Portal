@@ -4,32 +4,21 @@ import zipfile
 import geojson
 import datetime
 
+from rest_framework import viewsets
+from io import BytesIO
+from zipfile import ZipFile
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.db import transaction
 from django.core import serializers
 
-from context.views.helpers import get_context_folder_path, get_log_folder_path
-from rivercureproject.settings import MEDIA_ROOT
-from ..forms import ContextForm, UploadContextForm
 from django.contrib import messages
-from ..models import e_Context, e_ContextSensor, e_ContextEvent, ContextMembership
-from sensors.models import Sensor
-from rest_framework import viewsets
-from ..serializers import ContextSerializer
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter
-from io import BytesIO
-from zipfile import ZipFile
-
-from .authorization import *
-from .prepare_files import *
-from .upload import boundaryline_creation
-
 from django_filters.views import FilterView
 
 from django.db.models import Count, Case, When, Value 
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -37,14 +26,27 @@ from django.contrib.auth.models import User
 
 from rivercureproject import settings
 
+
+from ..forms import ContextForm, UploadContextForm
+from ..models import e_Context, e_ContextSensor, e_ContextEvent, ContextMembership
+from ..serializers import ContextSerializer
+from ..filters import ContextFilter, ContextSensorFilter
+
+from .authorization import *
+from .prepare_files import *
+from .upload import boundaryline_creation
+
+from rivercureproject.settings import MEDIA_ROOT
+from rivercureportal.authorization import is_platform_admin
+from sensors.models import Sensor
 from challenges.models import e_Challenge, ChallengeState
 from organization.models import Membership, Organization
 from organization.authorization import belongs_to_organization
 from context.forms import ContextDetailsForm, ContextInitialForm
 from contributions.models import e_ContextContribution, ContributionStatus
-from rivercureportal.authorization import is_platform_admin
 
 from context.views.upload import alignment_creation, context_creation, refinement_creation
+from context.views.helpers import get_context_folder_path, get_log_folder_path
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -90,8 +92,6 @@ class PublicContextFilterView(FilterView):
     template_name = 'context/context/citizen_home2.html'
     filterset_class = ContextFilter
     context_object_name = 'public_contexts'
-    # paginate_by = 9
-    # TODO: Since we're not using pagination anymore, make sure this is well done
 
     def get_queryset(self):
         # context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
@@ -155,7 +155,7 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
-        context['belongsToOrg'] = context_organization_belong_check(user, organization) # TODO: Substitute with belongs_to_organization from organization/authorization.py !!!
+        context['belongsToOrg'] = belongs_to_organization(user, organization)
 
         return context
 
@@ -250,7 +250,7 @@ class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
     def test_func(self):
-        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization) # TODO: Remove self.context.isPublic ?
+        return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
 
 
 

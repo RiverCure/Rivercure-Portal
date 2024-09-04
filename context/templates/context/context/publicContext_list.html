@@ -6,6 +6,8 @@
 {% load my_tags %}
 {% load static %}
 
+<!-- This template is not being used -->
+
 {% block scripts %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
@@ -86,7 +88,7 @@
 
             // On error (of finding user's location)
             map.on('locationerror', function (e) {
-                marker.setLatLng([38.722252, -9.139337]); // TODO: Change default location to what is in LEAFLET_SETTINGS
+                marker.setLatLng([38.722252, -9.139337]);
                 map.setZoom(17);
             });
 
@@ -193,7 +195,6 @@
             <!-- Search and Filter -->
             <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
 
-            <!-- TODO: Add sort -->
             <!-- Sort -->
             <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
             <!-- Sort Menu-->
@@ -214,7 +215,7 @@
 
         <!-- List of Public Contexts-->
         <div class="d-flex flex-row flex-wrap justify-content-between">
-            {% for context in public_contexts %} <!-- TODO: Not filter.qs (instead of public_contexts)? -->
+            {% for context in public_contexts %}
                 <a href="{% url 'public-context-detail' context.code %}">
                     <div class="card my-card-hover mb-3 my-context-card">
                         <img src={{ context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
@@ -265,65 +266,6 @@
     </div>
 </div>
 
-
-
-
-
-
-
-
-<!-- Cards are not Bootstrap
-<div class="context-cards-container">
-    {% for context in filter.qs %}
-    <div class="context-card-container">
-        <img src={{ context.picture.url }} alt="Picture of Context">
-        <div class="card-detail">
-            <h3>{{ context.Name }}</h3>
-            <p><i>{{ context.hydroFeature }}</i></p>
-            TODO: Add nr of contribution
-            <p>Contributions: </p>
-        </div>
-    </div>
-    {% endfor %}
-</div>
--->
-
-<!-- Old filtering section
-<div class="filter-section">
-    <h5>Filter</h5>
-    <form method="get">
-        {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-info">Filter</button>
-    </form>
-</div>
--->
-
-<!-- Old context list
-<div class="row">
-    <div class="col-md-8">
-        <table class="table table-hover">
-            <tr>
-                <th class="tr_align" scope="col">Organization</th>
-                <th class="tr_align" scope="col">Context</th>
-                <th class="tr_align" scope="col">Hydrofeature</th>
-                <th class="tr_align" width="200%" scope="col"></th>
-            </tr>
-
-            {% for context in filter.qs %}
-                <tr>
-                    <td>{{ context.organization }}</td>
-                    <td>
-                        <a href="{% url 'context-detail' context.code %}"><div style="height: 100%; width: 100%">{{ context.Name }}</div> </a>
-                    </td>
-                    <td>{{ context.hydroFeature }}</td>
-                </tr>
-                {% empty %}
-                <td><h3 class="text-secondary font-italic no-context-data">No public contexts!</h3></td>
-            {% endfor %}
-        </table>
-    </div>
-</div>
--->
 
 <script>
 const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;

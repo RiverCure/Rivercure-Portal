@@ -8,12 +8,7 @@
 
 {% block scripts %}
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
-{% endblock %}
 
-
-
-{% block content %}
-<!-- TODO: Leave style tag here? -->
 <style>
     td a { 
         display: block;
@@ -24,10 +19,12 @@
         color: #212529;
     }
 
-    {% comment %} main {
-        background: #F1F2EB;
-    } {% endcomment %}
 </style>
+{% endblock %}
+
+
+
+{% block content %}
 
 <!-- See if there is a success message -->
 {% if messages %}

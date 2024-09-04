@@ -24,7 +24,6 @@
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
-<!-- TODO: Move these plugins to settings.py -->
 <!-- Leaflet: Search function in map -->
 <!-- https://github.com/perliedman/leaflet-control-geocoder -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
@@ -83,7 +82,6 @@
                 defaultMarkGeocode: false, // Removing the default handler for marking a result
                 collapsed: false,
                 placeholder: 'Search by place...',
-                showResultIcons: true, // TODO: i don't think this is doing anything
             }).on('markgeocode', function(e) {
                 var bbox = e.geocode.bbox;
                 map.fitBounds(bbox);

@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
+from notifications.signals import notify
 from django_filters.views import FilterView
 
 from .authorization import *
@@ -91,7 +92,7 @@ def contextModeratorAdd(request, contextCode, userId):
 
     # Make sure only Organization Manager and Context Manager can do this
     # And that the user belongs to the Org
-    if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
+    if not context_organization_edit_permission_check(request.user, organization.id) or not belongs_to_organization(user, organization):
         return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
     
     # Make sure user is not already a Moderator
@@ -102,7 +103,8 @@ def contextModeratorAdd(request, contextCode, userId):
         member = ContextMembership(user=user, context=_context, permission='context_moderator')
         member.save()
 
-        # TODO: Send notifs
+        notify.send(sender=organization, recipient=user, action_object=_context, description='context',
+                    verb=f"You have been assigned Moderator to Context {_context.Name} by {request.user}")
 
     return redirect('moderator-list', contextCode)
 
@@ -121,11 +123,11 @@ def contextModeratorRemove(request, contextCode, userId):
     if context_membership_user:
         context_membership_user.delete()
 
-        # TODO: Send notifs
+        notify.send(sender=_context.organization, recipient=user, action_object=_context, description='context',
+                    verb=f"You have been removed as Moderator of Context {_context.Name} by {request.user}")
     
     return redirect('moderator-list', contextCode)
 
-# TODO: Mudar nomes em que está ListView (e na verdade é uma FilterView) para FilterView
 class ModeratorContextsFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = e_Context
     template_name = 'context/moderator/moderator_my_context_list.html'
@@ -168,12 +170,12 @@ class ModeratorContextContributionFilterView(LoginRequiredMixin, UserPassesTestM
         # # TODO: Perhaps redo with: https://www.pixiebrix.com/blog/sort-django-queryset-by-custom-order/
         # contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
         #     When(state=ContributionStatus.PENDING, then=Value(True)))
-        # ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
+        # ).order_by('cont_state', 'creationDateTime')
 
         # Get Contributions
         contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
             When(state=ContributionStatus.PENDING, then=Value(True)))
-        ).order_by('cont_state', 'creationDateTime') # TODO: Is this actually working?
+        ).order_by('cont_state', 'creationDateTime')
 
         # Sort / Order
         sort_field = self.request.GET.get('sort') # Get sort from URL (so like: base_url?sort=sort_field)
@@ -223,7 +225,8 @@ def batchHandle(request, contextCode):
                 if contribution and contribution.can_accept():
                     accept_contribution(contribution, request.user, request)
 
-                    # TODO: For each, send notifs
+                    notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Accepted by {request.user}")
             
             # Send message
             messages.success(request, 'The selected Contributions have been accepted.')
@@ -239,7 +242,8 @@ def batchHandle(request, contextCode):
                 if contribution and contribution.can_reject():
                     reject_contribution(contribution, request.user, "BATCH REJECT")
 
-                    # TODO: For each, send notifs
+                    notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Rejected by {request.user}")
             
             # Send message
             messages.success(request, 'The selected Contributions have been rejected.')

@@ -8,13 +8,6 @@
 {% block scripts %}
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 
-{% endblock %}
-
-
-
-{% block content %}
-
-<!-- TODO: Where to put style tag? -->
 <style>
     .text-pending {
         font-size: 14px;
@@ -24,12 +17,12 @@
     .text-total {
         color: #a5aec0;
     }
-
-
-    {% comment %} .progress {
-        background-color: #28a444;
-    } {% endcomment %}
 </style>
+{% endblock %}
+
+
+
+{% block content %}
 
 <!-- Header -->
 <h1> {% trans "My Contexts" %} </h1>

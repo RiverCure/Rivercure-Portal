@@ -4,8 +4,9 @@ from django_filters.views import FilterView
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core import serializers
-from common.utils import is_mobile
 
+from common.utils import is_mobile
+from notifications.signals import notify
 
 from django.core.files import File
 from django.views.generic import ListView, CreateView, DetailView, DeleteView
@@ -274,7 +275,8 @@ def contributionAccept(request, contributionId):
 
         accept_contribution(contribution, request.user, request)
     
-        # TODO: Send notifs
+        notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Accepted by {request.user}")
 
     return redirect('contribution-detail', contributionId)
 
@@ -329,7 +331,8 @@ def contributionReject(request, contributionId):
 
         reject_contribution(contribution, request.user, form.cleaned_data['last_rejection_reason'])
         
-        # TODO: Send notifs
+        notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Rejected by {request.user}")
         
         return HttpResponseRedirect(reverse('contribution-detail', args=[contributionId]))
     
@@ -389,7 +392,8 @@ def contributionReport(request, contributionId):
         # Save
         report.save()
         
-        # TODO: Send notifs
+        notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Reported by {request.user}")
         
         return HttpResponseRedirect(reverse('contribution-list', args=[contribution.context.code]))
     

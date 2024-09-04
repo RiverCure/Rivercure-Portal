@@ -90,7 +90,7 @@ class EventDetailView(LoginRequiredMixin, DetailView):
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
 
         # If user belongs to Org
-        if context_organization_belong_check(self.request.user, event.context.organization):
+        if belongs_to_organization(self.request.user, event.context.organization):
             # If Quiz Manager, see every Challenge of this Event
             if is_org_quiz_manager(self.request.user, event.context.organization):
                 context['challenges'] = e_Challenge.objects.filter(event=event.id).order_by('-creation_datetime')
@@ -111,7 +111,7 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
     filterset_class = EventChallengeListFilter
     pk_url_kwarg = 'event_id'
     context_object_name = 'challenges'
-    paginate_by = 9 # TODO: See if this is working
+    paginate_by = 9
 
     def get_queryset(self):
 
@@ -119,7 +119,7 @@ class EventChallengesFilterView(LoginRequiredMixin, FilterView):
         event = e_ContextEvent.objects.get(pk=event_id)
 
         # If user belongs to Org
-        if context_organization_belong_check(self.request.user, event.context.organization):
+        if belongs_to_organization(self.request.user, event.context.organization):
             # If Quiz Manager, see every Challenge of this Event
             if is_org_quiz_manager(self.request.user, event.context.organization):
                 challenge_list = e_Challenge.objects.filter(event=event_id).order_by('-creation_datetime')
@@ -282,7 +282,6 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return context_organization_event_permission_check(self.request.user, self.get_object().context.organization)
 
-# # TODO: Change to FilterView
 # class ContextQuizManagersListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
 #     model = User
 #     template_name = 'context/quiz/quiz_manager_list.html'
@@ -319,13 +318,13 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 #     model = User
 #     template_name = 'context/quiz/quiz_manager_add_list.html'
 #     context_object_name = 'users'
-#     ordering = ['first_name', 'last_name'] # TODO: Working?
+#     ordering = ['first_name', 'last_name']
 #     pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
 #     filterset_class = QuizManagerAddFilter
 #     paginate_by = 5
 
 #     def get_queryset(self):
-#         _context = e_Context.objects.get(pk=self.kwargs['contextCode']) # TODO: Change these _context to just self.kwargs['contextCode'] when possible
+#         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
 
 #         # Only show organization members that are not already event managers for that context
 #         quiz_managers = ContextMembership.objects.filter(context=_context, permission='context_quizManager').values('user')
@@ -359,7 +358,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 #     # Make sure only Organization Manager and Context Manager can do this
 #     # And that the user belongs to the Org
-#     if not context_organization_edit_permission_check(request.user, organization.id) or not context_organization_belong_check(user, organization): # TODO: Is this working? # TODO: Substitute context_organization_belong_check with belongs_to_organization from organization/authorization.py !!!
+#     if not context_organization_edit_permission_check(request.user, organization.id) or not belongs_to_organization(user, organization):
 #         return HttpResponseRedirect(reverse('quiz-manager-list', args=[contextCode]))
     
 #     # Make sure user is not already a Quiz Manager
@@ -370,7 +369,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 #         member = ContextMembership(user=user, context=_context, permission='context_quizManager')
 #         member.save()
 
-#         # TODO: Send notifs
+#         # Send notifs
 
 #     return redirect('quiz-manager-list', contextCode)
 
@@ -388,7 +387,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 #     if context_membership_user:
 #         context_membership_user.delete()
 
-#         # TODO: Send notifs
+#         # Send notifs
     
 #     return redirect('quiz-manager-list', contextCode)
 

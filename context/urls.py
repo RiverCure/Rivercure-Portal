@@ -23,7 +23,7 @@ urlpatterns = [
     # Moderator
     path('moderators/my-contexts/', ModeratorContextsFilterView.as_view(), name='moderator-context-list'),
     path('<str:contextCode>/moderators', ModeratorFilterView.as_view(), name='moderator-list'),
-    path('<str:contextCode>/moderators/contributions', ModeratorContextContributionFilterView.as_view(), name='moderator-context-contribution-list'), # TODO: Should I just reuse the already existing page with contribution list of a context? aka contribution-list
+    path('<str:contextCode>/moderators/contributions', ModeratorContextContributionFilterView.as_view(), name='moderator-context-contribution-list'),
     path('<str:contextCode>/moderators/add/', ModeratorAddFilterView.as_view(), name='moderator-list-add'),
     path('<str:contextCode>/moderators/<int:userId>/add/', contextModeratorAdd, name='moderator-user-add'),
     path('<str:contextCode>/moderators/<int:userId>/remove/', contextModeratorRemove, name='moderator-remove'),
