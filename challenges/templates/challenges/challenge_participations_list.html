@@ -14,9 +14,10 @@
 {% block content %}
 
 <h1 class="mt-2 mb-0">Quiz "{{challenge.title}}" - {% trans "Participations" %}</h1>
+<hr>
 
 <!-- Filter -->
-<button class="btn btn-info dropdown-toggle mt-3" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
 <div id="filter-menu" class="collapse card my-card-hover card-body mt-3">
     <form method="get">
         {{ filter.form |crispy }}

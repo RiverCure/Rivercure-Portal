@@ -68,7 +68,7 @@ class ModeratorAddFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView
         _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
         # Only show organization members that are not already context moderator's for that context
         moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
-        members = Membership.objects.filter(organization=_context.organization, permission='org_member').exclude(user__in=moderators)
+        members = Membership.objects.filter(organization=_context.organization).exclude(user__in=moderators)
 
         return members
 

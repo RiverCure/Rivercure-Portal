@@ -18,13 +18,9 @@
 {% block content %}
 
 <!-- Header -->
-<div class="row">
-    <div class="col">
-        <p><strong>{% trans "Organization" %}:</strong> <em>{{ challenge.organization }}</em></p>
-        {% if challenge.event %}<p>'{{ challenge.event.Name }}' Event</p>{% endif %}
-        <hr>
-    </div>
-</div>
+<h1>{% trans "Organization" %} {{ challenge.organization }}</h1>
+{% if challenge.event %}<p><strong>Event:</strong> {{ challenge.event.Name }}</p>{% endif %}
+<hr>
 
 <!-- Challenge Header -->
 <div class="my-3">
@@ -247,15 +243,30 @@
                 <h5>Latest User Participations</h5>
                 <hr>
 
-                <div class="row flex-row flex-nowrap my-4 mx-0">
-                    {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":4" %}
-                        <div class="text-center mx-4">
-                            <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
-                            <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
-                            <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}</p>
-                        </div>
-                    {% endfor %}
-                </div>
+                <!-- MOBILE -->
+                {% if is_mobile %}
+                    <div class="row flex-row flex-nowrap my-4 mx-0">
+                        {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":1" %}
+                            <div class="text-center mx-4">
+                                <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
+                                <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
+                                <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                <!-- COMPUTER -->
+                {% else %}
+                    <div class="row flex-row flex-nowrap my-4 mx-0">
+                        {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":4" %}
+                            <div class="text-center mx-4">
+                                <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
+                                <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
+                                <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
 
                 <hr>
                 <p class="font-weight-light m-0">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been submitted.</p>
@@ -267,17 +278,15 @@
     </div>
 {% endif %}
 
-<!-- Footer (Bottom Buttons) -->
-<div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
-    <div class="col">
-        <!-- Go back -->
-        <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a>
-        {% if challenge.event %}
-            <!-- See Event -->
-            <a class="btn btn-secondary my-3" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">See Event</a>
-        {% endif %}
-    </div>
+<!-- Bottom Buttons -->
+<div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
+    <!-- See Org Challenge List -->
+    {% comment %} <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a> {% endcomment %}
+    <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">See Organization Challenges</a>
+    {% if challenge.event %}
+        <!-- See Event -->
+        <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">See Event</a>
+    {% endif %}
 </div>
-
 
 {% endblock content %}

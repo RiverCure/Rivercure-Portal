@@ -16,12 +16,9 @@
 {% block content %}
 
 <!-- Header -->
-<div class="row">
-    <div class="col">
-        <p><strong>Organization:</strong> <em>{{ challenge.organization }}</em></p>
-        <hr>
-    </div>
-</div>
+<h1>Organization {{ challenge.organization }}</h1>
+{% if challenge.event %}<strong>Event:</strong> {{ challenge.event.Name }}{% endif %}
+<hr>
 
 <!-- Challenge Header -->
 <div class="my-3">
