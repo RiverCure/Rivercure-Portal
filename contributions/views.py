@@ -27,7 +27,7 @@ from .models import e_ContextContribution, e_ContributionAttachment, Contributio
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
-from .tasks import lat_long_to_address
+from .tasks import lat_long_to_address, send_contribution_submit_confirmation
 from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
@@ -127,7 +127,6 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
                         thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
                         new_contribution.thumbnail = thumb_django_file
                     except:
-                        # TODO: do a clean_files method or something where we check the length of the video and only allow form to be valid if its > 1 second
                         raise Exception("Video needs to be longer than 1 second in order to have a thumbnail.")
 
                 new_contribution.save()
@@ -150,7 +149,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         # Send success message (to be shown in detail page)
         messages.success(self.request, 'Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.')
 
-        # TODO: Send confirmation email to user
+        # TODO: Uncomment
+        # send_contribution_submit_confirmation(new_contribution)
 
         return super().form_valid(form)
 
@@ -198,12 +198,10 @@ class ContributionDetailView(DetailView):
         # If Contribution is PENDING or REJECTED
         if contribution.state != ContributionStatus.ACCEPTED:
             # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
-            # TODO: OR IS ADMIN!!
-            if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization)):
+            if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization) or is_platform_admin(self.request.user)):
                 # Then the user should not get access to the page
-                # TODO: use redirect instead. See how I did in challenges
-                # TODO: uniformize all views
-                raise Http404()
+                messages.error(self.request, 'You can\'t see this page!')
+                return redirect('my-contributions')
         
         # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
         return contribution
@@ -292,7 +290,7 @@ def accept_contribution(contribution, user, request):
     """
     # If Contribution was REPORTED
     if contribution.state == ContributionStatus.REPORTED:
-        # Clear all reports made to this Contribution # TODO: One day, stop doing this and just keep every report ever made
+        # Clear all reports made to this Contribution
         deleted_reports = e_ContributionReport.objects.filter(contribution=contribution).delete()
 
     # Put details of latest validation in Contribution
@@ -399,17 +397,15 @@ def contributionReport(request, contributionId):
     
     return redirect('contribution-list', args=[contribution.context.code])
 
-# TODO: CHANGE THIS TO A BETTER CONDITION!!!
 def report_contribution_condition(contribution):
     """
     Check whether this Contribution can change to state REPORTED
     """
     all_reports = e_ContributionReport.objects.filter(contribution=contribution)
 
-    # TODO: CHANGE THIS TO A BETTER CONDITION!!!
-    if not all_reports:
-        return True
-    return all_reports.count() > 0
+    # if not all_reports:
+    #     return True
+    return all_reports.count() > 5
 
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):

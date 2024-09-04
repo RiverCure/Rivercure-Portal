@@ -33,41 +33,10 @@ def url_replace (request, field, value):
     return dict_.urlencode()  
 
 
-# Get progress (that is, how many contributions have been validated) in percentage
-@register.filter(name='get_progress')
-def get_progress(contributions):
-    total = contributions.count()
-    validated = contributions.exclude(state='PENDING').count()
-
-    if total == 0:
-            return '0'
-        
-    progress = round((validated * 100) / total)
-
-    return str(progress)
-
-@register.filter(name='get_pending_percentage')
-def get_pending_percentage(contributions):
-    total = contributions.count()
-    pending = contributions.filter(state='PENDING').count()
-
-    if total == 0:
-            return '0'
-        
-    pending_percentage = round((pending * 100) / total)
-
-    return str(pending_percentage)
-
-# Get number of validated contributions
-@register.filter(name='get_validated')
-def get_validated(contributions):
-    completed = contributions.exclude(state='PENDING').count()  # TODO: Change this and others to use ContributionStatus
-    return str(completed)
-
 # Get number of pending contributions
 @register.filter(name='get_pending')
 def get_pending(contributions):
-    pending = contributions.filter(state='PENDING').count()
+    pending = contributions.filter(state=ContributionStatus.PENDING).count()
     return str(pending)
 
 # Get number of accepted contributions
@@ -110,22 +79,3 @@ def get_state_icon(state):
         return 'check-circle'
     else:
         return 'x-circle'
-
-# TODO: what am i even doing
-# TODO: this is a very temporary solution
-@register.filter(name='get_situation_default_image')
-def get_situation_default_image(situation):
-    if situation == 'flood':
-        return 'flood-kelly_sikkema-unsplash.jpg'
-    elif situation == 'heavyPrecipitation':
-        return 'heavy_precipitation-atilla_bingol-unsplash.jpg'
-    elif situation == 'hurricane':
-        return 'hurricane-nasa-unsplash.jpg'
-    elif situation == 'tsunami':
-        return 'tsunami-ray_harrington-unsplash.jpg'
-    elif situation == 'storm':
-        return 'storm-felipe_palacio-unsplash.jpg'
-    elif situation == 'landslide':
-        return 'landslide-timo_volz-unsplash.jpg'
-    else:
-        return 'drought-markus_spiske-unsplash.jpg'

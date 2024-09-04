@@ -34,7 +34,6 @@ class TornadoType(models.TextChoices):
     ON_WATER = "ON_WATER", _("On Water")
     ON_LAND = "ON_LAND", _("On Land")
 
-# TODO: Repeated code in here!
 def create_contribution_thumbnail_name(instance, filename):
     """
     Callable that saves the file with the path and name: contributions/uploaded_files/organization_name/context_code/year/month/day/thumb_uuid4.ext
@@ -233,7 +232,7 @@ class e_ContributionAttachment(models.Model):
 # For Validation History
 # Keep a record of every validation state the Contribution has been in
 class e_ContributionValidation(models.Model):
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true right ?
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true
     state = models.CharField(max_length=30, choices=ContributionStatus.choices)
     validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="validated_by")
     validation_datetime =  models.DateTimeField(auto_now_add=True)
@@ -248,7 +247,7 @@ class e_ContributionValidation(models.Model):
 
 # Keep a record of every report made to a Contribution
 class e_ContributionReport(models.Model):
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted TODO: Delete null=true right ?
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted TODO: Delete null=true
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     report_datetime = models.DateTimeField(auto_now_add=True)
     reason = models.TextField()

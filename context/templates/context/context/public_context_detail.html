@@ -57,11 +57,7 @@
         {% for contribution in contributions|slice:":5" %}
             <a href="{% url 'contribution-detail' contribution.pk %}">
                 <div class="card my-card-hover mr-3" style="width: 17.5rem;">
-                    {% if contribution.thumbnail %}
-                        <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                    {% else %}
-                        <div class="my-card-contribution-no-thumbnail-img"></div> <!-- TODO: Remove this -->
-                    {% endif %}
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
                     <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                     <div class="card-body pt-0" style="margin-top: -10px;">
                         <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>

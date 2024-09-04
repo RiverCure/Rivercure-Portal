@@ -31,17 +31,6 @@
     {% for challenge in challenges %}
         <a href="{% url 'challenge-detail' challenge.id %}">
             <div class="card my-card-hover my-2 my-context-card">
-                {% comment %} {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% else %}
-                    <div class="my-card-contribution-no-thumbnail-img"></div>
-                {% endif %} {% endcomment %}
-                {% comment %} {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% else %}
-                    <img src="{{MEDIA_URL}}/contributions/situation_default_imgs/{{contribution.situationObserved|get_situation_default_image}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% endif %} {% endcomment %}
-                {% comment %} <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image"> {% endcomment %}
                 <div class="card-body pt-0">
                     <h5 class="card-title">{{ challenge.title|title }}</h5>
                     <small class="text-body-secondary card-contributions text-muted">Created by {{ challenge.created_by }}</small>

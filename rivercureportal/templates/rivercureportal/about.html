@@ -61,18 +61,18 @@
     </p>
 </div> {% endcomment %}
 
-<!-- TODO: Make introduction text shorter -->
-
 <!-- MOBILE -->
 {% if is_mobile %}
   <!-- RCP Intro -->
   <div>
     <img src="{% static 'sensors/sensor-images/rivercure_logo.jpeg' %}" alt="RiverCure Logo" style="width: 20rem;">
     <p class="text-justify mt-2">
-      {% trans "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, and hydrodynamic modeling tools to help manage flood risks. It supports all stages of flood risk management, from assessment and prevention to emergency preparedness and response. The RCP efficiently uses both crowdsourced and authoritative data. This includes curated outputs from sensing instruments and data from virtual entities, which combine lower-level modeling results or other types of information not directly collected by physical instruments." %}
+      {% comment %} {% trans "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, and hydrodynamic modeling tools to help manage flood risks. It supports all stages of flood risk management, from assessment and prevention to emergency preparedness and response. The RCP efficiently uses both crowdsourced and authoritative data. This includes curated outputs from sensing instruments and data from virtual entities, which combine lower-level modeling results or other types of information not directly collected by physical instruments." %} {% endcomment %}
+      {% trans "The RiverCure Portal (RCP) combines geographic data, sensors and hydrodynamic modeling tools to manage flood risk. The RCP utilizes both crowdsourced and authoritative data, including sensor outputs and virtual data sources." %}
     </p>
     <p class="text-justify mt-2">
-      {% trans "RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection." %}
+      {% comment %} {% trans "RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection." %} {% endcomment %}
+      {% trans "RiverCure reduces uncertainty and improves forecasting in flood simulation, water management, and habitat protection models." %}
     </p>
     <p class="text-right font-weight-lighter">IST-ID, INESC-ID, APA I.P</p>
   </div>
@@ -213,10 +213,12 @@
       <div class="media-body">
           <h5>RiverCure Portal</h5>
           <p class="text-justify">
-              {% trans "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, and hydrodynamic modeling tools to help manage flood risks. It supports all stages of flood risk management, from assessment and prevention to emergency preparedness and response. The RCP efficiently uses both crowdsourced and authoritative data. This includes curated outputs from sensing instruments and data from virtual entities, which combine lower-level modeling results or other types of information not directly collected by physical instruments." %}
+              {% comment %} {% trans "The RiverCure Portal (RCP) brings together geographic contexts, sensor data, and hydrodynamic modeling tools to help manage flood risks. It supports all stages of flood risk management, from assessment and prevention to emergency preparedness and response. The RCP efficiently uses both crowdsourced and authoritative data. This includes curated outputs from sensing instruments and data from virtual entities, which combine lower-level modeling results or other types of information not directly collected by physical instruments." %} {% endcomment %}
+              {% trans "The RiverCure Portal (RCP) combines geographic data, sensors and hydrodynamic modeling tools to manage flood risk. The RCP utilizes both crowdsourced and authoritative data, including sensor outputs and virtual data sources." %}
           </p>
           <p class="text-justify">
-              {% trans "RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection." %}
+              {% comment %} {% trans "RiverCure addresses the issue of reducing uncertainty and improving forecasting capabilities of hydrodynamic and morphodynamic mathematical models for flood simulation, water resources management and habitat protection." %} {% endcomment %}
+              {% trans "RiverCure reduces uncertainty and improves forecasting in flood simulation, water management, and habitat protection models." %}
           </p>
           <p class="text-right font-weight-lighter">IST-ID, INESC-ID, APA I.P</p>
       </div>

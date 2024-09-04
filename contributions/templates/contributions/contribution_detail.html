@@ -34,7 +34,6 @@
             const map = e.detail.map;
             console.log(e.detail.map);
 
-            // TODO: fix!!
             let lat = parseFloat("{{ contribution.get_lat }}".replace(",", "."));
             let long = parseFloat("{{ contribution.get_long }}".replace(",", "."));
 
@@ -205,7 +204,6 @@
                                     </p>
                                     <!-- Form -->
                                     <hr>
-                                    <!-- TODO: Put form here, instead of doing this 'include' -->
                                     {% include "contributions/rejection_reason.html" %}
                                 </div>
                                 <div class="modal-footer">
@@ -292,7 +290,7 @@
                                         </video>
                                     </div>
                                 {% else %}
-                                    <p>Error!</p> <!-- TODO: What to do here? -->
+                                    <p>Error!</p>
                                 {% endif %}
                             </div>
 

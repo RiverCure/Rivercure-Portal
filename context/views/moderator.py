@@ -165,12 +165,6 @@ class ModeratorContextContributionFilterView(LoginRequiredMixin, UserPassesTestM
     paginate_by = 10
 
     def get_queryset(self):
-        # # Get this Context's Contributions
-        # # PEDNING Contributions come first. Done as seen in: https://stackoverflow.com/questions/48569659/django-how-would-i-create-a-sort-for-a-query-to-put-one-specific-element-first
-        # # TODO: Perhaps redo with: https://www.pixiebrix.com/blog/sort-django-queryset-by-custom-order/
-        # contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
-        #     When(state=ContributionStatus.PENDING, then=Value(True)))
-        # ).order_by('cont_state', 'creationDateTime')
 
         # Get Contributions
         contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(

@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 from celery import shared_task
 
+from django.core.mail import send_mail
+
 from .models import e_ContextContribution
 
 import os
@@ -21,7 +23,6 @@ def lat_long_to_address(self, contribution_id):
         long = contribution.get_long()
 
         # Call API
-        print(os.getenv('REVGEO_API_KEY')) #TODO: remove this print omg
         # We are using LocationIQ API
         # TODO: Make sure we are following all the directives of the free plan
         api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
@@ -39,3 +40,17 @@ def lat_long_to_address(self, contribution_id):
             # Oops, something went wrong
             print("Reverse Geocoding API Error:", response.status_code, response.text)
             raise Exception()
+
+
+@shared_task(bind=True)
+def send_contribution_submit_confirmation(self, contribution):
+
+    try:
+        send_mail(
+            subject=f'Contribution {contribution.id} submitted successfully!',
+            message=f'Your Contribution {contribution.id} has been successfully submitted to Context {contribution.context.Name}. You will be notified once it has been accepted or rejected.',
+            from_email=None, # TODO: Is this working?
+            recipient_list=contribution.createdBy.email,
+        )
+    except:
+        raise Exception("Error sending email")

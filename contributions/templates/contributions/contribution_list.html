@@ -40,11 +40,6 @@
                 {% else %}
                     <div class="my-card-contribution-no-thumbnail-img"></div>
                 {% endif %}
-                {% comment %} {% if contribution.thumbnail %}
-                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% else %}
-                    <img src="{{MEDIA_URL}}/contributions/situation_default_imgs/{{contribution.situationObserved|get_situation_default_image}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
-                {% endif %} {% endcomment %}
                 <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
                 <div class="card-body pt-0" style="margin-top: -10px;">
                     <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
