@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Event {{ event.context.Name }} - Create Quiz {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Create" %} Quiz {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -24,15 +25,15 @@
 {% block content %}
 
 
-<h1>Organization {{org.name}}</h1>
-{% if event %}<h2>'{{ event.Name }}' Event</h2>{% endif %}
+<h1>{% trans "Organization" %} {{org.name}}</h1>
+{% if event %}<p><strong>{% trans "Event" %}</strong> {{ event.Name }}</p>{% endif %}
 <hr>
 
 
 <div class="card p-4 mb-4">
     <!-- Header -->
     <p class="font-weight-light m-0" align="justify">
-        For more information about RiverCure and Quizzes, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+        {% trans "For more information about the RiverCure Portal and Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
     </p>
     <hr>
 
@@ -44,16 +45,10 @@
 
         <!-- Confirm Modal Button-->
         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmModal">
-            Submit
+            {% trans "Submit" %}
         </button>
 
-        {% comment %} {% if event %}
-            <a class="btn btn-outline-secondary" href="{% url 'event-detail' event.context.code event.id %}">Cancel</a>
-            {% elif  %}
-        {% else %}
-            <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">Cancel</a>
-        {% endif %} {% endcomment %}
-        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
+        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">{% trans "Cancel" %}</a>
 
     </form>
     
@@ -62,22 +57,22 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Create Quiz</h5>
+                    <h5 class="modal-title" id="confirmModalLabel">{% trans "Create Quiz" %}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <p class="justify">
-                        Are you sure you want to <span class='word-color'>submit</span>?
+                        {% trans "Are you sure you want to <span class='word-color'>submit</span>?" %}
                     </p>
                     <p class="justify">
-                        To read more about Quizzes, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+                        {% trans "For more information about the RiverCure Portal and Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-info my-3 mr-3" type="submit" form="challengeForm">Confirm</button>
+                    <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button class="btn btn-info my-3 mr-3" type="submit" form="challengeForm">{% trans "Confirm" %}</button>
                 </div>
             </div>
         </div>

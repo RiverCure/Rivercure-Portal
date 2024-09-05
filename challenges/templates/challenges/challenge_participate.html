@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load i18n %}
 {% block title %} Quiz "{{ challenge.title }}" {% endblock %}
 {% load auth_extras %}
 {% load my_tags %}
@@ -16,12 +17,8 @@
 {% block content %}
 
 <!-- Header -->
-<div class="row">
-    <div class="col">
-        <h1 class="mt-2">Organization: {{ challenge.organization }}</h1>
-        <hr>
-    </div>
-</div>
+<h1 class="mt-2">{% trans "Organization" %}: {{ challenge.organization }}</h1>
+<hr>
 
 <!-- Challenge Header -->
 <div class="my-3">
@@ -40,12 +37,12 @@
         <div class="my-3">
             <!-- Header -->
             <div class="py-2 px-4 my-contribution-detail-meta-info-card-top my-contribution-detail-footer">
-                <h5 class="mx-0 my-2">Question {{question.position}}</h5>
+                <h5 class="mx-0 my-2">{% trans "Question" %} {{question.position}}</h5>
             </div>
 
             <!-- Content -->
             <div class="py-2 px-4 my-contribution-detail-bottom">
-                <p class="my-2 font-weight-normal">Question</p>
+                <p class="my-2 font-weight-normal">{% trans "Question" %}</p>
                 <div class="question-box">
                     <p class="font-weight-light m-2">{{question.content}}</p>
                 </div>
@@ -53,14 +50,14 @@
                 <!-- Short Text -->
                 {% if question.is_short_text %}
                     <div class="form-group my-2">
-                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer</label>
-                        <input name="question-{{question.id}}-answer" type="text" class="form-control" id="answer-{{question.id}}" placeholder="Enter answer" required>
+                        <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer" %}</label>
+                        <input name="question-{{question.id}}-answer" type="text" class="form-control" id="answer-{{question.id}}" placeholder="{% trans "Enter answer" %}" required>
                     </div>
                     
                 <!-- Multiple Choice -->
                 {% elif question.is_multiple_choice %}
                     <div class="form-group my-2">
-                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer(s)</label>
+                        <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer(s)" %}</label>
                         <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
                             {% for mc_option in question.multiple_choice_option_question.all %}
                                 <div class="question-box mb-2">
@@ -73,7 +70,7 @@
                 <!-- True or False -->
                 {% elif question.is_true_false %}
                     <div class="form-group my-2">
-                        <label class="font-weight-normal" for="answer-{{question.id}}">Answer(s)</label>
+                        <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer(s)" %}</label>
                         <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
                             {% for tf_option in question.true_false_question.all %}
                                 <div class="question-box mb-2">
@@ -89,10 +86,10 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
         <!-- See Challenge -->
-        <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}">See Quiz</a>
+        <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}">{% trans "See Quiz" %}</a>
 
         <!-- Submit -->
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#confirmModal">Submit</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#confirmModal">{% trans "Submit" %}</button>
     </div>
 </form>
 
@@ -101,19 +98,19 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmModalLabel">Submit</h5>
+                <h5 class="modal-title" id="confirmModalLabel">{% trans "Submit" %}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <p class="justify">
-                    Are you sure you want to submit?
+                    {% trans "Are you sure you want to submit?" %}
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                <button class="btn btn-info my-3 mr-3" type="submit" form="challengeAnswerForm">Confirm</button>
+                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button class="btn btn-info my-3 mr-3" type="submit" form="challengeAnswerForm">{% trans "Confirm" %}</button>
             </div>
         </div>
     </div>

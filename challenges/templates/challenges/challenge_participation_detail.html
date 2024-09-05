@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load i18n %}
 {% block title %} Quiz "{{ challenge.title }}" {% endblock %}
 {% load auth_extras %}
 {% load my_tags %}
@@ -16,21 +17,17 @@
 {% block content %}
 
 <!-- Header -->
-<div class="row">
-    <div class="col">
-        <h1 class="mt-2">Organization: {{ participation.challenge.organization.name }}</h1>
-        <hr>
-    </div>
-</div>
+<h1 class="mt-2">{% trans "Organization" %} {{ participation.challenge.organization.name }}</h1>
+<hr>
 
 <!-- Challenge Header -->
 <div class="my-3">
 
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col">
-            <h2 class="mt-3">Quiz "{{ participation.challenge.title|title }}" - Participation</h2>
+            <h2 class="mt-3">Quiz "{{ participation.challenge.title|title }}" - {% trans "Participation" %}</h2>
             <hr>
-            <p class="font-weight-light"><strong>Submitted on:</strong> {{ participation.creation_datetime }}</p>
+            <p class="font-weight-light"><strong>{% trans "Submitted on" %}:</strong> {{ participation.creation_datetime }}</p>
         </div>
         <div class="col-md-auto text-center">
             <img src="{{MEDIA_URL}}{{participation.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
@@ -45,7 +42,7 @@
         <!-- Header -->
         <div class="py-2 px-4 d-flex justify-content-between align-items-center my-contribution-detail-meta-info-card-top my-contribution-detail-footer">
             <div class="q-header-left">
-                <h5 class="m-0">Question {{question.position}}</h5>
+                <h5 class="m-0">{% trans "Question" %} {{question.position}}</h5>
             </div>
             <div class="q-header-right d-flex">
                 
@@ -54,12 +51,12 @@
 
         <!-- Content -->
         <div class="py-2 px-4 my-contribution-detail-middle">
-            <p class="my-2 font-weight-normal">Question</p>
+            <p class="my-2 font-weight-normal">{% trans "Question" %}</p>
             <div class="question-box">
                 <p class="font-weight-light m-2">{{question.content}}</p>
             </div>
 
-            <p class="mb-2 mt-3 font-weight-normal">Your Answer</p>
+            <p class="mb-2 mt-3 font-weight-normal">{% trans "Your Answer" %}</p>
 
 
             {% for answer in participation.question_answer.all %}
@@ -71,7 +68,7 @@
                             <p class="font-weight-light m-2">{{ answer.answer }}</p>
                         </div>
                         {% if show_answers %}
-                            <p class="mb-2 mt-3 font-weight-normal">Correct Answer</p>
+                            <p class="mb-2 mt-3 font-weight-normal">{% trans "Correct Answer" %}</p>
                             <div class="question-box mb-2">
                                 <p class="font-weight-light m-2">{{ question.short_text_question.correct_text }}</p>
                             </div>
@@ -101,7 +98,7 @@
             {% endfor %}
 
             {% if question.is_true_false or question.is_multiple_choice %}
-                <p class="mb-2 mt-3 font-weight-normal">Correct Answer</p>
+                <p class="mb-2 mt-3 font-weight-normal">{% trans "Correct Answer" %}</p>
 
                 <!-- MC -->
                 {% if question.is_multiple_choice %}
@@ -121,7 +118,7 @@
                         <div class="question-box mb-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <p class="font-weight-light m-2">{{tf_option.content}}</p>
-                                <div class="m-2">{% if tf_option.value %}<span class="text-primary">True</span>{% else %}<span class="text-warning">False</span>{% endif %}</div>
+                                <div class="m-2">{% if tf_option.value %}<span class="text-primary">{% trans "True" %}</span>{% else %}<span class="text-warning">{% trans "False" %}</span>{% endif %}</div>
                             </div>
                         </div>
                     {% endfor %}
@@ -142,7 +139,7 @@
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
     <div class="col">
         <!-- See Challenge -->
-        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' participation.challenge.id %}">See Quiz</a>
+        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' participation.challenge.id %}">{% trans "See Quiz" %}</a>
         
     </div>
 </div>

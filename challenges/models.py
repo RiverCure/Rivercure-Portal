@@ -14,22 +14,22 @@ from organization.models import Organization
 ## Choices
 class ChallengeState(models.TextChoices):
     DRAFT = "DRAFT", _("Draft")
-    DELETED = "DELETED", "Deleted"
-    PUBLISHED = "PUBLISHED", "Published"
-    ARCHIVED = "ARCHIVED", "Archived"
+    DELETED = "DELETED", _("Deleted")
+    PUBLISHED = "PUBLISHED", _("Published")
+    ARCHIVED = "ARCHIVED", _("Archived")
 
 class ChallengePublishState(models.TextChoices):
-    OPEN = "OPEN", "Open"
-    CLOSED = "CLOSED", "Closed"
+    OPEN = "OPEN", _("Open")
+    CLOSED = "CLOSED", _("Closed")
 
 
-DIFFICULTY_LEVEL = (('easy', 'Easy'), ('intermediate', 'Intermediate'), ('hard', 'Hard'))
+DIFFICULTY_LEVEL = (('easy', _('Easy')), ('intermediate', _('Intermediate')), ('hard', _('Hard')))
 
 
 class Question_Type(models.TextChoices):
-    SHORT_TEXT = "SHORT_TEXT", "Short Text"
-    MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Multiple Choice"
-    TRUE_FALSE = "TRUE_FALSE", "True or False"
+    SHORT_TEXT = "SHORT_TEXT", _("Short Text")
+    MULTIPLE_CHOICE = "MULTIPLE_CHOICE", _("Multiple Choice")
+    TRUE_FALSE = "TRUE_FALSE", _("True or False")
 
 
 

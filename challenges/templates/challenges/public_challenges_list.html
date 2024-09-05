@@ -1,9 +1,9 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Public Quizzes {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Public Quizzes" %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load challenge_extras %}
 {% load my_tags %}
-{% load i18n %}
 {% load static %}
 
 {% block scripts %}

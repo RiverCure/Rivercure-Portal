@@ -1,6 +1,6 @@
 {% extends "rivercureportal/base.html" %}
 {% load i18n %}
-{% block title %} Organization {{org}} - Quizzes {% endblock %}
+{% block title %} {% trans "Organization" %} {{org}} - Quizzes {% endblock %}
 {% load crispy_forms_tags %}
 {% load challenge_extras %}
 {% load my_tags %}
@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<h1 class="mt-2">Organization {{org}} - Quizzes</h1>
+<h1 class="mt-2">{% trans "Organization" %} {{org}} - Quizzes</h1>
 <p class="font-weight-light" align="justify">{% trans "On this page you can see all the Quizzes from Organization" %} {{org.name}}.</p>
 <hr>
 
@@ -44,13 +44,13 @@
                     <div class="d-flex">
                         <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
                         {% comment %} {% if challenge.is_published %}<span class="ml-2 badge {{challenge.publish_state|bootstrap_badge_publish_state}} text-white">{{ challenge.publish_state|title }}</span>{% endif %} {% endcomment %}
-                        <span class="ml-2 badge badge-{% if challenge.is_public %}light{% else %}dark{% endif %}">{% if challenge.is_public %}Public{% else %}Private{% endif %}</span>
+                        <span class="ml-2 badge badge-{% if challenge.is_public %}light{% else %}dark{% endif %}">{% if challenge.is_public %}{% trans "Public" %}{% else %}{% trans "Private" %}{% endif %}</span>
                     </div>
                 </div>
                 <div class="card-footer text-muted">
                     <div class="d-flex justify-content-between">
-                        <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
-                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                        <p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Created by" %} {{ challenge.created_by }}</p>
+                        {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Event" %}: {{ challenge.event.Name }}</p>{% endif %}
                     </div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
 </div>
 <!-- If list empty -->
 {% if challenges.count == 0 %}
-    <p class="font-weight-light my-2 text-center">There are no Quizzes.</p>
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Quizzes." %}</p>
 {% endif %}
 
 
@@ -68,7 +68,7 @@
     <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
         <ul class="pagination">
             {% if page_obj.has_previous and page_obj.number != 2 %}
-                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
             {% endif %}
 
             {% if page_obj.has_previous %}
@@ -82,7 +82,7 @@
             {% endif %}
 
             {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
-                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
             {% endif %}
         </ul>
     </nav>

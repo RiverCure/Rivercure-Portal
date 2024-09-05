@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-02 14:42+0100\n"
+"POT-Creation-Date: 2024-09-05 09:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: challenges/filters.py:40
+#: challenges/filters.py:14 challenges/filters.py:30 context/filters.py:204
+msgid "Creation Date"
+msgstr "Data de Criação"
+
+#: challenges/filters.py:15 challenges/filters.py:31
+msgid ""
+"The participation was submitted in between the specified dates. <i>Hint:</i> "
+"You may also just search for dates more recent than the date on the left, or "
+"older than the date on the right."
+msgstr "A participação foi submetida entre as datas especificadas. <i>Dica:</i> Também pode procurar por datas mais recentes do que a data à esquerda, ou mais antigas do que a data à direita."
+
+#: challenges/filters.py:26 context/filters.py:71 context/filters.py:123
+msgid "Search by username..."
+msgstr "Procurar por nome de utilizador..."
+
+#: challenges/filters.py:40 challenges/forms.py:17
 msgid "Title"
 msgstr "Título"
 
@@ -26,7 +41,17 @@ msgstr "Título"
 msgid "Search by Quiz name..."
 msgstr "Procurar pelo nome do Quiz..."
 
-#: challenges/filters.py:46 context/filters.py:198
+#: challenges/filters.py:46
+#: challenges/templates/challenges/challenge_confirm_delete.html:18
+#: challenges/templates/challenges/challenge_detail.html:22
+#: challenges/templates/challenges/challenge_detail.html:209
+#: challenges/templates/challenges/challenge_form.html:29
+#: challenges/templates/challenges/challenge_manage.html:21
+#: challenges/templates/challenges/org_challenges_list.html:54
+#: challenges/templates/challenges/public_challenges_list.html:51
+#: context/filters.py:196 context/templates/context/event/challenge_list.html:3
+#: context/templates/context/event/challenge_list.html:19
+#: context/templates/context/event/challenge_list.html:55
 msgid "Event"
 msgstr "Evento"
 
@@ -34,115 +59,261 @@ msgstr "Evento"
 msgid "Search by Event title..."
 msgstr "Procurar por título do Evento..."
 
-#: challenges/filters.py:53 context/filters.py:197
+#: challenges/filters.py:53 challenges/forms.py:21 context/filters.py:195
 msgid "Difficulty Level"
 msgstr "Nível de Dificuldade"
+
+#: challenges/forms.py:14
+msgid "Enter a title for the Quiz. Maximum of 100 characters."
+msgstr "Introduza um título para o Quiz. Máximo de 100 caracteres. "
+
+#: challenges/forms.py:20
+msgid "This serves as information to participants."
+msgstr "Isto serve como informação para os participantes."
+
+#: challenges/forms.py:22
+msgid "Is Public"
+msgstr "É Público"
+
+#: challenges/forms.py:23
+msgid ""
+"If Quiz is Public, every logged-in user can participate in it. If it isn't, "
+"only members of the Organization can."
+msgstr ""
+"Se o Quiz for Público, qualquer utilizador com sessão iniciada pode "
+"participar. Caso contrário, apenas os membros da Organização poderão "
+"participar."
+
+#: challenges/forms.py:26
+msgid "If specified, the Quiz will be automatically closed on this date."
+msgstr "Se especificado, o Quiz será automaticamente encerrado nesta data."
+
+#: challenges/forms.py:27
+msgid "Automatic Closing Date"
+msgstr "Data de Encerramento Automático"
+
+#: challenges/forms.py:29
+msgid ""
+"If yes, correct answers will only be shown to participating users when the "
+"Quiz is closed."
+msgstr ""
+"Se sim, as respostas corretas serão mostradas aos participantes apenas "
+"quando o Quiz for encerrado."
+
+#: challenges/forms.py:30
+msgid "Only show correct answers when closed?"
+msgstr "Mostrar as respostas corretas apenas quando encerrado?"
+
+#: challenges/forms.py:32
+msgid "Number of times a user can participate."
+msgstr "Número de vezes que um utilizador pode participar."
+
+#: challenges/forms.py:33
+msgid "Max Number of Participations (per user)"
+msgstr "Número Máximo de Participações (por utilizador)"
+
+#: challenges/forms.py:48 challenges/forms.py:61
+msgid "Enter the question. Maximum of 500 characters."
+msgstr "Introduza a questão. Máximo de 500 caracteres. "
+
+#: challenges/forms.py:51
+msgid "Question Content"
+msgstr "Conteúdo da Questão"
+
+#: challenges/forms.py:74
+msgid "Enter the correct answer for this Question. Maximum of 500 characters."
+msgstr "Introduza a resposta correta para esta Questão. Máximo de 500 caracteres. "
+
+#: challenges/forms.py:77
+#: challenges/templates/challenges/challenge_participation_detail.html:71
+#: challenges/templates/challenges/challenge_participation_detail.html:101
+msgid "Correct Answer"
+msgstr "Resposta Correta"
+
+#: challenges/forms.py:87 challenges/forms.py:104
+msgid "Enter the content for this Option. Maximum of 500 characters."
+msgstr "Introduza o conteúdo para esta Opção. Máximo de 500 caracteres. "
+
+#: challenges/forms.py:90 challenges/forms.py:107
+msgid "Option Content"
+msgstr "Conteúdo da Opção"
+
+#: challenges/forms.py:91
+msgid "Is Correct"
+msgstr "É Correta"
+
+#: challenges/forms.py:108
+msgid "True?"
+msgstr "Verdadeira?"
 
 #: challenges/models.py:16
 msgid "Draft"
 msgstr "Rascunho"
 
-#: challenges/templates/challenges/challenge_confirm_delete.html:19
-#: challenges/templates/challenges/challenge_detail.html:23
-#: challenges/templates/challenges/challenge_detail.html:47
-#: context/filters.py:44 context/filters.py:103 context/filters.py:183
-#: context/templates/context/context/citizen_home.html:234
+#: challenges/models.py:17
+msgid "Deleted"
+msgstr "Apagado"
+
+#: challenges/models.py:18
+msgid "Published"
+msgstr "Publicado"
+
+#: challenges/models.py:19
+msgid "Archived"
+msgstr "Arquivado"
+
+#: challenges/models.py:22
+#: challenges/templates/challenges/challenge_detail.html:140
+msgid "Open"
+msgstr "Aberto"
+
+#: challenges/models.py:23
+msgid "Closed"
+msgstr "Fechado"
+
+#: challenges/models.py:26
+msgid "Easy"
+msgstr "Fácil"
+
+#: challenges/models.py:26
+msgid "Intermediate"
+msgstr "Intermediário"
+
+#: challenges/models.py:26
+msgid "Hard"
+msgstr "Difícil"
+
+#: challenges/models.py:30
+msgid "Short Text"
+msgstr "Resposta Curta"
+
+#: challenges/models.py:31
+msgid "Multiple Choice"
+msgstr "Escolha Múltipla"
+
+#: challenges/models.py:32
+msgid "True or False"
+msgstr "Verdadeiro ou Falso"
+
+#: challenges/templates/challenges/challenge_confirm_delete.html:3
+#: challenges/templates/challenges/challenge_detail.html:205
+#: challenges/templates/challenges/challenge_manage.html:71
+#: challenges/templates/challenges/question_update_form.html:76
+#: contributions/templates/contributions/contribution_detail.html:227
+msgid "Delete"
+msgstr "Apagar"
+
+#: challenges/templates/challenges/challenge_confirm_delete.html:17
+#: challenges/templates/challenges/challenge_detail.html:21
+#: challenges/templates/challenges/challenge_detail.html:43
+#: challenges/templates/challenges/challenge_form.html:28
+#: challenges/templates/challenges/challenge_participate.html:20
+#: challenges/templates/challenges/challenge_participation_detail.html:20
+#: challenges/templates/challenges/org_challenges_list.html:3
+#: challenges/templates/challenges/org_challenges_list.html:17
+#: context/filters.py:44 context/filters.py:102 context/filters.py:181
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
-#: contributions/templates/contributions/contribution_detail.html:99
+#: contributions/templates/contributions/contribution_detail.html:103
 #: contributions/templates/contributions/contribution_form.html:225
 #: contributions/templates/contributions/contribution_list.html:19
 #: rivercureportal/templates/rivercureportal/base.html:66
 msgid "Organization"
 msgstr "Organização"
 
-#: challenges/templates/challenges/challenge_confirm_delete.html:28
+#: challenges/templates/challenges/challenge_confirm_delete.html:29
 msgid "Delete Quiz"
 msgstr "Apagar Quiz"
 
-#: challenges/templates/challenges/challenge_confirm_delete.html:29
+#: challenges/templates/challenges/challenge_confirm_delete.html:32
 msgid "Are you sure you want to delete this Quiz?"
 msgstr "Tem a certeza que pretende apagar este Quiz?"
 
-#: challenges/templates/challenges/challenge_confirm_delete.html:32
+#: challenges/templates/challenges/challenge_confirm_delete.html:34
 msgid "Yes, delete"
 msgstr "Sim, apagar"
 
-#: challenges/templates/challenges/challenge_confirm_delete.html:33
-#: challenges/templates/challenges/challenge_detail.html:98
-#: challenges/templates/challenges/challenge_detail.html:131
-#: challenges/templates/challenges/challenge_detail.html:164
-#: challenges/templates/challenges/challenge_detail.html:197
-#: contributions/templates/contributions/contribution_detail.html:172
-#: contributions/templates/contributions/contribution_detail.html:208
-#: contributions/templates/contributions/contribution_detail.html:459
+#: challenges/templates/challenges/challenge_confirm_delete.html:35
+#: challenges/templates/challenges/challenge_detail.html:95
+#: challenges/templates/challenges/challenge_detail.html:128
+#: challenges/templates/challenges/challenge_detail.html:161
+#: challenges/templates/challenges/challenge_detail.html:194
+#: challenges/templates/challenges/challenge_form.html:51
+#: challenges/templates/challenges/challenge_form.html:74
+#: challenges/templates/challenges/challenge_manage.html:70
+#: challenges/templates/challenges/challenge_participate.html:112
+#: challenges/templates/challenges/question_form.html:197
+#: challenges/templates/challenges/question_update_form.html:85
+#: contributions/templates/contributions/contribution_detail.html:176
+#: contributions/templates/contributions/contribution_detail.html:211
+#: contributions/templates/contributions/contribution_detail.html:539
 #: contributions/templates/contributions/contribution_form.html:248
 #: contributions/templates/contributions/contribution_form.html:273
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: challenges/templates/challenges/challenge_detail.html:35
+#: challenges/templates/challenges/challenge_detail.html:31
 msgid "Quiz"
-msgstr ""
+msgstr "Quiz"
 
-#: challenges/templates/challenges/challenge_detail.html:44
+#: challenges/templates/challenges/challenge_detail.html:40
 msgid "Difficulty"
 msgstr "Dificuldade"
 
-#: challenges/templates/challenges/challenge_detail.html:45
+#: challenges/templates/challenges/challenge_detail.html:41
 msgid "Max Score"
 msgstr "Pontuação Máxima"
 
-#: challenges/templates/challenges/challenge_detail.html:47
+#: challenges/templates/challenges/challenge_detail.html:43
 msgid "Visibility"
 msgstr "Visibilidade"
 
-#: challenges/templates/challenges/challenge_detail.html:47
+#: challenges/templates/challenges/challenge_detail.html:43
 msgid "Platform"
 msgstr "Plataforma"
 
-#: challenges/templates/challenges/challenge_detail.html:48
+#: challenges/templates/challenges/challenge_detail.html:44
 msgid "Last opened on"
 msgstr "Aberto pela última vez a"
 
-#: challenges/templates/challenges/challenge_detail.html:48
+#: challenges/templates/challenges/challenge_detail.html:44
 msgid "and closed on"
 msgstr "e fechado a"
 
-#: challenges/templates/challenges/challenge_detail.html:49
+#: challenges/templates/challenges/challenge_detail.html:45
 msgid "Automatically closes on"
 msgstr "Automaticamente fecha a"
 
-#: challenges/templates/challenges/challenge_detail.html:50
+#: challenges/templates/challenges/challenge_detail.html:46
 msgid "Correct answers will only be published when Quiz is closed."
 msgstr "Respostas corretas só serão publicadas quando o Quiz estiver fechado."
 
-#: challenges/templates/challenges/challenge_detail.html:64
+#: challenges/templates/challenges/challenge_detail.html:60
 msgid "Created on"
 msgstr "Criado a"
 
-#: challenges/templates/challenges/challenge_detail.html:64
+#: challenges/templates/challenges/challenge_detail.html:60
 msgid "by"
 msgstr "por"
 
-#: challenges/templates/challenges/challenge_detail.html:69
+#: challenges/templates/challenges/challenge_detail.html:65
 msgid "Edit"
 msgstr "Editar"
 
-#: challenges/templates/challenges/challenge_detail.html:71
+#: challenges/templates/challenges/challenge_detail.html:68
 msgid "Manage Questions"
 msgstr "Gerir Questões"
 
-#: challenges/templates/challenges/challenge_detail.html:77
+#: challenges/templates/challenges/challenge_detail.html:74
 msgid "Publish"
 msgstr "Publicar"
 
-#: challenges/templates/challenges/challenge_detail.html:84
+#: challenges/templates/challenges/challenge_detail.html:81
 msgid "Publish Quiz"
 msgstr "Publicar Quiz"
 
-#: challenges/templates/challenges/challenge_detail.html:91
+#: challenges/templates/challenges/challenge_detail.html:88
 msgid ""
 "Are you sure you want to <span class=\"text-success\">publish</span> this "
 "Quiz? Once published, it will be available for <span class='font-weight-"
@@ -152,35 +323,37 @@ msgstr ""
 "Quiz? Assim que for publicado, estará disponível para <span class='font-"
 "weight-bold'>todos</span> os utilizadores!"
 
-#: challenges/templates/challenges/challenge_detail.html:94
-#: challenges/templates/challenges/challenge_detail.html:127
-#: challenges/templates/challenges/challenge_detail.html:160
-#: challenges/templates/challenges/challenge_detail.html:193
+#: challenges/templates/challenges/challenge_detail.html:91
+#: challenges/templates/challenges/challenge_detail.html:124
+#: challenges/templates/challenges/challenge_detail.html:157
+#: challenges/templates/challenges/challenge_detail.html:190
 msgid "To read more about Quizzes, please visit the"
 msgstr "Para ler mais sobre Quizzes, por favor visite a"
 
-#: challenges/templates/challenges/challenge_detail.html:99
-#: challenges/templates/challenges/challenge_detail.html:132
-#: challenges/templates/challenges/challenge_detail.html:165
-#: challenges/templates/challenges/challenge_detail.html:198
-#: contributions/templates/contributions/contribution_detail.html:173
-#: contributions/templates/contributions/contribution_detail.html:210
-#: contributions/templates/contributions/contribution_detail.html:461
+#: challenges/templates/challenges/challenge_detail.html:96
+#: challenges/templates/challenges/challenge_detail.html:129
+#: challenges/templates/challenges/challenge_detail.html:162
+#: challenges/templates/challenges/challenge_detail.html:195
+#: challenges/templates/challenges/challenge_form.html:75
+#: challenges/templates/challenges/challenge_participate.html:113
+#: contributions/templates/contributions/contribution_detail.html:177
+#: contributions/templates/contributions/contribution_detail.html:213
+#: contributions/templates/contributions/contribution_detail.html:541
 #: contributions/templates/contributions/contribution_form.html:274
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: challenges/templates/challenges/challenge_detail.html:110
-#: contributions/templates/contributions/contribution_detail.html:530
-#: contributions/templates/contributions/contribution_detail.html:586
+#: challenges/templates/challenges/challenge_detail.html:107
+#: contributions/templates/contributions/contribution_detail.html:610
+#: contributions/templates/contributions/contribution_detail.html:666
 msgid "Close"
 msgstr "Fechar"
 
-#: challenges/templates/challenges/challenge_detail.html:117
+#: challenges/templates/challenges/challenge_detail.html:114
 msgid "Close Quiz"
 msgstr "Fechar Quiz"
 
-#: challenges/templates/challenges/challenge_detail.html:124
+#: challenges/templates/challenges/challenge_detail.html:121
 msgid ""
 "Are you sure you want to <span class=\"text-primary\">close</span> this "
 "Quiz? The Quiz will remain <span class='font-weight-bold'>visible</span> to "
@@ -192,15 +365,11 @@ msgstr ""
 "os utilizadores, mas eles <span class='font-weight-bold'>não</span> poderão "
 "participar nele."
 
-#: challenges/templates/challenges/challenge_detail.html:143
-msgid "Open"
-msgstr "Aberto"
-
-#: challenges/templates/challenges/challenge_detail.html:150
+#: challenges/templates/challenges/challenge_detail.html:147
 msgid "Open Quiz"
 msgstr "Abrir Quiz"
 
-#: challenges/templates/challenges/challenge_detail.html:157
+#: challenges/templates/challenges/challenge_detail.html:154
 msgid ""
 "Are you sure you want to <span class=\"text-primary\">open</span> this Quiz? "
 "Users will be able to <span class='font-weight-bold'>participate</span> in "
@@ -210,15 +379,15 @@ msgstr ""
 "Quiz? Os utilizadores poderão <span class='font-weight-bold'>participar</"
 "span> nele."
 
-#: challenges/templates/challenges/challenge_detail.html:176
+#: challenges/templates/challenges/challenge_detail.html:173
 msgid "Archive"
 msgstr "Arquivar"
 
-#: challenges/templates/challenges/challenge_detail.html:183
+#: challenges/templates/challenges/challenge_detail.html:180
 msgid "Archive Quiz"
 msgstr "Arquivar Quiz"
 
-#: challenges/templates/challenges/challenge_detail.html:190
+#: challenges/templates/challenges/challenge_detail.html:187
 msgid ""
 "Are you sure you want to <span class=\"text-warning\">archive</span> this "
 "Quiz? Once archived, the Challenge will <span class='font-weight-bold'>no "
@@ -228,10 +397,165 @@ msgstr ""
 "este Quiz? Uma vez arquivado, o Desafio <span class='font-weight-"
 "bold'>deixará</span> de estar disponível para os utilizadores."
 
-#: challenges/templates/challenges/challenge_detail.html:208
-#: contributions/templates/contributions/contribution_detail.html:224
-msgid "Delete"
-msgstr "Apagar"
+#: challenges/templates/challenges/challenge_detail.html:224
+msgid "Participations Left"
+msgstr "Participações Restantes"
+
+#: challenges/templates/challenges/challenge_detail.html:228
+msgid "Participate"
+msgstr "Participar"
+
+#: challenges/templates/challenges/challenge_detail.html:230
+msgid "My Participation(s)"
+msgstr "As Minhas Participações"
+
+#: challenges/templates/challenges/challenge_detail.html:243
+msgid "Latest User Participations"
+msgstr "Últimas Participações dos Utilizadores"
+
+#: challenges/templates/challenges/challenge_detail.html:253
+msgid "On"
+msgstr "A"
+
+#: challenges/templates/challenges/challenge_detail.html:272
+msgid "So far, a total of"
+msgstr "Até ao momento, um total de"
+
+#: challenges/templates/challenges/challenge_detail.html:272
+msgid "participation(s) have been submitted."
+msgstr "participações foram submetidas."
+
+#: challenges/templates/challenges/challenge_detail.html:273
+msgid "See Participations"
+msgstr "Ver Participações"
+
+#: challenges/templates/challenges/challenge_detail.html:286
+msgid "See Organization Challenges"
+msgstr "Ver Desafios da Organização"
+
+#: challenges/templates/challenges/challenge_detail.html:289
+#: context/templates/context/event/challenge_list.html:70
+msgid "See Event"
+msgstr "Ver Evento"
+
+#: challenges/templates/challenges/challenge_form.html:3
+msgid "Create"
+msgstr "Criar"
+
+#: challenges/templates/challenges/challenge_form.html:36
+#: challenges/templates/challenges/challenge_form.html:70
+msgid ""
+"For more information about the RiverCure Portal and Quizzes, please visit the"
+msgstr ""
+"Para mais informações sobre o Portal RiverCure e Quizzes, por favor visite a"
+
+#: challenges/templates/challenges/challenge_form.html:48
+#: challenges/templates/challenges/challenge_participate.html:92
+#: challenges/templates/challenges/challenge_participate.html:101
+#: challenges/templates/challenges/question_form.html:196
+#: challenges/templates/challenges/question_update_form.html:84
+#: contributions/templates/contributions/contribution_form.html:245
+msgid "Submit"
+msgstr "Submeter"
+
+#: challenges/templates/challenges/challenge_form.html:60
+msgid "Create Quiz"
+msgstr "Criar Quiz"
+
+#: challenges/templates/challenges/challenge_form.html:67
+msgid "Are you sure you want to <span class='word-color'>submit</span>?"
+msgstr "Tem a certeza de que deseja <span class='word-color'>submeter</span>?"
+
+#: challenges/templates/challenges/challenge_manage.html:29
+#: rivercureportal/forms.py:9
+msgid "Questions"
+msgstr "Questões"
+
+#: challenges/templates/challenges/challenge_manage.html:33
+#: challenges/templates/challenges/question_form.html:3
+msgid "Add Question"
+msgstr "Adicionar Questão"
+
+#: challenges/templates/challenges/challenge_manage.html:45
+#: challenges/templates/challenges/challenge_manage.html:82
+#: challenges/templates/challenges/challenge_participate.html:40
+#: challenges/templates/challenges/challenge_participate.html:45
+#: challenges/templates/challenges/challenge_participation_detail.html:45
+#: challenges/templates/challenges/challenge_participation_detail.html:54
+#: challenges/templates/challenges/question_update_form.html:35
+msgid "Question"
+msgstr "Questão"
+
+#: challenges/templates/challenges/challenge_manage.html:61
+msgid "Delete Question"
+msgstr "Apagar Questão"
+
+#: challenges/templates/challenges/challenge_manage.html:67
+msgid ""
+"Are you sure you want to <span class='text-danger'>delete</span> this "
+"Question?"
+msgstr ""
+"Tem a certeza de que deseja <span class='text-danger'>eliminar</span> esta "
+"pergunta?"
+
+#: challenges/templates/challenges/challenge_manage.html:87
+msgid "Expected Answer"
+msgstr "Resposta Esperada"
+
+#: challenges/templates/challenges/challenge_manage.html:111
+#: challenges/templates/challenges/challenge_participation_detail.html:121
+msgid "True"
+msgstr "Verdadeiro"
+
+#: challenges/templates/challenges/challenge_manage.html:111
+#: challenges/templates/challenges/challenge_participation_detail.html:121
+msgid "False"
+msgstr "Falso"
+
+#: challenges/templates/challenges/challenge_manage.html:120
+msgid "Score"
+msgstr "Pontuação"
+
+#: challenges/templates/challenges/challenge_manage.html:131
+#: challenges/templates/challenges/challenge_participate.html:89
+#: challenges/templates/challenges/challenge_participation_detail.html:142
+#: challenges/templates/challenges/challenge_participations_list.html:55
+msgid "See Quiz"
+msgstr "Ver Quiz"
+
+#: challenges/templates/challenges/challenge_participate.html:53
+msgid "Answer"
+msgstr "Resposta"
+
+#: challenges/templates/challenges/challenge_participate.html:54
+msgid "Enter answer"
+msgstr "Introduzir resposta"
+
+#: challenges/templates/challenges/challenge_participate.html:60
+#: challenges/templates/challenges/challenge_participate.html:73
+msgid "Answer(s)"
+msgstr "Resposta(s)"
+
+#: challenges/templates/challenges/challenge_participate.html:108
+msgid "Are you sure you want to submit?"
+msgstr "Tem a certeza que pretende submeter?"
+
+#: challenges/templates/challenges/challenge_participation_detail.html:28
+msgid "Participation"
+msgstr "Participação"
+
+#: challenges/templates/challenges/challenge_participation_detail.html:30
+#: challenges/templates/challenges/challenge_participations_list.html:38
+#: context/templates/context/context/public_context_detail.html:64
+#: contributions/templates/contributions/contribution_detail.html:131
+#: contributions/templates/contributions/contribution_list.html:46
+#: contributions/templates/contributions/my_contributions_list.html:48
+msgid "Submitted on"
+msgstr "Submetido a"
+
+#: challenges/templates/challenges/challenge_participation_detail.html:59
+msgid "Your Answer"
+msgstr "A Sua Resposta"
 
 #: challenges/templates/challenges/challenge_participations_list.html:5
 msgid "My Participations"
@@ -241,78 +565,116 @@ msgstr "Minhas Participações"
 msgid "Participations"
 msgstr "Participações"
 
-#: challenges/templates/challenges/challenge_participations_list.html:19
-#: challenges/templates/challenges/org_challenges_list.html:25
+#: challenges/templates/challenges/challenge_participations_list.html:20
+#: challenges/templates/challenges/org_challenges_list.html:23
 #: challenges/templates/challenges/public_challenges_list.html:23
-#: context/templates/context/moderator/moderator_context_contribution_list.html:52
+#: context/templates/context/event/challenge_list.html:25
+#: context/templates/context/moderator/moderator_context_contribution_list.html:48
 #: context/templates/context/moderator/moderator_list.html:21
-#: context/templates/context/moderator/moderator_my_context_list.html:44
+#: context/templates/context/moderator/moderator_my_context_list.html:36
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:37
 #: contributions/templates/contributions/contribution_list.html:24
 #: contributions/templates/contributions/my_contributions_list.html:24
 msgid "Search and Filter"
 msgstr "Procurar e Filtrar"
 
-#: challenges/templates/challenges/challenge_participations_list.html:23
-#: challenges/templates/challenges/org_challenges_list.html:32
+#: challenges/templates/challenges/challenge_participations_list.html:24
+#: challenges/templates/challenges/org_challenges_list.html:30
 #: challenges/templates/challenges/public_challenges_list.html:30
-#: context/templates/context/moderator/moderator_context_contribution_list.html:80
+#: context/templates/context/event/challenge_list.html:33
+#: context/templates/context/moderator/moderator_context_contribution_list.html:75
 #: context/templates/context/moderator/moderator_list.html:30
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:52
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:53
 #: contributions/templates/contributions/contribution_list.html:28
 #: contributions/templates/contributions/my_contributions_list.html:28
 msgid "Apply"
 msgstr "Aplicar"
 
-#: challenges/templates/challenges/challenge_participations_list.html:37
-#: context/templates/context/context/public_context_detail.html:75
-#: contributions/templates/contributions/contribution_detail.html:127
-#: contributions/templates/contributions/contribution_list.html:52
-#: contributions/templates/contributions/my_contributions_list.html:48
-msgid "Submitted on"
-msgstr "Submetido a"
+#: challenges/templates/challenges/challenge_participations_list.html:47
+#, fuzzy
+#| msgid "There are no Contributions."
+msgid "There are no participations."
+msgstr "Não existem Contribuições."
 
-#: challenges/templates/challenges/challenge_participations_list.html:57
-#: context/templates/context/moderator/moderator_add_list.html:67
-#: context/templates/context/moderator/moderator_context_contribution_list.html:167
-#: context/templates/context/moderator/moderator_list.html:78
-#: context/templates/context/moderator/moderator_my_context_list.html:101
+#: challenges/templates/challenges/challenge_participations_list.html:62
+#: challenges/templates/challenges/org_challenges_list.html:72
+#: context/templates/context/event/challenge_list.html:77
+#: context/templates/context/moderator/moderator_add_list.html:63
+#: context/templates/context/moderator/moderator_context_contribution_list.html:161
+#: context/templates/context/moderator/moderator_list.html:74
+#: context/templates/context/moderator/moderator_my_context_list.html:85
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:100
-#: contributions/templates/contributions/contribution_list.html:73
+#: contributions/templates/contributions/contribution_list.html:67
 #: contributions/templates/contributions/my_contributions_list.html:64
 msgid "First Page"
 msgstr "Primeira Página"
 
-#: challenges/templates/challenges/challenge_participations_list.html:71
-#: context/templates/context/moderator/moderator_add_list.html:81
-#: context/templates/context/moderator/moderator_context_contribution_list.html:181
-#: context/templates/context/moderator/moderator_list.html:92
-#: context/templates/context/moderator/moderator_my_context_list.html:115
+#: challenges/templates/challenges/challenge_participations_list.html:76
+#: challenges/templates/challenges/org_challenges_list.html:86
+#: context/templates/context/event/challenge_list.html:91
+#: context/templates/context/moderator/moderator_add_list.html:77
+#: context/templates/context/moderator/moderator_context_contribution_list.html:175
+#: context/templates/context/moderator/moderator_list.html:88
+#: context/templates/context/moderator/moderator_my_context_list.html:99
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:114
-#: contributions/templates/contributions/contribution_list.html:87
+#: contributions/templates/contributions/contribution_list.html:81
 #: contributions/templates/contributions/my_contributions_list.html:78
 msgid "Last Page"
 msgstr "Última Página"
 
-#: challenges/templates/challenges/challenge_participations_list.html:80
-msgid "See Quiz"
-msgstr "Ver Quiz"
-
-#: challenges/templates/challenges/org_challenges_list.html:20
+#: challenges/templates/challenges/org_challenges_list.html:18
 msgid "On this page you can see all the Quizzes from Organization"
 msgstr "Nesta página, pode ver todos os Quizzes da Organização"
 
-#: challenges/templates/challenges/org_challenges_list.html:26
+#: challenges/templates/challenges/org_challenges_list.html:24
 #: challenges/templates/challenges/public_challenges_list.html:24
+#: context/templates/context/event/challenge_list.html:26
+#: context/templates/context/event/detail.html:99
 msgid "Add Quiz"
 msgstr "Adicionar Quiz"
+
+#: challenges/templates/challenges/org_challenges_list.html:48
+msgid "Public"
+msgstr "Público"
+
+#: challenges/templates/challenges/org_challenges_list.html:48
+msgid "Private"
+msgstr "Privado"
+
+#: challenges/templates/challenges/org_challenges_list.html:53
+#: challenges/templates/challenges/public_challenges_list.html:50
+#: context/templates/context/event/challenge_list.html:54
+msgid "Created by"
+msgstr "Criado por"
+
+#: challenges/templates/challenges/org_challenges_list.html:63
+#: challenges/templates/challenges/public_challenges_list.html:60
+msgid "There are no Quizzes."
+msgstr "Não existem Quizzes."
+
+#: challenges/templates/challenges/public_challenges_list.html:3
+msgid "Public Quizzes"
+msgstr "Quizzes Públicos"
 
 #: challenges/templates/challenges/public_challenges_list.html:18
 msgid "On this page you can see all the Public Quizzes."
 msgstr "Nesta página pode ver todos os Quizzes Públicos."
 
-#: challenges/views.py:58 challenges/views.py:109
+#: challenges/templates/challenges/question_form.html:217
+#: challenges/templates/challenges/question_form.html:229
+#: challenges/templates/challenges/question_update_form.html:63
+#: challenges/templates/challenges/question_update_form.html:80
+msgid "Add Option"
+msgstr "Adicionar Opção"
+
+#: challenges/templates/challenges/question_update_form.html:3
+#, fuzzy
+#| msgid "Add Question"
+msgid "Update Question"
+msgstr "Adicionar Questão"
+
+#: challenges/views.py:60 challenges/views.py:111
 msgid ""
 "There is an error in the submission form. Please check what field(s) need to "
 "be adjusted."
@@ -320,105 +682,105 @@ msgstr ""
 "Existe um erro no formulário de submissão. Por favor verifique quais os "
 "campos a ser ajustados."
 
-#: challenges/views.py:75 challenges/views.py:125
+#: challenges/views.py:77 challenges/views.py:127
 msgid "Your Quiz has been created successfully."
 msgstr "O seu Quiz foi criado com sucesso."
 
-#: challenges/views.py:218
+#: challenges/views.py:228
 msgid "The Quiz was updated successfully."
 msgstr "O Quiz foi atualizado com sucesso."
 
-#: challenges/views.py:241
+#: challenges/views.py:251
 msgid "The Quiz was deleted successfully."
 msgstr "O Quiz foi apagado com sucesso."
 
-#: challenges/views.py:275 challenges/views.py:445 challenges/views.py:602
-#: challenges/views.py:669 challenges/views.py:695 challenges/views.py:720
-#: challenges/views.py:746 challenges/views.py:817 challenges/views.py:832
+#: challenges/views.py:285 challenges/views.py:455 challenges/views.py:612
+#: challenges/views.py:677 challenges/views.py:703 challenges/views.py:728
+#: challenges/views.py:754 challenges/views.py:823 challenges/views.py:838
 msgid "Quiz does not exist"
 msgstr "O Quiz não existe"
 
-#: challenges/views.py:280 challenges/views.py:359 challenges/views.py:450
-#: challenges/views.py:485 challenges/views.py:509 challenges/views.py:534
-#: challenges/views.py:570
+#: challenges/views.py:290 challenges/views.py:369 challenges/views.py:460
+#: challenges/views.py:495 challenges/views.py:519 challenges/views.py:544
+#: challenges/views.py:580
 msgid "Quiz is not a Draft"
 msgstr "O Quiz não é um Rascunho"
 
-#: challenges/views.py:285 challenges/views.py:490 challenges/views.py:514
-#: challenges/views.py:544 challenges/views.py:580 challenges/views.py:674
-#: challenges/views.py:700 challenges/views.py:725 challenges/views.py:751
+#: challenges/views.py:295 challenges/views.py:500 challenges/views.py:524
+#: challenges/views.py:554 challenges/views.py:590 challenges/views.py:682
+#: challenges/views.py:708 challenges/views.py:733 challenges/views.py:759
 msgid "You don't have permission to do this"
 msgstr "Não tem permissão para fazer isto"
 
-#: challenges/views.py:332
+#: challenges/views.py:342
 msgid "Your Question has been created successfully."
 msgstr "A sua Questão foi criada com sucesso."
 
-#: challenges/views.py:354 challenges/views.py:529 challenges/views.py:565
+#: challenges/views.py:364 challenges/views.py:539 challenges/views.py:575
 msgid "Question does not exist"
 msgstr "A Questão não existe"
 
-#: challenges/views.py:419
+#: challenges/views.py:429
 msgid "Your Question has been updated successfully."
 msgstr "A sua Questão foi atualizada com sucesso."
 
-#: challenges/views.py:480
+#: challenges/views.py:490
 msgid "Multiple Choice Option does not exist"
 msgstr "A Questão de Escolha Múltipla não existe"
 
-#: challenges/views.py:504
+#: challenges/views.py:514
 msgid "True or False Option does not exist"
 msgstr "A Opção de Verdadeiro ou Falso não existe"
 
-#: challenges/views.py:539
+#: challenges/views.py:549
 msgid "Question is already first"
 msgstr "A Questão já é a primeira"
 
-#: challenges/views.py:575
+#: challenges/views.py:585
 msgid "Question is already last"
 msgstr "A Questão já é a última"
 
-#: challenges/views.py:607
+#: challenges/views.py:617
 msgid "Quiz isn't public and you don't belong to its Organization!"
 msgstr "O Quiz não é público e você não pertence a esta Organização!"
 
-#: challenges/views.py:613
+#: challenges/views.py:623
 msgid "You can't participate in this Quiz!"
 msgstr "Não pode participar neste Quiz!"
 
-#: challenges/views.py:655
+#: challenges/views.py:665
 msgid "Your participation has been submitted successfully."
 msgstr "A sua participação foi submetida com sucesso."
 
-#: challenges/views.py:683
+#: challenges/views.py:691
 msgid "Quiz cannot be published"
 msgstr "O Quiz não pode ser publicado"
 
-#: challenges/views.py:686
+#: challenges/views.py:694
 msgid "Quiz is now published"
 msgstr "O Quiz foi publicado"
 
-#: challenges/views.py:708
+#: challenges/views.py:716
 msgid "Quiz cannot be closed"
 msgstr "O Quiz não pode ser fechado"
 
-#: challenges/views.py:711
+#: challenges/views.py:719
 msgid "Quiz is now closed"
 msgstr "O Quiz foi fechado"
 
-#: challenges/views.py:734
+#: challenges/views.py:742
 msgid "Quiz cannot be opened"
 msgstr "O Quiz não pode ser aberto"
 
-#: challenges/views.py:737
+#: challenges/views.py:745
 msgid "Quiz is now open"
 msgstr "O Quiz está agora aberto"
 
-#: challenges/views.py:758
+#: challenges/views.py:766
 msgid "Quiz cannot be archived"
 msgstr "O Quiz não pode ser arquivado"
 
-#: challenges/views.py:761
+#: challenges/views.py:769
 msgid "Quiz is now archived"
 msgstr "O Quiz foi arquivado"
 
@@ -431,10 +793,6 @@ msgstr "Procurar"
 #: context/templates/context/moderator/moderator_list.html:37
 msgid "Username"
 msgstr "Nome de Utilizador"
-
-#: context/filters.py:71 context/filters.py:124
-msgid "Search by username..."
-msgstr "Procurar por nome de utilizador..."
 
 #: context/filters.py:75
 #: rivercureportal/templates/rivercureportal/contact.html:34
@@ -460,32 +818,32 @@ msgstr ""
 "pode pesquisar por datas de permissão mais recentes do que a data à "
 "esquerda, ou mais antigas do que a data à direita."
 
-#: context/filters.py:94 context/filters.py:175
+#: context/filters.py:94 context/filters.py:173
 msgid "Context Name"
 msgstr "Nome do Contexto"
 
-#: context/filters.py:98 context/filters.py:179 contributions/filters.py:40
+#: context/filters.py:98 context/filters.py:177 contributions/filters.py:40
 msgid "Search by Context name..."
 msgstr "Procurar por nome do Contexto..."
 
-#: context/filters.py:111
-#: context/templates/context/moderator/moderator_context_contribution_list.html:94
-#: context/templates/context/moderator/moderator_context_contribution_list.html:128
-#: contributions/templates/contributions/contribution_detail.html:128
+#: context/filters.py:110
+#: context/templates/context/moderator/moderator_context_contribution_list.html:89
+#: context/templates/context/moderator/moderator_context_contribution_list.html:123
+#: contributions/templates/contributions/contribution_detail.html:132
 msgid "State"
 msgstr "Estado"
 
-#: context/filters.py:113 contributions/filters.py:11
+#: context/filters.py:112 contributions/filters.py:11
 #: contributions/filters.py:28 contributions/forms.py:39
 msgid "Situation Observed"
 msgstr "Situação Observada"
 
-#: context/filters.py:114 contributions/filters.py:12
+#: context/filters.py:113 contributions/filters.py:12
 #: contributions/filters.py:29 contributions/forms.py:33
 msgid "Observation Date"
 msgstr "Data de Observação"
 
-#: context/filters.py:115 contributions/filters.py:13
+#: context/filters.py:114 contributions/filters.py:13
 #: contributions/filters.py:30
 msgid ""
 "The observation was made in between the specified dates. <i>Hint:</i> You "
@@ -496,12 +854,12 @@ msgstr ""
 "pode pesquisar por observações mais recentes do que a data à esquerda, ou "
 "mais antigas do que a data à direita."
 
-#: context/filters.py:118 contributions/filters.py:16
+#: context/filters.py:117 contributions/filters.py:16
 #: contributions/filters.py:33
 msgid "Submission Date"
 msgstr "Data de Submissão"
 
-#: context/filters.py:119 contributions/filters.py:17
+#: context/filters.py:118 contributions/filters.py:17
 #: contributions/filters.py:34
 msgid ""
 "The Contribution was submitted in between the specified dates. <i>Hint:</i> "
@@ -512,33 +870,29 @@ msgstr ""
 "Também pode pesquisar por Contribuições mais recentes do que a data à "
 "esquerda, ou mais antigas do que a data à direita."
 
-#: context/filters.py:122
-#: context/templates/context/moderator/moderator_context_contribution_list.html:93
-#: context/templates/context/moderator/moderator_context_contribution_list.html:127
+#: context/filters.py:121
+#: context/templates/context/moderator/moderator_context_contribution_list.html:88
+#: context/templates/context/moderator/moderator_context_contribution_list.html:122
 msgid "Author"
 msgstr "Autor"
 
-#: context/filters.py:190
+#: context/filters.py:188
 msgid "Challenge Title"
 msgstr "Título do Desafio"
 
-#: context/filters.py:193
+#: context/filters.py:191
 msgid "Search by title..."
 msgstr "Procurar por título..."
 
-#: context/filters.py:201
+#: context/filters.py:199
 msgid "Search by Event name..."
 msgstr "Procurar por nome do Evento..."
 
-#: context/filters.py:204
+#: context/filters.py:202
 msgid "Challenge State"
 msgstr "Estado do Desafio"
 
-#: context/filters.py:206
-msgid "Creation Date"
-msgstr "Data de Criação"
-
-#: context/filters.py:207
+#: context/filters.py:205
 msgid ""
 "The Challenge was created in between the specified dates. <i>Hint:</i> You "
 "may also just search for dates more recent than the date on the left, or "
@@ -548,176 +902,103 @@ msgstr ""
 "pesquisar por datas mais recentes do que a data à esquerda, ou mais antigas "
 "do que a data à direita."
 
-#: context/templates/context/context/citizen_home.html:161
-#: context/templates/context/context/citizen_home.html:450
-#: context/templates/context/context/citizen_home2.html:143
+#: context/templates/context/context/citizen_home2.html:142
 #: context/templates/context/context/citizen_home2.html:263
 #: context/templates/context/context/public_context_detail.html:37
 msgid "Contribute"
 msgstr "Contribuir"
 
-#: context/templates/context/context/citizen_home.html:162
-#: context/templates/context/context/citizen_home.html:451
-#: context/templates/context/context/citizen_home2.html:144
+#: context/templates/context/context/citizen_home2.html:143
 #: context/templates/context/context/citizen_home2.html:264
 #: context/templates/context/context/public_context_detail.html:39
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:81
-#: contributions/templates/contributions/contribution_detail.html:396
+#: contributions/templates/contributions/contribution_detail.html:378
+#: contributions/templates/contributions/contribution_detail.html:475
 msgid "Details"
 msgstr "Detalhes"
 
-#: context/templates/context/context/citizen_home.html:226
-#: contributions/templates/contributions/my_contributions_list.html:7
-#: contributions/templates/contributions/my_contributions_list.html:19
-#: rivercureportal/templates/rivercureportal/base.html:58
-msgid "My Contributions"
-msgstr "Minhas Contribuições"
-
-#: context/templates/context/context/citizen_home.html:231
-#: rivercureportal/templates/rivercureportal/base.html:63
-msgid "Management"
-msgstr "Gestão"
-
-#: context/templates/context/context/citizen_home.html:235
-#: rivercureportal/templates/rivercureportal/base.html:67
-msgid "Contexts"
-msgstr "Contextos"
-
-#: context/templates/context/context/citizen_home.html:236
-#: rivercureportal/templates/rivercureportal/base.html:68
-msgid "Sensors"
-msgstr "Sensores"
-
-#: context/templates/context/context/citizen_home.html:238
-#: context/templates/context/context/citizen_home.html:265
-#: rivercureportal/templates/rivercureportal/base.html:70
-#: rivercureportal/templates/rivercureportal/base.html:97
-msgid "Quizzes"
-msgstr ""
-
-#: context/templates/context/context/citizen_home.html:242
-#: rivercureportal/templates/rivercureportal/base.html:74
-msgid "Moderator"
-msgstr "Moderador"
-
-#: context/templates/context/context/citizen_home.html:243
-#: context/templates/context/moderator/moderator_my_context_list.html:3
-#: context/templates/context/moderator/moderator_my_context_list.html:36
-#: context/templates/context/quiz/quiz_manager_my_context_list.html:29
-#: rivercureportal/templates/rivercureportal/base.html:75
-msgid "My Contexts"
-msgstr "Os Meus Contextos"
-
-#: context/templates/context/context/citizen_home.html:264
-#: rivercureportal/templates/rivercureportal/about.html:105
-#: rivercureportal/templates/rivercureportal/about.html:251
-#: rivercureportal/templates/rivercureportal/base.html:96
-msgid "Organizations"
-msgstr "Organizações"
-
-#: context/templates/context/context/citizen_home.html:274
-#: context/templates/context/context/citizen_home.html:466
-#: context/templates/context/context/citizen_home2.html:279
-#: rivercureportal/templates/rivercureportal/base.html:106
-#: rivercureportal/templates/rivercureportal/contact.html:23
-msgid "Contact"
-msgstr "Contacto"
-
-#: context/templates/context/context/citizen_home.html:277
-#: context/templates/context/context/citizen_home.html:468
-#: context/templates/context/context/citizen_home2.html:281
-#: rivercureportal/templates/rivercureportal/base.html:109
-msgid "About"
-msgstr "Sobre"
-
-#: context/templates/context/context/citizen_home.html:302
-#: rivercureportal/templates/rivercureportal/base.html:134
-msgid "ago"
-msgstr "atrás"
-
-#: context/templates/context/context/citizen_home.html:310
-#: rivercureportal/templates/rivercureportal/base.html:142
-msgid "See all notifications"
-msgstr "Ver todas as notificações"
-
-#: context/templates/context/context/citizen_home.html:313
-#: rivercureportal/templates/rivercureportal/base.html:145
-msgid "Clear all notifications"
-msgstr "Limpar todas as notificações"
-
-#: context/templates/context/context/citizen_home.html:331
-#: rivercureportal/templates/rivercureportal/about.html:99
-#: rivercureportal/templates/rivercureportal/about.html:245
-#: rivercureportal/templates/rivercureportal/base.html:163
-msgid "Users"
-msgstr "Utilizadores"
-
-#: context/templates/context/context/citizen_home.html:339
-#: rivercureportal/templates/rivercureportal/base.html:171
-msgid "Edit Profile"
-msgstr "Editar Perfil"
-
-#: context/templates/context/context/citizen_home.html:340
-#: rivercureportal/templates/rivercureportal/base.html:172
-msgid "Set Current Organization"
-msgstr "Definir Organização Atual"
-
-#: context/templates/context/context/citizen_home.html:346
-#: rivercureportal/templates/rivercureportal/base.html:178
-msgid "Register"
-msgstr "Registar"
-
-#: context/templates/context/context/citizen_home.html:389
 #: context/templates/context/context/citizen_home2.html:202
 msgid "Map"
 msgstr "Mapa"
 
-#: context/templates/context/context/citizen_home.html:392
 #: context/templates/context/context/citizen_home2.html:205
 msgid "Grid"
 msgstr "Grelha"
 
-#: context/templates/context/context/public_context_detail.html:52
+#: context/templates/context/context/citizen_home2.html:272
+#: context/templates/context/moderator/moderator_my_context_list.html:76
+#: context/templates/context/quiz/quiz_manager_my_context_list.html:88
+msgid "There are no Contexts."
+msgstr "Não existem Contextos."
+
+#: context/templates/context/context/public_context_detail.html:49
 #: context/templates/context/moderator/moderator_context_contribution_list.html:4
-#: context/templates/context/moderator/moderator_context_contribution_list.html:43
+#: context/templates/context/moderator/moderator_context_contribution_list.html:39
+#: contributions/templates/contributions/contribution_list.html:3
 #: rivercureportal/templates/rivercureportal/about.html:87
-#: rivercureportal/templates/rivercureportal/about.html:233
+#: rivercureportal/templates/rivercureportal/about.html:237
 msgid "Contributions"
 msgstr "Contribuições"
 
-#: context/templates/context/context/public_context_detail.html:55
-#: context/templates/context/context/public_context_detail.html:136
+#: context/templates/context/context/public_context_detail.html:50
+#: context/templates/context/context/public_context_detail.html:83
+#: context/templates/context/event/detail.html:100
 msgid "See more"
 msgstr "Ver mais"
 
-#: context/templates/context/context/public_context_detail.html:59
+#: context/templates/context/context/public_context_detail.html:53
 msgid ""
 "There are no Contributions for this Context yet. Why don't you make one?"
 msgstr ""
 "Ainda não existem Contribuições para este Contexto. Porque não faz uma?"
 
-#: context/templates/context/context/public_context_detail.html:86
-#: context/templates/context/context/public_context_detail.html:168
-#: contributions/templates/contributions/contribution_detail.html:305
+#: context/templates/context/context/public_context_detail.html:74
+#: context/templates/context/context/public_context_detail.html:108
+#: context/templates/context/event/detail.html:132
+#: contributions/templates/contributions/contribution_detail.html:306
 msgid "Scroll horizontally to see more"
 msgstr "Arraste horizontalmente para ver mais"
 
-#: context/templates/context/context/public_context_detail.html:133
+#: context/templates/context/context/public_context_detail.html:82
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:79
 msgid "Events"
 msgstr "Eventos"
 
-#: context/templates/context/context/public_context_detail.html:140
+#: context/templates/context/context/public_context_detail.html:86
 msgid "There are no Events for this Context."
 msgstr "Não existem Eventos para este Contexto."
 
-#: context/templates/context/context/public_context_detail.html:157
+#: context/templates/context/context/public_context_detail.html:98
 msgid "Started on"
 msgstr "Começou a"
 
-#: context/templates/context/context/public_context_detail.html:175
-msgid "Back to Home"
-msgstr "Voltar a Home"
+#: context/templates/context/event/challenge_list.html:20
+#, fuzzy
+#| msgid "On this page you can see all the Quizzes from Organization"
+msgid "On this page you can see the Quizzes published for this Event."
+msgstr "Nesta página, pode ver todos os Quizzes da Organização"
+
+#: context/templates/context/event/challenge_list.html:64
+#, fuzzy
+#| msgid "There are no Events for this Context."
+msgid "There are no published Quizzes in this Event yet."
+msgstr "Não existem Eventos para este Contexto."
+
+#: context/templates/context/event/detail.html:6
+msgid "Context Event Detail"
+msgstr ""
+
+#: context/templates/context/event/detail.html:104
+#, fuzzy
+#| msgid "There are no Events for this Context."
+msgid "There are no published Quizzes for this Event."
+msgstr "Não existem Eventos para este Contexto."
+
+#: context/templates/context/event/detail.html:139
+#: contributions/templates/contributions/contribution_detail.html:501
+#: contributions/templates/contributions/contribution_list.html:60
+msgid "See Context"
+msgstr "Ver Contexto"
 
 #: context/templates/context/moderator/moderator_add_list.html:3
 #: context/templates/context/moderator/moderator_list.html:23
@@ -752,7 +1033,7 @@ msgstr "Procurar"
 msgid "Role"
 msgstr "Papel"
 
-#: context/templates/context/moderator/moderator_add_list.html:50
+#: context/templates/context/moderator/moderator_add_list.html:49
 msgid "There are no available users."
 msgstr "Não existem utilizadores disponíveis."
 
@@ -760,7 +1041,7 @@ msgstr "Não existem utilizadores disponíveis."
 msgid "Back to Moderators"
 msgstr "Voltar para Moderadores"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:46
+#: context/templates/context/moderator/moderator_context_contribution_list.html:42
 #, python-format
 msgid ""
 "On this page you can see a Moderator-specific view of the Contributions of "
@@ -771,61 +1052,61 @@ msgstr ""
 "Contribuições de %(context_name)s. Para mais informações sobre Moderadores e "
 "Contribuições, por favor visite a"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:55
+#: context/templates/context/moderator/moderator_context_contribution_list.html:52
 msgid "Sort By"
 msgstr "Ordenar Por"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:62
+#: context/templates/context/moderator/moderator_context_contribution_list.html:54
 msgid "Ascending Date"
 msgstr "Data Ascendente"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:63
+#: context/templates/context/moderator/moderator_context_contribution_list.html:55
 msgid "Descending Date"
 msgstr "Data Descendente"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:68
+#: context/templates/context/moderator/moderator_context_contribution_list.html:62
 msgid "Actions"
 msgstr "Ações"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:70
+#: context/templates/context/moderator/moderator_context_contribution_list.html:64
 msgid "Accept Selected"
 msgstr "Aceitar Selecionadas"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:71
+#: context/templates/context/moderator/moderator_context_contribution_list.html:65
 msgid "Reject Selected"
 msgstr "Rejeitar Selecionadas"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:92
+#: context/templates/context/moderator/moderator_context_contribution_list.html:87
 msgid "ID"
 msgstr ""
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:95
-#: context/templates/context/moderator/moderator_context_contribution_list.html:130
+#: context/templates/context/moderator/moderator_context_contribution_list.html:90
+#: context/templates/context/moderator/moderator_context_contribution_list.html:125
 msgid "Select"
 msgstr "Selecionar"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:111
-#: context/templates/context/moderator/moderator_context_contribution_list.html:153
+#: context/templates/context/moderator/moderator_context_contribution_list.html:106
+#: context/templates/context/moderator/moderator_context_contribution_list.html:147
 msgid "There are no Contributions."
 msgstr "Não existem Contribuições."
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:124
+#: context/templates/context/moderator/moderator_context_contribution_list.html:119
 msgid "Contribution ID"
 msgstr "ID da Contribuição"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:125
+#: context/templates/context/moderator/moderator_context_contribution_list.html:120
 msgid "Situation"
 msgstr "Situação"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:126
+#: context/templates/context/moderator/moderator_context_contribution_list.html:121
 msgid "Date Submitted"
 msgstr "Data de Submissão"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:129
+#: context/templates/context/moderator/moderator_context_contribution_list.html:124
 msgid "File(s) Size"
 msgstr "Tamanho do(s) Ficheiro(s)"
 
-#: context/templates/context/moderator/moderator_context_contribution_list.html:188
+#: context/templates/context/moderator/moderator_context_contribution_list.html:182
 msgid "Back to Contexts"
 msgstr "Voltar a Contextos"
 
@@ -845,16 +1126,24 @@ msgstr ""
 "informações sobre Moderadores e permissões ao nível do Contexto, por favor "
 "visite o"
 
-#: context/templates/context/moderator/moderator_list.html:61
-msgid "There are no Moderators in this Organization."
-msgstr "Não existem Moderadores nesta Organização."
+#: context/templates/context/moderator/moderator_list.html:60
+#, fuzzy
+#| msgid "There are no Contexts."
+msgid "There are no Moderators."
+msgstr "Não existem Contextos."
 
 #: context/templates/context/moderator/moderator_list.html:67
-#: contributions/templates/contributions/contribution_list.html:64
 msgid "Back to Context"
 msgstr "Voltar a Contexto"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:39
+#: context/templates/context/moderator/moderator_my_context_list.html:3
+#: context/templates/context/moderator/moderator_my_context_list.html:28
+#: context/templates/context/quiz/quiz_manager_my_context_list.html:29
+#: rivercureportal/templates/rivercureportal/base.html:75
+msgid "My Contexts"
+msgstr "Os Meus Contextos"
+
+#: context/templates/context/moderator/moderator_my_context_list.html:31
 msgid ""
 "On this page you can see the Contexts in which you have the permission to "
 "moderate. For more information on Moderators and Context-level permissions, "
@@ -864,22 +1153,17 @@ msgstr ""
 "mais informações sobre Moderadores e permissões ao nível do Contexto, por "
 "favor visite a"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:83
+#: context/templates/context/moderator/moderator_my_context_list.html:69
 msgid "pending"
 msgstr "pendentes"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:83
+#: context/templates/context/moderator/moderator_my_context_list.html:69
 msgid "of"
 msgstr "de"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:83
+#: context/templates/context/moderator/moderator_my_context_list.html:69
 msgid "contributions"
 msgstr "contribuições"
-
-#: context/templates/context/moderator/moderator_my_context_list.html:90
-#: context/templates/context/quiz/quiz_manager_my_context_list.html:88
-msgid "There are no Contexts."
-msgstr "Não existem Contextos."
 
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:32
 #, fuzzy
@@ -925,7 +1209,8 @@ msgid "Text description of the observation you made."
 msgstr "Descrição textual da observação que fez."
 
 #: contributions/forms.py:36
-#: contributions/templates/contributions/contribution_detail.html:333
+#: contributions/templates/contributions/contribution_detail.html:337
+#: contributions/templates/contributions/contribution_detail.html:412
 msgid "Description"
 msgstr "Descrição"
 
@@ -947,12 +1232,14 @@ msgid "Images and videos"
 msgstr "Imagens e vídeos"
 
 #: contributions/forms.py:45
-#: contributions/templates/contributions/contribution_detail.html:338
+#: contributions/templates/contributions/contribution_detail.html:342
+#: contributions/templates/contributions/contribution_detail.html:417
 msgid "Transit Time of Floating Objects"
 msgstr "Tempo de Trânsito de Objetos Flutuantes"
 
 #: contributions/forms.py:48
-#: contributions/templates/contributions/contribution_detail.html:339
+#: contributions/templates/contributions/contribution_detail.html:343
+#: contributions/templates/contributions/contribution_detail.html:418
 msgid "Water Height"
 msgstr "Altura da Água"
 
@@ -961,7 +1248,8 @@ msgid "Height in meters."
 msgstr "Altura em metros."
 
 #: contributions/forms.py:51
-#: contributions/templates/contributions/contribution_detail.html:342
+#: contributions/templates/contributions/contribution_detail.html:346
+#: contributions/templates/contributions/contribution_detail.html:421
 msgid "Velocity"
 msgstr "Velocidade"
 
@@ -970,7 +1258,8 @@ msgid "Velocity in km/h."
 msgstr "Velocidade em km/h."
 
 #: contributions/forms.py:55
-#: contributions/templates/contributions/contribution_detail.html:343
+#: contributions/templates/contributions/contribution_detail.html:347
+#: contributions/templates/contributions/contribution_detail.html:422
 msgid "Tornado Type"
 msgstr "Tipo de Tornado"
 
@@ -1003,12 +1292,12 @@ msgid "Pending"
 msgstr "Pendente"
 
 #: contributions/models.py:19
-#: contributions/templates/contributions/contribution_detail.html:164
+#: contributions/templates/contributions/contribution_detail.html:168
 msgid "Accepted"
 msgstr "Aceite"
 
 #: contributions/models.py:20
-#: contributions/templates/contributions/contribution_detail.html:196
+#: contributions/templates/contributions/contribution_detail.html:200
 msgid "Rejected"
 msgstr "Rejeitada"
 
@@ -1056,75 +1345,79 @@ msgstr "Sobre Água"
 msgid "On Land"
 msgstr "Sobre Terra"
 
-#: contributions/templates/contributions/contribution_detail.html:125
-#: contributions/templates/contributions/contribution_detail.html:513
+#: contributions/templates/contributions/contribution_detail.html:129
+#: contributions/templates/contributions/contribution_detail.html:593
 msgid "Contribution"
 msgstr "Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:141
-#: contributions/templates/contributions/contribution_detail.html:525
+#: contributions/templates/contributions/contribution_detail.html:145
+#: contributions/templates/contributions/contribution_detail.html:605
 msgid "Rejection reason"
 msgstr "Razão de Rejeição"
 
-#: contributions/templates/contributions/contribution_detail.html:147
+#: contributions/templates/contributions/contribution_detail.html:151
 msgid "Back to Contribution list"
 msgstr "Voltar à lista de Contribuições"
 
-#: contributions/templates/contributions/contribution_detail.html:151
+#: contributions/templates/contributions/contribution_detail.html:155
 msgid "Accept"
 msgstr "Aceitar"
 
-#: contributions/templates/contributions/contribution_detail.html:158
+#: contributions/templates/contributions/contribution_detail.html:162
 msgid "Accept Contribution"
 msgstr "Aceitar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:164
-#: contributions/templates/contributions/contribution_detail.html:196
+#: contributions/templates/contributions/contribution_detail.html:168
+#: contributions/templates/contributions/contribution_detail.html:200
 msgid "Are you sure you want to mark this Contribution as"
 msgstr "Tem a certeza que pretende marcar esta Contribuição como"
 
-#: contributions/templates/contributions/contribution_detail.html:165
-#: contributions/templates/contributions/contribution_detail.html:197
+#: contributions/templates/contributions/contribution_detail.html:169
+#: contributions/templates/contributions/contribution_detail.html:201
 msgid "This action is irreversible!"
 msgstr "Esta ação é irreversível!"
 
-#: contributions/templates/contributions/contribution_detail.html:168
-#: contributions/templates/contributions/contribution_detail.html:200
+#: contributions/templates/contributions/contribution_detail.html:172
+#: contributions/templates/contributions/contribution_detail.html:204
 msgid ""
 "To read more about Contributions and the Moderation process, please visit the"
 msgstr ""
 "Para ler mais sobre Contribuições e o processo de Moderação, por favor "
 "visite a"
 
-#: contributions/templates/contributions/contribution_detail.html:182
+#: contributions/templates/contributions/contribution_detail.html:186
 msgid "Reject"
 msgstr "Rejeitar"
 
-#: contributions/templates/contributions/contribution_detail.html:190
+#: contributions/templates/contributions/contribution_detail.html:194
 msgid "Reject Contribution"
 msgstr "Rejeitar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:218
+#: contributions/templates/contributions/contribution_detail.html:221
 msgid "Validate Next Contribution"
 msgstr "Validar Próxima Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:237
+#: contributions/templates/contributions/contribution_detail.html:240
 msgid "Uploaded Media"
 msgstr "Média Carregada"
 
-#: contributions/templates/contributions/contribution_detail.html:320
+#: contributions/templates/contributions/contribution_detail.html:324
+#: contributions/templates/contributions/contribution_detail.html:399
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
 
-#: contributions/templates/contributions/contribution_detail.html:339
+#: contributions/templates/contributions/contribution_detail.html:343
+#: contributions/templates/contributions/contribution_detail.html:418
 msgid "meters"
 msgstr "metros"
 
-#: contributions/templates/contributions/contribution_detail.html:387
+#: contributions/templates/contributions/contribution_detail.html:358
+#: contributions/templates/contributions/contribution_detail.html:466
 msgid "Observed on"
 msgstr "Observado a"
 
-#: contributions/templates/contributions/contribution_detail.html:394
+#: contributions/templates/contributions/contribution_detail.html:376
+#: contributions/templates/contributions/contribution_detail.html:473
 msgid ""
 "Address will be available shortly after Contribution is accepted. In the "
 "meantime, check the details."
@@ -1132,27 +1425,25 @@ msgstr ""
 "O endereço estará disponível após a Contribuição ser aceite. Enquanto isso, "
 "consulte os detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:399
+#: contributions/templates/contributions/contribution_detail.html:381
+#: contributions/templates/contributions/contribution_detail.html:478
 msgid "Latitude"
 msgstr "Latitude"
 
-#: contributions/templates/contributions/contribution_detail.html:402
+#: contributions/templates/contributions/contribution_detail.html:384
+#: contributions/templates/contributions/contribution_detail.html:481
 msgid "Longitude"
 msgstr "Longitude"
 
-#: contributions/templates/contributions/contribution_detail.html:421
-msgid "See Context"
-msgstr "Ver Contexto"
-
-#: contributions/templates/contributions/contribution_detail.html:427
+#: contributions/templates/contributions/contribution_detail.html:507
 msgid "Report"
 msgstr "Reportar"
 
-#: contributions/templates/contributions/contribution_detail.html:435
+#: contributions/templates/contributions/contribution_detail.html:515
 msgid "Report Contribution"
 msgstr "Reportar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:441
+#: contributions/templates/contributions/contribution_detail.html:521
 msgid ""
 "Are you sure you want to <span class='text-danger'>report</span> this "
 "Contribution?"
@@ -1160,15 +1451,15 @@ msgstr ""
 "Tem a certeza de que deseja <span class='text-danger'>reportar</span> esta "
 "Contribuição?"
 
-#: contributions/templates/contributions/contribution_detail.html:442
+#: contributions/templates/contributions/contribution_detail.html:522
 msgid "Make sure you are following the"
 msgstr "Certifique-se de que está a seguir as"
 
-#: contributions/templates/contributions/contribution_detail.html:442
+#: contributions/templates/contributions/contribution_detail.html:522
 msgid "Platform Guidelines"
 msgstr "Diretrizes da Plataforma"
 
-#: contributions/templates/contributions/contribution_detail.html:444
+#: contributions/templates/contributions/contribution_detail.html:524
 msgid ""
 "To read more about reporting Contributions and the Moderation process, "
 "please visit the"
@@ -1176,7 +1467,7 @@ msgstr ""
 "Para ler mais sobre Contribuições e o processo de Moderação, por favor "
 "visite a"
 
-#: contributions/templates/contributions/contribution_detail.html:452
+#: contributions/templates/contributions/contribution_detail.html:532
 msgid ""
 "Please write the <span class='font-weight-bold'>reason</span> for reporting "
 "this Contribution."
@@ -1184,11 +1475,11 @@ msgstr ""
 "Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
 "reportar esta Contribuição."
 
-#: contributions/templates/contributions/contribution_detail.html:477
+#: contributions/templates/contributions/contribution_detail.html:557
 msgid "Validation History"
 msgstr "Histórico de Validação"
 
-#: contributions/templates/contributions/contribution_detail.html:478
+#: contributions/templates/contributions/contribution_detail.html:558
 msgid ""
 "This is the history of the states this Contribution has been in, from most "
 "recent to oldest. Scroll to see more, and click on one to see details."
@@ -1197,40 +1488,40 @@ msgstr ""
 "recente ao mais antigo. Arraste horizontalmente para ver mais, e clique em "
 "um para ver os detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:499
+#: contributions/templates/contributions/contribution_detail.html:579
 msgid "Latest Validation"
 msgstr "Última Validação"
 
-#: contributions/templates/contributions/contribution_detail.html:502
+#: contributions/templates/contributions/contribution_detail.html:582
 msgid "User Submission"
 msgstr "Submissão do Utilizador"
 
-#: contributions/templates/contributions/contribution_detail.html:520
+#: contributions/templates/contributions/contribution_detail.html:600
 msgid "Validated on"
 msgstr "Validado a"
 
-#: contributions/templates/contributions/contribution_detail.html:521
+#: contributions/templates/contributions/contribution_detail.html:601
 msgid "Validated by"
 msgstr "Validado por"
 
-#: contributions/templates/contributions/contribution_detail.html:551
+#: contributions/templates/contributions/contribution_detail.html:631
 msgid ""
 "Reports made by users. Scroll to see more, and click on one to see details."
 msgstr ""
 "Alertas feitos pelos utilizadores. Arraste horizontalmente para ver mais, e "
 "clique em um para ver os detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:563
-#: contributions/templates/contributions/contribution_detail.html:576
+#: contributions/templates/contributions/contribution_detail.html:643
+#: contributions/templates/contributions/contribution_detail.html:656
 msgid "Reported by"
 msgstr "Reportado por"
 
-#: contributions/templates/contributions/contribution_detail.html:564
-#: contributions/templates/contributions/contribution_detail.html:583
+#: contributions/templates/contributions/contribution_detail.html:644
+#: contributions/templates/contributions/contribution_detail.html:663
 msgid "Reported on"
 msgstr "Reportado a"
 
-#: contributions/templates/contributions/contribution_detail.html:565
+#: contributions/templates/contributions/contribution_detail.html:645
 msgid "Read"
 msgstr "Ler"
 
@@ -1260,10 +1551,6 @@ msgstr ""
 "Para mais informações sobre o RiverCure Portal e Contribuições, por favor "
 "visite a página %(about)s, ou a <a href=\"https://rivercure.notion."
 "site/16c3e86b02a24ce093567de41fb6b6d7\" target=\"_blank\">Wiki</a>."
-
-#: contributions/templates/contributions/contribution_form.html:245
-msgid "Submit"
-msgstr "Submeter"
 
 #: contributions/templates/contributions/contribution_form.html:257
 msgid "Submit Contribution"
@@ -1301,17 +1588,23 @@ msgid ""
 msgstr ""
 "Nesta página, pode ver as Contribuições que outros utilizadores submeteram ao"
 
-#: contributions/templates/contributions/contribution_list.html:60
+#: contributions/templates/contributions/contribution_list.html:54
 msgid "There are no Contributions yet. Why don't you"
 msgstr "Ainda não existem Contribuições. Porque não"
 
-#: contributions/templates/contributions/contribution_list.html:60
+#: contributions/templates/contributions/contribution_list.html:54
 msgid "contribute"
 msgstr "contribui"
 
-#: contributions/templates/contributions/contribution_list.html:60
+#: contributions/templates/contributions/contribution_list.html:54
 msgid "to this Context?"
 msgstr "para este Contexto?"
+
+#: contributions/templates/contributions/my_contributions_list.html:7
+#: contributions/templates/contributions/my_contributions_list.html:19
+#: rivercureportal/templates/rivercureportal/base.html:58
+msgid "My Contributions"
+msgstr "Minhas Contribuições"
 
 #: contributions/templates/contributions/my_contributions_list.html:20
 msgid ""
@@ -1329,10 +1622,6 @@ msgstr ""
 msgid "Request Context"
 msgstr "Pedir Contexto"
 
-#: rivercureportal/forms.py:9
-msgid "Questions"
-msgstr "Questões"
-
 #: rivercureportal/forms.py:11
 msgid "Other"
 msgstr "Outro"
@@ -1345,33 +1634,26 @@ msgstr "O seu endereço de email"
 msgid "Your message"
 msgstr "A sua mensagem"
 
-#: rivercureportal/templates/rivercureportal/about.html:75
-#: rivercureportal/templates/rivercureportal/about.html:219
+#: rivercureportal/templates/rivercureportal/about.html:73
+#: rivercureportal/templates/rivercureportal/about.html:221
 msgid ""
-"The RiverCure Portal (RCP) brings together geographic contexts, sensor data, "
-"and hydrodynamic modeling tools to help manage flood risks. It supports all "
-"stages of flood risk management, from assessment and prevention to emergency "
-"preparedness and response. The RCP efficiently uses both crowdsourced and "
-"authoritative data. This includes curated outputs from sensing instruments "
-"and data from virtual entities, which combine lower-level modeling results "
-"or other types of information not directly collected by physical instruments."
+"The RiverCure Portal (RCP) combines geographic data, sensors and "
+"hydrodynamic modeling tools to manage flood risk. The RCP utilizes both "
+"crowdsourced and authoritative data, including sensor outputs and virtual "
+"data sources."
 msgstr ""
-"O RiverCure Portal (RCP) reúne contextos geográficos, dados de sensores e "
-"ferramentas de modelação hidrodinâmica para ajudar na gestão de riscos de "
-"inundação. Suporta todas as etapas da gestão de riscos de inundação, desde a "
-"avaliação e prevenção até à preparação para emergências e resposta. O RCP "
-"utiliza de forma eficiente dados colaborativos e dados autoritativos. Isto "
-"inclui resultados curados de instrumentos de deteção e dados de entidades "
-"virtuais, que combinam resultados de modelação de baixo nível ou outros "
-"tipos de informações não diretamente recolhidas por instrumentos físicos."
 
 #: rivercureportal/templates/rivercureportal/about.html:78
-#: rivercureportal/templates/rivercureportal/about.html:222
+#: rivercureportal/templates/rivercureportal/about.html:226
+#, fuzzy
+#| msgid ""
+#| "RiverCure addresses the issue of reducing uncertainty and improving "
+#| "forecasting capabilities of hydrodynamic and morphodynamic mathematical "
+#| "models for flood simulation, water resources management and habitat "
+#| "protection."
 msgid ""
-"RiverCure addresses the issue of reducing uncertainty and improving "
-"forecasting capabilities of hydrodynamic and morphodynamic mathematical "
-"models for flood simulation, water resources management and habitat "
-"protection."
+"RiverCure reduces uncertainty and improves forecasting in flood simulation, "
+"water management, and habitat protection models."
 msgstr ""
 "O RiverCure aborda a questão da redução da incerteza e melhoria das "
 "capacidades de previsão de modelos matemáticos hidrodinâmicos e "
@@ -1379,22 +1661,34 @@ msgstr ""
 "proteção de habitats."
 
 #: rivercureportal/templates/rivercureportal/about.html:93
-#: rivercureportal/templates/rivercureportal/about.html:239
+#: rivercureportal/templates/rivercureportal/about.html:243
 msgid "Public Contexts"
 msgstr "Contextos Públicos"
 
+#: rivercureportal/templates/rivercureportal/about.html:99
+#: rivercureportal/templates/rivercureportal/about.html:249
+#: rivercureportal/templates/rivercureportal/base.html:175
+msgid "Users"
+msgstr "Utilizadores"
+
+#: rivercureportal/templates/rivercureportal/about.html:105
+#: rivercureportal/templates/rivercureportal/about.html:255
+#: rivercureportal/templates/rivercureportal/base.html:96
+msgid "Organizations"
+msgstr "Organizações"
+
 #: rivercureportal/templates/rivercureportal/about.html:111
-#: rivercureportal/templates/rivercureportal/about.html:260
+#: rivercureportal/templates/rivercureportal/about.html:264
 msgid "How does it work?"
 msgstr "Como funciona?"
 
 #: rivercureportal/templates/rivercureportal/about.html:131
-#: rivercureportal/templates/rivercureportal/about.html:275
+#: rivercureportal/templates/rivercureportal/about.html:279
 msgid "What is a Context?"
 msgstr "O que é um Contexto?"
 
 #: rivercureportal/templates/rivercureportal/about.html:137
-#: rivercureportal/templates/rivercureportal/about.html:281
+#: rivercureportal/templates/rivercureportal/about.html:285
 msgid ""
 "A Context, or geographic Context, refers to a specific geographic area, "
 "pertinent to modeling and analyzing flood events. A Context can be linked to "
@@ -1409,33 +1703,33 @@ msgstr ""
 "sensores e várias características geográficas."
 
 #: rivercureportal/templates/rivercureportal/about.html:147
-#: rivercureportal/templates/rivercureportal/about.html:291
+#: rivercureportal/templates/rivercureportal/about.html:295
 msgid "What is a Contribution?"
 msgstr "O que é uma Contribuição?"
 
 #: rivercureportal/templates/rivercureportal/about.html:153
 #: rivercureportal/templates/rivercureportal/about.html:169
 #: rivercureportal/templates/rivercureportal/about.html:185
-#: rivercureportal/templates/rivercureportal/about.html:297
-#: rivercureportal/templates/rivercureportal/about.html:313
-#: rivercureportal/templates/rivercureportal/about.html:329
+#: rivercureportal/templates/rivercureportal/about.html:301
+#: rivercureportal/templates/rivercureportal/about.html:317
+#: rivercureportal/templates/rivercureportal/about.html:333
 msgid "TODO"
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/about.html:163
-#: rivercureportal/templates/rivercureportal/about.html:307
+#: rivercureportal/templates/rivercureportal/about.html:311
 msgid "What is an Event?"
 msgstr "O que é um Evento?"
 
 #: rivercureportal/templates/rivercureportal/about.html:179
-#: rivercureportal/templates/rivercureportal/about.html:323
+#: rivercureportal/templates/rivercureportal/about.html:327
 #, fuzzy
 #| msgid "What is an Event?"
 msgid "What is a Quiz?"
 msgstr "O que é um Evento?"
 
 #: rivercureportal/templates/rivercureportal/about.html:195
-#: rivercureportal/templates/rivercureportal/about.html:339
+#: rivercureportal/templates/rivercureportal/about.html:343
 msgid ""
 "I want to contribute to a Context that does not exist in the RiverCure "
 "Portal. What should I do?"
@@ -1444,7 +1738,7 @@ msgstr ""
 "devo proceder?"
 
 #: rivercureportal/templates/rivercureportal/about.html:202
-#: rivercureportal/templates/rivercureportal/about.html:346
+#: rivercureportal/templates/rivercureportal/about.html:350
 #, python-format
 msgid ""
 "If you wish to contribute to a Context that is not currently defined in the "
@@ -1456,6 +1750,62 @@ msgstr ""
 "RiverCure Portal, por favor entre em contacto connosco através da nossa "
 "página de %(contact)s. A nossa equipa avaliará o seu pedido e responderá o "
 "mais rapidamente possível."
+
+#: rivercureportal/templates/rivercureportal/base.html:63
+msgid "Management"
+msgstr "Gestão"
+
+#: rivercureportal/templates/rivercureportal/base.html:67
+msgid "Contexts"
+msgstr "Contextos"
+
+#: rivercureportal/templates/rivercureportal/base.html:68
+msgid "Sensors"
+msgstr "Sensores"
+
+#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:97
+msgid "Quizzes"
+msgstr ""
+
+#: rivercureportal/templates/rivercureportal/base.html:74
+msgid "Moderator"
+msgstr "Moderador"
+
+#: rivercureportal/templates/rivercureportal/base.html:106
+#: rivercureportal/templates/rivercureportal/contact.html:23
+msgid "Contact"
+msgstr "Contacto"
+
+#: rivercureportal/templates/rivercureportal/base.html:109
+msgid "About"
+msgstr "Sobre"
+
+#: rivercureportal/templates/rivercureportal/base.html:135
+#: rivercureportal/templates/rivercureportal/base.html:140
+#: rivercureportal/templates/rivercureportal/base.html:145
+msgid "ago"
+msgstr "atrás"
+
+#: rivercureportal/templates/rivercureportal/base.html:154
+msgid "See all notifications"
+msgstr "Ver todas as notificações"
+
+#: rivercureportal/templates/rivercureportal/base.html:157
+msgid "Clear all notifications"
+msgstr "Limpar todas as notificações"
+
+#: rivercureportal/templates/rivercureportal/base.html:183
+msgid "Edit Profile"
+msgstr "Editar Perfil"
+
+#: rivercureportal/templates/rivercureportal/base.html:184
+msgid "Set Current Organization"
+msgstr "Definir Organização Atual"
+
+#: rivercureportal/templates/rivercureportal/base.html:190
+msgid "Register"
+msgstr "Registar"
 
 #: rivercureportal/templates/rivercureportal/contact.html:27
 msgid ""
@@ -1564,6 +1914,32 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
+#~ msgid "Back to Home"
+#~ msgstr "Voltar a Home"
+
+#~ msgid "There are no Moderators in this Organization."
+#~ msgstr "Não existem Moderadores nesta Organização."
+
+#~ msgid ""
+#~ "The RiverCure Portal (RCP) brings together geographic contexts, sensor "
+#~ "data, and hydrodynamic modeling tools to help manage flood risks. It "
+#~ "supports all stages of flood risk management, from assessment and "
+#~ "prevention to emergency preparedness and response. The RCP efficiently "
+#~ "uses both crowdsourced and authoritative data. This includes curated "
+#~ "outputs from sensing instruments and data from virtual entities, which "
+#~ "combine lower-level modeling results or other types of information not "
+#~ "directly collected by physical instruments."
+#~ msgstr ""
+#~ "O RiverCure Portal (RCP) reúne contextos geográficos, dados de sensores e "
+#~ "ferramentas de modelação hidrodinâmica para ajudar na gestão de riscos de "
+#~ "inundação. Suporta todas as etapas da gestão de riscos de inundação, "
+#~ "desde a avaliação e prevenção até à preparação para emergências e "
+#~ "resposta. O RCP utiliza de forma eficiente dados colaborativos e dados "
+#~ "autoritativos. Isto inclui resultados curados de instrumentos de deteção "
+#~ "e dados de entidades virtuais, que combinam resultados de modelação de "
+#~ "baixo nível ou outros tipos de informações não diretamente recolhidas por "
+#~ "instrumentos físicos."
+
 #, fuzzy
 #~| msgid "Contexts"
 #~ msgid "Context Quizzes"
@@ -1576,11 +1952,6 @@ msgstr "Já Tem Conta?"
 
 #~ msgid "Opened on"
 #~ msgstr "Aberto a"
-
-#, fuzzy
-#~| msgid "There are no Events for this Context."
-#~ msgid "There are no Quizzes for this Context."
-#~ msgstr "Não existem Eventos para este Contexto."
 
 #, fuzzy
 #~| msgid "Search by title..."

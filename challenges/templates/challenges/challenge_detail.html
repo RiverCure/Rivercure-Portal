@@ -19,7 +19,7 @@
 
 <!-- Header -->
 <h1>{% trans "Organization" %} {{ challenge.organization }}</h1>
-{% if challenge.event %}<p><strong>Event:</strong> {{ challenge.event.Name }}</p>{% endif %}
+{% if challenge.event %}<p><strong>{% trans "Event" %}:</strong> {{ challenge.event.Name }}</p>{% endif %}
 <hr>
 
 <!-- Challenge Header -->
@@ -206,7 +206,7 @@
             {% endif %}
 
             <div class="my-2 d-flex justify-content-between">
-                {% if challenge.event %}<p class="m-0 font-weight-lighter text-muted">Event: {{challenge.event.Name|title}}</p>{% endif %}
+                {% if challenge.event %}<p class="m-0 font-weight-lighter text-muted">{% trans "Event" %}: {{challenge.event.Name|title}}</p>{% endif %}
                 <p class="m-0 font-weight-lighter text-muted">ID: {{challenge.id}}</p>
             </div>
             
@@ -221,13 +221,13 @@
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col my-3">
 
-            <h5>Participations Left: <span class="text-info">{{user_participations_left}}</span></h5>
+            <h5>{% trans "Participations Left" %}: <span class="text-info">{{user_participations_left}}</span></h5>
             <hr>
 
             <div>
-                <a class="btn btn-primary {% if not canParticipate %}disabled{% endif %}" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> Participate</a>
+                <a class="btn btn-primary {% if not canParticipate %}disabled{% endif %}" href="{% url 'challenge-participate' challenge.id %}"><i class="bi bi-controller"></i> {% trans "Participate" %}</a>
                 {% if is_mobile %}<div class="mt-2"></div>{% endif %}
-                <a class="btn btn-info" href="{% url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> My Participation(s)</a>
+                <a class="btn btn-info" href="{% url 'challenge-my-participations' challenge.id %}"><i class="bi bi-activity"></i> {% trans "My Participation(s)" %}</a>
             </div>
 
         </div>
@@ -240,7 +240,7 @@
         <div class="row mx-0 my-contribution-detail-meta-info-card">
             <div class="col my-3">
 
-                <h5>Latest User Participations</h5>
+                <h5>{% trans "Latest User Participations" %}</h5>
                 <hr>
 
                 <!-- MOBILE -->
@@ -250,7 +250,7 @@
                             <div class="text-center mx-4">
                                 <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                                 <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
-                                <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}</p>
+                                <p class="font-weight-lighter m-0"> {% trans "On" %} {{latest_challenge.creation_datetime}}</p>
                             </div>
                         {% endfor %}
                     </div>
@@ -269,8 +269,8 @@
 
 
                 <hr>
-                <p class="font-weight-light m-0">So far, a total of <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> participation(s) have been submitted.</p>
-                {% if canManage %}<a class="btn btn-info mt-3" href="{% url 'challenge-all-participations' challenge.id %}"><i class="bi bi-clipboard-data"></i> See Participations</a>{% endif %}
+                <p class="font-weight-light m-0">{% trans "So far, a total of" %} <span class="text-info">{{ challenge.e_challengeanswer_set.count }}</span> {% trans "participation(s) have been submitted." %}</p>
+                {% if canManage %}<a class="btn btn-info mt-3" href="{% url 'challenge-all-participations' challenge.id %}"><i class="bi bi-clipboard-data"></i> {% trans "See Participations" %}</a>{% endif %}
 
             </div>
         </div>
@@ -282,10 +282,10 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
     <!-- See Org Challenge List -->
     {% comment %} <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a> {% endcomment %}
-    <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">See Organization Challenges</a>
+    <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">{% trans "See Organization Challenges" %}</a>
     {% if challenge.event %}
         <!-- See Event -->
-        <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">See Event</a>
+        <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">{% trans "See Event" %}</a>
     {% endif %}
 </div>
 

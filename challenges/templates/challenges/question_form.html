@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Quiz {{ challenge.id }} - Add Question {% endblock %}
+{% load i18n %}
+{% block title %} Quiz {{ challenge.id }} - {% trans "Add Question" %} {% endblock %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -191,8 +192,8 @@
         <!-- This is where the type-specific form will be inserted -->
         <div id="question-type-form-section"></div>
 
-        <button type="submit" class="btn btn-outline-info">Submit</button>
-        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">Cancel</a>
+        <button type="submit" class="btn btn-outline-info">{% trans "Submit" %}</button>
+        <a class="btn btn-outline-secondary" href="javascript:window.history.back()">{% trans "Cancel" %}</a>
     </form>
 
     
@@ -212,7 +213,7 @@
             {{mc_form|crispy}}
         </div>
     {% endfor %}
-    <button id="add-mc-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
+    <button id="add-mc-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> {% trans "Add Option" %}</button>
 </div>
 
 <!-- True or False -->
@@ -224,7 +225,7 @@
             {{tf_form|crispy}}
         </div>
     {% endfor %}
-    <button id="add-tf-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> Add Option</button>
+    <button id="add-tf-option" type="button" class="btn btn-outline-primary"><i class="bi bi-plus"></i> {% trans "Add Option" %}</button>
 </div>
 
 {% endblock content %}

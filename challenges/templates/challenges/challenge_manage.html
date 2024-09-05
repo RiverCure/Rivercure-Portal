@@ -1,4 +1,5 @@
 {% extends "rivercureportal/base.html" %}
+{% load i18n %}
 {% block title %} Quiz "{{ challenge.title }}" {% endblock %}
 {% load auth_extras %}
 {% load my_tags %}
@@ -17,7 +18,7 @@
 
 <!-- Header -->
 <h1>Organization {{ challenge.organization }}</h1>
-{% if challenge.event %}<strong>Event:</strong> {{ challenge.event.Name }}{% endif %}
+{% if challenge.event %}<p><strong>{% trans "Event" %}:</strong> {{ challenge.event.Name }}</p>{% endif %}
 <hr>
 
 <!-- Challenge Header -->
@@ -25,11 +26,11 @@
 
     <div class="row mx-0 my-contribution-detail-meta-info-card">
         <div class="col">
-            <h2 class="my-3">Quiz "{{ challenge.title }}" - Questions</h2>
+            <h2 class="my-3">Quiz "{{ challenge.title }}" - {% trans "Questions" %}</h2>
 
             {% if challenge.can_manage_questions %}
                 <hr>
-                <a class="btn btn-info mb-3" href="{% url 'question-add' challenge.id %}"><i class="bi bi-plus"></i> Add Question</a>
+                <a class="btn btn-info mb-3" href="{% url 'question-add' challenge.id %}"><i class="bi bi-plus"></i> {% trans "Add Question" %}</a>
             {% endif %}
         </div>
     </div>
@@ -41,7 +42,7 @@
     <!-- Header -->
     <div class="py-2 px-4 d-flex justify-content-between align-items-center my-contribution-detail-meta-info-card-top my-contribution-detail-footer">
         <div class="q-header-left">
-            <h5 class="m-0">Question {{question.position}}</h5>
+            <h5 class="m-0">{% trans "Question" %} {{question.position}}</h5>
         </div>
         <div class="q-header-right d-flex">
             {% if challenge.can_manage_questions %}
@@ -57,17 +58,17 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="deleteModal{{ forloop.counter }}"><span class='text-danger'>Delete Question</span></h5>
+                                <h5 class="modal-title" id="deleteModal{{ forloop.counter }}"><span class='text-danger'>{% trans "Delete Question" %}</span></h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body p-3">
-                                <p class="justify m-0">Are you sure you want to <span class='text-danger'>delete</span> this Question?</p>
+                                <p class="justify m-0">{% trans "Are you sure you want to <span class='text-danger'>delete</span> this Question?" %}</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-danger my-3 mr-3" href="{% url 'question-delete' question_id=question.id %}"><i class="bi bi-trash"></i> Delete</a>
+                                <button type="button" class="btn btn-secondary my-3 ml-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                <a class="btn btn-danger my-3 mr-3" href="{% url 'question-delete' question_id=question.id %}"><i class="bi bi-trash"></i> {% trans "Delete" %}</a>
                             </div>
                         </div>
                     </div>
@@ -78,12 +79,12 @@
 
     <!-- Content -->
     <div class="py-2 px-4 my-contribution-detail-middle">
-        <p class="my-2 font-weight-normal">Question</p>
+        <p class="my-2 font-weight-normal">{% trans "Question" %}</p>
         <div class="question-box">
             <p class="font-weight-light m-2">{{question.content}}</p>
         </div>
 
-        <p class="mb-2 mt-3 font-weight-normal">Expected Answer</p>
+        <p class="mb-2 mt-3 font-weight-normal">{% trans "Expected Answer" %}</p>
         <!-- Short Text -->
         {% if question.is_short_text %}
             <div class="question-box mb-2">
@@ -107,7 +108,7 @@
                 <div class="question-box mb-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="font-weight-light m-2">{{tf_option.content}}</p>
-                        <div class="m-2">{% if tf_option.value %}<span class="text-primary">True</span>{% else %}<span class="text-warning">False</span>{% endif %}</div>
+                        <div class="m-2">{% if tf_option.value %}<span class="text-primary">{% trans "True" %}</span>{% else %}<span class="text-warning">{% trans "False" %}</span>{% endif %}</div>
                     </div>
                 </div>
             {% endfor %}
@@ -116,7 +117,7 @@
 
     <!-- Footer -->
     <div class="py-2 px-4 d-flex justify-content-between my-contribution-detail-bottom my-contribution-detail-footer">
-        <p class="m-0 font-weight-lighter text-muted">Score: <span class="text-info">{{question.score}}</span></p>
+        <p class="m-0 font-weight-lighter text-muted">{% trans "Score" %}: <span class="text-info">{{question.score}}</span></p>
         <p class="m-0 font-weight-lighter text-muted">ID: {{question.id}}</p>
     </div>
 </div>
@@ -127,7 +128,7 @@
 <div class="row my-3 mx-0 my-contribution-detail-meta-info-card my-contribution-detail-footer">
     <div class="col">
         <!-- See Challenge -->
-        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}">See Quiz</a>
+        <a class="btn btn-secondary my-3" href="{% url 'challenge-detail' challenge.id %}">{% trans "See Quiz" %}</a>
         
     </div>
 </div>
