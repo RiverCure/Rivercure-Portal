@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 
 from django.db.models import Case, When, Value, Count
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -223,7 +224,7 @@ def batchHandle(request, contextCode):
                         verb=f"Your Contribution {contribution.id} has been Accepted by {request.user}")
             
             # Send message
-            messages.success(request, 'The selected Contributions have been accepted.')
+            messages.success(request, _('The selected Contributions have been accepted.'))
             return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
         
         # Reject Contributions
@@ -234,13 +235,13 @@ def batchHandle(request, contextCode):
 
                 ## Reject Contribution if it's PENDING or ACCEPTED
                 if contribution and contribution.can_reject():
-                    reject_contribution(contribution, request.user, "BATCH REJECT")
+                    reject_contribution(contribution, request.user, _("BATCH REJECT"))
 
                     notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
                         verb=f"Your Contribution {contribution.id} has been Rejected by {request.user}")
             
             # Send message
-            messages.success(request, 'The selected Contributions have been rejected.')
+            messages.success(request, _('The selected Contributions have been rejected.'))
             return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
         
         else:

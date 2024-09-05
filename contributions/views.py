@@ -10,6 +10,7 @@ from notifications.signals import notify
 
 from django.core.files import File
 from django.views.generic import ListView, CreateView, DetailView, DeleteView
+from django.utils.translation import gettext_lazy as _
 
 from django.db.models.base import Model as Model
 from django.contrib.gis.geos import Point
@@ -69,7 +70,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
     #     else:
     #         return self.form_invalid(form)
     def form_invalid(self, form):
-        messages.error(self.request, 'There is an error in the submission form. Please check what field(s) need to be adjusted.')
+        messages.error(self.request, _('There is an error in the submission form. Please check what field(s) need to be adjusted.'))
         return super().form_invalid(form)
 
     def form_valid(self, form):
@@ -127,7 +128,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
                         thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
                         new_contribution.thumbnail = thumb_django_file
                     except:
-                        raise Exception("Video needs to be longer than 1 second in order to have a thumbnail.")
+                        raise Exception(_("Video needs to be longer than 1 second in order to have a thumbnail."))
 
                 new_contribution.save()
         
@@ -147,7 +148,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         validation.save()
         
         # Send success message (to be shown in detail page)
-        messages.success(self.request, 'Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.')
+        messages.success(self.request, _('Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.'))
 
         # TODO: Uncomment
         # send_contribution_submit_confirmation(new_contribution)
@@ -200,7 +201,7 @@ class ContributionDetailView(DetailView):
             # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
             if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization) or is_platform_admin(self.request.user)):
                 # Then the user should not get access to the page
-                messages.error(self.request, 'You can\'t see this page!')
+                messages.error(self.request, _('You can\'t see this page!'))
                 return redirect('my-contributions')
         
         # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
@@ -312,7 +313,7 @@ def accept_contribution(contribution, user, request):
         if check_celery():
             task = lat_long_to_address.delay(contribution.pk)
         else:  # Celery offline
-            messages.error(request, 'Background process offline: Contact admin.')
+            messages.error(request, _('Background process offline: Contact admin.'))
 
 @login_required
 def contributionReject(request, contributionId):
