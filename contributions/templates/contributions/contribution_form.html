@@ -1,9 +1,9 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Create Contribution {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Create Contribution" %} {% endblock %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% load leaflet_tags %}
-{% load i18n %}
-{% load static %}
 
 
 
@@ -222,7 +222,7 @@
 
 
 <h1>{{ context.Name }} </h1>
-<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
 <hr>
 
 

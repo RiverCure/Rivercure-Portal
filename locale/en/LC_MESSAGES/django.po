@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 09:20+0100\n"
+"POT-Creation-Date: 2024-09-05 09:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,6 +211,7 @@ msgstr ""
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
+#: contributions/templates/contributions/contribution_confirm_delete.html:18
 #: contributions/templates/contributions/contribution_detail.html:103
 #: contributions/templates/contributions/contribution_form.html:225
 #: contributions/templates/contributions/contribution_list.html:19
@@ -227,6 +228,7 @@ msgid "Are you sure you want to delete this Quiz?"
 msgstr ""
 
 #: challenges/templates/challenges/challenge_confirm_delete.html:34
+#: contributions/templates/contributions/contribution_confirm_delete.html:29
 msgid "Yes, delete"
 msgstr ""
 
@@ -241,6 +243,7 @@ msgstr ""
 #: challenges/templates/challenges/challenge_participate.html:112
 #: challenges/templates/challenges/question_form.html:197
 #: challenges/templates/challenges/question_update_form.html:85
+#: contributions/templates/contributions/contribution_confirm_delete.html:30
 #: contributions/templates/contributions/contribution_detail.html:176
 #: contributions/templates/contributions/contribution_detail.html:211
 #: contributions/templates/contributions/contribution_detail.html:539
@@ -1215,6 +1218,14 @@ msgstr ""
 msgid "Total size of files is too large ( > 10mb )."
 msgstr ""
 
+#: contributions/forms.py:100
+msgid "Enter a reason for the rejection."
+msgstr ""
+
+#: contributions/forms.py:107
+msgid "Enter a reason for reporting."
+msgstr ""
+
 #: contributions/models.py:18
 msgid "Pending"
 msgstr ""
@@ -1273,6 +1284,16 @@ msgstr ""
 msgid "On Land"
 msgstr ""
 
+#: contributions/templates/contributions/contribution_confirm_delete.html:3
+#: contributions/templates/contributions/contribution_confirm_delete.html:25
+msgid "Delete Contribution"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_confirm_delete.html:27
+msgid "Are you sure you want to delete this Contribution?"
+msgstr ""
+
+#: contributions/templates/contributions/contribution_detail.html:4
 #: contributions/templates/contributions/contribution_detail.html:129
 #: contributions/templates/contributions/contribution_detail.html:593
 msgid "Contribution"
@@ -1438,6 +1459,10 @@ msgstr ""
 msgid "Read"
 msgstr ""
 
+#: contributions/templates/contributions/contribution_form.html:3
+msgid "Create Contribution"
+msgstr ""
+
 #: contributions/templates/contributions/contribution_form.html:231
 msgid ""
 "If you have observed an extreme weather situation in this geographical "
@@ -1510,6 +1535,12 @@ msgstr ""
 
 #: contributions/templates/contributions/my_contributions_list.html:56
 msgid "There are no Contributions yet. Why don't you contribute to a Context?"
+msgstr ""
+
+#: contributions/templates/contributions/rejection_reason.html:8
+msgid ""
+"Please write the <span class='font-weight-bold'>reason</span> why you reject "
+"this Contribution."
 msgstr ""
 
 #: rivercureportal/forms.py:8

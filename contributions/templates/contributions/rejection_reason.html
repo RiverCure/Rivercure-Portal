@@ -1,10 +1,11 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 <form action="{% url 'moderator-contribution-reject' contribution.pk %}" method="POST" id="rejectionForm">
     {% csrf_token %}
 
-    <div class="form-group m-2"> <!-- style="float: left;"-->
-        <label for="id_last_rejection_reason">Please write the <span class='font-weight-bold'>reason</span> why you reject this Contribution.</label>
+    <div class="form-group m-2">
+        <label for="id_last_rejection_reason">{% trans "Please write the <span class='font-weight-bold'>reason</span> why you reject this Contribution." %}</label>
         {{ form.last_rejection_reason }}
     </div>
 

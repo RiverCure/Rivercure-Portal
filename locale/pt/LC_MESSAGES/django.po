@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 09:20+0100\n"
+"POT-Creation-Date: 2024-09-05 09:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,6 +220,7 @@ msgstr "Apagar"
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
+#: contributions/templates/contributions/contribution_confirm_delete.html:18
 #: contributions/templates/contributions/contribution_detail.html:103
 #: contributions/templates/contributions/contribution_form.html:225
 #: contributions/templates/contributions/contribution_list.html:19
@@ -236,6 +237,7 @@ msgid "Are you sure you want to delete this Quiz?"
 msgstr "Tem a certeza que pretende apagar este Quiz?"
 
 #: challenges/templates/challenges/challenge_confirm_delete.html:34
+#: contributions/templates/contributions/contribution_confirm_delete.html:29
 msgid "Yes, delete"
 msgstr "Sim, apagar"
 
@@ -250,6 +252,7 @@ msgstr "Sim, apagar"
 #: challenges/templates/challenges/challenge_participate.html:112
 #: challenges/templates/challenges/question_form.html:197
 #: challenges/templates/challenges/question_update_form.html:85
+#: contributions/templates/contributions/contribution_confirm_delete.html:30
 #: contributions/templates/contributions/contribution_detail.html:176
 #: contributions/templates/contributions/contribution_detail.html:211
 #: contributions/templates/contributions/contribution_detail.html:539
@@ -1296,6 +1299,14 @@ msgstr "Não foi possível ler o ficheiro submetido."
 msgid "Total size of files is too large ( > 10mb )."
 msgstr "O tamanho total dos ficheiros é demasiado grande ( > 10 MB )"
 
+#: contributions/forms.py:100
+msgid "Enter a reason for the rejection."
+msgstr "Insira uma razão para a rejeição."
+
+#: contributions/forms.py:107
+msgid "Enter a reason for reporting."
+msgstr "Insira uma razão para a denúncia. "
+
 #: contributions/models.py:18
 msgid "Pending"
 msgstr "Pendente"
@@ -1354,6 +1365,16 @@ msgstr "Sobre Água"
 msgid "On Land"
 msgstr "Sobre Terra"
 
+#: contributions/templates/contributions/contribution_confirm_delete.html:3
+#: contributions/templates/contributions/contribution_confirm_delete.html:25
+msgid "Delete Contribution"
+msgstr "Apagar Contribuição"
+
+#: contributions/templates/contributions/contribution_confirm_delete.html:27
+msgid "Are you sure you want to delete this Contribution?"
+msgstr "Tem a certeza de que pretende apagar esta Contribuição?"
+
+#: contributions/templates/contributions/contribution_detail.html:4
 #: contributions/templates/contributions/contribution_detail.html:129
 #: contributions/templates/contributions/contribution_detail.html:593
 msgid "Contribution"
@@ -1534,6 +1555,10 @@ msgstr "Reportado a"
 msgid "Read"
 msgstr "Ler"
 
+#: contributions/templates/contributions/contribution_form.html:3
+msgid "Create Contribution"
+msgstr "Criar Contribuição"
+
 #: contributions/templates/contributions/contribution_form.html:231
 msgid ""
 "If you have observed an extreme weather situation in this geographical "
@@ -1626,6 +1651,14 @@ msgstr ""
 msgid "There are no Contributions yet. Why don't you contribute to a Context?"
 msgstr ""
 "Ainda não existem Contribuições. Porque não contribui para um Contexto?"
+
+#: contributions/templates/contributions/rejection_reason.html:8
+msgid ""
+"Please write the <span class='font-weight-bold'>reason</span> why you reject "
+"this Contribution."
+msgstr ""
+"Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
+"rejeitar esta Contribuição."
 
 #: rivercureportal/forms.py:8
 msgid "Request Context"
@@ -1919,6 +1952,9 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
+#~ msgid "REJECTED"
+#~ msgstr "Rejeitada"
+
 #~ msgid "Back to Home"
 #~ msgstr "Voltar a Home"
 
@@ -2029,9 +2065,6 @@ msgstr "Já Tem Conta?"
 
 #~ msgid "ACCEPTED"
 #~ msgstr "Aceite"
-
-#~ msgid "REJECTED"
-#~ msgstr "Rejeitada"
 
 #~ msgid "REPORTED"
 #~ msgstr "Reportada"

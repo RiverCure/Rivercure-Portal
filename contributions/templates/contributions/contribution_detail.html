@@ -1,10 +1,10 @@
 {% extends "rivercureportal/base.html" %}
 {% block show_messages %}{% endblock %} <!-- As seen in: https://stackoverflow.com/questions/7768165/how-to-override-django-base-template -->
-{% block title %} Contribution {{ contribution }} {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Contribution" %} {{ contribution }} {% endblock %}
 {% load leaflet_tags %}
 {% load auth_extras %}
 {% load my_tags %}
-{% load i18n %}
 {% load static %}
 
 {% block scripts %}

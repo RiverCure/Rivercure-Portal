@@ -97,13 +97,13 @@ class ContributionInitialForm(forms.ModelForm):
 class RejectionForm(forms.Form):
     last_rejection_reason = forms.CharField(max_length=500,
                                       widget=forms.Textarea(attrs={
-                                            'placeholder': 'Enter a reason for the rejection.',
+                                            'placeholder': _('Enter a reason for the rejection.'),
                                             'class': 'form-control',
                                         }))
 
 class ReportForm(forms.Form):
     reason = forms.CharField(max_length=500,
                                       widget=forms.Textarea(attrs={
-                                            'placeholder': 'Enter a reason for reporting.',
+                                            'placeholder': _('Enter a reason for reporting.'),
                                             'class': 'form-control',
                                         }))
