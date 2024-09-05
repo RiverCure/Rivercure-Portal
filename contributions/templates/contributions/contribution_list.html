@@ -16,7 +16,7 @@
 {% block content %}
 
 <h1 class="mt-2">{{ context.Name }} </h1>
-<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
 <p class="font-weight-light" align="justify">{% trans "On this page you can see the Contributions that other users have submitted to" %} {{ context.Name }}.</p>
 <hr>
 

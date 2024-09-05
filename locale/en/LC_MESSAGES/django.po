@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 09:47+0100\n"
+"POT-Creation-Date: 2024-09-05 10:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -653,7 +653,7 @@ msgstr ""
 msgid "Update Question"
 msgstr ""
 
-#: challenges/views.py:60 challenges/views.py:111
+#: challenges/views.py:60 challenges/views.py:111 contributions/views.py:73
 msgid ""
 "There is an error in the submission form. Please check what field(s) need to "
 "be adjusted."
@@ -969,7 +969,7 @@ msgstr ""
 
 #: context/templates/context/moderator/moderator_add_list.html:12
 #, python-format
-msgid "%(context_name)s Moderators - Add"
+msgid "%(context_name)s - Moderators - Add"
 msgstr ""
 
 #: context/templates/context/moderator/moderator_add_list.html:16
@@ -1120,6 +1120,18 @@ msgstr ""
 
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:80
 msgid "Challenges"
+msgstr ""
+
+#: context/views/moderator.py:227
+msgid "The selected Contributions have been accepted."
+msgstr ""
+
+#: context/views/moderator.py:238
+msgid "BATCH REJECT"
+msgstr ""
+
+#: context/views/moderator.py:244
+msgid "The selected Contributions have been rejected."
 msgstr ""
 
 #: contributions/filters.py:37
@@ -1541,6 +1553,24 @@ msgstr ""
 msgid ""
 "Please write the <span class='font-weight-bold'>reason</span> why you reject "
 "this Contribution."
+msgstr ""
+
+#: contributions/views.py:131
+msgid "Video needs to be longer than 1 second in order to have a thumbnail."
+msgstr ""
+
+#: contributions/views.py:151
+msgid ""
+"Thank you for submitting your Contribution! Your participation is very "
+"valuable to the RiverCure Portal."
+msgstr ""
+
+#: contributions/views.py:204
+msgid "You can't see this page!"
+msgstr ""
+
+#: contributions/views.py:316
+msgid "Background process offline: Contact admin."
 msgstr ""
 
 #: rivercureportal/forms.py:8

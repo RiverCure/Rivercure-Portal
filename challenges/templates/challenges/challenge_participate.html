@@ -17,7 +17,8 @@
 {% block content %}
 
 <!-- Header -->
-<h1 class="mt-2">{% trans "Organization" %}: {{ challenge.organization }}</h1>
+<h1>{% trans "Organization" %} {{ challenge.organization }}</h1>
+{% if challenge.event %}<p><strong>{% trans "Event" %}:</strong> {{ challenge.event.Name }}</p>{% endif %}
 <hr>
 
 <!-- Challenge Header -->

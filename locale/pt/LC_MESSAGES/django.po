@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 09:47+0100\n"
+"POT-Creation-Date: 2024-09-05 10:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -682,7 +682,7 @@ msgstr "Adicionar Opção"
 msgid "Update Question"
 msgstr "Adicionar Questão"
 
-#: challenges/views.py:60 challenges/views.py:111
+#: challenges/views.py:60 challenges/views.py:111 contributions/views.py:73
 msgid ""
 "There is an error in the submission form. Please check what field(s) need to "
 "be adjusted."
@@ -1018,9 +1018,8 @@ msgid "Add Moderator"
 msgstr "Adicionar Moderador"
 
 #: context/templates/context/moderator/moderator_add_list.html:12
-#, python-format
-msgid "%(context_name)s Moderators - Add"
-msgstr "Moderadores de %(context_name)s - Adicionar"
+msgid "%(context_name)s - Moderators - Add"
+msgstr "%(context_name)s - Moderadores - Adicionar"
 
 #: context/templates/context/moderator/moderator_add_list.html:16
 #, python-format
@@ -1195,6 +1194,20 @@ msgstr ""
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:80
 msgid "Challenges"
 msgstr "Desafios"
+
+#: context/views/moderator.py:227
+msgid "The selected Contributions have been accepted."
+msgstr ""
+
+#: context/views/moderator.py:238
+#, fuzzy
+#| msgid "REJECTED"
+msgid "BATCH REJECT"
+msgstr "Rejeitada"
+
+#: context/views/moderator.py:244
+msgid "The selected Contributions have been rejected."
+msgstr ""
 
 #: contributions/filters.py:37
 msgid "Context"
@@ -1660,6 +1673,31 @@ msgstr ""
 "Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
 "rejeitar esta Contribuição."
 
+#: contributions/views.py:131
+msgid "Video needs to be longer than 1 second in order to have a thumbnail."
+msgstr ""
+
+#: contributions/views.py:151
+#, fuzzy
+#| msgid ""
+#| "On this page you can see the Contributions you have submitted to the "
+#| "RiverCure Portal."
+msgid ""
+"Thank you for submitting your Contribution! Your participation is very "
+"valuable to the RiverCure Portal."
+msgstr ""
+"Nesta página, pode ver as Contribuições que submeteu ao RiverCure Portal."
+
+#: contributions/views.py:204
+#, fuzzy
+#| msgid "You can't participate in this Quiz!"
+msgid "You can't see this page!"
+msgstr "Não pode participar neste Quiz!"
+
+#: contributions/views.py:316
+msgid "Background process offline: Contact admin."
+msgstr ""
+
 #: rivercureportal/forms.py:8
 msgid "Request Context"
 msgstr "Pedir Contexto"
@@ -1951,9 +1989,6 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
-
-#~ msgid "REJECTED"
-#~ msgstr "Rejeitada"
 
 #~ msgid "Back to Home"
 #~ msgstr "Voltar a Home"

@@ -26,7 +26,7 @@
 
 <!-- Presentation about Context (photo, introduction, see more, ...)-->
 <h1>{{ context.Name }} </h1>
-<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
 <hr>
 
 <div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">

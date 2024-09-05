@@ -9,8 +9,8 @@
 
 {% block content %}
 <!-- Header -->
-<h1>{% blocktrans with context_name=context.Name %}{{context_name}} Moderators - Add{% endblocktrans %}</h1>
-<p><strong>{% trans "Organization" %}:</strong> <em>{{ context.organization }}</em></p>
+<h1>{% blocktrans with context_name=context.Name %}{{context_name}} - Moderators - Add{% endblocktrans %}</h1>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
 <hr>
 
 <p class="font-weight-light" align="justify">{% blocktrans with org=context.organization context_name=context.Name %}On this page you can search for members of the {{org}} Organization and add them as Moderators of the {{context_name}} Context. Click the <i class="bi bi-plus-circle text-success"></i> symbol to make a certain user a Moderator. For more information on Moderators and Context-level permissions, please visit the{% endblocktrans %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
