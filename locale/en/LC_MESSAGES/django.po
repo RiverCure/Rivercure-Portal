@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 09:10+0100\n"
+"POT-Creation-Date: 2024-09-05 09:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,8 @@ msgid ""
 "older than the date on the right."
 msgstr ""
 
-#: challenges/filters.py:26 context/filters.py:71 context/filters.py:123
+#: challenges/filters.py:26 context/filters.py:58 context/filters.py:71
+#: context/filters.py:123
 msgid "Search by username..."
 msgstr ""
 
@@ -863,6 +864,10 @@ msgid ""
 "older than the date on the right."
 msgstr ""
 
+#: context/models.py:39 rivercureportal/templates/rivercureportal/base.html:74
+msgid "Moderator"
+msgstr ""
+
 #: context/templates/context/context/citizen_home2.html:142
 #: context/templates/context/context/citizen_home2.html:263
 #: context/templates/context/context/public_context_detail.html:37
@@ -1632,10 +1637,6 @@ msgstr ""
 #: rivercureportal/templates/rivercureportal/base.html:70
 #: rivercureportal/templates/rivercureportal/base.html:97
 msgid "Quizzes"
-msgstr ""
-
-#: rivercureportal/templates/rivercureportal/base.html:74
-msgid "Moderator"
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/base.html:106

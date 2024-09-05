@@ -55,7 +55,7 @@ class ContextFilter(django_filters.FilterSet):
 class ModeratorAddFilter(django_filters.FilterSet):
     user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
                                                widget=TextInput(attrs={
-                                                    'placeholder': 'Search by username...',
+                                                    'placeholder': _('Search by username...'),
                                                     'type': 'search',
                                                     'class': 'flex-fill mr-2 form-control',
                                                 }))

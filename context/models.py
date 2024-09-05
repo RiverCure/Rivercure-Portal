@@ -1,5 +1,6 @@
 import os
 
+
 from uuid import uuid4
 from datetime import datetime, date
 
@@ -7,6 +8,8 @@ from common.utils import resize_image
 
 from django.utils import timezone
 from django.contrib import admin
+
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
@@ -33,7 +36,7 @@ CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('Q', 'Discharge'), ('Z', 'Elevation'), (
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
-Permissions = (('context_moderator', 'Moderator'),)
+Permissions = (('context_moderator', _('Moderator')),)
 
 
 def create_picture_file_name(instance, filename):
