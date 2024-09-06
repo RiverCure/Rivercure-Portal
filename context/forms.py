@@ -1,12 +1,15 @@
 import re
+
 from django import forms
-from django.forms import ModelForm, ValidationError
-from django.contrib.gis.forms import fields
+
+from django.forms import ValidationError
+
+from django.db.models import Q
+
+from organization.models import Organization, Membership
+
 from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
-from leaflet.forms.widgets import LeafletWidget
-from organization.models import Organization, Membership
-from django.db.models import Q
 
 
 class ContextDetailsForm(forms.ModelForm):

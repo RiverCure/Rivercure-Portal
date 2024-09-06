@@ -60,22 +60,6 @@
                 maxZoom: 17,
             });
 
-            /*
-            // On success (of finding user's location)
-            var marker = L.marker([0,0]).addTo(map);
-            map.on('locationfound', function (e) {
-                marker.setLatLng(e.latlng);
-            });
-            */
-
-            // On error (of finding user's location)
-            /*
-            map.on('locationerror', function (e) {
-                marker.setLatLng([38.722252, -9.139337]);
-                map.setZoom(17);
-            });
-            */
-
             // Add search function to map -> leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
             L.Control.geocoder({
                 position: 'topright',
@@ -103,8 +87,6 @@
             var publicContextPolygons = {};
             // Domain
             publicContextPolygons.ClusterDomain = L.markerClusterGroup().addTo(map); // We use a markerClusterGroup instead of a layerGroup because we want to cluster the polygons
-            //publicContextPolygons.Domain = L.layerGroup().addTo(map); old
-            //map.layerscontrol.addOverlay(publicContextPolygons.Domain, 'Domain'); old
 
             // - For clustering (as seen in https://stackoverflow.com/questions/45798387/how-to-make-markerclustergroup-cluster-polygons?rq=3)
             // When initializing the polygon, compute a "center"
@@ -148,7 +130,6 @@
                     });
 
                     // Add this Public Context (layer) to Public Contexts layer group
-                    //publicContextPolygons.Domain.addLayer(domain); old
                     publicContextPolygons.ClusterDomain.addLayer(domain);
 
                 }
@@ -193,7 +174,6 @@
 
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center flex-wrap mx-3">
-    {% comment %} <h1 class="m-0">Public Contexts</h1> {% endcomment %}
 
     <!-- Tab buttons -->
     <ul class="nav nav-pills">
@@ -251,9 +231,6 @@
             {% for context in public_contexts %}
                 <div class="card mb-4" style="width: 26rem;">
                     <img src="{{ context.picture.url }}" class="card-img-top my-card-img" alt="...">
-                    {% comment %} <div class="card-img-overlay">
-                        <p class="card-text text-white observations-circle"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
-                    </div> {% endcomment %}
                     <div class="card-body">
                         <h5 class="card-title">{{context.Name}}</h5>
                         <p class="text-muted"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
@@ -273,16 +250,5 @@
 
     </div>
 </div>
-
-{% comment %} <!-- Footer -->
-<div class="footer p-4">
-    <div class="d-flex justify-content-center">
-        <p class="m-0">
-            <a href="{% url 'contact' %}" class="text-light">{% trans "Contact" %}</a> |
-            <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank" class="text-light"> Wiki</a> |
-            <a href="{% url 'rivercure-about' %}"  class="text-light">{% trans "About" %}</a>
-        </p>
-    </div>
-</div> {% endcomment %}
 
 {% endblock landing_page %}

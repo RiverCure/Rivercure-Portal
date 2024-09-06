@@ -34,14 +34,6 @@
 <div class="mb-3">
     <!-- Search and Filter Button -->
     <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
-    
-    {% comment %} <!-- Sort Button -->
-    <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
-    <!-- Sort Menu-->
-    <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_asc' %}"><i class="bi bi-sort-up"></i> Ascending Pending Contributions</a>
-        <a class="dropdown-item" href="?{% url_replace request 'sort' 'date_desc' %}"><i class="bi bi-sort-down"></i> Descending Pending Contributions</a>
-    </div> {% endcomment %}
 </div>
 
 <!-- Search and Filter Menu -->

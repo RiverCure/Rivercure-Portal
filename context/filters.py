@@ -43,7 +43,6 @@ class ContextFilter(django_filters.FilterSet):
                                                     widget=Select(attrs={'class': 'form-control',}))
     organization = django_filters.ModelChoiceFilter(label=_('Organization'), queryset=Organization.objects.all(),
                                                     widget=Select(attrs={'class': 'form-control',}))
-    # hydroFeatureType = django_filters.ChoiceFilter(label='HydroFeature Type', choices=HYDROFEATUREKIND_CHOICES)
 
     class Meta:
         model = e_Context
@@ -129,87 +128,7 @@ class ModeratorContextContributionFilter(django_filters.FilterSet):
         Model = e_ContextContribution
         fields = ['state', 'situationObserved', 'observationDate', 'creationDateTime', 'createdBy__username']
 
-##############
-# Quiz Managers 
-##############
-class QuizManagerFilter(django_filters.FilterSet):
-    user__username = django_filters.CharFilter(label='Username', field_name='user__username', lookup_expr='icontains',
-                                               widget=TextInput(attrs={
-                                                    'placeholder': 'Search by username...',
-                                                    'class': 'form-control',
-                                                    'type': 'search',
-                                                }))
-    user__email = django_filters.CharFilter(label='Email address', field_name='user__email', lookup_expr='icontains',
-                                               widget=TextInput(attrs={
-                                                    'placeholder': 'Search by email address...',
-                                                    'class': 'form-control',
-                                                    'type': 'search',
-                                                }))
-    grant_date = django_filters.DateFromToRangeFilter(label='Date granted',
-                                                        help_text='The permission was given in between the specified dates. <i>Hint:</i> You may also just search for permission dates more recent than the date on the left, or older than the date on the right.',
-                                                        widget=RangeWidget(attrs={
-                                                            'placeholder': 'yyyy-mm-dd',
-                                                            'type': 'date'
-                                                        }))
-
-    class Meta:
-        Model = User
-        fields = ['user__username', 'user__email', 'grant_date']
-        
-        
-class QuizManagerAddFilter(django_filters.FilterSet):
-    user__username = django_filters.CharFilter(label='', field_name='user__username', lookup_expr='icontains',
-                                               widget=TextInput(attrs={
-                                                    'placeholder': 'Search by username...',
-                                                    'type': 'search',
-                                                    'class': 'flex-fill mr-2 form-control',
-                                                }))
-
-    class Meta:
-        Model = User
-        fields = ['user__username']
-
-class QuizManagerContextFilter(django_filters.FilterSet):
-    Name = django_filters.CharFilter(label=_('Context Name'),
-                                        field_name='context__Name',
-                                        lookup_expr='icontains',
-                                        widget=TextInput(attrs={
-                                                    'placeholder': _('Search by Context name...'),
-                                                    'class': 'form-control',
-                                                    'type': 'search',
-                                                }))
-    organization = django_filters.ModelChoiceFilter(field_name='context__organization', label=_('Organization'), queryset=Organization.objects.all())
-
-    class Meta:
-        Model = e_Context
-        fields = ['Name', 'organization']
-
-class MyChallengesFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(label=_('Challenge Title'),
-                                      lookup_expr='icontains',
-                                      widget=TextInput(attrs={
-                                                    'placeholder': _('Search by title...'),
-                                                    'type': 'search',
-                                                    'class': 'form-control',
-                                                    }))
-    difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL, label=_('Difficulty Level'))
-    event = django_filters.CharFilter(label=_('Event'),
-                                      field_name='event__Name', lookup_expr='icontains',
-                                      widget=TextInput(attrs={
-                                        'placeholder': _('Search by Event name...'),
-                                        'type': 'search',
-                                      }))
-    state = django_filters.ChoiceFilter(label=_('Challenge State'),
-                                        choices=ChallengeState.choices)
-    creation_datetime = django_filters.DateFromToRangeFilter(label=_('Creation Date'),
-                                                           help_text=_('The Challenge was created in between the specified dates. <i>Hint:</i> You may also just search for dates more recent than the date on the left, or older than the date on the right.'),
-                                                           widget=RangeWidget(attrs={'placeholder': 'yyyy-mm-dd',
-                                                                                     'type': 'date'}))
-
-    class Meta:
-        Model = e_Challenge
-        fields = ['title', 'difficulty_level', 'event', 'state', 'creation_datetime']
-
+ 
 ############
 # Challenges
 ############

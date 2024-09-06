@@ -15,10 +15,10 @@ from common.utils import is_mobile
 
 from context.models import e_Context, e_ContextEvent, e_ContextEventResult
 from context.forms import EventForm
-from context.filters import EventFilter, QuizManagerFilter, QuizManagerAddFilter, EventChallengeListFilter
+from context.filters import EventFilter, EventChallengeListFilter
 from context.tasks import simulate_task
 from context.views.context import zip_file
-from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
+from context.views.helpers import cancel_execution, cancel_task, get_context_folder_path, get_event_rasters_files
 from context.views.mesh import Status, get_status, tail, check_celery
 
 from sensors.models import Sensor
@@ -26,8 +26,6 @@ from notifications.signals import notify
 from organization.authorization import belongs_to_organization
 from challenges.models import e_Challenge, ChallengeState
 from organization.authorization import is_org_quiz_manager
-
-from ..filters import QuizManagerContextFilter, MyChallengesFilter
 
 from .authorization import *
 from .prepare_files import *
