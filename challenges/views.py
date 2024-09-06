@@ -1,16 +1,11 @@
 from datetime import datetime
 
-from common.utils import is_mobile
-
-from django.db.models.query import QuerySet
 from django.urls import reverse, reverse_lazy
-from django.http import Http404, HttpResponse
-from django.forms import modelformset_factory, Textarea
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect
+from django.shortcuts import render, HttpResponseRedirect, redirect
 from django_filters.views import FilterView
 
-from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
+from django.views.generic import CreateView, DetailView, DeleteView, UpdateView
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -18,13 +13,13 @@ from django.contrib.auth.decorators import login_required
 
 from rivercureproject import settings
 
-from context.models import e_ContextEvent, e_Context
-from context.models import ContextMembership
-from organization.models import Membership, Organization
+from common.utils import is_mobile
+from context.models import e_ContextEvent
+from organization.models import Organization
 from organization.authorization import belongs_to_organization, is_org_quiz_manager
 from rivercureportal.authorization import is_platform_admin
 
-from context.views.authorization import context_organization_edit_permission_check, context_quiz_manager_check, general_quiz_manager_check
+from context.views.authorization import context_quiz_manager_check
 
 from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
@@ -91,10 +86,6 @@ class OrganizationChallengeCreateView(LoginRequiredMixin, UserPassesTestMixin, C
         organization = Organization.objects.get(code=self.kwargs['org_id'])
         return is_org_quiz_manager(self.request.user, organization)
     
-        # context = e_Context.objects.get(pk=self.kwargs['context_id'])
-        # # Only Event Manager or Platform Admin can do this
-        # return context_quiz_manager_check(self.request.user, context) or is_platform_admin(self.request.user)
-
     def get_success_url(self):
         return reverse('challenge-detail', args=(self.object.id, ))
 
@@ -296,7 +287,6 @@ def question_create(request, challenge_id):
         return redirect('challenge-detail', challenge.id)
 
     if request.method == 'POST':
-        # challenge = e_Challenge.objects.get(pk=challenge_id)
 
         question_form = QuestionForm(request.POST)
         short_text_form = QuestionShortTextForm(request.POST)

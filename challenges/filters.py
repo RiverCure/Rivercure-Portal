@@ -2,10 +2,8 @@ import django_filters
 
 from django_filters.widgets import RangeWidget
 
-from django.forms.widgets import TextInput, Select
+from django.forms.widgets import TextInput
 from django.utils.translation import gettext_lazy as _
-
-from context.models import e_ContextEvent
 
 from .models import e_Challenge, e_ChallengeAnswer, DIFFICULTY_LEVEL
 

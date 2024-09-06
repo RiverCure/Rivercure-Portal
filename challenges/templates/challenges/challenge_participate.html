@@ -67,15 +67,6 @@
                             </div>
                         {% endfor %}
                     </div>
-                    {% comment %} <div class="form-group my-2">
-                        <p class="mb-2 font-italic">{% trans "Select one or more options." %}</p>
-                        <p class="mb-2 font-italic">{% trans "Answer(s)" %}</p>
-                        <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
-                            {% for mc_option in question.multiple_choice_option_question.all %}
-                                <option class="font-weight-lighter m-2" value="{{mc_option.id}}">{{mc_option.content}}</option>
-                            {% endfor %}
-                        </select>
-                    </div> {% endcomment %}
 
                 <!-- True or False -->
                 {% elif question.is_true_false %}
@@ -90,17 +81,6 @@
                         {% endfor %}
                     </div>
 
-                    {% comment %} <div class="form-group my-2">
-                        <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer(s)" %}</label>
-                        <p class="mb-2 font-italic">{% trans "Select which options are true." %}</p>
-                        <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
-                            {% for tf_option in question.true_false_question.all %}
-                                <div class="question-box mb-2">
-                                    <option class="font-weight-lighter m-2" value="{{tf_option.id}}">{{tf_option.content}}</option>
-                                </div>
-                            {% endfor %}
-                        </select>
-                    </div> {% endcomment %}
                 {% endif %}
             </div>
         </div>
