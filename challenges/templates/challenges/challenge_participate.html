@@ -58,20 +58,41 @@
                 <!-- Multiple Choice -->
                 {% elif question.is_multiple_choice %}
                     <div class="form-group my-2">
-                        <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer(s)" %}</label>
+                        <p class="mb-2">{% trans "Answer(s)" %}</p>
+                        <p class="mb-2 font-italic">{% trans "Select one or more options." %}</p>
+                        {% for mc_option in question.multiple_choice_option_question.all %}
+                            <div class="form-check my-2">
+                                <input class="form-check-input" type="checkbox" id="answer-{{mc_option.id}}" name="question-{{question.id}}-answer" value="{{mc_option.id}}">
+                                <label class="form-check-label" for="answer-{{mc_option.id}}">{{mc_option.content}}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% comment %} <div class="form-group my-2">
+                        <p class="mb-2 font-italic">{% trans "Select one or more options." %}</p>
+                        <p class="mb-2 font-italic">{% trans "Answer(s)" %}</p>
                         <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
                             {% for mc_option in question.multiple_choice_option_question.all %}
-                                <div class="question-box mb-2">
-                                    <option class="font-weight-lighter m-2" value="{{mc_option.id}}">{{mc_option.content}}</option>
-                                </div>
+                                <option class="font-weight-lighter m-2" value="{{mc_option.id}}">{{mc_option.content}}</option>
                             {% endfor %}
                         </select>
-                    </div>
+                    </div> {% endcomment %}
 
                 <!-- True or False -->
                 {% elif question.is_true_false %}
                     <div class="form-group my-2">
+                        <p class="mb-2">{% trans "Answer(s)" %}</p>
+                        <p class="mb-2 font-italic">{% trans "Select which options are true." %}</p>
+                        {% for tf_option in question.true_false_question.all %}
+                            <div class="form-check my-2">
+                                <input class="form-check-input" type="checkbox" id="answer-{{tf_option.id}}" name="question-{{question.id}}-answer" value="{{tf_option.id}}">
+                                <label class="form-check-label" for="answer-{{tf_option.id}}">{{tf_option.content}}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% comment %} <div class="form-group my-2">
                         <label class="font-weight-normal" for="answer-{{question.id}}">{% trans "Answer(s)" %}</label>
+                        <p class="mb-2 font-italic">{% trans "Select which options are true." %}</p>
                         <select multiple name="question-{{question.id}}-answer" class="form-control" id="answer-{{question.id}}" required>
                             {% for tf_option in question.true_false_question.all %}
                                 <div class="question-box mb-2">
@@ -79,7 +100,7 @@
                                 </div>
                             {% endfor %}
                         </select>
-                    </div>
+                    </div> {% endcomment %}
                 {% endif %}
             </div>
         </div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 10:04+0100\n"
+"POT-Creation-Date: 2024-09-06 14:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,6 +48,7 @@ msgstr ""
 #: challenges/templates/challenges/challenge_detail.html:209
 #: challenges/templates/challenges/challenge_form.html:29
 #: challenges/templates/challenges/challenge_manage.html:21
+#: challenges/templates/challenges/challenge_participate.html:21
 #: challenges/templates/challenges/org_challenges_list.html:54
 #: challenges/templates/challenges/public_challenges_list.html:51
 #: context/filters.py:196 context/templates/context/event/challenge_list.html:3
@@ -240,7 +241,7 @@ msgstr ""
 #: challenges/templates/challenges/challenge_form.html:51
 #: challenges/templates/challenges/challenge_form.html:74
 #: challenges/templates/challenges/challenge_manage.html:70
-#: challenges/templates/challenges/challenge_participate.html:112
+#: challenges/templates/challenges/challenge_participate.html:136
 #: challenges/templates/challenges/question_form.html:197
 #: challenges/templates/challenges/question_update_form.html:85
 #: contributions/templates/contributions/contribution_confirm_delete.html:30
@@ -331,7 +332,7 @@ msgstr ""
 #: challenges/templates/challenges/challenge_detail.html:162
 #: challenges/templates/challenges/challenge_detail.html:195
 #: challenges/templates/challenges/challenge_form.html:75
-#: challenges/templates/challenges/challenge_participate.html:113
+#: challenges/templates/challenges/challenge_participate.html:137
 #: contributions/templates/contributions/contribution_detail.html:177
 #: contributions/templates/contributions/contribution_detail.html:213
 #: contributions/templates/contributions/contribution_detail.html:541
@@ -435,8 +436,8 @@ msgid ""
 msgstr ""
 
 #: challenges/templates/challenges/challenge_form.html:48
-#: challenges/templates/challenges/challenge_participate.html:92
-#: challenges/templates/challenges/challenge_participate.html:101
+#: challenges/templates/challenges/challenge_participate.html:116
+#: challenges/templates/challenges/challenge_participate.html:125
 #: challenges/templates/challenges/question_form.html:196
 #: challenges/templates/challenges/question_update_form.html:84
 #: contributions/templates/contributions/contribution_form.html:245
@@ -463,8 +464,8 @@ msgstr ""
 
 #: challenges/templates/challenges/challenge_manage.html:45
 #: challenges/templates/challenges/challenge_manage.html:82
-#: challenges/templates/challenges/challenge_participate.html:40
-#: challenges/templates/challenges/challenge_participate.html:45
+#: challenges/templates/challenges/challenge_participate.html:41
+#: challenges/templates/challenges/challenge_participate.html:46
 #: challenges/templates/challenges/challenge_participation_detail.html:45
 #: challenges/templates/challenges/challenge_participation_detail.html:54
 #: challenges/templates/challenges/question_update_form.html:35
@@ -500,26 +501,34 @@ msgid "Score"
 msgstr ""
 
 #: challenges/templates/challenges/challenge_manage.html:131
-#: challenges/templates/challenges/challenge_participate.html:89
+#: challenges/templates/challenges/challenge_participate.html:113
 #: challenges/templates/challenges/challenge_participation_detail.html:142
 #: challenges/templates/challenges/challenge_participations_list.html:55
 msgid "See Quiz"
 msgstr ""
 
-#: challenges/templates/challenges/challenge_participate.html:53
+#: challenges/templates/challenges/challenge_participate.html:54
 msgid "Answer"
 msgstr ""
 
-#: challenges/templates/challenges/challenge_participate.html:54
+#: challenges/templates/challenges/challenge_participate.html:55
 msgid "Enter answer"
 msgstr ""
 
-#: challenges/templates/challenges/challenge_participate.html:60
-#: challenges/templates/challenges/challenge_participate.html:73
+#: challenges/templates/challenges/challenge_participate.html:61
+#: challenges/templates/challenges/challenge_participate.html:84
 msgid "Answer(s)"
 msgstr ""
 
-#: challenges/templates/challenges/challenge_participate.html:108
+#: challenges/templates/challenges/challenge_participate.html:62
+msgid "Select one or more options."
+msgstr ""
+
+#: challenges/templates/challenges/challenge_participate.html:85
+msgid "Select which options are true."
+msgstr ""
+
+#: challenges/templates/challenges/challenge_participate.html:132
 msgid "Are you sure you want to submit?"
 msgstr ""
 
@@ -643,7 +652,7 @@ msgid "On this page you can see all the Public Quizzes."
 msgstr ""
 
 #: challenges/templates/challenges/question_form.html:217
-#: challenges/templates/challenges/question_form.html:229
+#: challenges/templates/challenges/question_form.html:230
 #: challenges/templates/challenges/question_update_form.html:63
 #: challenges/templates/challenges/question_update_form.html:80
 msgid "Add Option"

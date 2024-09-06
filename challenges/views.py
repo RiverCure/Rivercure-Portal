@@ -613,7 +613,7 @@ def challenge_participate(request, challenge_id):
         return redirect('public-challenge-list')
     
     if not challenge.is_public:
-        if not belongs_to_organization(request.user, challenge.context.organization):
+        if not belongs_to_organization(request.user, challenge.organization):
             messages.error(request, _('Quiz isn\'t public and you don\'t belong to its Organization!'))
             return redirect('public-challenge-list')
     

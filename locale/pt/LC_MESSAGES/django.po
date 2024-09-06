@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-05 10:04+0100\n"
+"POT-Creation-Date: 2024-09-06 14:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,6 +51,7 @@ msgstr "Procurar pelo nome do Quiz..."
 #: challenges/templates/challenges/challenge_detail.html:209
 #: challenges/templates/challenges/challenge_form.html:29
 #: challenges/templates/challenges/challenge_manage.html:21
+#: challenges/templates/challenges/challenge_participate.html:21
 #: challenges/templates/challenges/org_challenges_list.html:54
 #: challenges/templates/challenges/public_challenges_list.html:51
 #: context/filters.py:196 context/templates/context/event/challenge_list.html:3
@@ -249,7 +250,7 @@ msgstr "Sim, apagar"
 #: challenges/templates/challenges/challenge_form.html:51
 #: challenges/templates/challenges/challenge_form.html:74
 #: challenges/templates/challenges/challenge_manage.html:70
-#: challenges/templates/challenges/challenge_participate.html:112
+#: challenges/templates/challenges/challenge_participate.html:136
 #: challenges/templates/challenges/question_form.html:197
 #: challenges/templates/challenges/question_update_form.html:85
 #: contributions/templates/contributions/contribution_confirm_delete.html:30
@@ -343,7 +344,7 @@ msgstr "Para ler mais sobre Quizzes, por favor visite a"
 #: challenges/templates/challenges/challenge_detail.html:162
 #: challenges/templates/challenges/challenge_detail.html:195
 #: challenges/templates/challenges/challenge_form.html:75
-#: challenges/templates/challenges/challenge_participate.html:113
+#: challenges/templates/challenges/challenge_participate.html:137
 #: contributions/templates/contributions/contribution_detail.html:177
 #: contributions/templates/contributions/contribution_detail.html:213
 #: contributions/templates/contributions/contribution_detail.html:541
@@ -458,8 +459,8 @@ msgstr ""
 "Para mais informações sobre o Portal RiverCure e Quizzes, por favor visite a"
 
 #: challenges/templates/challenges/challenge_form.html:48
-#: challenges/templates/challenges/challenge_participate.html:92
-#: challenges/templates/challenges/challenge_participate.html:101
+#: challenges/templates/challenges/challenge_participate.html:116
+#: challenges/templates/challenges/challenge_participate.html:125
 #: challenges/templates/challenges/question_form.html:196
 #: challenges/templates/challenges/question_update_form.html:84
 #: contributions/templates/contributions/contribution_form.html:245
@@ -486,8 +487,8 @@ msgstr "Adicionar Questão"
 
 #: challenges/templates/challenges/challenge_manage.html:45
 #: challenges/templates/challenges/challenge_manage.html:82
-#: challenges/templates/challenges/challenge_participate.html:40
-#: challenges/templates/challenges/challenge_participate.html:45
+#: challenges/templates/challenges/challenge_participate.html:41
+#: challenges/templates/challenges/challenge_participate.html:46
 #: challenges/templates/challenges/challenge_participation_detail.html:45
 #: challenges/templates/challenges/challenge_participation_detail.html:54
 #: challenges/templates/challenges/question_update_form.html:35
@@ -525,26 +526,34 @@ msgid "Score"
 msgstr "Pontuação"
 
 #: challenges/templates/challenges/challenge_manage.html:131
-#: challenges/templates/challenges/challenge_participate.html:89
+#: challenges/templates/challenges/challenge_participate.html:113
 #: challenges/templates/challenges/challenge_participation_detail.html:142
 #: challenges/templates/challenges/challenge_participations_list.html:55
 msgid "See Quiz"
 msgstr "Ver Quiz"
 
-#: challenges/templates/challenges/challenge_participate.html:53
+#: challenges/templates/challenges/challenge_participate.html:54
 msgid "Answer"
 msgstr "Resposta"
 
-#: challenges/templates/challenges/challenge_participate.html:54
+#: challenges/templates/challenges/challenge_participate.html:55
 msgid "Enter answer"
 msgstr "Introduzir resposta"
 
-#: challenges/templates/challenges/challenge_participate.html:60
-#: challenges/templates/challenges/challenge_participate.html:73
+#: challenges/templates/challenges/challenge_participate.html:61
+#: challenges/templates/challenges/challenge_participate.html:84
 msgid "Answer(s)"
 msgstr "Resposta(s)"
 
-#: challenges/templates/challenges/challenge_participate.html:108
+#: challenges/templates/challenges/challenge_participate.html:62
+msgid "Select one or more options."
+msgstr "Selecione uma ou mais opções."
+
+#: challenges/templates/challenges/challenge_participate.html:85
+msgid "Select which options are true."
+msgstr "Selecione as opções verdadeiras."
+
+#: challenges/templates/challenges/challenge_participate.html:132
 msgid "Are you sure you want to submit?"
 msgstr "Tem a certeza que pretende submeter?"
 
@@ -670,7 +679,7 @@ msgid "On this page you can see all the Public Quizzes."
 msgstr "Nesta página pode ver todos os Quizzes Públicos."
 
 #: challenges/templates/challenges/question_form.html:217
-#: challenges/templates/challenges/question_form.html:229
+#: challenges/templates/challenges/question_form.html:230
 #: challenges/templates/challenges/question_update_form.html:63
 #: challenges/templates/challenges/question_update_form.html:80
 msgid "Add Option"
@@ -1001,10 +1010,8 @@ msgid "Context Event Detail"
 msgstr ""
 
 #: context/templates/context/event/detail.html:104
-#, fuzzy
-#| msgid "There are no Events for this Context."
 msgid "There are no published Quizzes for this Event."
-msgstr "Não existem Eventos para este Contexto."
+msgstr "Não existem Quizzes publicados para este Contexto."
 
 #: context/templates/context/event/detail.html:139
 #: contributions/templates/contributions/contribution_detail.html:501
@@ -1018,6 +1025,7 @@ msgid "Add Moderator"
 msgstr "Adicionar Moderador"
 
 #: context/templates/context/moderator/moderator_add_list.html:12
+#, python-format
 msgid "%(context_name)s - Moderators - Add"
 msgstr "%(context_name)s - Moderadores - Adicionar"
 
@@ -1675,28 +1683,23 @@ msgstr ""
 
 #: contributions/views.py:131
 msgid "Video needs to be longer than 1 second in order to have a thumbnail."
-msgstr ""
+msgstr "O vídeo precisa ter mais de 1 segundo para que tenha uma miniatura."
 
 #: contributions/views.py:151
-#, fuzzy
-#| msgid ""
-#| "On this page you can see the Contributions you have submitted to the "
-#| "RiverCure Portal."
 msgid ""
 "Thank you for submitting your Contribution! Your participation is very "
 "valuable to the RiverCure Portal."
 msgstr ""
-"Nesta página, pode ver as Contribuições que submeteu ao RiverCure Portal."
+"Obrigado por submeter a sua Contribuição! A sua participação é muito valiosa "
+"para o Portal RiverCure."
 
 #: contributions/views.py:204
-#, fuzzy
-#| msgid "You can't participate in this Quiz!"
 msgid "You can't see this page!"
-msgstr "Não pode participar neste Quiz!"
+msgstr "Não pode participar ver esta págnia!"
 
 #: contributions/views.py:316
 msgid "Background process offline: Contact admin."
-msgstr ""
+msgstr "Processo em segundo plano offline: Contacte o administrador."
 
 #: rivercureportal/forms.py:8
 msgid "Request Context"
@@ -1722,23 +1725,19 @@ msgid ""
 "crowdsourced and authoritative data, including sensor outputs and virtual "
 "data sources."
 msgstr ""
+"O Portal RiverCure (RCP) combina dados geográficos, sensores e ferramentas "
+"de modelação hidrodinâmica para gerir o risco de inundações. O RCP utiliza "
+"tanto dados provenientes de crowdsourcing como dados oficiais, incluindo "
+"saídas de sensores e fontes de dados virtuais."
 
 #: rivercureportal/templates/rivercureportal/about.html:78
 #: rivercureportal/templates/rivercureportal/about.html:226
-#, fuzzy
-#| msgid ""
-#| "RiverCure addresses the issue of reducing uncertainty and improving "
-#| "forecasting capabilities of hydrodynamic and morphodynamic mathematical "
-#| "models for flood simulation, water resources management and habitat "
-#| "protection."
 msgid ""
 "RiverCure reduces uncertainty and improves forecasting in flood simulation, "
 "water management, and habitat protection models."
 msgstr ""
-"O RiverCure aborda a questão da redução da incerteza e melhoria das "
-"capacidades de previsão de modelos matemáticos hidrodinâmicos e "
-"morfodinâmicos para simulação de inundações, gestão de recursos hídricos e "
-"proteção de habitats."
+"O RiverCure reduz a incerteza e melhora as previsões em simulações de "
+"cheias, gestão da água e modelos de proteção de habitats."
 
 #: rivercureportal/templates/rivercureportal/about.html:93
 #: rivercureportal/templates/rivercureportal/about.html:243

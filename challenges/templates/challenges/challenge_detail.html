@@ -246,7 +246,7 @@
                 <!-- MOBILE -->
                 {% if is_mobile %}
                     <div class="row flex-row flex-nowrap my-4 mx-0">
-                        {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":1" %}
+                        {% for latest_challenge in challenge.e_challengeanswer_set.all|sort_by:'-creation_datetime'|slice:":1" %}
                             <div class="text-center mx-4">
                                 <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                                 <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
@@ -257,7 +257,7 @@
                 <!-- COMPUTER -->
                 {% else %}
                     <div class="row flex-row flex-nowrap my-4 mx-0">
-                        {% for latest_challenge in challenge.e_challengeanswer_set.all|slice:":4" %}
+                        {% for latest_challenge in challenge.e_challengeanswer_set.all|sort_by:'-creation_datetime'|slice:":4" %}
                             <div class="text-center mx-4">
                                 <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                                 <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>

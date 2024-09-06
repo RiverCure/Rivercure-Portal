@@ -4,6 +4,10 @@ from challenges.models import ChallengeState, ChallengePublishState
 
 register = template.Library()
 
+@register.filter
+def sort_by(queryset, order):
+    return queryset.order_by(order)
+
 @register.filter(name="bootstrap_badge_state")
 def bootstrap_badge_state(state):
     """
