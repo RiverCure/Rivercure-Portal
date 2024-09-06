@@ -55,11 +55,4 @@ urlpatterns = [
     path('event-status/<str:event_id>/regenerate-confirm', regenerate_event_confirm, name='event-regenerate-confirm'),
     path('event-status/<str:event_id>/cancel-confirm', cancel_event_confirm, name='event-cancel-confirm'),
     path('event-status/<str:event_id>/request', inform_event_status, name='event-status-request'),
-    # Quiz Managers
-    # path('<str:contextCode>/quiz/managers/', ContextQuizManagersListView.as_view(), name='quiz-manager-list'),
-    # path('<str:contextCode>/quiz/managers/add/', ContextQuizManagerAddListView.as_view(), name='quiz-manager-list-add'),
-    # path('<str:contextCode>/quiz/managers/add/<int:userId>/', contextQuizManagerAdd, name='quiz-manager-add'),
-    # path('<str:contextCode>/quiz/managers/remove/<int:userId>/', contextQuizManagerRemove, name='quiz-manager-remove'),
-    # path('quiz-managers/my-contexts/', QuizManagerContextsListView.as_view(), name='quiz-manager-context-list'),
-    # path('quiz-managers/my-challenges/', QuizManagerChallengesFilterView.as_view(), name='quiz-manager-my-challenges-list'),
 ]

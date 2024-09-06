@@ -65,11 +65,7 @@ class e_Context(models.Model):
     isPublic = models.BooleanField(default=False)
     description = models.TextField(blank=True) # TODO: Change this to default (blank=False)!!!!
 
-    # Members
-    # moderators = models.ManyToManyField(User, through='ModeratorMembership', related_name='moderators')
-    # eventManagers = models.ManyToManyField(User, through='EventManagerMembership', related_name='event_managers')
-
-    # Moderators or Event Managers (have permissions on a Context level)
+    # Moderators (Context-level membership)
     members = models.ManyToManyField(User, through='ContextMembership', related_name='members')
 
     # Context detail
@@ -127,13 +123,6 @@ class ContextMembership(models.Model):
     class Meta:
         verbose_name = 'Context membership'
         verbose_name_plural = 'Context\'s memberships'
-    
-    # @property
-    # def permission_name(self):
-    #     if self.permission == 'context_quizManager':
-    #         return 'Context Event Manager'
-    #     else:
-    #         return 'Moderator'
 
     def __str__(self):
         # return f"{self.permission_name} {self.user} ({self.context})"
