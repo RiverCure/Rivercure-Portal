@@ -1,7 +1,7 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django_filters.views import FilterView
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.core import serializers
 
@@ -9,12 +9,11 @@ from common.utils import is_mobile
 from notifications.signals import notify
 
 from django.core.files import File
-from django.views.generic import ListView, CreateView, DetailView, DeleteView
+from django.views.generic import CreateView, DetailView, DeleteView
 from django.utils.translation import gettext_lazy as _
 
 from django.db.models.base import Model as Model
 from django.contrib.gis.geos import Point
-from django.db.models.query import QuerySet
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -33,12 +32,6 @@ from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
 from context.views.mesh import check_celery
-
-
-# class AllContributionsListView(LoginRequiredMixin, ListView):
-#     model = e_ContextContribution
-#     template_name = 'contributions/contribution_list.html'
-
 
 
 class ContributionCreateView(LoginRequiredMixin, CreateView):
@@ -62,13 +55,6 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         
         return context
 
-    # def post(self, request, *args, **kwargs):
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-    #     if form.is_valid():
-    #         return self.form_valid(form)
-    #     else:
-    #         return self.form_invalid(form)
     def form_invalid(self, form):
         messages.error(self.request, _('There is an error in the submission form. Please check what field(s) need to be adjusted.'))
         return super().form_invalid(form)

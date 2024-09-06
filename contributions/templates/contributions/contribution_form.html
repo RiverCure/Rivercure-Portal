@@ -107,31 +107,7 @@
             domain.addTo(map);
             //}
             
-            /*
-            // Try to find the user's current location
-            map.locate({setView: false});
             
-            // On success (of finding user's location)
-            map.on('locationfound', function (e) {
-                // Put a marker
-                var userLocationIcon = L.icon({
-                    iconUrl: '{% static 'rivercureportal/icons/user-location.png' %}',
-                    iconSize: [35, 35],
-                    iconAnchor: [15, 30],
-                    popupAnchor: [-3, -76],
-                });
-                var userMarker = L.marker([0,0], {icon: userLocationIcon}).addTo(map);
-                userMarker.setLatLng(e.latlng);
-            });
-            */
-                
-            /*
-            // On error (of finding user's location)
-            map.on('locationerror', function (e) {
-                marker.setLatLng([38.722252, -9.139337]);
-                map.setZoom(17);
-            });
-            */
 
             var lat = document.querySelector('#id_lat');
             var lng = document.querySelector('#id_lng');
