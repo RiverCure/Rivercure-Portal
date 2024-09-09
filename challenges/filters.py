@@ -2,8 +2,10 @@ import django_filters
 
 from django_filters.widgets import RangeWidget
 
-from django.forms.widgets import TextInput
+from django.forms.widgets import TextInput, Select
 from django.utils.translation import gettext_lazy as _
+
+from organization.models import Organization
 
 from .models import e_Challenge, e_ChallengeAnswer, DIFFICULTY_LEVEL
 
@@ -53,3 +55,25 @@ class ChallengesFilter(django_filters.FilterSet):
     class Meta:
             Model = e_Challenge
             fields = ['title', 'event', 'difficulty_level']
+
+class PublicChallengesFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(label=_('Title'),
+                                      field_name='title', lookup_expr='icontains',
+                                      widget=TextInput(attrs={
+                                                    'placeholder': _('Search by Quiz name...'),
+                                                    'type': 'search',
+                                                }))
+    event = django_filters.CharFilter(label=_('Event'),
+                                      field_name='event__Name', lookup_expr='icontains',
+                                      widget=TextInput(attrs={
+                                                    'placeholder': _('Search by Event title...'),
+                                                    'type': 'search',
+                                                }))
+    organization = django_filters.ModelChoiceFilter(label=_('Organization'), queryset=Organization.objects.all(),
+                                                    widget=Select(attrs={'class': 'form-control',}))
+    difficulty_level = django_filters.ChoiceFilter(choices=DIFFICULTY_LEVEL,
+                                                   label=_('Difficulty Level'))
+    
+    class Meta:
+            Model = e_Challenge
+            fields = ['title', 'event', 'organization', 'difficulty_level']

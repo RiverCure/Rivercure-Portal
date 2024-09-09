@@ -21,9 +21,9 @@ from rivercureportal.authorization import is_platform_admin
 
 from context.views.authorization import context_quiz_manager_check
 
-from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, Question_Type, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
+from .models import e_Challenge, ChallengeState, e_Question, e_ShortText_Question, e_MultipleChoiceOption_Question, e_TrueFalse_Question, e_ChallengeAnswer, e_QuestionAnswer
 from .forms import ChallengeForm, QuestionForm, QuestionUpdateForm, QuestionShortTextForm, QuestionMultipleChoiceFormSet, QuestionTrueFalseFormSet
-from .filters import MyChallengeParticipationsFilter, ChallengeParticipationsFilter, ChallengesFilter
+from .filters import MyChallengeParticipationsFilter, ChallengeParticipationsFilter, ChallengesFilter, PublicChallengesFilter
 
 
 # Page to create a Challenge for an Event
@@ -160,7 +160,7 @@ class OrganizationChallengesFilterView(LoginRequiredMixin, UserPassesTestMixin, 
 class PublicChallengesFilterView(FilterView):
     model = e_Challenge
     template_name = 'challenges/public_challenges_list.html'
-    filterset_class = ChallengesFilter
+    filterset_class = PublicChallengesFilter
     context_object_name = 'challenges'
     paginate_by = 9
 

@@ -412,13 +412,17 @@
             <p class="font-weight-light" align="justify">{{ contribution.observationDescription }}</p>
 
             {% if contribution.situationObserved == "FLOOD" %}
-            <hr>
-            <p>{% trans "Transit Time of Floating Objects" %}: <span class="font-weight-light">{{contribution.floating_objects_time}}</span></p>
-            <p>{% trans "Water Height" %}: <span class="font-weight-light">{{contribution.water_height}} {% trans "meters" %}</span></p>
+                {% if contribution.floating_objects_time %}
+                    <hr>
+                    <p>{% trans "Transit Time of Floating Objects" %}: <span class="font-weight-light">{{contribution.floating_objects_time}} (HH:MM:SS) </span></p>
+                {% endif %}
+                {% if contribution.water_height %}<p>{% trans "Water Height" %}: <span class="font-weight-light">{{contribution.water_height}} {% trans "meters" %}</span></p>{% endif %}
             {% elif contribution.situationObserved == "TORNADO" %}
-            <hr>
-            <p>{% trans "Velocity" %}: <span class="font-weight-light">{{contribution.velocity}} km/h</span></p>
-            <p>{% trans "Tornado Type" %}: <span class="font-weight-light">{{contribution.tornado_type}}</span></p>
+                {% if contribution.velocity %}
+                    <hr>
+                    <p>{% trans "Velocity" %}: <span class="font-weight-light">{{contribution.velocity}} km/h</span></p>
+                {% endif %}
+                {% if contribution.tornado_type %}<p>{% trans "Tornado Type" %}: <span class="font-weight-light">{{contribution.tornado_type}}</span></p>{% endif %}
             {% endif %}
         </div>
 

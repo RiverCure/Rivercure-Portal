@@ -41,7 +41,7 @@
             <h4 class="font-weight-light"><strong>{% trans "Max Score" %}:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
             <hr>
             {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform" %}{% else %}{% trans "Organization" %}{% endif %} </p>{% endif %}
-            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
+            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Quiz last opened by Manager on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
             {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Automatically closes on" %} {{ challenge.automatic_close_datetime }}.</p>{% endif %}
             {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Quiz is closed." %}</p>{% endif %}
         </div>
