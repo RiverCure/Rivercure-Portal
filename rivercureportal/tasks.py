@@ -9,7 +9,7 @@ def send_contact_email(self, contact):
             subject=contact['subject'],
             message=contact['message'],
             from_email=contact['from_email'],
-            recipient_list=['to@email.com'],  #TODO: Put the real one
+            recipient_list=['rivercure.geral@gmail.com'],
         )
     except:
         raise Exception("Error sending Contact email")

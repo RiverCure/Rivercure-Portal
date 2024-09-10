@@ -611,10 +611,8 @@ msgid "Apply"
 msgstr "Aplicar"
 
 #: challenges/templates/challenges/challenge_participations_list.html:47
-#, fuzzy
-#| msgid "There are no Contributions."
 msgid "There are no participations."
-msgstr "Não existem Contribuições."
+msgstr "Não existem participações."
 
 #: challenges/templates/challenges/challenge_participations_list.html:62
 #: challenges/templates/challenges/org_challenges_list.html:70
@@ -971,16 +969,12 @@ msgid "Started on"
 msgstr "Começou a"
 
 #: context/templates/context/event/challenge_list.html:20
-#, fuzzy
-#| msgid "On this page you can see all the Quizzes from Organization"
 msgid "On this page you can see the Quizzes published for this Event."
-msgstr "Nesta página, pode ver todos os Quizzes da Organização"
+msgstr "Nesta página, pode ver todos os Quizzes publicados para este Evento."
 
 #: context/templates/context/event/challenge_list.html:64
-#, fuzzy
-#| msgid "There are no Events for this Context."
 msgid "There are no published Quizzes in this Event yet."
-msgstr "Não existem Eventos para este Contexto."
+msgstr "Ainda não existem Quizzes publicados neste Evento"
 
 #: context/templates/context/event/detail.html:6
 msgid "Context Event Detail"

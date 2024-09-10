@@ -97,31 +97,33 @@
                 
             {% endfor %}
 
-            {% if question.is_true_false or question.is_multiple_choice %}
-                <p class="mb-2 mt-3 font-weight-normal">{% trans "Correct Answer" %}</p>
+            {% if show_answers %}
+                {% if question.is_true_false or question.is_multiple_choice %}
+                    <p class="mb-2 mt-3 font-weight-normal">{% trans "Correct Answer" %}</p>
 
-                <!-- MC -->
-                {% if question.is_multiple_choice %}
-                    {% for mc_option in question.multiple_choice_option_question.all %}
-                        <div class="question-box mb-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="font-weight-light m-2">{{mc_option.content}}</p>
-                                <div class="m-2">{% if mc_option.is_correct %}<i class="bi bi-check-lg text-success"></i>{% else %}<i class="bi bi-x-lg text-danger"></i>{% endif %}</div>
+                    <!-- MC -->
+                    {% if question.is_multiple_choice %}
+                        {% for mc_option in question.multiple_choice_option_question.all %}
+                            <div class="question-box mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <p class="font-weight-light m-2">{{mc_option.content}}</p>
+                                    <div class="m-2">{% if mc_option.is_correct %}<i class="bi bi-check-lg text-success"></i>{% else %}<i class="bi bi-x-lg text-danger"></i>{% endif %}</div>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
-                <!-- TF -->
-                {% if question.is_true_false %}
-                    {% for tf_option in question.true_false_question.all %}
-                        <div class="question-box mb-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="font-weight-light m-2">{{tf_option.content}}</p>
-                                <div class="m-2">{% if tf_option.value %}<span class="text-primary">{% trans "True" %}</span>{% else %}<span class="text-warning">{% trans "False" %}</span>{% endif %}</div>
+                    <!-- TF -->
+                    {% if question.is_true_false %}
+                        {% for tf_option in question.true_false_question.all %}
+                            <div class="question-box mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <p class="font-weight-light m-2">{{tf_option.content}}</p>
+                                    <div class="m-2">{% if tf_option.value %}<span class="text-primary">{% trans "True" %}</span>{% else %}<span class="text-warning">{% trans "False" %}</span>{% endif %}</div>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
 

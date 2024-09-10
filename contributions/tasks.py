@@ -48,7 +48,7 @@ def send_contribution_submit_confirmation(self, contribution):
         send_mail(
             subject=f'Contribution {contribution.id} submitted successfully!',
             message=f'Your Contribution {contribution.id} has been successfully submitted to Context {contribution.context.Name}. You will be notified once it has been accepted or rejected.',
-            from_email=None, # TODO: Is this working?
+            from_email=None,
             recipient_list=contribution.createdBy.email,
         )
     except:

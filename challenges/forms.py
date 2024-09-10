@@ -22,10 +22,10 @@ class ChallengeForm(forms.ModelForm):
     is_public = forms.BooleanField(label=_('Is Public'),
                                    help_text=_('If Quiz is Public, every logged-in user can participate in it. If it isn\'t, only members of the Organization can.'),
                                    required=False)
-    automatic_close_datetime = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','min': datetime.now().date()}),
-                                              help_text=_('If specified, the Quiz will be automatically closed on this date.'),
-                                              label=_('Automatic Closing Date'),
-                                              required=False)
+    # automatic_close_datetime = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','min': datetime.now().date()}),
+    #                                           help_text=_('If specified, the Quiz will be automatically closed on this date.'),
+    #                                           label=_('Automatic Closing Date'),
+    #                                           required=False)
     when_close_show_correct_answers = forms.BooleanField(help_text=_('If yes, correct answers will only be shown to participating users when the Quiz is closed.'),
                                                          label=_('Only show correct answers when closed?'),
                                                          required=False)
@@ -34,7 +34,7 @@ class ChallengeForm(forms.ModelForm):
 
     class Meta:
         model = e_Challenge
-        fields = ['id', 'title', 'difficulty_level', 'is_public', 'automatic_close_datetime', 'when_close_show_correct_answers', 'max_participations']
+        fields = ['id', 'title', 'difficulty_level', 'is_public', 'when_close_show_correct_answers', 'max_participations']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

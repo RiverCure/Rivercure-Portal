@@ -47,7 +47,7 @@ class e_Challenge(models.Model):
     publish_state = FSMField(choices=ChallengePublishState.choices, default=ChallengePublishState.CLOSED, protected=True) # Sub-state related to PUBLISHED state
     open_datetime = models.DateTimeField(null=True, blank=True) # Date when Challenge was opened (aka published)
     close_datetime = models.DateTimeField(null=True, blank=True) # Date when Challenge was closed
-    automatic_close_datetime = models.DateTimeField(null=True, blank=True) # If this exists, then Challenge will become automatically closed on this date # TODO: Comment this and related stuff. Not implemented
+    # automatic_close_datetime = models.DateTimeField(null=True, blank=True) # If this exists, then Challenge will become automatically closed on this date # TODO: Comment this and related stuff. Not implemented
     when_close_show_correct_answers = models.BooleanField(default=False) # If True, only show correct answers to users when Challenge is in sub-state CLOSED
 
     # Information
