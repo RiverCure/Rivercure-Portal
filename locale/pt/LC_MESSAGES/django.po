@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-09 16:00+0100\n"
+"POT-Creation-Date: 2024-09-10 09:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -694,7 +694,7 @@ msgstr "Adicionar Opção"
 msgid "Update Question"
 msgstr "Adicionar Questão"
 
-#: challenges/views.py:55 challenges/views.py:102 contributions/views.py:59
+#: challenges/views.py:55 challenges/views.py:102 contributions/views.py:61
 msgid ""
 "There is an error in the submission form. Please check what field(s) need to "
 "be adjusted."
@@ -1463,6 +1463,10 @@ msgstr "Latitude"
 msgid "Longitude"
 msgstr "Longitude"
 
+#: contributions/templates/contributions/contribution_detail.html:477
+msgid "Search by LocationIQ.com"
+msgstr "Procura por LocationIQ.com"
+
 #: contributions/templates/contributions/contribution_detail.html:511
 msgid "Report"
 msgstr "Reportar"
@@ -1658,11 +1662,11 @@ msgstr ""
 "Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
 "rejeitar esta Contribuição."
 
-#: contributions/views.py:117
+#: contributions/views.py:119
 msgid "Video needs to be longer than 1 second in order to have a thumbnail."
 msgstr "O vídeo precisa ter mais de 1 segundo para que tenha uma miniatura."
 
-#: contributions/views.py:137
+#: contributions/views.py:139
 msgid ""
 "Thank you for submitting your Contribution! Your participation is very "
 "valuable to the RiverCure Portal."
@@ -1670,11 +1674,11 @@ msgstr ""
 "Obrigado por submeter a sua Contribuição! A sua participação é muito valiosa "
 "para o Portal RiverCure."
 
-#: contributions/views.py:190
+#: contributions/views.py:192
 msgid "You can't see this page!"
 msgstr "Não pode participar ver esta págnia!"
 
-#: contributions/views.py:302
+#: contributions/views.py:306
 msgid "Background process offline: Contact admin."
 msgstr "Processo em segundo plano offline: Contacte o administrador."
 
@@ -1978,14 +1982,16 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
+#, fuzzy
+#~| msgid "Search"
+#~ msgid "Search by"
+#~ msgstr "Procurar"
+
 #~ msgid "Last opened on"
 #~ msgstr "Aberto pela última vez a"
 
 #~ msgid "Challenge Title"
 #~ msgstr "Título do Desafio"
-
-#~ msgid "Search by title..."
-#~ msgstr "Procurar por título..."
 
 #~ msgid "Search by Event name..."
 #~ msgstr "Procurar por nome do Evento..."

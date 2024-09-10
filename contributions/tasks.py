@@ -24,7 +24,6 @@ def lat_long_to_address(self, contribution_id):
 
         # Call API
         # We are using LocationIQ API
-        # TODO: Make sure we are following all the directives of the free plan
         api_url = "https://eu1.locationiq.com/v1/reverse?key={}&lat={}&lon={}&format=json&".format(os.getenv('REVGEO_API_KEY', ''), lat, long)
         headers = {"accept": "application/json"}
 

@@ -147,6 +147,8 @@ class HydroFeatureDetailView(DetailView):
         
         return context
 
+
+# !! No longer used
 class HydroFeatureContextsListView(ListView):
     model = e_Context
     template_name = 'rivercureportal/hydrofeature_context_list.html'
@@ -166,7 +168,6 @@ class HydroFeatureContextsListView(ListView):
         return context_list
     
 
-    # TODO: Filtering not working?
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

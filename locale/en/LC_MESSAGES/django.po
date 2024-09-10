@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-09 16:00+0100\n"
+"POT-Creation-Date: 2024-09-10 09:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -665,7 +665,7 @@ msgstr ""
 msgid "Update Question"
 msgstr ""
 
-#: challenges/views.py:55 challenges/views.py:102 contributions/views.py:59
+#: challenges/views.py:55 challenges/views.py:102 contributions/views.py:61
 msgid ""
 "There is an error in the submission form. Please check what field(s) need to "
 "be adjusted."
@@ -1381,6 +1381,10 @@ msgstr ""
 msgid "Longitude"
 msgstr ""
 
+#: contributions/templates/contributions/contribution_detail.html:477
+msgid "Search by LocationIQ.com"
+msgstr ""
+
 #: contributions/templates/contributions/contribution_detail.html:511
 msgid "Report"
 msgstr ""
@@ -1544,21 +1548,21 @@ msgid ""
 "this Contribution."
 msgstr ""
 
-#: contributions/views.py:117
+#: contributions/views.py:119
 msgid "Video needs to be longer than 1 second in order to have a thumbnail."
 msgstr ""
 
-#: contributions/views.py:137
+#: contributions/views.py:139
 msgid ""
 "Thank you for submitting your Contribution! Your participation is very "
 "valuable to the RiverCure Portal."
 msgstr ""
 
-#: contributions/views.py:190
+#: contributions/views.py:192
 msgid "You can't see this page!"
 msgstr ""
 
-#: contributions/views.py:302
+#: contributions/views.py:306
 msgid "Background process offline: Contact admin."
 msgstr ""
 
