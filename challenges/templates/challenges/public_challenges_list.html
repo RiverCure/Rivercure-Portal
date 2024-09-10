@@ -47,7 +47,7 @@
                 </div>
                 <div class="card-footer text-muted">
                     <div class="d-flex justify-content-between">
-                        <p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Created by" %} {{ challenge.created_by }}</p>
+                        <p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Created by" %} {{ challenge.created_by }} ({{challenge.organization}})</p>
                         {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">{% trans "Event" %}: {{ challenge.event.Name }}</p>{% endif %}
                     </div>
                 </div>

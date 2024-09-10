@@ -41,15 +41,15 @@ def lat_long_to_address(self, contribution_id):
             raise Exception()
 
 
-@shared_task(bind=True)
-def send_contribution_submit_confirmation(self, contribution):
+# @shared_task(bind=True)
+# def send_contribution_submit_confirmation(self, contribution):
 
-    try:
-        send_mail(
-            subject=f'Contribution {contribution.id} submitted successfully!',
-            message=f'Your Contribution {contribution.id} has been successfully submitted to Context {contribution.context.Name}. You will be notified once it has been accepted or rejected.',
-            from_email=None,
-            recipient_list=contribution.createdBy.email,
-        )
-    except:
-        raise Exception("Error sending email")
+#     try:
+#         send_mail(
+#             subject=f'Contribution {contribution.id} submitted successfully!',
+#             message=f'Your Contribution {contribution.id} has been successfully submitted to Context {contribution.context.Name}. You will be notified once it has been accepted or rejected.',
+#             from_email=None,
+#             recipient_list=contribution.createdBy.email,
+#         )
+#     except:
+#         raise Exception("Error sending email")

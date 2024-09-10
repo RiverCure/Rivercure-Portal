@@ -123,10 +123,17 @@
                                         <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
                                     </a>
                                 {% elif notification.description == "contribution" %}
-                                    <a class="dropdown-item text-wrap mb-0" href="{% url 'contribution-detail' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
-                                        <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
-                                        <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
-                                    </a>
+                                    {% if notification.action_object %}
+                                        <a class="dropdown-item text-wrap mb-0" href="{% url 'contribution-detail' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
+                                            <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                            <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-wrap mb-0" href="#" type="button">
+                                            <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                            <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                        </a>
+                                    {% endif %}
                                 {% else %}
                                     <a class="dropdown-item text-wrap mb-0" href="{% url 'organization-manage' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
                                         <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>

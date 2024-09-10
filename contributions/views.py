@@ -7,6 +7,7 @@ from django.core import serializers
 
 from common.utils import is_mobile
 from notifications.signals import notify
+from notifications.models import Notification
 
 from django.core.files import File
 from django.views.generic import CreateView, DetailView, DeleteView
@@ -27,7 +28,7 @@ from .models import e_ContextContribution, e_ContributionAttachment, Contributio
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
-from .tasks import lat_long_to_address, send_contribution_submit_confirmation
+from .tasks import lat_long_to_address
 from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
@@ -136,7 +137,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         # Send success message (to be shown in detail page)
         messages.success(self.request, _('Thank you for submitting your Contribution! Your participation is very valuable to the RiverCure Portal.'))
 
-        # TODO: Uncomment
+        # Send success email
         # send_contribution_submit_confirmation(new_contribution)
 
         return super().form_valid(form)
@@ -171,44 +172,60 @@ class ContributionFilterView(FilterView):
 
 
 
-class ContributionDetailView(DetailView):
+class ContributionDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = e_ContextContribution
     template_name = 'contributions/contribution_detail.html'
     pk_url_kwarg = 'contributionId'
     context_object_name = 'contribution'
 
-    # We override this method because we want to control who gets to see this page
-    # As seen in: https://stackoverflow.com/a/42653231/12387341
-    def get_object(self, queryset=None):
-        contribution = super().get_object(queryset)
-
+    def test_func(self):
+        contribution = get_object_or_404(e_ContextContribution, pk=self.kwargs['contributionId'])
+        print(contribution.state)
         # If Contribution is PENDING or REJECTED
         if contribution.state != ContributionStatus.ACCEPTED:
             # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
             if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization) or is_platform_admin(self.request.user)):
                 # Then the user should not get access to the page
-                messages.error(self.request, _('You can\'t see this page!'))
-                return redirect('my-contributions')
+                return False
         
-        # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
-        return contribution
+        return True
+
+
+    # # We override this method because we want to control who gets to see this page
+    # # As seen in: https://stackoverflow.com/a/42653231/12387341
+    # def get_object(self, queryset=None):
+    #     # contribution = super().get_object(queryset)
+    #     contribution = get_object_or_404(e_ContextContribution, pk=self.kwargs['contributionId'])
+
+    #     # If Contribution is PENDING or REJECTED
+    #     if contribution.state != ContributionStatus.ACCEPTED:
+    #         # And if user is not author OR moderator OR context manager OR org manager (of the contribution's context and organization)
+    #         if not (author_of_contribution_check(self.request.user, contribution) or context_moderator_check(self.request.user, contribution.context) or context_organization_edit_permission_check(self.request.user, contribution.context.organization) or is_platform_admin(self.request.user)):
+    #             # Then the user should not get access to the page
+    #             messages.error(self.request, _('You can\'t see this page!'))
+    #             return redirect('my-contributions')
+        
+    #     # Otherwise (Contribution is ACCEPTED or user has correct permissions) then just show it
+    #     return contribution
                 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        user = self.request.user
-        org = self.get_object().context.organization
+        contribution = get_object_or_404(e_ContextContribution, pk=self.kwargs['contributionId'])
 
-        context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=self.get_object().pk)
+        user = self.request.user
+        org = contribution.context.organization
+
+        context['contribution_media_list'] = e_ContributionAttachment.objects.filter(contribution=contribution.pk)
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['isContextOrOrgManager'] = context_organization_edit_permission_check(user, org)
-        context['isMod'] = context_moderator_check(self.request.user, self.get_object().context.code)
+        context['isMod'] = context_moderator_check(self.request.user, contribution.context.code)
         context['form'] = RejectionForm()
         context['report_form'] = ReportForm()
-        context['reports'] = e_ContributionReport.objects.filter(contribution=self.get_object().pk).order_by('-report_datetime')
-        context['validations'] = e_ContributionValidation.objects.filter(contribution=self.get_object().pk).order_by('-validation_datetime')
-        context['nextContribution'] = e_ContextContribution.objects.filter(context=self.get_object().context.code, state=ContributionStatus.PENDING).order_by('creationDateTime').first()
+        context['reports'] = e_ContributionReport.objects.filter(contribution=contribution.pk).order_by('-report_datetime')
+        context['validations'] = e_ContributionValidation.objects.filter(contribution=contribution.pk).order_by('-validation_datetime')
+        context['nextContribution'] = e_ContextContribution.objects.filter(context=contribution.context.code, state=ContributionStatus.PENDING).order_by('creationDateTime').first()
         context['is_mobile'] = is_mobile(self.request)
         return context
     
@@ -241,6 +258,14 @@ class ContributionDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
     pk_url_kwarg = 'contributionId'
     success_url = reverse_lazy('my-contributions')
     context_object_name = 'contribution'
+
+    def form_valid(self, form):
+        # Make sure all notifications are read
+        notifications = self.request.user.notifications.unread()
+        if notifications.exists():
+            notifications.mark_all_as_read()
+
+        return super(ContributionDeleteView,self).form_valid(form)
 
     def test_func(self):
         # Author, Event Manager or Platform Admin can delete the Contribution
@@ -392,7 +417,7 @@ def report_contribution_condition(contribution):
 
     # if not all_reports:
     #     return True
-    return all_reports.count() > 5
+    return all_reports.count() > 3
 
 # Helper functions
 def handle_uploaded_file(contribution, uploaded_file):

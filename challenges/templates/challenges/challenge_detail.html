@@ -278,7 +278,12 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
     <!-- See Org Challenge List -->
     {% comment %} <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a> {% endcomment %}
-    <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">{% trans "See Organization Challenges" %}</a>
+    <div>
+        {% if belongs_to_org %}
+            <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">{% trans "See Organization Challenges" %}</a>
+        {% endif %}
+        <a class="btn btn-secondary" href="{% url 'public-challenge-list' %}">{% trans "See Public Challenges" %}</a>
+    </div>
     {% if challenge.event %}
         <!-- See Event -->
         <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">{% trans "See Event" %}</a>

@@ -197,6 +197,7 @@ class ChallengeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['canParticipate'] = challenge.is_open() and user_participations < challenge.max_participations
         context['MEDIA_URL'] = settings.MEDIA_URL
         context['is_mobile'] = is_mobile(self.request)
+        context['belongs_to_org'] = belongs_to_organization(self.request.user, challenge.organization)
 
         return context
     
