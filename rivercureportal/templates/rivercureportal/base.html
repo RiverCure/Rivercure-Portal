@@ -63,29 +63,19 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             <a class="dropdown-item disabled" href="#">{% trans "Organization" %}</a>
-                                            <a class="dropdown-item" href="{% url 'context-list' %}">{% trans "Contexts" %}</a>
-                                            <a class="dropdown-item" href="{% url 'sensor-list' %}">{% trans "Sensors" %}</a>
+                                            <a class="dropdown-item" href="{% url 'context-list' %}"><span class="ml-2"></span>{% trans "Contexts" %}</a>
+                                            <a class="dropdown-item" href="{% url 'sensor-list' %}"><span class="ml-2"></span>{% trans "Sensors" %}</a>
                                             {% if request.session.organizationCode %}
-                                            <a class="dropdown-item" href="{% url 'org-challenge-list' org_id=request.session.organizationCode %}">{% trans "Quizzes" %}</a>
+                                            <a class="dropdown-item" href="{% url 'org-challenge-list' org_id=request.session.organizationCode %}"><span class="ml-2"></span>{% trans "Quizzes" %}</a>
                                             {% endif %}
                                             {% if user|is_mod %}
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item disabled" href="#">{% trans "Moderator" %}</a>
-                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}">{% trans "My Contexts" %}</a>
+                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}"><span class="ml-2"></span>{% trans "My Contexts" %}</a>
                                             {% endif %}
                                         </div>
                                     </li>
                                 {% endif %}
-                                {% comment %} {% if user|is_mod %}
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Moderation
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item" href="{% url 'moderator-context-list' %}">My Contexts</a>
-                                        </div>
-                                    </li>
-                                {% endif %} {% endcomment %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Portal
