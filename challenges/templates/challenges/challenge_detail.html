@@ -30,14 +30,14 @@
             <h2 class="mt-3">
                 {% trans "Quiz" %} "{{ challenge.title }}"
                 {% if canManage %}
-                    <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
+                    <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.get_state_display }}</span>
                 {% endif %}
                 {% if challenge.is_published %}
-                    <span class="badge {{challenge.publish_state|bootstrap_badge_publish_state}} text-white">{{ challenge.publish_state|title }}</span>
+                    <span class="badge {{challenge.publish_state|bootstrap_badge_publish_state}} text-white">{{ challenge.publish_get_state_display }}</span>
                 {% endif %}
             </h2>
             <hr>
-            <h4 class="font-weight-light mb-3"><strong>{% trans "Difficulty" %}:</strong> <span class="text-info">{{ challenge.difficulty_level|title }}</span></h4>
+            <h4 class="font-weight-light mb-3"><strong>{% trans "Difficulty" %}:</strong> <span class="text-info">{{ challenge.get_difficulty_level_display }}</span></h4>
             <h4 class="font-weight-light"><strong>{% trans "Max Score" %}:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
             <hr>
             {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform" %}{% else %}{% trans "Organization" %}{% endif %} </p>{% endif %}

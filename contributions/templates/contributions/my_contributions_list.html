@@ -41,9 +41,8 @@
                     <div class="my-card-contribution-no-thumbnail-img" style="border-radius: 0.4em 0.4em 0 0;"></div>
                 {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ contribution.situationObserved|title }}</h5>
-                    {% comment %} <h6 class="font-weight-light"><span class="text-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.state|title }}</span></h6> {% endcomment %}
-                    <h6 class="font-weight-light"> <span class="badge badge-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.state|title }}</span></h6>
+                    <h5 class="card-title">{{ contribution.get_situationObserved_display }}</h5>
+                    <h6 class="font-weight-light"> <span class="badge badge-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.get_state_display }}</span></h6>
                     <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
                 </div>
             </div>

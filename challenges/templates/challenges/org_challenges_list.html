@@ -42,7 +42,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ challenge.title|title }}</h5>
                     <div class="d-flex">
-                        <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.state|title }}</span>
+                        <span class="badge {{challenge.state|bootstrap_badge_state}}">{{ challenge.get_state_display }}</span>
                         <span class="ml-2 badge badge-{% if challenge.is_public %}light{% else %}dark{% endif %}">{% if challenge.is_public %}{% trans "Public" %}{% else %}{% trans "Private" %}{% endif %}</span>
                     </div>
                 </div>

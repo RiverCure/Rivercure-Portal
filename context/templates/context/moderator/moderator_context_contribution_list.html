@@ -94,7 +94,7 @@
                         <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
-                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.get_state_display }}</span></a></td>
                         <td>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="{{contribution.pk}}" name="contribution-checkboxes">
@@ -128,10 +128,10 @@
                     <tr>
                         <!-- We can't make an entire table row clickable. So, I used this workaround: https://stackoverflow.com/a/17147909/12387341 -->
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.pk }}</a></td>
-                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.situationObserved|title }}</a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.get_situationObserved_display }}</a></td>
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.creationDateTime }}</a></td>
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.createdBy }}</a></td>
-                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.state|title }}</span></a></td>
+                        <td><a href="{% url 'contribution-detail' contribution.pk %}"><span class="text-{{contribution.state|get_state_color}}">{{ contribution.get_state_display }}</span></a></td>
                         <td><a href="{% url 'contribution-detail' contribution.pk %}">{{ contribution.total_file_size|floatformat:3 }} Mb</a></td>
                         <td>
                             <div class="form-check">
