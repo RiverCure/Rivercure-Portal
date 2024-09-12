@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-10 16:47+0100\n"
+"POT-Creation-Date: 2024-09-12 09:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,6 @@ msgid "Archived"
 msgstr "Arquivado"
 
 #: challenges/models.py:22
-#: challenges/templates/challenges/challenge_detail.html:137
 msgid "Open"
 msgstr "Aberto"
 
@@ -364,6 +363,11 @@ msgstr ""
 "os utilizadores, mas eles <span class='font-weight-bold'>não</span> poderão "
 "participar nele."
 
+#: challenges/templates/challenges/challenge_detail.html:137
+msgctxt "Open the Quiz"
+msgid "Open"
+msgstr "Abrir"
+
 #: challenges/templates/challenges/challenge_detail.html:144
 msgid "Open Quiz"
 msgstr "Abrir Quiz"
@@ -432,14 +436,14 @@ msgstr "Ver Participações"
 msgid "See Organization Challenges"
 msgstr "Ver Desafios da Organização"
 
-#: challenges/templates/challenges/challenge_detail.html:289
+#: challenges/templates/challenges/challenge_detail.html:287
+msgid "See Public Challenges"
+msgstr "Ver Desafios Públicos"
+
+#: challenges/templates/challenges/challenge_detail.html:291
 #: context/templates/context/event/challenge_list.html:70
 msgid "See Event"
 msgstr "Ver Evento"
-
-#: challenges/templates/challenges/challenge_detail.html:292
-msgid "See Public Challenges"
-msgstr "Ver Desafios Públicos"
 
 #: challenges/templates/challenges/challenge_form.html:3
 msgid "Create"
