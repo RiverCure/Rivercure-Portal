@@ -232,7 +232,7 @@ class e_ContributionAttachment(models.Model):
 # For Validation History
 # Keep a record of every validation state the Contribution has been in
 class e_ContributionValidation(models.Model):
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete validation from DB if parent contribution is deleted TODO: Delete null=true
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE) # Delete validation from DB if parent contribution is deleted
     state = models.CharField(max_length=30, choices=ContributionStatus.choices)
     validated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="validated_by")
     validation_datetime =  models.DateTimeField(auto_now_add=True)
@@ -247,7 +247,7 @@ class e_ContributionValidation(models.Model):
 
 # Keep a record of every report made to a Contribution
 class e_ContributionReport(models.Model):
-    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE, null=True) # Delete report from DB if parent contribution is deleted TODO: Delete null=true
+    contribution = models.ForeignKey(e_ContextContribution, on_delete=models.CASCADE) # Delete report from DB if parent contribution is deleted
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     report_datetime = models.DateTimeField(auto_now_add=True)
     reason = models.TextField()

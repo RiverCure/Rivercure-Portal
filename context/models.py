@@ -63,7 +63,7 @@ class e_Context(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     create_date = models.DateTimeField()
     isPublic = models.BooleanField(default=False)
-    description = models.TextField(blank=True) # TODO: Change this to default (blank=False)!!!!
+    description = models.TextField(blank=True)
 
     # Moderators (Context-level membership)
     members = models.ManyToManyField(User, through='ContextMembership', related_name='members')
