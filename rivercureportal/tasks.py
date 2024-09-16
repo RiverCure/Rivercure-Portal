@@ -9,7 +9,7 @@ def send_contact_email(self, contact):
             subject=contact['subject'],
             message=contact['message'],
             from_email=contact['from_email'],
-            recipient_list=['rivercure.geral@gmail.com'],
+            recipient_list=['rivercure@outlook.pt'],
         )
     except:
         raise Exception("Error sending Contact email")
