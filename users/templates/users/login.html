@@ -1,6 +1,7 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Login {% endblock %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
 
@@ -14,12 +15,12 @@
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Log In</button>
             <small class="text-muted ml-2">
-                <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                <a href="{% url 'password_reset' %}">{% trans "Forgot Password?" %}</a>
             </small>
         </div>
     </form>
     <div class="border-top pt-3">
-        <small class="text-muted"> Need An Account? <a class="ml-2" href="{% url 'register' %}">Sign Up Now</a> </small>
+        <small class="text-muted"> {% trans "Need An Account?" %} <a class="ml-2" href="{% url 'register' %}">{% trans "Sign Up Now" %}</a> </small>
     </div>
 </div>
 

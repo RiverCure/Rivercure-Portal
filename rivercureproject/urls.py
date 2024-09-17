@@ -13,17 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.contrib.auth import views as auth_views
-
-from django.urls import path, re_path, include
-from users import views as users_views
-from django.conf import settings
-from django.conf.urls.static import static
 import notifications.urls
 
+from django.urls import path, re_path, include
+from django.conf import settings
+from django.contrib import admin
 
-urlpatterns = [
+from django.contrib.auth import views as auth_views
+
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
+
+from users import views as users_views
+
+
+
+urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
     path('register/', users_views.register, name='register'),
     path('profile/', users_views.profile, name='profile'),
@@ -44,13 +49,15 @@ urlpatterns = [
     path('sensors/', include('sensors.urls')),
     path('context/raster/', include('raster.urls')),
     path('organization/', include('organization.urls')),
+    path('contributions/', include('contributions.urls')),
+    path('challenges/', include('challenges.urls')),
 
     re_path(r'^inbox/notifications/',
         include(notifications.urls, namespace='notifications')),
 
     # the endpoint is configurable
     re_path(r'^celery-progress/', include('celery_progress.urls')),
-]
+)
 
 if settings.DEBUG is True:
     urlpatterns += static(settings.STATIC_URL,

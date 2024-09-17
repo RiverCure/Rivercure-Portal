@@ -1,0 +1,252 @@
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+
+from django.db.models import Case, When, Value, Count
+from django.utils.translation import gettext_lazy as _
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
+from notifications.signals import notify
+from django_filters.views import FilterView
+
+from .authorization import *
+from .prepare_files import *
+
+from ..models import e_Context, ContextMembership
+from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
+
+from organization.models import Membership
+from organization.authorization import belongs_to_organization
+
+from contributions.models import e_ContextContribution, ContributionStatus
+from contributions.views import accept_contribution, reject_contribution
+
+from common.utils import is_mobile
+
+class ModeratorFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/moderator/moderator_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name']
+    pk_url_kwarg = 'contextCode'
+    filterset_class = ModeratorFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        members = ContextMembership.objects.filter(context=_context, permission='context_moderator')
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        context_code = self.kwargs['contextCode']
+        _context = e_Context.objects.get(pk=context_code)
+
+        context = super(ModeratorFilterView, self).get_context_data(**kwargs)
+        context['context'] = _context
+        context['canEdit'] = context_organization_edit_permission_check(self.request.user, _context.organization) # Only Org or Context Managers can edit Moderators of a Context
+        
+        return context
+    
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return belongs_to_organization(self.request.user, _context.organization)
+
+class ModeratorAddFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = User
+    template_name = 'context/moderator/moderator_add_list.html'
+    context_object_name = 'users'
+    ordering = ['first_name', 'last_name']
+    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+    filterset_class = ModeratorAddFilter
+    paginate_by = 5
+
+    def get_queryset(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        # Only show organization members that are not already context moderator's for that context
+        moderators = ContextMembership.objects.filter(context=_context, permission='context_moderator').values('user')
+        members = Membership.objects.filter(organization=_context.organization).exclude(user__in=moderators)
+
+        return members
+
+    def get_context_data(self, **kwargs):
+        context = super(ModeratorAddFilterView, self).get_context_data(**kwargs)
+        
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        context['context'] =  _context
+
+        return context
+
+    def test_func(self):
+        _context = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        return context_organization_edit_permission_check(self.request.user, _context.organization)
+
+@login_required
+def contextModeratorAdd(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+    user = get_object_or_404(User, pk=userId)
+    organization = _context.organization
+
+    # Make sure only Organization Manager and Context Manager can do this
+    # And that the user belongs to the Org
+    if not context_organization_edit_permission_check(request.user, organization.id) or not belongs_to_organization(user, organization):
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    # Make sure user is not already a Moderator
+    if context_moderator_check(user, _context):
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    if user and _context:
+        member = ContextMembership(user=user, context=_context, permission='context_moderator')
+        member.save()
+
+        notify.send(sender=organization, recipient=user, action_object=_context, description='context',
+                    verb=f"You have been assigned Moderator to Context {_context.Name} by {request.user}")
+
+    return redirect('moderator-list', contextCode)
+
+
+@login_required
+def contextModeratorRemove(request, contextCode, userId):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+
+    # Make sure only Organization Manager and Context Manager can do this
+    if not context_organization_edit_permission_check(request.user, _context.organization.id):
+        return HttpResponseRedirect(reverse('moderator-list', args=[contextCode]))
+    
+    user = get_object_or_404(User, pk=userId)
+    context_membership_user = get_object_or_404(ContextMembership, user=user, context=_context, permission='context_moderator')
+
+    if context_membership_user:
+        context_membership_user.delete()
+
+        notify.send(sender=_context.organization, recipient=user, action_object=_context, description='context',
+                    verb=f"You have been removed as Moderator of Context {_context.Name} by {request.user}")
+    
+    return redirect('moderator-list', contextCode)
+
+class ModeratorContextsFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_Context
+    template_name = 'context/moderator/moderator_my_context_list.html'
+    context_object_name = 'contexts'
+    filterset_class = ModeratorContextFilter
+    paginate_by = 6
+
+    def get_queryset(self):
+        # Get Contexts for which this user is a Moderator
+        # And order them by number of pending contributions (hight to low)
+        pendingContributions = Count("context__e_contextcontribution", filter=Q(context__e_contextcontribution__state=ContributionStatus.PENDING))
+        contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator').annotate(pendingContributions=pendingContributions).order_by('-pendingContributions', 'context__code')
+        # contexts = ContextMembership.objects.filter(user=self.request.user, permission='context_moderator')
+        return contexts
+
+    def get_context_data(self, **kwargs):
+        context = super(ModeratorContextsFilterView, self).get_context_data(**kwargs)
+
+        context['is_mobile'] = is_mobile(self.request)
+
+        return context
+
+    def test_func(self):
+        # User must be a Moderator
+        return general_moderator_check(self.request.user)
+    
+
+
+class ModeratorContextContributionFilterView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = e_ContextContribution
+    template_name = 'context/moderator/moderator_context_contribution_list.html'
+    context_object_name = 'contributions'
+    pk_url_kwarg = 'contextCode' # = self.kwargs['contextCode']
+    filterset_class = ModeratorContextContributionFilter
+    paginate_by = 10
+
+    def get_queryset(self):
+
+        # Get Contributions
+        contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).annotate(cont_state=Case(
+            When(state=ContributionStatus.PENDING, then=Value(True)))
+        ).order_by('cont_state', 'creationDateTime')
+
+        # Sort / Order
+        sort_field = self.request.GET.get('sort') # Get sort from URL (so like: base_url?sort=sort_field)
+        # If there IS a sort field in the URL, then get new ordered queryset
+        if sort_field:
+            if sort_field == 'date_asc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('creationDateTime')
+            elif sort_field == 'date_desc':
+                contributions = e_ContextContribution.objects.filter(context=self.kwargs['contextCode']).order_by('-creationDateTime')
+
+        return contributions
+
+    def get_context_data(self, **kwargs):
+        context = super(ModeratorContextContributionFilterView, self).get_context_data(**kwargs)
+        
+        context['context'] = e_Context.objects.get(pk=self.kwargs['contextCode'])
+        context['is_mobile'] = is_mobile(self.request)
+
+        return context
+
+    def test_func(self):
+        # User must be a Moderator of this Context
+        return context_moderator_check(self.request.user, self.kwargs['contextCode'])
+
+
+@login_required
+def batchHandle(request, contextCode):
+    _context = get_object_or_404(e_Context, pk=contextCode)
+
+    # Make sure only (Context) Moderator can do this
+    if not context_moderator_check(request.user, _context):
+        return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
+    
+    
+    if request.method == "POST":
+
+        # Iterate through list of checked-Contribution IDs
+        contribution_id_list = request.POST.getlist('contribution-checkboxes')
+
+        # Accept Contributions
+        if 'batch-accept' in request.POST:
+            for contribution_id in contribution_id_list:
+                # Get Contribution
+                contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
+
+                # Accept Contribution if it's PENDING or REJECTED
+                if contribution and contribution.can_accept():
+                    accept_contribution(contribution, request.user, request)
+
+                    notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Accepted by {request.user}")
+            
+            # Send message
+            messages.success(request, _('The selected Contributions have been accepted.'))
+            return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
+        
+        # Reject Contributions
+        elif 'batch-reject' in request.POST:
+            for contribution_id in contribution_id_list:
+                # Get Contribution
+                contribution = get_object_or_404(e_ContextContribution, pk=int(contribution_id))
+
+                ## Reject Contribution if it's PENDING or ACCEPTED
+                if contribution and contribution.can_reject():
+                    reject_contribution(contribution, request.user, _("BATCH REJECT"))
+
+                    notify.send(sender=contribution.context.organization, recipient=contribution.createdBy, action_object=contribution, description='contribution',
+                        verb=f"Your Contribution {contribution.id} has been Rejected by {request.user}")
+            
+            # Send message
+            messages.success(request, _('The selected Contributions have been rejected.'))
+            return HttpResponseRedirect(reverse('moderator-context-contribution-list', args=[contextCode]))
+        
+        else:
+            # Do nothing, that is, redirect to 'moderator-context-contribution-list'
+            return redirect('moderator-context-contribution-list', contextCode)
+
+    else: # If it's not a POST request
+        return redirect('moderator-context-contribution-list', contextCode)

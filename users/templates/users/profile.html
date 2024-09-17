@@ -1,6 +1,8 @@
 {% extends "rivercureportal/base.html" %}
 {% block title %} Profile {% endblock %}
+
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
 
@@ -16,11 +18,11 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Profile Info</legend>
+            <legend class="border-bottom mb-4">{% trans "Profile Info" %}</legend>
             {{ u_form|crispy }} {{ p_form|crispy }}
         </fieldset>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Save</button>
+            <button class="btn btn-outline-info" type="submit">{% trans "Save" %}</button>
         </div>
     </form>
 </div>

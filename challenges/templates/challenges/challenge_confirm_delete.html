@@ -1,0 +1,45 @@
+{% extends "rivercureportal/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Delete" %} Quiz {% endblock %}
+{% load static %}
+
+
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- Header -->
+<h1>{% trans "Organization" %} {{ challenge.organization }}</h1>
+{% if challenge.event %}<p><strong>{% trans "Event" %}:</strong> {{ challenge.event.Name }}</p>{% endif %}
+<hr>
+
+<!-- Challenge Header -->
+<div class="my-3">
+
+    <div class="row mx-0 my-contribution-detail-meta-info-card">
+        <div class="col">
+
+            <form method="POST" class="mt-2">
+                {% csrf_token %}
+                <h2 class="my-3">{% trans "Delete Quiz" %} "{{challenge.title}}" <span class="font-weight-lighter text-muted">ID: {{challenge.id}}</span></h2>
+                
+                <hr>
+                <h3 class="mb-3">{% trans "Are you sure you want to delete this Quiz?" %}</h3>
+                <div class="form-group">
+                    <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i> {% trans "Yes, delete" %}</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'challenge-detail' challenge.id %}">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock content %}

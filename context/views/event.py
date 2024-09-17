@@ -1,31 +1,41 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from context.models import e_Context, e_ContextEvent, e_ContextEventResult
-from context.views.context import zip_file
-from context.views.helpers import cancel_execution, cancel_task, copy_file_to_media_folder, get_context_folder_path, get_event_rasters_files
-from context.views.mesh import Status, get_status, tail, check_celery
-from .authorization import *
 from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
-from context.filters import EventFilter
-from sensors.models import Sensor
-import os
-from django.contrib import messages
 from django.urls import reverse
-import requests
-from io import BytesIO
-from zipfile import ZipFile
-from rivercureproject import settings
+from django.contrib import messages
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
-from context.forms import EventForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from .prepare_files import *
+from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
+from django_filters.views import FilterView
+
+from common.utils import is_mobile
+
+from context.models import e_Context, e_ContextEvent, e_ContextEventResult
+from context.forms import EventForm
+from context.filters import EventFilter, EventChallengeListFilter
 from context.tasks import simulate_task
+from context.views.context import zip_file
+from context.views.helpers import cancel_execution, cancel_task, get_context_folder_path, get_event_rasters_files
+from context.views.mesh import Status, get_status, tail, check_celery
+
+from sensors.models import Sensor
 from notifications.signals import notify
 from organization.authorization import belongs_to_organization
+from challenges.models import e_Challenge, ChallengeState
+from organization.authorization import is_org_quiz_manager
+
+from .authorization import *
+from .prepare_files import *
+from rivercureproject import settings
+
+import os
+import requests
+from io import BytesIO
+from zipfile import ZipFile
 import json
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 class ContextEventListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -76,6 +86,59 @@ class EventDetailView(LoginRequiredMixin, DetailView):
                 rasters[key] = None
 
         context['rasters'] = json.dumps(rasters, cls=DjangoJSONEncoder)
+
+        # If user belongs to Org
+        if belongs_to_organization(self.request.user, event.context.organization):
+            # If Quiz Manager, see every Challenge of this Event
+            if is_org_quiz_manager(self.request.user, event.context.organization):
+                context['challenges'] = e_Challenge.objects.filter(event=event.id).order_by('-creation_datetime')
+            else:
+                # Else, show every Published Challenge of this event
+                context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
+        else:
+            # Otherwise, only show Published Public Challenges
+            context['challenges'] = e_Challenge.objects.filter(event=event.id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
+        context['isQuizMan'] = is_org_quiz_manager(self.request.user, event.context.organization)
+
+        return context
+
+
+class EventChallengesFilterView(LoginRequiredMixin, FilterView):
+    model = e_Challenge
+    template_name = 'context/event/challenge_list.html'
+    filterset_class = EventChallengeListFilter
+    pk_url_kwarg = 'event_id'
+    context_object_name = 'challenges'
+    paginate_by = 9
+
+    def get_queryset(self):
+
+        event_id = self.kwargs['event_id']
+        event = e_ContextEvent.objects.get(pk=event_id)
+
+        # If user belongs to Org
+        if belongs_to_organization(self.request.user, event.context.organization):
+            # If Quiz Manager, see every Challenge of this Event
+            if is_org_quiz_manager(self.request.user, event.context.organization):
+                challenge_list = e_Challenge.objects.filter(event=event_id).order_by('-creation_datetime')
+            else:
+                # Else, show every Published Challenge of this event
+                challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED).order_by('-creation_datetime')
+        else:
+            # Otherwise, only show Published Public Challenges
+            challenge_list = e_Challenge.objects.filter(event=event_id, state=ChallengeState.PUBLISHED, is_public=True).order_by('-creation_datetime')
+
+        return challenge_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        event_id = self.kwargs['event_id']
+
+        context['event'] = e_ContextEvent.objects.get(pk=event_id)
+        context['isQuizMan'] = is_org_quiz_manager(self.request.user, context['event'].context.organization)
+        context['is_mobile'] = is_mobile(self.request)
+        
         return context
 
 
@@ -166,10 +229,10 @@ class EventCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         context = get_object_or_404(e_Context, pk=self.kwargs['pk'])
         self.context = context
-        if context.e_contextevent_set.count() >= 1:
-            messages.error(
-                request, 'There already exists an event for this context. Currently, RiverCure only allows one event per context.')
-            return redirect('event-list', contextCode=context.pk)
+        # if context.e_contextevent_set.count() >= 1:
+        #     messages.error(
+        #         request, 'There already exists an event for this context. Currently, RiverCure only allows one event per context.')
+        #     return redirect('event-list', contextCode=context.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

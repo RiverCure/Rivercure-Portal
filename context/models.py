@@ -1,11 +1,22 @@
-from django.contrib.gis.db import models
-from django.utils import timezone
+import os
+
+
+from uuid import uuid4
 from datetime import datetime, date
-from rivercureportal.models import e_HydroFeature
-from datetime import date
+
+from common.utils import resize_image
+
+from django.utils import timezone
+from django.contrib import admin
+
+from django.utils.translation import gettext_lazy as _
+
+from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-from sensors.models import Sensor
+
 from raster.models import RasterLayer
+from sensors.models import Sensor
+from rivercureportal.models import e_HydroFeature
 from organization.models import Organization
 
 EVENTKIND_CHOICES = (('flood', 'Flood'),  ('heavyPrecipitation', 'HeavyPrecipitation'),
@@ -25,6 +36,24 @@ CONTEXTBOUNDARYLINEDATAKIND_CHOICES = (('Q', 'Discharge'), ('Z', 'Elevation'), (
 
 TIME_UNITS = (('hour', 'Hour'), ('minute', 'Minute'), ('second', 'Second'))
 
+Permissions = (('context_moderator', _('Moderator')),)
+
+
+def create_picture_file_name(instance, filename):
+    """
+    Callable that saves the file with the path and name: contexts_pictures/organization_name/context_code/uuid4.ext
+    """
+    organization = instance.organization
+    context_code = instance.code
+
+    # Path is: contexts_pictures/organization_name/context_code
+    path = "contexts_pictures/{}/{}".format(organization, context_code)
+
+    # File name is: uuid4.ext
+    extension = "." + filename.split('.')[-1]
+    file_name = "picture" + extension
+
+    return os.path.join(path, file_name)
 
 class e_Context(models.Model):
     # Information/identification
@@ -34,12 +63,19 @@ class e_Context(models.Model):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     create_date = models.DateTimeField()
     isPublic = models.BooleanField(default=False)
+    description = models.TextField(blank=True)
+
+    # Moderators (Context-level membership)
+    members = models.ManyToManyField(User, through='ContextMembership', related_name='members')
 
     # Context detail
     hydroFeature = models.ForeignKey('rivercureportal.e_HydroFeature', on_delete=models.CASCADE, null=True, blank=True)
     geomExternalBoundary = models.MultiPolygonField(null=True, blank=True)  # aka Domain
     CLExternalBoundary = models.FloatField(null=True, blank=True)  # aka Domain's CL, characteristic lenght
     hasMesh = models.BooleanField(default=False)
+
+    # Picture
+    picture = models.ImageField(default='default_context_pic.png', upload_to=create_picture_file_name)
 
     # For the pre-processing celery task
     task_id = models.CharField(max_length=200, null=True)
@@ -65,6 +101,32 @@ class e_Context(models.Model):
 
     def __str__(self):
         return self.tag
+    
+    #SAVE ALWAYS RUNS BUT WE'RE ADDING THE RESIZE FUNCTION
+    def save(self, *args, **kwargs):
+        # Save
+        super().save()
+
+        # Resize Context picture
+        resize_image(self.picture, 1400, 900)
+
+
+
+
+# Keep track of Moderators and Quiz Managers of a Context
+class ContextMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
+    permission = models.CharField(max_length=80, choices=Permissions, null=True)
+    grant_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Context membership'
+        verbose_name_plural = 'Context\'s memberships'
+
+    def __str__(self):
+        # return f"{self.permission_name} {self.user} ({self.context})"
+        return f"{self.permission} {self.user} ({self.context})"
 
 
 class e_ContextDTM(models.Model):

@@ -1,4 +1,5 @@
 {% load auth_extras %}
+{% load i18n %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -15,6 +16,10 @@
         <link rel="stylesheet" type="text/css" href="{% static 'rivercureportal/main.css' %}" />
         <link rel="RCP icon" href="{% static 'rivercureportal/icons/logo.ico' %}" type="image/x-icon" />
 
+        <!-- Boostrap Icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        
+
         {% block scripts %}{% endblock scripts %}
     </head>
 
@@ -25,6 +30,15 @@
                 max-height: 80vh;
                 overflow-x: hidden;
             }
+
+            .language-circle {
+                height: 22px;
+                width: 22px;
+                border-radius: 50%;
+                border-style: solid;
+                border-color: white;
+                object-fit: cover;
+              }
         </style>
         <header class="site-header">
             <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
@@ -35,26 +49,52 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarToggle">
                         <div class="navbar-nav mr-auto">
+                            <div class="nav-item">
+                                <a href="{% url 'rivercure-home' %}" class="nav-link">Home</a>
+                            </div>
                             {% if user.is_authenticated %}
+                                <div class="nav-item">
+                                    <a href="{% url 'my-contributions' %}" class="nav-link">{% trans "My Contributions" %}</a>
+                                </div>
+                                {% if user|has_org %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {% trans "Management" %}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item disabled" href="#">{% trans "Organization" %}</a>
+                                            <a class="dropdown-item" href="{% url 'context-list' %}"><span class="ml-2"></span>{% trans "Contexts" %}</a>
+                                            <a class="dropdown-item" href="{% url 'sensor-list' %}"><span class="ml-2"></span>{% trans "Sensors" %}</a>
+                                            {% if request.session.organizationCode %}
+                                            <a class="dropdown-item" href="{% url 'org-challenge-list' org_id=request.session.organizationCode %}"><span class="ml-2"></span>{% trans "Quizzes" %}</a>
+                                            {% endif %}
+                                            {% if user|is_mod %}
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item disabled" href="#">{% trans "Moderator" %}</a>
+                                                <a class="dropdown-item" href="{% url 'moderator-context-list' %}"><span class="ml-2"></span>{% trans "My Contexts" %}</a>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                {% endif %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Management
+                                        Portal
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{% url 'context-list' %}">Contexts</a>
-                                        <a class="dropdown-item" href="{% url 'sensor-list' %}">Sensors</a>
+                                        <a class="dropdown-item" href="{% url 'organization-list' %}">{% trans "Organizations" %}</a>
+                                        <a class="dropdown-item" href="{% url 'public-challenge-list' %}">{% trans "Public Quizzes" %}</a>
                                     </div>
                                 </li>
-                                <div class="nav-item">
-                                    <a href="{% url 'hydrofeature-list' %}" class="nav-link">Hydrofeatures</a>
-                                </div>
-                                <div class="nav-item">
-                                    <a href="{% url 'organization-list' %}" class="nav-link">Organizations</a>
-                                </div>
-                                <div class="nav-item">
+                                {% comment %} <div class="nav-item">
                                     <a href="{% url 'public-contexts' %}" class="nav-link">Public contexts</a>
-                                </div>
-                            {% endif %}
+                                </div> {% endcomment %}
+                                {% endif %}
+                            <div class="nav-item">
+                                <a href="{% url 'contact' %}" class="nav-link">{% trans "Contact" %}</a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="{% url 'rivercure-about' %}" class="nav-link">{% trans "About" %}</a>
+                            </div>
                         </div>
 
                         <!-- Navbar Right Side -->
@@ -77,19 +117,38 @@
                             {% if user.notifications.unread|length != 0 %}
                             <div class="dropdown-menu scrollable-menu" style="min-width: 30vw">
                                 {% for notification in user.notifications.unread %}
-                                <a class="dropdown-item text-wrap mb-0" href="{% url 'organization-manage' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
-                                    <small style="color: gray">{{ notification.timesince }} ago</small>
-                                    <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
-                                </a>
+                                {% if notification.description == "context" %}
+                                    <a class="dropdown-item text-wrap mb-0" href="{% url 'moderator-context-contribution-list' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
+                                        <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                        <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                    </a>
+                                {% elif notification.description == "contribution" %}
+                                    {% if notification.action_object %}
+                                        <a class="dropdown-item text-wrap mb-0" href="{% url 'contribution-detail' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
+                                            <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                            <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-wrap mb-0" href="#" type="button">
+                                            <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                            <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="dropdown-item text-wrap mb-0" href="{% url 'organization-manage' notification.action_object.pk %}?notification={{ notification.pk }}" type="button">
+                                        <small style="color: gray">{{ notification.timesince }} {% trans "ago" %}</small>
+                                        <p style="font-size: 0.9rem; margin-bottom: 0">{{ notification.verb }}</p>
+                                    </a>
+                                {% endif %}
                                 <div class="dropdown-divider"></div>
                                     {% if forloop.last %}
                                         <div>
                                             <div class="row">
                                                 <div class="col-sm" style="border-right: 1px solid #e9ecef">
-                                                    <a class="dropdown-item" href="{% url 'notifications-all' %}" type="button"><small>See all notifications</small></a>
+                                                    <a class="dropdown-item" href="{% url 'notifications-all' %}" type="button"><small>{% trans "See all notifications" %}</small></a>
                                                 </div>
                                                 <div class="col-sm">
-                                                    <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>Clear all notifications</small></a>
+                                                    <a class="dropdown-item" href="{% url 'notifications-clear' %}" type="button"><small>{% trans "Clear all notifications" %}</small></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -107,7 +166,7 @@
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
                                     <div class="dropdown-menu">
                                         <a href="{% url 'admin:index' %}" class="dropdown-item">Admin Backoffice</a>
-                                        <a href="{% url 'users' %}" class="dropdown-item">Users</a>
+                                        <a href="{% url 'users' %}" class="dropdown-item">{% trans "Users" %}</a>
                                     </div>
                                 </div>
                             {% endif %}
@@ -115,15 +174,32 @@
                                 <div class="nav-item dropdown">
                                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ user.username }} {%if request.session.organizationCode %} ({{ request.session.organizationCode }}) {% endif %}</a>
                                     <div class="dropdown-menu">
-                                        <a href="{% url 'profile' %}" class="dropdown-item">Edit My Profile</a>
-                                        <a href="{% url 'organization-list' %}" class="dropdown-item">Set Current Organization</a>
+                                        <a href="{% url 'profile' %}" class="dropdown-item">{% trans "Edit Profile"  %}</a>
+                                        <a href="{% url 'organization-list' %}" class="dropdown-item">{% trans "Set Current Organization" %}</a>
                                         <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
                                     </div>
                                 </div>
                             {% else %}
                                 <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                                <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                                <a class="nav-item nav-link" href="{% url 'register' %}">{% trans "Register" %}</a>
                             {% endif %}
+                            <!-- Language Picker -->
+                            {% get_current_language as CURRENT_LANGUAGE %}
+                            {% get_available_languages as AVAILABLE_LANGUAGES %}
+                            {% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+                            <div class="nav-item dropdown">
+                                <a class="nav-link" href="#" id="languageDropdownMenuButton" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="{% static 'rivercureportal/icons/'|add:CURRENT_LANGUAGE|add:'-flag.png' %}" class="language-circle" alt="Language Icon"> 
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="languageDropdownMenuButton">
+                                    {% for language in languages %}
+                                        <a class="dropdown-item" href="/{{ language.code }}/">
+                                            <img src="{% static 'rivercureportal/icons/'|add:language.code|add:'-flag.png' %}" class="language-circle mx-2" alt="Language Icon"> 
+                                            {{language.name_local}}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,15 +208,17 @@
 
         <main role="main" class="container">
             <div class="container">
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                        <div class="alert alert-danger">{{ message }}</div>
-                    {% else %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% block show_messages %} {% comment %} TODO: MAKE SURE THIS DIDNT BREAK ANYTHING!! {% endcomment %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                            {% else %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
-                {% endfor %}
-            {% endif %}
+                {% endblock show_messages %}
             
             {% block content %}{% endblock %}
             </div>

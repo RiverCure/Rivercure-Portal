@@ -1,19 +1,38 @@
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from leaflet.forms.widgets import LeafletWidget
-from django.contrib.auth.models import Group
 from django import forms
+
 from users.models import User
-from context.models import e_Context
-from .models import e_HydroFeature
 from sensors.models import Sensor
-from .filters import UserFilter, HydroFeatureFilter
-from django.urls import reverse, reverse_lazy
+from context.models import e_Context
+from context.filters import ContextFilter
 from notifications.models import Notification
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from contributions.models import ContributionStatus
 from rivercureportal.authorization import is_platform_admin, is_platform_admin_or_manager
+from contributions.models  import e_ContextContribution
+from organization.models import Organization
+from common.utils import is_mobile
+
+from context.views.mesh import check_celery
+
+from leaflet.forms.widgets import LeafletWidget
+
+from django.contrib import messages
+from django.urls import reverse, reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+
+from django.db.models import Count, Q
+from django.core.mail import send_mail
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
+
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
+from .models import e_HydroFeature
+from .forms import ContactForm
+from .filters import UserFilter, HydroFeatureFilter, HydrofeatureContextsFilter
+from .tasks import send_contact_email
+
 
 
 class ProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -44,15 +63,28 @@ def users(request):
 
 def home(request):
 
+    # context = {
+    #     'users': User.objects.all(),
+    #     'groups': Group.objects.all(),
+    #     'contexts': e_Context.objects.all(),
+    #     'recent_context': e_Context.objects.all().first(),
+    #     'recent_sensor': Sensor.objects.all().first()
+    # }
+
+    # return render(request, 'rivercureportal/home.html', context)
+    return redirect('public-contexts')
+
+def about(request):
+
     context = {
-        'users': User.objects.all(),
-        'groups': Group.objects.all(),
-        'contexts': e_Context.objects.all(),
-        'recent_context': e_Context.objects.all().first(),
-        'recent_sensor': Sensor.objects.all().first()
+        'contributions': e_ContextContribution.objects.all().count(), # Total number of Contributions
+        'contexts': e_Context.objects.filter(isPublic=True).count(), # Total number of Public Contexts
+        'users': User.objects.all().count(), # Total number of users
+        'orgs': Organization.objects.all().count(), # Total number of organizations
+        'is_mobile': is_mobile(request)
     }
 
-    return render(request, 'rivercureportal/home.html', context)
+    return render(request, 'rivercureportal/about.html', context)
 
 
 class HydroFeatureListView(LoginRequiredMixin, ListView):
@@ -107,6 +139,50 @@ class HydroFeatureDetailView(DetailView):
     context_object_name = 'Hydrofeatures'
     template_name = 'rivercureportal/hydrofeature_detail.html'
 
+    def get_context_data(self, **kwargs):
+        hydrofeature = self.get_object()
+
+        context = super().get_context_data(**kwargs)
+        context['contexts'] = e_Context.objects.filter(hydroFeature=hydrofeature)
+        
+        return context
+
+
+# !! No longer used
+class HydroFeatureContextsListView(ListView):
+    model = e_Context
+    template_name = 'rivercureportal/hydrofeature_context_list.html'
+    filterset_class = HydrofeatureContextsFilter
+    context_object_name = 'hydrofeature_contexts'
+    pk_url_kwarg = 'hydrofeaturePk'
+    paginate_by = 9
+
+    def get_queryset(self):
+        hydrofeature_pk = self.kwargs['pk']
+        hydrofeature = get_object_or_404(e_HydroFeature, pk=hydrofeature_pk)
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context_list = e_Context.objects.filter(isPublic=True, hydroFeature=hydrofeature).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
+        return context_list
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        hydrofeature_pk = self.kwargs['pk']
+        hydrofeature = get_object_or_404(e_HydroFeature, pk=hydrofeature_pk)
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context['context_list'] = e_Context.objects.filter(isPublic=True, hydroFeature=hydrofeature).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
+        context['filter'] = HydrofeatureContextsFilter(self.request.GET, queryset=context['context_list'])
+        context['hydrofeature'] = hydrofeature
+
+        return context
+
 
 class HydroFeatureDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_HydroFeature
@@ -155,3 +231,48 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     def test_func(self):
         return is_platform_admin(self)
+
+class ContactView(FormView):
+    form_class = ContactForm
+    template_name = "rivercureportal/contact.html"
+
+    def get_success_url(self):
+        return reverse("contact")
+
+    def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            email = self.request.user.email
+        else:
+            email = form.cleaned_data.get("email")
+        subject = form.cleaned_data.get("subject")
+        message = form.cleaned_data.get("message")
+
+        # Celery
+        # contact = {
+        #     'from_email': email,
+        #     'subject': subject,
+        #     'message': message
+        # }
+
+        # if check_celery():
+        #     task = send_contact_email.delay(contact)
+        #     messages.success(self.request, 'Thank you for your contact!')
+        # else:  # Celery offline
+        #     messages.error(self.request, 'Background process offline: Contact admin.')
+
+        # Debug
+        full_message = f"""
+            Received message below from {email}
+            Subject - {subject}
+            ________________________
+
+
+            {message}
+            """
+        send_mail(
+            subject=subject,
+            message=full_message,
+            from_email=email,
+            recipient_list=['to@email.com'],
+        )
+        return super(ContactView, self).form_valid(form)

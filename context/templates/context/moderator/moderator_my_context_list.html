@@ -1,0 +1,96 @@
+{% extends "rivercureportal/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "My Contexts" %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load my_tags %}
+{% load static %}
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+<style>
+    .text-pending {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .text-total {
+        color: #a5aec0;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- Header -->
+<h1> {% trans "My Contexts" %} </h1>
+<hr>
+
+<p class="font-weight-light" align="justify">{% trans "On this page you can see the Contexts in which you have the permission to moderate. For more information on Moderators and Context-level permissions, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+</p>
+
+<div class="mb-3">
+    <!-- Search and Filter Button -->
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+</div>
+
+<!-- Search and Filter Menu -->
+<div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
+    </form>
+</div>
+
+<hr>
+
+
+<!-- List of Contexts-->
+<div class="d-flex flex-row flex-wrap justify-content-between">
+    {% for context in contexts %}
+        <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
+            <div class="card my-card-hover mb-3 my-context-card"  {% if is_mobile %}style="width: 75vw;"{% endif %}>
+                <img src={{ context.context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">{{ context.context.Name }}</h5>
+                </div>
+                <div class="card-footer">
+                    <span class="text-warning"><i class="bi bi-binoculars"></i> {{context.context.e_contextcontribution_set|get_pending}} {% trans "pending" %} <span class="text-total">{% trans "of" %} {{context.context.e_contextcontribution_set.count}} {% trans "contributions" %}</span></span>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+{% if contexts.count == 0 %}
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Contexts." %}</p>
+{% endif %}
+
+
+<!-- Pagination -->
+{% if is_paginated %}
+    <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
+        <ul class="pagination">
+            {% if page_obj.has_previous and page_obj.number != 2 %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
+            {% endif %}
+
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+            {% endif %}
+            
+            <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+            {% endif %}
+
+            {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% endblock content %}

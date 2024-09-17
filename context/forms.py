@@ -1,17 +1,21 @@
 import re
+
 from django import forms
-from django.forms import ModelForm, ValidationError
-from django.contrib.gis.forms import fields
+
+from django.forms import ValidationError
+
+from django.db.models import Q
+
+from organization.models import Organization, Membership
+
 from .models import e_Context, e_ContextEvent
 from .models import e_HydroFeature
-from leaflet.forms.widgets import LeafletWidget
-from organization.models import Organization, Membership
-from django.db.models import Q
 
 
 class ContextDetailsForm(forms.ModelForm):
 
     hydroFeature = forms.ModelChoiceField(queryset=e_HydroFeature.objects.all(), required=False)
+    picture = forms.ImageField(widget=forms.FileInput(attrs={'accept': 'image/*'}))
 
     def clean_Name(self):
         pattern = re.compile('^[\\w]+[-\\w]*$')
@@ -20,16 +24,38 @@ class ContextDetailsForm(forms.ModelForm):
             raise ValidationError("Name must only have letters, numbers. These can be intercalated with slashes (-)")
 
         return data
+    
+    def clean_picture(self):
+        picture = self.cleaned_data['picture']
+
+        # Only accept a total size of 10mb
+        if picture.size > 10485760:
+            raise ValidationError("Size of file is too large ( > 10mb ).")
+        
+        return picture
 
     class Meta:
         model = e_Context
-        fields = ['Name', 'hydroFeature', 'isPublic']
+        fields = ['Name', 'hydroFeature', 'isPublic', 'description', 'picture']
 
 
 class ContextInitialForm(forms.ModelForm):
+    picture = forms.ImageField(required=False, widget=forms.FileInput(attrs={'accept': 'image/*'}))
+
     class Meta:
         model = e_Context
-        fields = ['code', 'Name', 'hydroFeature', 'organization', 'isPublic',]
+        fields = ['code', 'Name', 'hydroFeature', 'organization', 'isPublic', 'description', 'picture']
+    
+    def clean_picture(self):
+
+        picture = self.cleaned_data['picture']
+        
+        if picture:
+            # Only accept a total size of 10mb
+            if picture.size > 10485760:
+                raise ValidationError("Size of file is too large ( > 10mb ).")
+        
+        return picture
 
     def clean_code(self):
         pattern = re.compile('^[\\w]+[-\\w]*$')

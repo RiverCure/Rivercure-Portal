@@ -4,3 +4,4 @@ from .event import *
 from .prepare_files import *
 from .upload import *
 from .authorization import *
+from .moderator import *

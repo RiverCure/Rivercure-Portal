@@ -1,0 +1,88 @@
+{% extends "rivercureportal/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Contributions" %} {% endblock %}
+{% load crispy_forms_tags %}
+{% load my_tags %}
+{% load static %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<h1 class="mt-2">{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
+<p class="font-weight-light" align="justify">{% trans "On this page you can see the Contributions that other users have submitted to" %} {{ context.Name }}.</p>
+<hr>
+
+<!-- Filter -->
+<button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">{% trans "Search and Filter" %}</button>
+<div id="filter-menu" class="collapse card my-card-hover card-body mt-3">
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> {% trans "Apply" %}</button>
+    </form>
+</div>
+<hr>
+
+<!-- List of Contributions-->
+<div class="d-flex flex-row flex-wrap justify-content-between">
+    {% for contribution in contributions %}
+        <a href="{% url 'contribution-detail' contribution.pk %}">
+            <div class="card my-card-hover my-2 my-context-card">
+                {% if contribution.thumbnail %}
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                {% else %}
+                    <div class="my-card-contribution-no-thumbnail-img"></div>
+                {% endif %}
+                <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
+                <div class="card-body pt-0" style="margin-top: -10px;">
+                    <h5 class="card-title">{{ contribution.get_situationObserved_display }}</h5>
+                    <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+<!-- If list empty -->
+{% if contributions.count == 0 %}
+    <p class="font-weight-light my-2 text-center">{% trans "There are no Contributions yet. Why don't you" %} <a href="{% url 'contribution-create' context.code %}">{% trans "contribute" %}</a> {% trans "to this Context?" %}</p>
+{% endif %}
+
+
+<div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
+    <!-- Bottom button -->
+    <a class="btn btn-secondary" href="{% url 'public-context-detail' context.code %}">{% trans "See Context" %}</a>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Page navigation" class="d-flex justify-content-center {% if is_mobile %}pt-3{% endif %}">
+            <ul class="pagination">
+                {% if page_obj.has_previous and page_obj.number != 2 %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">{% trans "First Page" %}</a></li>
+                {% endif %}
+    
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                {% endif %}
+                
+                <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+    
+                {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                    <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{% trans "Last Page" %}</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+{% endblock content %}

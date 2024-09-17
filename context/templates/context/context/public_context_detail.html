@@ -1,0 +1,113 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} {{ context.Name }} {% endblock %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<style>
+    /* For the horizontal scroll carousel */
+    .scrolling-wrapper{
+        overflow-x: auto;
+    }
+</style>
+
+
+
+
+<!-- Presentation about Context (photo, introduction, see more, ...)-->
+<h1>{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
+<hr>
+
+<div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
+    <img src="{{ context.picture.url }}" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
+    <div class="card-body">
+        <p class="card-text">{{ context.description }}</p>
+        <hr>
+        <a class="btn btn-info" href="{% url 'contribution-create' context.code %}"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>
+        <div class="float-right">
+            <a class="btn btn-info" href="{% url 'context-detail' context.code %}"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Contribution list -->
+<!-- From: https://codepen.io/Temmio/pen/gKGEYV -->
+<div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <h1 class="mb-2">{% trans "Contributions" %}</h1>
+        <a class="btn btn-secondary" href="{% url 'contribution-list' context.code %}">{% trans "See more" %} <i class="bi bi-chevron-right"></i></a>
+    </div>
+    {% if contributions.count == 0 %}
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Contributions for this Context yet. Why don't you make one?" %}</p>
+    {% endif %}
+
+    <div class="scrolling-wrapper row flex-row flex-nowrap px-4 py-2">
+        {% for contribution in contributions|slice:":5" %}
+            <a href="{% url 'contribution-detail' contribution.pk %}">
+                <div class="card my-card-hover mr-3" style="width: 17.5rem;">
+                    <img src="{{MEDIA_URL}}{{contribution.thumbnail}}" class="my-card-contribution-thumbnail-img" alt="Contribution thumbnail">
+                    <img src="{{MEDIA_URL}}{{contribution.createdBy.profile.image}}" class="my-card-user-image" alt="User profile image">
+                    <div class="card-body pt-0" style="margin-top: -10px;">
+                        <h5 class="card-title">{{ contribution.get_situationObserved_display }}</h5>
+                        <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}</small>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+</div>
+{% if contributions.count != 0 %}
+<div class="mb-3 text-center">
+    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
+</div>
+{% endif %}
+
+
+<!-- Event list -->
+<div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <h1 class="">{% trans "Events" %}</h1>
+        <a class="btn btn-secondary" href="{% url 'event-list' context.code %}">{% trans "See more" %} <i class="bi bi-chevron-right"></i></a>
+    </div>
+    {% if events.count == 0 %}
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Events for this Context." %}</p>
+    {% endif %}
+
+    <div class="scrolling-wrapper row flex-row flex-nowrap px-4 py-2">
+        {% for event in events|slice:":5" %}
+            <a href="{% url 'event-detail' event.context.code event.id %}">
+                <div class="card my-card-hover mr-3" style="width: 17.5rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ event.Name }}</h5>
+                        <p class="card-text text-muted">{{ event.type|title }} {% if event.subtype is not None %}- {{ event.subtype|title }} {% endif %}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-body-secondary text-muted">{% trans "Started on" %} {{ event.startDate }}</small>
+                    </div>            
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+</div>
+{% if events.count != 0 %}
+<div class="mb-4 text-center">
+    <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
+</div>
+{% endif %}
+
+
+{% endblock content %}

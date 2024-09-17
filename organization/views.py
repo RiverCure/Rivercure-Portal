@@ -257,7 +257,7 @@ def organizationAccessRequestCancel(request, organizationId):
 
 @login_required
 def organizationAccessRequestDeny(request, organizationId, userId):
-    if not is_org_manager_check(request.user, organizationId):
+    if not is_org_manager(request.user, organizationId):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
     organization = get_object_or_404(Organization, pk=organizationId)
@@ -281,7 +281,7 @@ def organizationAccessRequestDeny(request, organizationId, userId):
 
 @login_required
 def organizationAccessRemove(request, organizationId, userId):
-    if not is_org_manager_check(request.user, organizationId) and not is_platform_admin(request.user):
+    if not is_org_manager(request.user, organizationId) and not is_platform_admin(request.user):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
     organization = get_object_or_404(Organization, pk=organizationId)
@@ -309,7 +309,7 @@ def organizationAccessRemove(request, organizationId, userId):
 
 @login_required
 def organizationAccessAllow(request, organizationId, userId):
-    if not is_org_manager_check(request.user, organizationId):
+    if not is_org_manager(request.user, organizationId):
         return HttpResponseRedirect(reverse('rivercure-home'))
 
     organization = get_object_or_404(Organization, pk=organizationId)

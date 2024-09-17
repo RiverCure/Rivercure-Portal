@@ -1,12 +1,140 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Other contexts {% endblock %}
-{% load auth_extras %}
+{% block title %} Public Contexts {% endblock %}
 {% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load auth_extras %}
+{% load my_tags %}
 {% load static %}
+
+<!-- This template is not being used -->
 
 {% block scripts %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+<!-- Leaflet -->
+{% leaflet_js plugins="ALL" %}
+{% leaflet_css plugins="ALL" %}
+
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+<!-- Leaflet: Search function in map -->
+<!-- https://github.com/perliedman/leaflet-control-geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<!-- Leaflet: Get current position control -->
+<!-- https://github.com/domoritz/leaflet-locatecontrol -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // help
+        /*
+        var containers = document.getElementsByClassName("container");
+        var mapContainer = document.getElementById("map-container");
+
+        var marginLeft = 0;
+        var marginRight = 0;
+        var paddingLeft = 0;
+        var paddingRight = 0;
+        for (let i = 0; i < containers.length; i++) {
+            var style = containers[i].currentStyle || window.getComputedStyle(containers[i]);
+            // get total margin
+            marginLeft = marginLeft + Number(style.marginLeft.substring(0, style.marginLeft.length-2));
+            marginRight = marginRight + Number(style.marginRight.substring(0, style.marginRight.length-2));
+            console.log("cur margin left: " + style.marginLeft.substring(0, style.marginLeft.length-2));
+            console.log("total margin left: " + marginLeft);
+            // get padding
+            paddingLeft = paddingLeft + Number(style.paddingLeft.substring(0, style.paddingLeft.length-2));
+            paddingRight = paddingRight + Number(style.paddingRight.substring(0, style.paddingRight.length-2));
+            console.log("cur padding left:" + paddingLeft);
+            console.log("total padding left: " + paddingLeft);
+        }
+        console.log("total padding left: " + paddingLeft);
+        
+        // add (in negative) to map
+        mapContainer.style.marginLeft = "-" + marginLeft + "px";
+        mapContainer.style.marginRight = "-" + marginRight + "px";
+        mapContainer.style.paddingLeft = "-" + paddingLeft + "px";
+        mapContainer.style.paddingRight = "-" + paddingRight + "px";
+        console.log("final margin left: " + mapContainer.style.marginLeft);
+        console.log("final margin right: " + mapContainer.style.marginRight);
+        console.log("final padding left: " + mapContainer.style.paddingLeft);
+        console.log("final padding right: " + mapContainer.style.paddingRight);
+        */
+        
+        
+
+
+
+
+        window.addEventListener("map:init", e => {
+
+            const map = e.detail.map;
+
+            // Try to find the user's current location
+            map.locate({setView: true, maxZoom: 17});
+
+            var marker = L.marker([0,0]).addTo(map);
+            // On success (of finding user's location)
+            map.on('locationfound', function (e) {
+                marker.setLatLng(e.latlng);
+            });
+
+            // On error (of finding user's location)
+            map.on('locationerror', function (e) {
+                marker.setLatLng([38.722252, -9.139337]);
+                map.setZoom(17);
+            });
+
+            var lat = document.querySelector('#id_lat');
+            var lng = document.querySelector('#id_lng');
+            let lat_initial = lat.value == '' ? 0 : lat.value;
+            let lng_initial = lng.value == '' ? 0 : lng.value;
+
+            // Update position of the marker to be the center while the map is being moved
+            map.on('move',function(e){
+                marker.setLatLng(map.getCenter());
+            });
+
+            // Get latlng of center of the map (which is where the marker is fixed)
+            map.on("moveend", function () {
+                console.log(map.getCenter());
+                marker.setLatLng(map.getCenter());
+
+                lat.value = map.getCenter().lat;
+                lng.value = map.getCenter().lng;
+            });
+
+            // Add search function to map
+            // Using leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
+            L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).on('markgeocode', function(e) {
+                var bbox = e.geocode.bbox;
+                console.log("bonjour");
+                console.log(bbox);
+                map.fitBounds(bbox);
+                map.setZoom(17);
+            }).addTo(map);
+
+            // Add current position control to map
+            L.control.locate({
+                initialZoomLevel: 17,
+                flyTo: true,
+                drawCircle: false,
+                drawMarker: false
+            }).addTo(map);
+
+        });
+    })
+
+</script>
 
 {% endblock %}
 
@@ -24,40 +152,117 @@
     th .tr_align {
         text-align: left;
     }
+
+    .outline {
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+    
 </style>
 
-<h1>Public contexts</h1>
-<h5 class="font-weight-light">Here are contexts that are publicly available</h5>
-<div class="filter-section">
-    <h5>Filter</h5>
-    <form method="get">
-        {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-info">Filter</button>
-    </form>
+<!-- Top nav -->
+<div class="d-flex justify-content-between align-items-center py-2">
+    <!-- Views -->
+    <ul class="nav nav-pills">
+        <li class="nav-item mr-2">
+          <a class="nav-link active" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true"><i class="bi bi-map"></i> Map</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true"><i class="bi bi-grid-3x3-gap"></i> Grid</a>
+        </li>
+    </ul>
+
+    <!-- Grid Buttons-->
+
 </div>
 
-<div class="row">
-    <div class="col-md-8">
-        <table class="table table-hover">
-            <tr>
-                <th class="tr_align" scope="col">Organization</th>
-                <th class="tr_align" scope="col">Context</th>
-                <th class="tr_align" scope="col">Hydrofeature</th>
-                <th class="tr_align" width="200%" scope="col"></th>
-            </tr>
+<div class="tab-content" id="publicContextsTabs">
+    <!-- Map -->
+    <div class="tab-pane fade show active" id="map-view" role="tabpanel" aria-labelledby="map-view-tab">
+        <div id="map-container" class="">
+            {% leaflet_map "my_map" %}
+        </div>
+    </div>
 
-            {% for context in filter.qs %}
-                <tr>
-                    <td>{{ context.organization }}</td>
-                    <td>
-                        <a href="{% url 'context-detail' context.code %}"><div style="height: 100%; width: 100%">{{ context.Name }}</div> </a>
-                    </td>
-                    <td>{{ context.hydroFeature }}</td>
-                </tr>
-                {% empty %}
-                <td><h3 class="text-secondary font-italic no-context-data">No public contexts!</h3></td>
+    <!-- Grid -->
+    <div class="tab-pane fade" id="grid-view" role="tabpanel" aria-labelledby="grid-view-tab">
+        <!-- Header -->
+        <h1>Public Contexts</h1>
+        <hr>
+        <h5 class="font-weight-light mb-3" align="justify">Search for the public Contexts available in the RiverCure Portal. Click on one to see details.</h5>
+
+        <div>
+            <!-- Search and Filter -->
+            <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+
+            <!-- Sort -->
+            <button class="btn btn-info dropdown-toggle" type="button" id="sortDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by</button>
+            <!-- Sort Menu-->
+            <div class="dropdown-menu" aria-labelledby="sortDropdownMenuButton">
+                <a class="dropdown-item" href="#"><i class="bi bi-sort-up"></i> Ascending Contributions</a>
+                <a class="dropdown-item" href="#"><i class="bi bi-sort-down"></i> Descending Contributions</a>
+            </div>
+        </div>
+        <!-- Search and Filter Menu -->
+        <div id="filter-menu" class="collapse card my-card-hover card-body">
+            <form method="get">
+                {{ filter.form |crispy }}
+                <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+            </form>
+        </div>
+        <hr>
+
+
+        <!-- List of Public Contexts-->
+        <div class="d-flex flex-row flex-wrap justify-content-between">
+            {% for context in public_contexts %}
+                <a href="{% url 'public-context-detail' context.code %}">
+                    <div class="card my-card-hover mb-3 my-context-card">
+                        <img src={{ context.picture.url }} class="card-img-top my-card-img" alt="Picture of Context">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ context.Name }}</h5>
+                            <h6 class="card-text text-muted"><em>{{ context.hydroFeature }}</em></h6>
+                        </div>    
+                        {% comment %} <ul class="list-group list-group-flush">
+                            <p class="list-group-item card-text card-contributions">Contributions: {{ context.e_contextcontribution_set|get_accepted }}</p>
+                        </ul> {% endcomment %}
+                        <div class="card-footer text-muted">
+                            {% comment %} Contributions: {{ context.e_contextcontribution_set|get_accepted }} {% endcomment %}
+                            <span class="text-info">{{ context.e_contextcontribution_set|get_accepted }}</span> contributions
+                        </div>
+                    </div>
+                </a>
             {% endfor %}
-        </table>
+        </div>
+        <!-- If list is empty -->
+        {% if public_contexts.count == 0 %}
+            <p class="font-weight-light my-2 text-center">There are no Public Contexts yet.</p>
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Page navigation" class="d-flex justify-content-center py-3">
+                <ul class="pagination">
+                    {% if page_obj.has_previous and page_obj.number != 2 %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                    {% endif %}
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                    {% endif %}
+                    
+                    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                    {% endif %}
+
+                    {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
     </div>
 </div>
 

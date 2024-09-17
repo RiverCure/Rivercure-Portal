@@ -1,7 +1,13 @@
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
+LANGUAGES = (
+    ('en', _('English')),
+    ('pt', _('Portuguese')),
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +33,13 @@ DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
 FILES_BASE_PATH = os.getenv('FILES_BASE_PATH', BASE_DIR)
 
+# Locale path directory, where message files reside
+LOCALE_PATHS = [
+    # BASE_DIR / 'locale/',
+    os.path.join(BASE_DIR, 'locale/'),
+]
+
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
@@ -44,6 +57,8 @@ INSTALLED_APPS = [
     'rivercureportal.apps.RivercureportalConfig',
     'users.apps.UsersConfig',
     'context.apps.ContextConfig',
+    'contributions.apps.ContributionsConfig',
+    'challenges.apps.ChallengesConfig',
     'crispy_forms',
     'rest_framework',
     'corsheaders',
@@ -57,13 +72,15 @@ INSTALLED_APPS = [
     'django_filters',
     'bootstrapform',
     'django_celery_results',
-    'celery_progress'
+    'celery_progress',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -85,6 +102,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':  {
+                'my_tags': 'rivercureproject.templatetags.my_tags',
+                'context_tags': 'context.templatetags.context_tags',
+            }
         },
     },
 ]
@@ -134,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Lisbon'
 
@@ -149,7 +170,7 @@ LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (38.707616, -9.1365),  # Lisbon coordinates
     'DEFAULT_ZOOM': 6,
     'MIN_ZOOM': 3,
-    'MAX_ZOOM': 30,
+    'MAX_ZOOM': 18, # With zoom higher than this map stops loading
     'RESET_VIEW': False,
     'TILES': [('Satellite', 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/512/{z}/{x}/{y}@2x?access_token={accessToken}', {
         'id': 'satellite-streets-v11',
@@ -187,7 +208,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'rivercure-home'
 LOGIN_URL = 'login'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # FOR DEBUG
 EMAIL_HOST = os.getenv('EMAIL_HOST', '')
 EMAIL_PORT = os.getenv('EMAIL_PORT', '')
 EMAIL_USE_TLS = True

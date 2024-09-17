@@ -1,10 +1,14 @@
 {% extends "rivercureportal/base.html" %}
+{% load auth_extras %}
+{% load challenge_extras %}
+{% load i18n %}
 {% load static %}
-{% block title %} Context event detail {% endblock %}
+{% block title %} {% trans "Context Event Detail" %} {% endblock %}
 
 {% block scripts %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
 {% endblock %}
 
 
@@ -31,6 +35,10 @@
         float: left;
         margin-right: 8px;
         opacity: 0.7;
+    }
+    /* For the horizontal scroll carousel */
+    .scrolling-wrapper{
+        overflow-x: auto;
     }
 </style>
 
@@ -78,6 +86,63 @@
 
         <a class="btn btn-secondary btn mt-1 mb-1" style="float:right" href="{% url 'event-list' event.context.code %}" >Back to event list</a>
 </article>
+
+
+
+<hr>
+
+<!-- Challenge list -->
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <h1 class="">Quizzes</h1>
+        <div class="d-flex justify-content-end">
+            {% if isQuizMan or user|has_group:"Admin" %}<a class="btn btn-success ml-2" href="{% url 'event-challenge-create' event.id %}"><i class="bi bi-plus"></i> {% trans "Add Quiz" %}</a>{% endif %}
+            <a class="btn btn-secondary ml-2" href="{% url 'event-challenge-list' event.context.code event.id %}">{% trans "See more" %} <i class="bi bi-chevron-right"></i></a>
+        </div>
+    </div>
+    {% if challenges.count == 0 %}
+        <p class="font-weight-light my-2 text-center">{% trans "There are no published Quizzes for this Event." %}</p>
+    {% endif %}
+
+    <div class="scrolling-wrapper row flex-row flex-nowrap px-4 py-2">
+        {% for challenge in challenges|slice:":5" %}
+            <a href="{% url 'challenge-detail' challenge.id %}">
+                <div class="card my-card-hover my-2 mr-3 my-context-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ challenge.title|title }}</h5>
+                        <div class="d-flex">
+                            <span class="badge {{challenge.state|bootstrap_badge_publish_state}}">{{ challenge.get_publish_state_display }}</span>
+                            <span class="badge badge-info ml-1">{{ challenge.get_difficulty_level_display }}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <div class="d-flex justify-content-between">
+                            <p class="text-body-secondary card-contributions text-muted small mb-0">Created by {{ challenge.created_by }}</p>
+                            {% if challenge.event %}<p class="text-body-secondary card-contributions text-muted small mb-0">Event: {{ challenge.event.Name }}</p>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+</div>
+{% if challenges.count > 2 %}
+    <div class="mb-3 text-center">
+        <p class="d-inline font-weight-lighter"><i class="bi bi-info"></i> {% trans "Scroll horizontally to see more" %}</p>
+    </div>
+{% endif %}
+
+<!-- Footer -->
+<div class="d-flex justify-content-between my-3 my-contribution-detail-meta-info-card my-contribution-detail-footer">
+    <!-- Bottom button -->
+    <a class="btn btn-secondary m-3" href="{% url 'public-context-detail' event.context.code %}">{% trans "See Context" %}</a>
+</div>
+
+
+
+
+
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/georaster"></script>

@@ -1,0 +1,100 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Event Managers {% endblock %}
+{% load crispy_forms_tags %}
+{% load my_tags %}
+{% load static %}
+
+
+
+{% block content %}
+<!-- Header -->
+<h1>{{ context.Name }} Quiz Managers </h1>
+<p><strong>Organization:</strong> <em>{{ context.organization }}</em></p>
+<hr>
+
+<p class="font-weight-light" align="justify">
+    On this page you can see the Quiz Managers of the {{ context.Name }} Context.
+    For more information on Quiz Managers and Context-level permissions, please visit the <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
+</p>
+
+<!-- Top buttons -->
+<div class="mb-3">
+    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="collapse" data-target="#filter-menu">Search and Filter</button>
+    {% if canEdit %}
+        <a class="btn btn-success" href="{% url 'quiz-manager-list-add' context.code %}"><i class="bi bi-plus"></i> Add Quiz Manager</a>
+    {% endif %}
+</div>
+
+<div id="filter-menu" class="collapse card my-card-hover card-body mb-3">
+    <form method="get">
+        {{ filter.form |crispy }}
+        <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel"></i> Apply</button>
+    </form>
+</div>
+
+<!-- Moderator list -->
+<table class="table table-hover">
+    <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Date granted</th>
+    </tr>
+    {% for member in users %}
+        <tr>
+            <td>{{ member.user.username }}</td>
+            <td>{{ member.user.email }}</td>
+            {% if canEdit %}
+                <td>
+                    {{ member.grant_date }}
+                    <!-- Remove access -->
+                    <a class="pl-2" href="{% url 'quiz-manager-remove' contextCode=context.code userId=member.user.id %}">
+                        <i class="bi bi-x-circle text-danger"></i>
+                    </a>
+                </td>
+            {% else %}
+                <td>{{ member.grant_date }}</td>
+            {% endif %}
+            
+        </tr>
+
+        {% empty %}
+        <td><h2 class="text-secondary font-italic no-context-data">There are no Event Managers in this Context.</h2></td>
+    {% endfor %}
+</table>
+
+<!-- Bottom button -->
+<div class="w-100 mb-4">
+    <a class="btn btn-secondary" style="float: right;" href="{% url 'context-detail' context.code %}">Back to Context detail</a>
+</div>
+
+<!-- Pagination -->
+<div class="row">
+    <div class="col">
+        {% if is_paginated %}
+            <nav aria-label="Page navigation" class="d-flex justify-content-center pt-3">
+                <ul class="pagination">
+                    {% if page_obj.has_previous and page_obj.number != 2 %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' 1 %}" tabindex="-1" aria-disabled="true">First Page</a></li>
+                    {% endif %}
+
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a></li>
+                    {% endif %}
+                    
+                    <li class="page-item disabled"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a></li>
+                    {% endif %}
+
+                    {% if page_obj.paginator.num_pages != page_obj.number and page_obj.paginator.num_pages != page_obj.next_page_number %}
+                        <li class="page-item"><a class="page-link text-dark" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">Last Page</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock content %} 

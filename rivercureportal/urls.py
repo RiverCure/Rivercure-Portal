@@ -6,18 +6,22 @@ from .views import (
     HydroFeatureUpdateView,
     HydroFeatureDetailView,
     HydroFeatureDeleteView,
+    HydroFeatureContextsListView,
     home,
     users,
     ProfileDetailView,
     clearNotifications,
     UserUpdateView,
-    NotificationListView
+    NotificationListView,
+    about,
+    ContactView,
 )
 
 urlpatterns = [
     path('', home, name='rivercure-home'),
     path('hydrofeatures/', HydroFeatureListView.as_view(), name='hydrofeature-list'),
     path('hydrofeature/<int:pk>', HydroFeatureDetailView.as_view(), name='hydrofeature-detail'),
+    path('hydrofeature/<int:pk>/contexts', HydroFeatureContextsListView.as_view(), name='hydrofeature-contexts-list'),
     path('hydrofeature/new/', HydroFeatureCreateView.as_view(), name='hydrofeature-create'),
     path('hydrofeature/<int:pk>/update/', HydroFeatureUpdateView.as_view(), name='hydrofeature-update'),
     path('hydrofeature/<int:pk>/delete/', HydroFeatureDeleteView.as_view(), name='hydrofeature-delete'),
@@ -26,4 +30,6 @@ urlpatterns = [
     path('profile/<int:pk>/update', UserUpdateView.as_view(), name='profile-update'),
     path('notification/clear', clearNotifications, name='notifications-clear'),
     path('notification/all', NotificationListView.as_view(), name='notifications-all'),
+    path('about/', about, name='rivercure-about'),
+    path('contact/', ContactView.as_view(), name='contact'),
 ]

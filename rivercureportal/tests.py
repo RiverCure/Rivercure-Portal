@@ -22,7 +22,7 @@
 #         username_input.send_keys('testuser')
 #         email_input = self.selenium.find_element_by_name('email')
 #         email_input.send_keys('testuser')
-#         # TODO: incomplete
+#         # incomplete
 
 #     def test_login(self):
 #         # Arrange

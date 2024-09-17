@@ -118,3 +118,229 @@
 }
 
 /*# sourceMappingURL=style.css.map */
+
+/* CSS classes with 'my-' prefix are custom (made by Maf) */
+
+/* Context cards */
+.observations-circle {
+  width: 3em;
+  height: 3em;
+  line-height: 3em;
+  border-radius: 50%;
+  border: #20bc9c;
+  text-align: center;
+  background: #20bc9c;
+}
+
+.my-context-card {
+  width: 21rem;
+}
+
+.my-card-img {
+  height: 300px;
+  object-fit: cover;
+}
+
+.my-card-public-context-detail-img {
+  height: 400px;
+  object-fit: cover;
+}
+
+.my-card-contribution-thumbnail-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.my-card-contribution-no-thumbnail-img {
+  height: 200px;
+  background: #eee;
+}
+
+.my-card-user-image {
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: 1em;
+  margin-top: -40px;
+  z-index: 1;
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.my-card-hover:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+
+.my-fade-out {
+  opacity:1;
+  transition: 1s ease;
+}
+
+.my-fade-out:hover {
+  opacity:0.75;
+  transition: 1s ease;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.card-contributions {
+  color: #333333;
+}
+
+/* Contribution Detail page */
+/* these are a mess */
+.my-contribution-detail-user-img {
+  height: 70px;
+  width: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.my-contribution-detail-situation-img {
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.my-contribution-detail-meta-info-card {
+  border-radius: 1rem;
+  border: 2px solid rgb(221, 221, 221);
+}
+.my-contribution-detail-meta-info-card-top {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 2px 2px 2px 2px;
+  border-radius: 1em 1em 0 0;
+}
+
+.my-contribution-detail-meta-info-card-footer-left {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0 0 2px 2px;
+}
+
+.my-contribution-detail-meta-info-card-footer-right {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0 2px 2px 0;
+}
+
+.my-contribution-detail-middle {
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0px 2px 2px 2px;
+}
+
+.my-contribution-detail-bottom {
+  /* border: 2px solid rgb(221, 221, 221); */
+  border-style: solid;
+  border-color: rgb(221, 221, 221);
+  border-width: 0px 2px 2px 2px;
+  border-radius: 0 0 1em 1em;
+}
+
+.my-border-top {
+  border-top: 2px solid rgb(221, 221, 221);
+}
+
+.my-border-radius-bottom-left {
+  border-radius: 0 0 0 1rem;
+}
+
+.my-border-radius-bottom-right {
+  border-radius: 0 0 1rem 0;
+}
+
+.my-border-radius-bottom {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.my-contribution-detail-footer {
+  background-color: #f8f8f8;
+}
+
+.my-contribution-detail-situation-card {
+  border: 2px solid rgb(221, 221, 221);
+}
+
+/* (Contribution detail) Media carousel */
+.my-image-carousel-thumbnail {
+  height: 300px;
+  object-fit: cover;
+}
+
+.my-video {
+  object-fit: cover;
+  height: 300px;
+  width: 336px;
+}
+
+.my-video-carousel-thumbnail {
+  position: relative;
+}
+
+.my-video-carousel-thumbnail-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Contributions */
+/* .contribution-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 8px;
+  margin-right: 8px;
+} */
+
+/* .contribution-card {
+  margin: 8px;
+} */
+
+
+
+/*
+.context-card-container {
+  border: 0.125rem solid #dddddd;
+  border-radius: 0.5rem;
+  margin: 5px;
+  padding: 5px;
+}
+*/
+
+/***********************************
+/* CONTRIBUTIONS
+/***********************************/
+
+/* For the modals in contribution_detail.html and contribution_form.html */
+.modal-header {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.modal-footer {
+  border-top: 1px solid #e8e8e8;
+}
+
+/***********************************
+/* CHALLENGE
+/***********************************/
+.question-box {
+  border-radius: 0.5rem;
+  border: 1px solid rgb(221, 221, 221);
+}
+
+.answer-bg-success {
+  background-color: rgba(40, 167, 69, 0.4);
+}
+
+.answer-bg-danger {
+  background-color: rgba(220, 53, 69, 0.4);
+}

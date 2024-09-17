@@ -1,0 +1,53 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %} Contact {% endblock %}
+{% load crispy_forms_tags %}
+{% load auth_extras %}
+{% load i18n %}
+{% load static %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {% if user.is_authenticated %}
+            var email = document.querySelector('#inputEmail');
+            email.value = "{{user.email}}";
+        {% endif %}
+    })
+</script>
+{% endblock scripts %}
+
+
+
+{% block content %}
+
+<h1>{% trans "Contact" %}</h1>
+<hr>
+
+<p class="font-weight-light" align="justify">
+    {% trans "We appreciate your interest in the RiverCure Portal. Should you have any inquiries, feedback, or require assistance, please complete the form below with your contact information, subject and message. Our team will respond to your submission at the earliest opportunity. Thank you for reaching out to us." %}
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="inputEmail">{% trans "Email Address" %}</label>
+        {{form.email}}
+    </div>
+
+    <div class="form-group">
+        <label for="selectSubject">{% trans "Subject" %}</label>
+        {{form.subject}}
+    </div>
+
+    <div class="form-group">
+        <label for="inputMessage">{% trans "Message" %}</label>
+        {{form.message}}
+    </div>
+
+    <button type="submit" class="btn btn-outline-info mb-3">
+        {% trans "Send" %}
+    </button>
+</form>
+
+{% endblock %}

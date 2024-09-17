@@ -8,7 +8,8 @@ router.register(r'context', ContextViewSet)
 urlpatterns = [
     path('', ContextListView.as_view(), name='context-list'),
     path('new/', ContextCreateView.as_view(), name='context-create'),
-    path('public/', PublicContextListView.as_view(), name='public-contexts'),
+    path('public/', PublicContextFilterView.as_view(), name='public-contexts'),
+    path('public/<str:contextCode>', PublicContextDetailView.as_view(), name='public-context-detail'),
     path('<str:contextCode>', ContextDetailView.as_view(), name='context-detail'),
     path('<str:contextCode>/update/', ContextUpdateView.as_view(), name='context-update'),
     path('<str:contextCode>/delete/', ContextDeleteView.as_view(), name='context-delete'),
@@ -19,6 +20,14 @@ urlpatterns = [
     path('<str:contextCode>/preprocessing_results/download/',
          download_preprocessing_results, name='context-preprocessing-results-download'),
     path('preprocessing_results/', preprocessing_results, name='context-preprocessing-results'),
+    # Moderator
+    path('moderators/my-contexts/', ModeratorContextsFilterView.as_view(), name='moderator-context-list'),
+    path('<str:contextCode>/moderators', ModeratorFilterView.as_view(), name='moderator-list'),
+    path('<str:contextCode>/moderators/contributions', ModeratorContextContributionFilterView.as_view(), name='moderator-context-contribution-list'),
+    path('<str:contextCode>/moderators/add/', ModeratorAddFilterView.as_view(), name='moderator-list-add'),
+    path('<str:contextCode>/moderators/<int:userId>/add/', contextModeratorAdd, name='moderator-user-add'),
+    path('<str:contextCode>/moderators/<int:userId>/remove/', contextModeratorRemove, name='moderator-remove'),
+    path('<str:contextCode>/moderators/batch-handle/', batchHandle, name='contribution-batch-handle'),
     # Mesh progress
     path('mesh-status/<str:contextCode>', mesh_status, name='mesh-status'),
     path('mesh-status/<str:contextCode>/progress', mesh_status_progress, name='mesh-status-progress'),
@@ -32,7 +41,9 @@ urlpatterns = [
     path('simulation/results/handle/<int:event_id>', handle_simulation_results, name='handle-simulation-results'),
     path('api/', include(router.urls)),
     path('<str:contextCode>/sensors/', ContextSensorListView.as_view(), name='context-sensor-list'),
+    # Events
     path('<str:pk>/events/<int:event_id>', EventDetailView.as_view(), name='event-detail'),
+    path('<str:pk>/events/<int:event_id>/challenges/', EventChallengesFilterView.as_view(), name='event-challenge-list'),
     path('<str:pk>/events/<int:event_id>/run/', request_simulation, name='event-run'),
     path('<str:contextCode>/events/', ContextEventListView.as_view(), name='event-list'),
     path('<str:pk>/events/new/', EventCreateView.as_view(), name='event-create'),

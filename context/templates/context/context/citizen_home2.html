@@ -1,0 +1,254 @@
+{% extends "rivercureportal/base.html" %}
+{% block title %}Rivercure Portal - Home{% endblock title %}
+{% load crispy_forms_tags %}
+{% load leaflet_tags %}
+{% load auth_extras %}
+{% load context_tags %}
+{% load my_tags %}
+{% load i18n %}
+{% load static %}
+
+{% block scripts %}
+<!-- Context CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}" />
+
+<!-- Leaflet -->
+{% leaflet_js plugins="ALL" %}
+{% leaflet_css plugins="ALL" %}
+
+<script type='text/javascript' src={% static 'context/js/context.js' %}></script>
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'context/LeafletClustering/MarkerCluster.Default.css' %}">
+<script src="{% static 'context/LeafletClustering/leaflet.markercluster.js' %}"></script>
+
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+<!-- Leaflet: Search function in map -->
+<!-- https://github.com/perliedman/leaflet-control-geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<!-- Leaflet: Get current position control -->
+<!-- https://github.com/domoritz/leaflet-locatecontrol -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+<script>
+
+    function showGridSearchForm() {
+        let gridSearchForm = document.getElementById("grid-search-form");
+        gridSearchForm.classList.remove("hidden");
+    }
+
+    function hideGridSearchForm() {
+        let gridSearchForm = document.getElementById("grid-search-form");
+        gridSearchForm.classList.add("hidden");
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+
+        window.addEventListener("map:init", e => {
+
+            const map = e.detail.map;
+
+            map.layerscontrol.setPosition("topleft");
+
+            // Try to find the user's current location
+            map.locate({
+                setView: true,
+                maxZoom: 17,
+            });
+
+            // Add search function to map -> leaflet-control-geocoder (https://github.com/perliedman/leaflet-control-geocoder)
+            L.Control.geocoder({
+                position: 'topright',
+                defaultMarkGeocode: false, // Removing the default handler for marking a result
+                collapsed: false,
+                placeholder: 'Search by place...',
+            }).on('markgeocode', function(e) {
+                var bbox = e.geocode.bbox;
+                map.fitBounds(bbox);
+                map.setZoom(17);
+            }).addTo(map);
+
+            // Add current position control to map
+            L.control.locate({
+                initialZoomLevel: 17,
+                flyTo: true,
+                drawCircle: false,
+                drawMarker: true
+            }).addTo(map);
+
+            // - Add Public Contexts to map
+            public_contexts_json = {{public_contexts_json|safe}};
+
+            // Public Contexts layer group
+            var publicContextPolygons = {};
+            // Domain
+            publicContextPolygons.ClusterDomain = L.markerClusterGroup().addTo(map); // We use a markerClusterGroup instead of a layerGroup because we want to cluster the polygons
+
+            // - For clustering (as seen in https://stackoverflow.com/questions/45798387/how-to-make-markerclustergroup-cluster-polygons?rq=3)
+            // When initializing the polygon, compute a "center"
+            L.Polygon.addInitHook(function () {
+                this._latlng = this._bounds.getCenter();
+            });
+
+            // Add extra functionality to Polygon (getLatLng and setLatLng methods for
+            //  Leaflet.markercluster to be able to cluster polygons.)
+            L.Polygon.include({
+                getLatLng: function () {
+                    return this._latlng;
+                },
+                setLatLng: function () {} // Dummy method.
+            });
+
+            // - For each Public Context
+            Object.entries(public_contexts_json).forEach((context) => {
+                // Draw Domain
+                const geomExternalBoundary = context["1"]["fields"]["geomExternalBoundary"];
+                const CLExternalBoundary = context["1"]["fields"]["CLExternalBoundary"];
+                if (geomExternalBoundary !== null) {
+                    //check if the refinement is defined in the database
+                    let domain = L.polygon(MyFunctions.coordStringToArray(geomExternalBoundary), {
+                        color: '#18a4bc',
+                        opacity: 0.3,
+                    });
+
+                    // When polygon is clicked, open card
+                    const cur_lang = "{{request.path}}".substring(0,3);
+                    const pk = context["1"]["pk"];
+
+                    const header = `<h3>${context["1"]["fields"]["Name"]}</h3>`;
+                    const picture = `<img src="/media/${context["1"]["fields"]["picture"]}" class="mb-2 rounded" style="width: 16rem; alt="Context Picture">`;
+                    const contributeBtn = `<a href="${cur_lang}/contributions/new/${pk}" class="btn btn-info text-white mr-2 btn-block"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>`; // We have to hardcode URL
+                    const detailBtn = `<a href="${cur_lang}/contexts/public/${pk}" class="btn btn-info mt-0 text-white btn-block"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>`;
+                    const btns = `<div class="d-flex">${contributeBtn}${detailBtn}</div>`;
+
+                    domain.bindPopup(header + "<hr class=\"my-2\">" + picture + btns,  {
+                        maxWidth: "auto"
+                    });
+
+                    // Add this Public Context (layer) to Public Contexts layer group
+                    publicContextPolygons.ClusterDomain.addLayer(domain);
+
+                }
+            });
+        });
+
+    })
+
+</script>
+
+<style>
+    .outline {
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    #my_map {
+        margin: 0px;
+        height: 84vh;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+{% endblock scripts %}
+
+
+
+
+{% block landing_page %}
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center flex-wrap mx-3">
+
+    <!-- Tab buttons -->
+    <ul class="nav nav-pills">
+        <li class="nav-item mr-2 mb-2">
+            <a class="nav-link {% is_active request.get_full_path 'map' %}" id="map-tab-button" data-toggle="tab" href="#map-view" role="tab" aria-controls="map-view" aria-selected="true" onclick="hideGridSearchForm()"><i class="bi bi-map"></i> {% trans "Map" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% is_active request.get_full_path 'grid' %}" id="grid-tab-button" data-toggle="tab" href="#grid-view" role="tab" aria-controls="grid-view" aria-selected="true" onclick="showGridSearchForm()"><i class="bi bi-grid-3x3-gap"></i> {% trans "Grid" %}</a>
+        </li>
+    </ul>
+
+    <!-- Grid search form -->
+    <form method="get" class="form-inline {% is_hidden request.get_full_path %}" id="grid-search-form">
+
+        <div class="dropdown">
+            <!-- Toggle -->
+            <button class="btn btn-primary dropdown-toggle ml-2" type="button" id="dropdownFilterMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-sliders2"></i>
+            </button>
+
+            <div class="dropdown-menu p-3" aria-labelledby="dropdownFilterMenuButton" onclick="event.stopPropagation()">
+                <!-- Organization -->
+                <div class="form-group mb-3">
+                    <label for="organization" class="mb-2">Organization</label>
+                    {{filter.form.organization}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row ml-2">
+            <!-- Context Name -->
+            <div class="form-group mb-0">
+                {{filter.form.Name}}
+            </div>
+
+            <!-- Search -->
+            <button type="submit" class="btn btn-primary ml-2"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tab views -->
+<div class="tab-content" id="publicContextsTabs">
+    <!-- Map -->
+    <div class="tab-pane fade {% is_show request.get_full_path 'map' %} {% is_active request.get_full_path 'map' %} mt-3" id="map-view" role="tabpanel" aria-labelledby="map-view-tab">
+        <div id="map-container">
+            {% leaflet_map "my_map" %}
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="tab-pane fade {% is_show request.get_full_path 'grid' %} {% is_active request.get_full_path 'grid' %}" id="grid-view" role="tabpanel" aria-labelledby="grid-view-tab">
+
+        <div class="d-flex flex-row flex-wrap justify-content-around m-3">
+            {% for context in public_contexts %}
+                <div class="card mb-4" style="width: 26rem;">
+                    <img src="{{ context.picture.url }}" class="card-img-top my-card-img" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{context.Name}}</h5>
+                        <p class="text-muted"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>
+                        <div class="d-flex">
+                            <a href="{% url 'contribution-create' context.code %}" class="btn btn-info btn-block mr-2"><i class="bi bi-upload"></i> {% trans "Contribute" %}</a>
+                            <a href="{% url 'public-context-detail' context.code %}" class="btn btn-info btn-block mt-0"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- If list empty -->
+        {% if public_contexts.count == 0 %}
+        <p class="font-weight-light my-2 text-center">{% trans "There are no Contexts." %}</p>
+        {% endif %}
+
+
+    </div>
+</div>
+
+{% endblock landing_page %}

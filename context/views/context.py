@@ -3,32 +3,50 @@ import shutil
 import zipfile
 import geojson
 import datetime
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect
-from django.db import transaction
-from context.views.helpers import get_context_folder_path, get_log_folder_path
-from rivercureproject.settings import MEDIA_ROOT
-from ..forms import ContextForm, UploadContextForm
-from django.contrib import messages
-from ..models import e_Context, e_ContextSensor
-from sensors.models import Sensor
+
 from rest_framework import viewsets
-from ..serializers import ContextSerializer
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from ..filters import ContextFilter, ContextSensorFilter
 from io import BytesIO
 from zipfile import ZipFile
+
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
+from django.db import transaction
+from django.core import serializers
+
+from django.contrib import messages
+from django_filters.views import FilterView
+
+from django.db.models import Count, Case, When, Value 
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from context.forms import ContextDetailsForm, ContextInitialForm
-from organization.models import Membership, Organization
+from django.contrib.auth.models import User
+
+from rivercureproject import settings
+
+
+from ..forms import ContextForm, UploadContextForm
+from ..models import e_Context, e_ContextSensor, e_ContextEvent, ContextMembership
+from ..serializers import ContextSerializer
+from ..filters import ContextFilter, ContextSensorFilter
+
 from .authorization import *
 from .prepare_files import *
 from .upload import boundaryline_creation
-from context.views.upload import alignment_creation, context_creation, refinement_creation
+
+from rivercureproject.settings import MEDIA_ROOT
+from rivercureportal.authorization import is_platform_admin
+from sensors.models import Sensor
+from challenges.models import e_Challenge, ChallengeState
+from organization.models import Membership, Organization
 from organization.authorization import belongs_to_organization
+from context.forms import ContextDetailsForm, ContextInitialForm
+from contributions.models import e_ContextContribution, ContributionStatus
+
+from context.views.upload import alignment_creation, context_creation, refinement_creation
+from context.views.helpers import get_context_folder_path, get_log_folder_path
 
 
 class ContextUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -69,15 +87,29 @@ class ContextListView(LoginRequiredMixin, ListView):
         return context
 
 
-class PublicContextListView(LoginRequiredMixin, ListView):
+class PublicContextFilterView(FilterView):
     model = e_Context
-    template_name = 'context/context/publicContext_list.html'
+    template_name = 'context/context/citizen_home2.html'
+    filterset_class = ContextFilter
+    context_object_name = 'public_contexts'
+
+    def get_queryset(self):
+        # context_list = e_Context.objects.exclude(isPublic=False).alias(nr_contributions=Count('e_contextcontribution')).order_by('-nr_contributions', 'code')
+
+        # Order by number of Accepted contributions belonging to this Context (from higher to lower)
+        # Ordering by code also because of repeating results (See https://stackoverflow.com/questions/5044464/django-pagination-is-repeating-results)
+        acceptedContributions = Count("e_contextcontribution", filter=Q(e_contextcontribution__state=ContributionStatus.ACCEPTED))
+        context_list = e_Context.objects.exclude(isPublic=False).annotate(acceptedContributions=acceptedContributions).order_by('-acceptedContributions', 'code')
+        return context_list
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # List of all public contexts (for JS)
+        public_contexts = e_Context.objects.exclude(isPublic=False)
+        context['public_contexts_json'] = serializers.serialize('json', list(public_contexts), fields=('code', 'Name', 'description', 'geomExternalBoundary', 'CLExternalBoundary', 'picture'))
 
-        context['context_list'] = e_Context.objects.exclude(isPublic=False)
-        context['filter'] = ContextFilter(self.request.GET, queryset=context['context_list'])
         return context
 
 
@@ -123,12 +155,35 @@ class ContextDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['sensors'] = get_context_sensors(self.get_object().pk)
         context['form'] = UploadContextForm()
         context['canEdit'] = context_organization_edit_permission_check(user, organization)
+        context['belongsToOrg'] = belongs_to_organization(user, organization)
 
         return context
 
     def test_func(self, *args, **kwargs):
         context = self.get_object()
         return context.isPublic or Membership.objects.filter(user=self.request.user, organization=context.organization).exists()
+
+class PublicContextDetailView(UserPassesTestMixin, DetailView):
+    model = e_Context
+    context_object_name = 'context'
+    template_name = 'context/context/public_context_detail.html'
+    pk_url_kwarg = 'contextCode'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['is_admin'] = is_platform_admin(self.request.user)
+        # context['is_context_event_man'] = context_quiz_manager_check(self.request.user, self.get_object())
+
+        context['contributions'] = e_ContextContribution.objects.filter(context=self.get_object().pk, state=ContributionStatus.ACCEPTED).order_by('-creationDateTime') # Contributions that belong to this context and are Accepted
+        context['events'] = e_ContextEvent.objects.filter(context=self.get_object().pk) # Events that belong to this context
+        # context['challenges'] = e_Challenge.objects.filter(context=self.get_object().pk, is_public=True, state=ChallengeState.PUBLISHED) # Public, published Challenges
+        context['MEDIA_URL'] = settings.MEDIA_URL
+        return context
+    
+    def test_func(self, *args, **kwargs):
+        context = self.get_object()
+        return context.isPublic
 
 
 class ContextDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -196,6 +251,9 @@ class ContextSensorListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def test_func(self):
         return self.context.isPublic or belongs_to_organization(self.request.user, self.context.organization)
+
+
+
 
 
 def get_context_sensors(context_code):
