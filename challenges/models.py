@@ -52,7 +52,7 @@ class e_Challenge(models.Model):
 
     # Information
     title = models.CharField(max_length=100)
-    difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL)
+    difficulty_level = models.CharField(choices=DIFFICULTY_LEVEL, max_length=20)
     is_public = models.BooleanField(default=False) # If false, only members of Org can see. If True, every logged-in user can see
     max_score = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     max_participations = models.IntegerField(default=1, validators=[MinValueValidator(1)]) # How many times users can participate
@@ -156,7 +156,7 @@ class e_Question(models.Model):
     challenge = models.ForeignKey(e_Challenge, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_by')
     creation_datetime = models.DateTimeField(auto_now_add=True)
-    type = models.CharField(choices=Question_Type.choices)
+    type = models.CharField(choices=Question_Type.choices, max_length=20)
     position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     # Question
