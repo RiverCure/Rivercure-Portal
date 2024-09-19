@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-12 09:48+0100\n"
+"POT-Creation-Date: 2024-09-19 10:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1629,10 +1629,8 @@ msgstr ""
 #: rivercureportal/templates/rivercureportal/about.html:285
 msgid ""
 "A Context, or geographic Context, refers to a specific geographic area, "
-"pertinent to modeling and analyzing flood events. A Context can be linked to "
-"a hydrological feature, such as a river, river basin, estuary, or lake. Each "
-"context is defined by a name, sensors, and various geographic "
-"characteristics."
+"relevant to modeling and analyzing flood events. Each Context is defined by "
+"a name, sensors, and a set of geographic characteristics."
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/about.html:147
@@ -1655,8 +1653,8 @@ msgstr ""
 #: rivercureportal/templates/rivercureportal/about.html:169
 #: rivercureportal/templates/rivercureportal/about.html:317
 msgid ""
-"An Event is a real or simulated set of occurrences taken place during a "
-"given period in a given geographic area."
+"An Event is a real or simulated set of occurrences, taken place during a "
+"given period, in a given geographic area."
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/about.html:179
@@ -1666,7 +1664,10 @@ msgstr ""
 
 #: rivercureportal/templates/rivercureportal/about.html:185
 #: rivercureportal/templates/rivercureportal/about.html:333
-msgid "A Quiz is a set of questions that can be answered by the user."
+msgid ""
+"A Quiz is a set of questions that can be answered by the user. Quizzes can "
+"be available only to the members of the Organization that created it, or to "
+"the entire RCP community (Public Quizzes)."
 msgstr ""
 
 #: rivercureportal/templates/rivercureportal/about.html:195
