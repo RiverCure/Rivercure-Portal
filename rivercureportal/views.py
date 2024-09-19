@@ -248,31 +248,31 @@ class ContactView(FormView):
         message = form.cleaned_data.get("message")
 
         # Celery
-        # contact = {
-        #     'from_email': email,
-        #     'subject': subject,
-        #     'message': message
-        # }
+        contact = {
+            'from_email': email,
+            'subject': subject,
+            'message': message
+        }
 
-        # if check_celery():
-        #     task = send_contact_email.delay(contact)
-        #     messages.success(self.request, 'Thank you for your contact!')
-        # else:  # Celery offline
-        #     messages.error(self.request, 'Background process offline: Contact admin.')
+        if check_celery():
+            task = send_contact_email.delay(contact)
+            messages.success(self.request, 'Thank you for your contact!')
+        else:  # Celery offline
+            messages.error(self.request, 'Background process offline: Contact admin.')
 
         # Debug
-        full_message = f"""
-            Received message below from {email}
-            Subject - {subject}
-            ________________________
+        # full_message = f"""
+        #     Received message below from {email}
+        #     Subject - {subject}
+        #     ________________________
 
 
-            {message}
-            """
-        send_mail(
-            subject=subject,
-            message=full_message,
-            from_email=email,
-            recipient_list=['to@email.com'],
-        )
+        #     {message}
+        #     """
+        # send_mail(
+        #     subject=subject,
+        #     message=full_message,
+        #     from_email=email,
+        #     recipient_list=['to@email.com'],
+        # )
         return super(ContactView, self).form_valid(form)
