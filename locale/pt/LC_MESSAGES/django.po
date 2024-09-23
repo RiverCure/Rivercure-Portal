@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-23 13:42+0100\n"
+"POT-Creation-Date: 2024-09-23 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,6 +79,7 @@ msgstr "Nível de Dificuldade"
 #: challenges/templates/challenges/org_challenges_list.html:3
 #: challenges/templates/challenges/org_challenges_list.html:17
 #: context/filters.py:44 context/filters.py:101
+#: context/templates/context/context/detail.html:111
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
@@ -922,7 +923,13 @@ msgstr "Grelha"
 msgid "There are no Contexts."
 msgstr "Não existem Contextos."
 
-#: context/templates/context/context/detail.html:194
+#: context/templates/context/context/detail.html:3
+#, fuzzy
+#| msgid "Context Name"
+msgid "Context Detail"
+msgstr "Nome do Contexto"
+
+#: context/templates/context/context/detail.html:196
 msgid "See Public Context"
 msgstr "Ver Contexto Público"
 
@@ -1245,36 +1252,44 @@ msgid "Transit Time of Floating Objects"
 msgstr "Tempo de Trânsito de Objetos Flutuantes"
 
 #: contributions/forms.py:48
+msgid ""
+"Write in total number of seconds or in the format HH:MM:SS. For example, "
+"writing 00:01:30 or 90 is the same (both mean 90 seconds)."
+msgstr ""
+"Escreva o número total de segundos ou no formato HH:MM:SS. Por exemplo, "
+"escrever 00:01:30 ou 90 é o mesmo (ambos significam 90 segundos)."
+
+#: contributions/forms.py:49
 #: contributions/templates/contributions/contribution_detail.html:339
 #: contributions/templates/contributions/contribution_detail.html:416
 msgid "Water Height"
 msgstr "Altura da Água"
 
-#: contributions/forms.py:50
+#: contributions/forms.py:51
 msgid "Height in meters."
 msgstr "Altura em metros."
 
-#: contributions/forms.py:51
+#: contributions/forms.py:52
 #: contributions/templates/contributions/contribution_detail.html:342
 #: contributions/templates/contributions/contribution_detail.html:420
 msgid "Velocity"
 msgstr "Velocidade"
 
-#: contributions/forms.py:53
+#: contributions/forms.py:54
 msgid "Velocity in km/h."
 msgstr "Velocidade em km/h."
 
-#: contributions/forms.py:55
+#: contributions/forms.py:56
 #: contributions/templates/contributions/contribution_detail.html:343
 #: contributions/templates/contributions/contribution_detail.html:422
 msgid "Tornado Type"
 msgstr "Tipo de Tornado"
 
-#: contributions/forms.py:62
+#: contributions/forms.py:63
 msgid "Observation Place"
 msgstr "Local da Observação"
 
-#: contributions/forms.py:65
+#: contributions/forms.py:66
 msgid ""
 "Move the map around to pick the location. Alternatively, you can text search "
 "for the desired location."
@@ -1282,23 +1297,23 @@ msgstr ""
 "Mova o mapa para escolher a localização. Alternativamente, pode pesquisar "
 "por texto a localização desejada."
 
-#: contributions/forms.py:79
+#: contributions/forms.py:80
 msgid "Too many files submitted. Only submit up to 10 files."
 msgstr "Demasiados ficheiros submetidos. Submita apenas até 10 ficheiros."
 
-#: contributions/forms.py:87
+#: contributions/forms.py:88
 msgid "Could not read uploaded file."
 msgstr "Não foi possível ler o ficheiro submetido."
 
-#: contributions/forms.py:91
+#: contributions/forms.py:92
 msgid "Total size of files is too large ( > 10mb )."
 msgstr "O tamanho total dos ficheiros é demasiado grande ( > 10 MB )"
 
-#: contributions/forms.py:100
+#: contributions/forms.py:101
 msgid "Enter a reason for the rejection."
 msgstr "Insira uma razão para a rejeição."
 
-#: contributions/forms.py:107
+#: contributions/forms.py:108
 msgid "Enter a reason for reporting."
 msgstr "Insira uma razão para a denúncia. "
 
@@ -1996,6 +2011,9 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
+
+#~ msgid "Water Height (m)"
+#~ msgstr "Altura da Água"
 
 #~ msgid "This action is irreversible!"
 #~ msgstr "Esta ação é irreversível!"

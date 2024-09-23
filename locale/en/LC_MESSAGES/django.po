@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-23 13:42+0100\n"
+"POT-Creation-Date: 2024-09-23 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,6 +76,7 @@ msgstr ""
 #: challenges/templates/challenges/org_challenges_list.html:3
 #: challenges/templates/challenges/org_challenges_list.html:17
 #: context/filters.py:44 context/filters.py:101
+#: context/templates/context/context/detail.html:111
 #: context/templates/context/context/public_context_detail.html:29
 #: context/templates/context/moderator/moderator_add_list.html:13
 #: context/templates/context/moderator/moderator_list.html:13
@@ -884,7 +885,11 @@ msgstr ""
 msgid "There are no Contexts."
 msgstr ""
 
-#: context/templates/context/context/detail.html:194
+#: context/templates/context/context/detail.html:3
+msgid "Context Detail"
+msgstr ""
+
+#: context/templates/context/context/detail.html:196
 msgid "See Public Context"
 msgstr ""
 
@@ -1175,58 +1180,64 @@ msgid "Transit Time of Floating Objects"
 msgstr ""
 
 #: contributions/forms.py:48
+msgid ""
+"Write in total number of seconds or in the format HH:MM:SS. For example, "
+"writing 00:01:30 or 90 is the same (both mean 90 seconds)."
+msgstr ""
+
+#: contributions/forms.py:49
 #: contributions/templates/contributions/contribution_detail.html:339
 #: contributions/templates/contributions/contribution_detail.html:416
 msgid "Water Height"
 msgstr ""
 
-#: contributions/forms.py:50
+#: contributions/forms.py:51
 msgid "Height in meters."
 msgstr ""
 
-#: contributions/forms.py:51
+#: contributions/forms.py:52
 #: contributions/templates/contributions/contribution_detail.html:342
 #: contributions/templates/contributions/contribution_detail.html:420
 msgid "Velocity"
 msgstr ""
 
-#: contributions/forms.py:53
+#: contributions/forms.py:54
 msgid "Velocity in km/h."
 msgstr ""
 
-#: contributions/forms.py:55
+#: contributions/forms.py:56
 #: contributions/templates/contributions/contribution_detail.html:343
 #: contributions/templates/contributions/contribution_detail.html:422
 msgid "Tornado Type"
 msgstr ""
 
-#: contributions/forms.py:62
+#: contributions/forms.py:63
 msgid "Observation Place"
 msgstr ""
 
-#: contributions/forms.py:65
+#: contributions/forms.py:66
 msgid ""
 "Move the map around to pick the location. Alternatively, you can text search "
 "for the desired location."
 msgstr ""
 
-#: contributions/forms.py:79
+#: contributions/forms.py:80
 msgid "Too many files submitted. Only submit up to 10 files."
 msgstr ""
 
-#: contributions/forms.py:87
+#: contributions/forms.py:88
 msgid "Could not read uploaded file."
 msgstr ""
 
-#: contributions/forms.py:91
+#: contributions/forms.py:92
 msgid "Total size of files is too large ( > 10mb )."
 msgstr ""
 
-#: contributions/forms.py:100
+#: contributions/forms.py:101
 msgid "Enter a reason for the rejection."
 msgstr ""
 
-#: contributions/forms.py:107
+#: contributions/forms.py:108
 msgid "Enter a reason for reporting."
 msgstr ""
 

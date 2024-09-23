@@ -44,7 +44,8 @@ class ContributionInitialForm(forms.ModelForm):
                                    required=False)
     floating_objects_time = forms.DurationField(label=_('Transit Time of Floating Objects'),
                                                 required=False,
-                                                widget=forms.TextInput(attrs={'placeholder': 'HH:MM:SS',}))
+                                                widget=forms.TextInput(attrs={'placeholder': 'Time in seconds.',}),
+                                                help_text=_('Write in total number of seconds or in the format HH:MM:SS. For example, writing 00:01:30 or 90 is the same (both mean 90 seconds).'))
     water_height = forms.FloatField(label=_('Water Height'),
                                     required=False,
                                     widget=forms.NumberInput(attrs={'placeholder': _('Height in meters.'),}))
