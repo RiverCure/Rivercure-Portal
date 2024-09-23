@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-19 12:50+0100\n"
+"POT-Creation-Date: 2024-09-23 13:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -809,7 +809,7 @@ msgid "Username"
 msgstr "Nome de Utilizador"
 
 #: context/filters.py:74
-#: rivercureportal/templates/rivercureportal/contact.html:38
+#: rivercureportal/templates/rivercureportal/contact.html:40
 msgid "Email Address"
 msgstr "Endereço de Email"
 
@@ -902,7 +902,6 @@ msgstr "Contribuir"
 
 #: context/templates/context/context/citizen_home2.html:125
 #: context/templates/context/context/citizen_home2.html:239
-#: context/templates/context/context/public_context_detail.html:39
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:81
 #: contributions/templates/contributions/contribution_detail.html:374
 #: contributions/templates/contributions/contribution_detail.html:475
@@ -922,6 +921,14 @@ msgstr "Grelha"
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:88
 msgid "There are no Contexts."
 msgstr "Não existem Contextos."
+
+#: context/templates/context/context/detail.html:194
+msgid "See Public Context"
+msgstr "Ver Contexto Público"
+
+#: context/templates/context/context/public_context_detail.html:39
+msgid "More Details"
+msgstr "Mais Detalhes"
 
 #: context/templates/context/context/public_context_detail.html:49
 #: context/templates/context/moderator/moderator_context_contribution_list.html:4
@@ -1883,7 +1890,7 @@ msgstr ""
 "href=\"mailto:rivercure@outlook.pt\">rivercure@outlook.pt</a>. A nossa "
 "equipa responderá à sua submissão com a maior brevidade possível."
 
-#: rivercureportal/templates/rivercureportal/contact.html:31
+#: rivercureportal/templates/rivercureportal/contact.html:33
 msgid ""
 "We appreciate your interest in the RiverCure Portal. Should you have any "
 "inquiries, feedback, or require assistance, please complete the form below "
@@ -1897,15 +1904,15 @@ msgstr ""
 "responderá à sua submissão com a maior brevidade possível. Obrigado por nos "
 "contactar."
 
-#: rivercureportal/templates/rivercureportal/contact.html:43
+#: rivercureportal/templates/rivercureportal/contact.html:45
 msgid "Subject"
 msgstr "Assunto"
 
-#: rivercureportal/templates/rivercureportal/contact.html:48
+#: rivercureportal/templates/rivercureportal/contact.html:50
 msgid "Message"
 msgstr "Mensagem"
 
-#: rivercureportal/templates/rivercureportal/contact.html:53
+#: rivercureportal/templates/rivercureportal/contact.html:55
 msgid "Send"
 msgstr "Enviar"
 

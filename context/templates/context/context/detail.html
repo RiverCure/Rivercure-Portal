@@ -1,5 +1,6 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Context detail {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Context Detail" %} {% endblock %}
 {% load leaflet_tags %}
 {% load static %}
 {% load crispy_forms_tags %}
@@ -106,8 +107,8 @@
 
 {% block content %}
 
-<h1>{{ context.Name }} context</h1>
-<h3>Organization: {{ context.organization }}</h3>
+<h1>{{ context.Name }} </h1>
+<p><strong>{% trans "Organization" %}:</strong> {{ context.organization.name }}</p>
 <article class="media content-section">
     <div class="media-body">
         <div id="map-container" class="container">
@@ -153,7 +154,9 @@
             <a class="btn btn-danger mt-1 mb-1" href="{% url 'mesh-cancel-confirm' context.code %}">Cancel Mesh</a> 
         {% endif %}
             
-        <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">Back to context list</a>
+        {% if belongsToOrg %}
+            <a class="btn btn-secondary" href="{% url 'context-list' %}" style="float:right">See Organization Context list</a>
+        {% endif %}
     </div>
 </article>
 
@@ -184,6 +187,12 @@
     <script>
         document.querySelector('#id_code').value = '{{ context.code }}';
     </script>
+</div>
+
+
+<div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
+    <!-- Bottom button -->
+    <a class="btn btn-secondary" href="{% url 'public-context-detail' context.code %}">{% trans "See Public Context" %}</a>
 </div>
 
 {% endblock content %}
