@@ -28,7 +28,7 @@ from .models import e_ContextContribution, e_ContributionAttachment, Contributio
 from .forms import ContributionInitialForm, RejectionForm, ReportForm
 from .filters import ContributionFilter, MyContributionsFilter
 from .authorization import *
-from .tasks import lat_long_to_address
+from .tasks import lat_long_to_address, make_video_thumbnail
 from context.models import e_Context
 from context.views.authorization import context_organization_edit_permission_check, context_moderator_check
 from rivercureproject import settings
@@ -103,19 +103,8 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
 
                 # If is video, first get thumbnail and then save
                 else:
-                    try:
-                        ff = FFmpeg()
-
-                        # oh god
-                        input_path = new_attachment.file.path
-                        input_path_no_extension = input_path.split('.')[0] 
-                        output_path = input_path_no_extension + ".jpg"
-                        ff.options("-i {} -ss 00:00:01.000 -vframes 1 {}".format(input_path, output_path))
-                        thumb = open(output_path, "rb")
-                        thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
-                        new_contribution.thumbnail = thumb_django_file
-                    except:
-                        raise Exception(_("Video needs to be longer than 1 second in order to have a thumbnail."))
+                    # Send to Celery
+                    make_video_thumbnail(new_contribution, new_attachment)
 
                 new_contribution.save()
         

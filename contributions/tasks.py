@@ -1,7 +1,11 @@
 from dotenv import load_dotenv
 from celery import shared_task
+from pyffmpeg import FFmpeg
 
+from django.core.files import File
 from django.core.mail import send_mail
+
+from django.utils.translation import gettext_lazy as _
 
 from .models import e_ContextContribution
 
@@ -39,6 +43,26 @@ def lat_long_to_address(self, contribution_id):
             # Oops, something went wrong
             print("Reverse Geocoding API Error:", response.status_code, response.text)
             raise Exception()
+
+@shared_task(bind=True)
+def make_video_thumbnail(self, contribution, attachment):
+    try:
+        ff = FFmpeg()
+
+        # oh god
+        input_path = attachment.file.path
+        input_path_no_extension = input_path.split('.')[0] 
+        output_path = input_path_no_extension + ".jpg"
+        ff.options("-i {} -ss 00:00:01.000 -vframes 1 {}".format(input_path, output_path))
+        thumb = open(output_path, "rb")
+        thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
+
+        contribution.thumbnail = thumb_django_file
+        contribution.save()
+    except:
+        raise Exception(_("Video needs to be longer than 1 second in order to have a thumbnail."))
+
+
 
 
 # @shared_task(bind=True)
