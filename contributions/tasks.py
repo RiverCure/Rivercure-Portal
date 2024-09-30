@@ -56,11 +56,12 @@ def make_video_thumbnail(self, contribution, attachment):
         input_path_no_extension = input_path.split('.')[0] 
         output_path = input_path_no_extension + ".jpg"
         ff.options("-i {} -ss 00:00:01.000 -vframes 1 {}".format(input_path, output_path))
-        thumb = open(output_path, "rb")
-        thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
-
-        contribution.thumbnail = thumb_django_file
-        contribution.save()
+        # thumb = open(output_path, "rb")
+        
+        with open(output_path, "rb") as thumb:
+            thumb_django_file = File(thumb) # As seen in: https://www.revsys.com/tidbits/loading-django-files-from-code/
+            contribution.thumbnail = thumb_django_file
+            contribution.save()
 
         default_storage.delete(output_path)
     except:
