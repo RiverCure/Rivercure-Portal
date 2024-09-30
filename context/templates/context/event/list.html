@@ -1,6 +1,12 @@
 {% extends "rivercureportal/base.html" %}
-{% block title %} Context event list {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Context Event list" %} {% endblock %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'context/css/style.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -18,13 +24,13 @@
     }
 </style>
 
-<h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> Events</h1>
+<h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> {% trans "Events" %}</h1>
 
 <div class="filter-section">
     <h5>Filter</h5>
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-info">Filter</button>
+        <button type="submit" class="btn btn-info">{% trans "Filter" %}</button>
     </form>
 
     <div class="mt-3"></div>
@@ -58,15 +64,22 @@
                         <td>{{ event.state }}</td>
                     </tr>
                     {% empty %}
-                    <td><h3 class="text-secondary font-italic no-context-data">No Events!</h3></td>
+                    <td><h3 class="text-secondary font-italic no-context-data">{% trans "No Events!" %}</h3></td>
                 {% endfor %}
             </tbody>
         </table>
         {% if hasPerm %}
-            <a type="button" class="btn btn-info" href="{% url 'event-create' context.code %}">Add Event</a>
+            <a type="button" class="btn btn-info" href="{% url 'event-create' context.code %}"><i class="bi bi-plus"></i> {% trans "Add Event" %}</a>
         {% endif %}
-        <a class="btn btn-secondary" style="float:right;" href="{% url 'context-detail' view.kwargs.contextCode %}">Back to context</a>
     </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
+    <!-- Bottom button -->
+    <a class="btn btn-secondary" href="{% url 'public-context-detail' context.code %}">{% trans "See Public Context" %}</a>
+    {% if hasPerm %}
+        <a class="btn btn-secondary" href="{% url 'context-detail' view.kwargs.contextCode %}">{% trans "Back to Context" %}</a>
+    {% endif %}
 </div>
 
 {% endblock content %}

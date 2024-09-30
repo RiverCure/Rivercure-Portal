@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-23 14:00+0100\n"
+"POT-Creation-Date: 2024-09-30 19:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -537,7 +537,7 @@ msgstr ""
 
 #: challenges/templates/challenges/challenge_participation_detail.html:30
 #: challenges/templates/challenges/challenge_participations_list.html:38
-#: context/templates/context/context/public_context_detail.html:64
+#: context/templates/context/context/public_context_detail.html:68
 #: contributions/templates/contributions/contribution_detail.html:131
 #: contributions/templates/contributions/contribution_list.html:46
 #: contributions/templates/contributions/my_contributions_list.html:46
@@ -592,7 +592,7 @@ msgstr ""
 #: context/templates/context/moderator/moderator_add_list.html:63
 #: context/templates/context/moderator/moderator_context_contribution_list.html:158
 #: context/templates/context/moderator/moderator_list.html:74
-#: context/templates/context/moderator/moderator_my_context_list.html:76
+#: context/templates/context/moderator/moderator_my_context_list.html:80
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:100
 #: contributions/templates/contributions/contribution_list.html:67
 #: contributions/templates/contributions/my_contributions_list.html:62
@@ -605,7 +605,7 @@ msgstr ""
 #: context/templates/context/moderator/moderator_add_list.html:77
 #: context/templates/context/moderator/moderator_context_contribution_list.html:172
 #: context/templates/context/moderator/moderator_list.html:88
-#: context/templates/context/moderator/moderator_my_context_list.html:90
+#: context/templates/context/moderator/moderator_my_context_list.html:94
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:114
 #: contributions/templates/contributions/contribution_list.html:81
 #: contributions/templates/contributions/my_contributions_list.html:76
@@ -858,13 +858,13 @@ msgid "Moderator"
 msgstr ""
 
 #: context/templates/context/context/citizen_home2.html:124
-#: context/templates/context/context/citizen_home2.html:238
-#: context/templates/context/context/public_context_detail.html:37
+#: context/templates/context/context/citizen_home2.html:242
+#: context/templates/context/context/public_context_detail.html:41
 msgid "Contribute"
 msgstr ""
 
 #: context/templates/context/context/citizen_home2.html:125
-#: context/templates/context/context/citizen_home2.html:239
+#: context/templates/context/context/citizen_home2.html:243
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:81
 #: contributions/templates/contributions/contribution_detail.html:374
 #: contributions/templates/contributions/contribution_detail.html:475
@@ -879,8 +879,8 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: context/templates/context/context/citizen_home2.html:247
-#: context/templates/context/moderator/moderator_my_context_list.html:67
+#: context/templates/context/context/citizen_home2.html:251
+#: context/templates/context/moderator/moderator_my_context_list.html:71
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:88
 msgid "There are no Contexts."
 msgstr ""
@@ -890,14 +890,15 @@ msgid "Context Detail"
 msgstr ""
 
 #: context/templates/context/context/detail.html:196
+#: context/templates/context/event/list.html:79
 msgid "See Public Context"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:39
+#: context/templates/context/context/public_context_detail.html:43
 msgid "More Details"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:49
+#: context/templates/context/context/public_context_detail.html:53
 #: context/templates/context/moderator/moderator_context_contribution_list.html:4
 #: context/templates/context/moderator/moderator_context_contribution_list.html:39
 #: contributions/templates/contributions/contribution_list.html:3
@@ -906,34 +907,35 @@ msgstr ""
 msgid "Contributions"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:50
-#: context/templates/context/context/public_context_detail.html:83
+#: context/templates/context/context/public_context_detail.html:54
+#: context/templates/context/context/public_context_detail.html:87
 #: context/templates/context/event/detail.html:100
 msgid "See more"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:53
+#: context/templates/context/context/public_context_detail.html:57
 msgid ""
 "There are no Contributions for this Context yet. Why don't you make one?"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:74
-#: context/templates/context/context/public_context_detail.html:108
+#: context/templates/context/context/public_context_detail.html:78
+#: context/templates/context/context/public_context_detail.html:112
 #: context/templates/context/event/detail.html:132
 #: contributions/templates/contributions/contribution_detail.html:302
 msgid "Scroll horizontally to see more"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:82
+#: context/templates/context/context/public_context_detail.html:86
+#: context/templates/context/event/list.html:27
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:79
 msgid "Events"
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:86
+#: context/templates/context/context/public_context_detail.html:90
 msgid "There are no Events for this Context."
 msgstr ""
 
-#: context/templates/context/context/public_context_detail.html:98
+#: context/templates/context/context/public_context_detail.html:102
 msgid "Started on"
 msgstr ""
 
@@ -957,6 +959,27 @@ msgstr ""
 #: contributions/templates/contributions/contribution_detail.html:501
 #: contributions/templates/contributions/contribution_list.html:60
 msgid "See Context"
+msgstr ""
+
+#: context/templates/context/event/list.html:3
+msgid "Context Event list"
+msgstr ""
+
+#: context/templates/context/event/list.html:33
+msgid "Filter"
+msgstr ""
+
+#: context/templates/context/event/list.html:67
+msgid "No Events!"
+msgstr ""
+
+#: context/templates/context/event/list.html:72
+msgid "Add Event"
+msgstr ""
+
+#: context/templates/context/event/list.html:81
+#: context/templates/context/moderator/moderator_list.html:67
+msgid "Back to Context"
 msgstr ""
 
 #: context/templates/context/moderator/moderator_add_list.html:3
@@ -1078,10 +1101,6 @@ msgstr ""
 msgid "There are no Moderators."
 msgstr ""
 
-#: context/templates/context/moderator/moderator_list.html:67
-msgid "Back to Context"
-msgstr ""
-
 #: context/templates/context/moderator/moderator_my_context_list.html:3
 #: context/templates/context/moderator/moderator_my_context_list.html:28
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:29
@@ -1096,15 +1115,15 @@ msgid ""
 "please visit the"
 msgstr ""
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "pending"
 msgstr ""
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "of"
 msgstr ""
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "contributions"
 msgstr ""
 
@@ -1119,15 +1138,15 @@ msgstr ""
 msgid "Challenges"
 msgstr ""
 
-#: context/views/moderator.py:227
+#: context/views/moderator.py:229
 msgid "The selected Contributions have been accepted."
 msgstr ""
 
-#: context/views/moderator.py:238
+#: context/views/moderator.py:240
 msgid "BATCH REJECT"
 msgstr ""
 
-#: context/views/moderator.py:244
+#: context/views/moderator.py:246
 msgid "The selected Contributions have been rejected."
 msgstr ""
 
@@ -1297,6 +1316,10 @@ msgstr ""
 
 #: contributions/models.py:35
 msgid "On Land"
+msgstr ""
+
+#: contributions/tasks.py:68
+msgid "Video needs to be longer than 1 second in order to have a thumbnail."
 msgstr ""
 
 #: contributions/templates/contributions/contribution_confirm_delete.html:3
@@ -1565,17 +1588,13 @@ msgid ""
 "this Contribution."
 msgstr ""
 
-#: contributions/views.py:118
-msgid "Video needs to be longer than 1 second in order to have a thumbnail."
-msgstr ""
-
-#: contributions/views.py:138
+#: contributions/views.py:127
 msgid ""
 "Thank you for submitting your Contribution! Your participation is very "
 "valuable to the RiverCure Portal."
 msgstr ""
 
-#: contributions/views.py:327
+#: contributions/views.py:316
 msgid "Background process offline: Contact admin."
 msgstr ""
 

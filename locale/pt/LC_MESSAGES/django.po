@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-23 14:00+0100\n"
+"POT-Creation-Date: 2024-09-30 19:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -562,7 +562,7 @@ msgstr "Participação"
 
 #: challenges/templates/challenges/challenge_participation_detail.html:30
 #: challenges/templates/challenges/challenge_participations_list.html:38
-#: context/templates/context/context/public_context_detail.html:64
+#: context/templates/context/context/public_context_detail.html:68
 #: contributions/templates/contributions/contribution_detail.html:131
 #: contributions/templates/contributions/contribution_list.html:46
 #: contributions/templates/contributions/my_contributions_list.html:46
@@ -617,7 +617,7 @@ msgstr "Não existem participações."
 #: context/templates/context/moderator/moderator_add_list.html:63
 #: context/templates/context/moderator/moderator_context_contribution_list.html:158
 #: context/templates/context/moderator/moderator_list.html:74
-#: context/templates/context/moderator/moderator_my_context_list.html:76
+#: context/templates/context/moderator/moderator_my_context_list.html:80
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:100
 #: contributions/templates/contributions/contribution_list.html:67
 #: contributions/templates/contributions/my_contributions_list.html:62
@@ -630,7 +630,7 @@ msgstr "Primeira Página"
 #: context/templates/context/moderator/moderator_add_list.html:77
 #: context/templates/context/moderator/moderator_context_contribution_list.html:172
 #: context/templates/context/moderator/moderator_list.html:88
-#: context/templates/context/moderator/moderator_my_context_list.html:90
+#: context/templates/context/moderator/moderator_my_context_list.html:94
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:114
 #: contributions/templates/contributions/contribution_list.html:81
 #: contributions/templates/contributions/my_contributions_list.html:76
@@ -896,13 +896,13 @@ msgid "Moderator"
 msgstr "Moderador"
 
 #: context/templates/context/context/citizen_home2.html:124
-#: context/templates/context/context/citizen_home2.html:238
-#: context/templates/context/context/public_context_detail.html:37
+#: context/templates/context/context/citizen_home2.html:242
+#: context/templates/context/context/public_context_detail.html:41
 msgid "Contribute"
 msgstr "Contribuir"
 
 #: context/templates/context/context/citizen_home2.html:125
-#: context/templates/context/context/citizen_home2.html:239
+#: context/templates/context/context/citizen_home2.html:243
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:81
 #: contributions/templates/contributions/contribution_detail.html:374
 #: contributions/templates/contributions/contribution_detail.html:475
@@ -917,8 +917,8 @@ msgstr "Mapa"
 msgid "Grid"
 msgstr "Grelha"
 
-#: context/templates/context/context/citizen_home2.html:247
-#: context/templates/context/moderator/moderator_my_context_list.html:67
+#: context/templates/context/context/citizen_home2.html:251
+#: context/templates/context/moderator/moderator_my_context_list.html:71
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:88
 msgid "There are no Contexts."
 msgstr "Não existem Contextos."
@@ -930,14 +930,15 @@ msgid "Context Detail"
 msgstr "Nome do Contexto"
 
 #: context/templates/context/context/detail.html:196
+#: context/templates/context/event/list.html:79
 msgid "See Public Context"
 msgstr "Ver Contexto Público"
 
-#: context/templates/context/context/public_context_detail.html:39
+#: context/templates/context/context/public_context_detail.html:43
 msgid "More Details"
 msgstr "Mais Detalhes"
 
-#: context/templates/context/context/public_context_detail.html:49
+#: context/templates/context/context/public_context_detail.html:53
 #: context/templates/context/moderator/moderator_context_contribution_list.html:4
 #: context/templates/context/moderator/moderator_context_contribution_list.html:39
 #: contributions/templates/contributions/contribution_list.html:3
@@ -946,35 +947,36 @@ msgstr "Mais Detalhes"
 msgid "Contributions"
 msgstr "Contribuições"
 
-#: context/templates/context/context/public_context_detail.html:50
-#: context/templates/context/context/public_context_detail.html:83
+#: context/templates/context/context/public_context_detail.html:54
+#: context/templates/context/context/public_context_detail.html:87
 #: context/templates/context/event/detail.html:100
 msgid "See more"
 msgstr "Ver mais"
 
-#: context/templates/context/context/public_context_detail.html:53
+#: context/templates/context/context/public_context_detail.html:57
 msgid ""
 "There are no Contributions for this Context yet. Why don't you make one?"
 msgstr ""
 "Ainda não existem Contribuições para este Contexto. Porque não faz uma?"
 
-#: context/templates/context/context/public_context_detail.html:74
-#: context/templates/context/context/public_context_detail.html:108
+#: context/templates/context/context/public_context_detail.html:78
+#: context/templates/context/context/public_context_detail.html:112
 #: context/templates/context/event/detail.html:132
 #: contributions/templates/contributions/contribution_detail.html:302
 msgid "Scroll horizontally to see more"
 msgstr "Arraste horizontalmente para ver mais"
 
-#: context/templates/context/context/public_context_detail.html:82
+#: context/templates/context/context/public_context_detail.html:86
+#: context/templates/context/event/list.html:27
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:79
 msgid "Events"
 msgstr "Eventos"
 
-#: context/templates/context/context/public_context_detail.html:86
+#: context/templates/context/context/public_context_detail.html:90
 msgid "There are no Events for this Context."
 msgstr "Não existem Eventos para este Contexto."
 
-#: context/templates/context/context/public_context_detail.html:98
+#: context/templates/context/context/public_context_detail.html:102
 msgid "Started on"
 msgstr "Começou a"
 
@@ -999,6 +1001,29 @@ msgstr "Não existem Quizzes publicados para este Contexto."
 #: contributions/templates/contributions/contribution_list.html:60
 msgid "See Context"
 msgstr "Ver Contexto"
+
+#: context/templates/context/event/list.html:3
+#, fuzzy
+#| msgid "Context Name"
+msgid "Context Event list"
+msgstr "Nome do Contexto"
+
+#: context/templates/context/event/list.html:33
+msgid "Filter"
+msgstr "Filtro"
+
+#: context/templates/context/event/list.html:67
+msgid "No Events!"
+msgstr "Sem Eventos!"
+
+#: context/templates/context/event/list.html:72
+msgid "Add Event"
+msgstr "Adicionar Evento"
+
+#: context/templates/context/event/list.html:81
+#: context/templates/context/moderator/moderator_list.html:67
+msgid "Back to Context"
+msgstr "Voltar a Contexto"
 
 #: context/templates/context/moderator/moderator_add_list.html:3
 #: context/templates/context/moderator/moderator_list.html:23
@@ -1132,10 +1157,6 @@ msgstr ""
 msgid "There are no Moderators."
 msgstr "Não existem Contextos."
 
-#: context/templates/context/moderator/moderator_list.html:67
-msgid "Back to Context"
-msgstr "Voltar a Contexto"
-
 #: context/templates/context/moderator/moderator_my_context_list.html:3
 #: context/templates/context/moderator/moderator_my_context_list.html:28
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:29
@@ -1153,15 +1174,15 @@ msgstr ""
 "mais informações sobre Moderadores e permissões ao nível do Contexto, por "
 "favor visite a"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "pending"
 msgstr "pendentes"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "of"
 msgstr "de"
 
-#: context/templates/context/moderator/moderator_my_context_list.html:60
+#: context/templates/context/moderator/moderator_my_context_list.html:64
 msgid "contributions"
 msgstr "contribuições"
 
@@ -1184,17 +1205,17 @@ msgstr ""
 msgid "Challenges"
 msgstr "Desafios"
 
-#: context/views/moderator.py:227
+#: context/views/moderator.py:229
 msgid "The selected Contributions have been accepted."
 msgstr ""
 
-#: context/views/moderator.py:238
+#: context/views/moderator.py:240
 #, fuzzy
 #| msgid "REJECTED"
 msgid "BATCH REJECT"
 msgstr "Rejeitada"
 
-#: context/views/moderator.py:244
+#: context/views/moderator.py:246
 msgid "The selected Contributions have been rejected."
 msgstr ""
 
@@ -1374,6 +1395,10 @@ msgstr "Sobre Água"
 #: contributions/models.py:35
 msgid "On Land"
 msgstr "Sobre Terra"
+
+#: contributions/tasks.py:68
+msgid "Video needs to be longer than 1 second in order to have a thumbnail."
+msgstr "O vídeo precisa ter mais de 1 segundo para que tenha uma miniatura."
 
 #: contributions/templates/contributions/contribution_confirm_delete.html:3
 #: contributions/templates/contributions/contribution_confirm_delete.html:25
@@ -1680,11 +1705,7 @@ msgstr ""
 "Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
 "rejeitar esta Contribuição."
 
-#: contributions/views.py:118
-msgid "Video needs to be longer than 1 second in order to have a thumbnail."
-msgstr "O vídeo precisa ter mais de 1 segundo para que tenha uma miniatura."
-
-#: contributions/views.py:138
+#: contributions/views.py:127
 msgid ""
 "Thank you for submitting your Contribution! Your participation is very "
 "valuable to the RiverCure Portal."
@@ -1692,7 +1713,7 @@ msgstr ""
 "Obrigado por submeter a sua Contribuição! A sua participação é muito valiosa "
 "para o Portal RiverCure."
 
-#: contributions/views.py:327
+#: contributions/views.py:316
 msgid "Background process offline: Contact admin."
 msgstr "Processo em segundo plano offline: Contacte o administrador."
 
@@ -2011,6 +2032,9 @@ msgstr "Registe-se"
 #: users/templates/users/register.html:23
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
+
+#~ msgid "Back to context"
+#~ msgstr "Voltar a contexto"
 
 #~ msgid "Water Height (m)"
 #~ msgstr "Altura da Água"
