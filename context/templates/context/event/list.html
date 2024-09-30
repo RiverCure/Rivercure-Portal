@@ -27,10 +27,10 @@
 <h1><a href="{% url 'context-detail' context.code %}"> {{ context }}</a> {% trans "Events" %}</h1>
 
 <div class="filter-section">
-    <h5>Filter</h5>
+    <h5>{% trans "Filter" %}</h5>
     <form method="get">
         {{ filter.form |crispy }}
-        <button type="submit" class="btn btn-info">{% trans "Filter" %}</button>
+        <button type="submit" class="btn btn-info">{% trans "Filter" context "to filter" %}</button>
     </form>
 
     <div class="mt-3"></div>
