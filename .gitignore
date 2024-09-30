@@ -12,7 +12,7 @@ db.sqlite3
 db.sqlite3-journal
 media/*
 !media/default.jpg
-!media/default_context_pic.jpg
+!media/default_context_pic.png
 
 # Keep the default situation_icons
 media/contributions/*
