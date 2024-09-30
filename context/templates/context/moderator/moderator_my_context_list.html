@@ -52,7 +52,7 @@
     {% for context in contexts %}
         <a href="{% url 'moderator-context-contribution-list' context.context.code %}">
             <div class="card my-card-hover mb-3 my-context-card"  {% if is_mobile %}style="width: 75vw;"{% endif %}>
-                {% if context.picture %}
+                {% if context.context.picture %}
                     <img src="{{ context.context.picture.url }}" class="card-img-top my-card-img" alt="Picture of Context">
                 {% else %}
                     <img src="{{MEDIA_URL}}default_context_pic.png" class="card-img-top my-card-img" alt="Picture of Context">
