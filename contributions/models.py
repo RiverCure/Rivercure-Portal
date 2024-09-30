@@ -39,8 +39,8 @@ def create_contribution_thumbnail_name(instance, filename):
     Callable that saves the file with the path and name: contributions/uploaded_files/organization_name/context_code/year/month/day/thumb_uuid4.ext
     """
 
-    organization = instance.context.organization
-    _context = instance.context.code
+    organization = str(instance.context.organization)
+    _context = str(instance.context.code)
     year = datetime.now().strftime('%Y')
     month = datetime.now().strftime('%m')
     day = datetime.now().strftime('%d')
@@ -51,7 +51,9 @@ def create_contribution_thumbnail_name(instance, filename):
     # Filename is: thumb-uuid4.ext
     format = "thumb-" + str(uuid4()) + extension
 
-    return os.path.join(path, format)
+    return os.path.join('contributions', 'uploaded_files', organization, _context, year, month, day, format)
+
+    #return os.path.join(path, format)
 
 
 # Contribution
@@ -167,8 +169,8 @@ def create_media_file_name(instance, filename):
     As indicated in: https://docs.djangoproject.com/en/4.2/ref/models/fields/#django.db.models.FileField.upload_to
     """
 
-    organization = instance.contribution.context.organization
-    _context = instance.contribution.context.code
+    organization = str(instance.contribution.context.organization)
+    _context = str(instance.contribution.context.code)
     year = datetime.now().strftime('%Y')
     month = datetime.now().strftime('%m')
     day = datetime.now().strftime('%d')
@@ -179,7 +181,8 @@ def create_media_file_name(instance, filename):
     # Filename is: uuid4.ext
     format = str(uuid4()) + extension
 
-    return os.path.join(path, format)
+    return os.path.join('contributions', 'uploaded_files', organization, _context, year, month, day, format)
+    # return os.path.join(path, format)
 
 # Attachment
 class e_ContributionAttachment(models.Model):
