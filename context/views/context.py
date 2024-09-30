@@ -110,6 +110,8 @@ class PublicContextFilterView(FilterView):
         public_contexts = e_Context.objects.exclude(isPublic=False)
         context['public_contexts_json'] = serializers.serialize('json', list(public_contexts), fields=('code', 'Name', 'description', 'geomExternalBoundary', 'CLExternalBoundary', 'picture'))
 
+        context['MEDIA_URL'] = settings.MEDIA_URL
+
         return context
 
 

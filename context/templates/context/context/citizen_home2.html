@@ -230,7 +230,11 @@
         <div class="d-flex flex-row flex-wrap justify-content-around m-3">
             {% for context in public_contexts %}
                 <div class="card mb-4" style="width: 26rem;">
-                    <img src="{{ context.picture.url }}" class="card-img-top my-card-img" alt="...">
+                    {% if context.picture %}
+                        <img src="{{ context.picture.url }}" class="card-img-top my-card-img" alt="...">
+                    {% else %}
+                        <img src="{{ MEDIA_URL }}default_context_pic.png" class="card-img-top my-card-img" alt="...">
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{context.Name}}</h5>
                         <p class="text-muted"><i class="bi bi-binoculars"></i> {{ context.e_contextcontribution_set|get_accepted }}</p>

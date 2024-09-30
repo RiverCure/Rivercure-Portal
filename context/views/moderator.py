@@ -15,9 +15,10 @@ from django_filters.views import FilterView
 
 from .authorization import *
 from .prepare_files import *
-
 from ..models import e_Context, ContextMembership
 from ..filters import ModeratorAddFilter, ModeratorFilter, ModeratorContextFilter, ModeratorContextContributionFilter
+
+from rivercureproject import settings
 
 from organization.models import Membership
 from organization.authorization import belongs_to_organization
@@ -148,6 +149,7 @@ class ModeratorContextsFilterView(LoginRequiredMixin, UserPassesTestMixin, Filte
         context = super(ModeratorContextsFilterView, self).get_context_data(**kwargs)
 
         context['is_mobile'] = is_mobile(self.request)
+        context['MEDIA_URL'] = settings.MEDIA_URL
 
         return context
 

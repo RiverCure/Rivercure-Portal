@@ -30,7 +30,11 @@
 <hr>
 
 <div class="card" style="border: 0.05rem solid rgba(0, 0, 0, 0.125);">
-    <img src="{{ context.picture.url }}" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
+    {% if context.picture %}
+        <img src="{{ context.picture.url }}" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
+    {% else %}
+        <img src="{{MEDIA_URL}}default_context_pic.png" class="card-img-top my-card-public-context-detail-img" alt="Context Picture">
+    {% endif %}
     <div class="card-body">
         <p class="card-text">{{ context.description }}</p>
         <hr>
