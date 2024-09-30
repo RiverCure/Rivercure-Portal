@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 
 from django.utils.translation import gettext_lazy as _
 
+from django.core.files.storage import default_storage
+
 from .models import e_ContextContribution
 
 import os
@@ -59,6 +61,8 @@ def make_video_thumbnail(self, contribution, attachment):
 
         contribution.thumbnail = thumb_django_file
         contribution.save()
+
+        default_storage.delete(output_path)
     except:
         raise Exception(_("Video needs to be longer than 1 second in order to have a thumbnail."))
 
