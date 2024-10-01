@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-30 19:26+0100\n"
+"POT-Creation-Date: 2024-10-01 18:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -980,6 +980,10 @@ msgstr "Não existem Eventos para este Contexto."
 msgid "Started on"
 msgstr "Começou a"
 
+#: context/templates/context/context/public_context_detail.html:120
+msgid "Back to Home"
+msgstr "Voltar a Home"
+
 #: context/templates/context/event/challenge_list.html:20
 msgid "On this page you can see the Quizzes published for this Event."
 msgstr "Nesta página, pode ver todos os Quizzes publicados para este Evento."
@@ -1003,10 +1007,8 @@ msgid "See Context"
 msgstr "Ver Contexto"
 
 #: context/templates/context/event/list.html:3
-#, fuzzy
-#| msgid "Context Name"
 msgid "Context Event list"
-msgstr "Nome do Contexto"
+msgstr "Lista de Eventos do Contexto"
 
 #: context/templates/context/event/list.html:30
 msgid "Filter"
@@ -2038,6 +2040,9 @@ msgstr "Registe-se"
 msgid "Already Have An Account?"
 msgstr "Já Tem Conta?"
 
+#~ msgid "See Home"
+#~ msgstr "Ver Home"
+
 #~ msgid "Back to context"
 #~ msgstr "Voltar a contexto"
 
@@ -2109,9 +2114,6 @@ msgstr "Já Tem Conta?"
 #~ "O Desafio foi criado entre as datas especificadas. <i>Dica:</i> Também "
 #~ "pode pesquisar por datas mais recentes do que a data à esquerda, ou mais "
 #~ "antigas do que a data à direita."
-
-#~ msgid "Back to Home"
-#~ msgstr "Voltar a Home"
 
 #~ msgid "There are no Moderators in this Organization."
 #~ msgstr "Não existem Moderadores nesta Organização."

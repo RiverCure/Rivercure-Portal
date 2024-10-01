@@ -28,7 +28,7 @@ class MultipleFileField(forms.FileField):
     
 
 class ContributionInitialForm(forms.ModelForm):
-    observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date','max': datetime.now().date()}),
+    observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date'}),
                                               help_text=_('Date in which you have made your observation.'),
                                               label=_('Observation Date'))
     observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': _('Enter a description of what you observed. Example: The water level reached 2 meters.')}),
@@ -71,6 +71,7 @@ class ContributionInitialForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['observationDate'].initial = datetime.now() # Automatically show in form today's date as the observation date
         self.fields['observationPlace'].required = False
+        self.fields['observationDate'].widget.attrs['max'] = datetime.now().date() # Each time a user visits the page (form is instantiated), the __init__ method is called, thus setting max to the current date - this fixes the problem of the date being "frozen" to the time when the server started
     
     def clean_file_field(self):
         files = self.files.getlist('file_field')

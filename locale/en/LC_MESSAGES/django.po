@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-30 19:26+0100\n"
+"POT-Creation-Date: 2024-10-01 18:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -937,6 +937,10 @@ msgstr ""
 
 #: context/templates/context/context/public_context_detail.html:102
 msgid "Started on"
+msgstr ""
+
+#: context/templates/context/context/public_context_detail.html:120
+msgid "Back to Home"
 msgstr ""
 
 #: context/templates/context/event/challenge_list.html:20
