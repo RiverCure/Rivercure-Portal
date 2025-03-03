@@ -193,7 +193,7 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="languageDropdownMenuButton">
                                     {% for language in languages %}
-                                        <a class="dropdown-item" href="/{{ language.code }}/">
+                                        <a class="dropdown-item" href="{{request.get_full_path|translated_url:language.code}}">
                                             <img src="{% static 'rivercureportal/icons/'|add:language.code|add:'-flag.png' %}" class="language-circle mx-2" alt="Language Icon"> 
                                             {{language.name_local}}
                                         </a>

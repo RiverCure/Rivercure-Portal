@@ -20,3 +20,9 @@ def has_org(user):
 @register.filter(name='is_mod')
 def is_mod(user):
     return ContextMembership.objects.filter(user=user, permission='context_moderator').exists()
+
+
+# TODO: put in another proper file
+@register.filter(name="translated_url")
+def translated_url(url, language_code):
+    return "/" + language_code + url[3:]

@@ -147,7 +147,7 @@
             <!-- Buttons -->
             <!-- For Moderators -->
             {% if isMod %}
-                <a class="my-2 btn btn-secondary" href="{% url 'moderator-context-contribution-list' contribution.context.code %}">{% trans "Back to Contribution list" %}</a>
+                <a class="my-2 btn btn-secondary" href="{% url 'moderator-context-contribution-list' contribution.context.code %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Contribution list" %}</a>
                 {% if contribution.can_accept %}
                     <!-- Accept Modal Button-->
                     <button type="button" class="my-2 btn btn-success" data-toggle="modal" data-target="#acceptingModal">
@@ -163,7 +163,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body p-3">
                                     <p class="justify">{% trans "Are you sure you want to mark this Contribution as" %} <span class='text-success'>{% trans "Accepted" %}</span>?</p>
                                     <p class="justify">
                                         {% trans "To read more about Contributions and the Moderation process, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -193,7 +193,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body p-3">
                                     <p class="justify">{% trans "Are you sure you want to mark this Contribution as" %} <span class='text-danger'>{% trans "Rejected" %}</span>?</p>
                                     <p class="justify">
                                         {% trans "To read more about Contributions and the Moderation process, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -368,7 +368,7 @@
     <div class="col p-0 my-contribution-detail-footer my-border-radius-bottom border-left my-contribution-detail-meta-info-card-footer-right">
         <!-- Map Footer -->
         <div class="d-flex justify-content-between">
-            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}}{% else %}{% trans "Address will be available shortly after Contribution is accepted. In the meantime, check the details." %}{% endif %}</p>
+            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}}{% else %}{% trans "Address will be available shortly after Contribution is accepted. In the meantime, see coordinates in details." %}{% endif %}</p>
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-info" type="button" id="dropdownMapDetails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Details" %}</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMapDetails" style="background-color: #f8f8f8;">
@@ -467,7 +467,7 @@
     <div class="col p-0 my-contribution-detail-footer my-border-radius-bottom-right my-contribution-detail-meta-info-card-footer-right">
         <!-- Map Footer -->
         <div class="d-flex justify-content-between">
-            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}} <span class="font-weight-lighter"><a href='https://locationiq.com'>({% trans "Search by LocationIQ.com" %})</a></span>{% else %}{% trans "Address will be available shortly after Contribution is accepted. In the meantime, check the details." %}{% endif %}</p>
+            <p class="font-weight-light mx-3 my-2"><i class="bi bi-geo-alt-fill"></i> {% if contribution.observationAddress %}{{contribution.observationAddress}} <span class="font-weight-lighter"><a href='https://locationiq.com'>({% trans "Search by LocationIQ.com" %})</a></span>{% else %}{% trans "Address will be available shortly after Contribution is accepted. In the meantime, see coordinates in details." %}{% endif %}</p>
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-info" type="button" id="dropdownMapDetails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Details" %}</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMapDetails" style="background-color: #f8f8f8;">
@@ -495,7 +495,7 @@
     <div class="col">
 
         <!-- See Context -->
-        <a class="btn btn-secondary my-3" href="{% url 'public-context-detail' contribution.context.code %}">{% trans "See Context" %}</a>
+        <a class="btn btn-secondary my-3" href="{% url 'public-context-detail' contribution.context.code %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Context" %}</a>
 
         <!-- Report -->
         {% if contribution.state == "ACCEPTED" %}
@@ -514,7 +514,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body p-3">
                             <p class="justify">{% trans "Are you sure you want to <span class='text-danger'>report</span> this Contribution?" %}</p>
                             <p class="justify">{% trans "Make sure you are following the" %} <a href="#">{% trans "Platform Guidelines" %}</a>.</p>
                             <p class="justify">

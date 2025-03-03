@@ -75,7 +75,7 @@
                 <h5 class="card-title mb-3">{{context.context.Name}}</h5>
                 <div class="d-flex">
                     <a href="{% url 'event-list' context.context.code %}" class="btn btn-info btn-block mr-2">{% trans "Events" %}</a>
-                    <a href="{% url 'challenges-context-list' context.context.code %}" class="btn btn-info btn-block mt-0 mr-2">{% trans "Challenges" %}</a>
+                    <a href="{% url 'challenges-context-list' context.context.code %}" class="btn btn-info btn-block mt-0 mr-2">{% trans "Quizzes" %}</a>
                     <a href="{% url 'public-context-detail' context.context.code %}" class="btn btn-info btn-block mt-0"><i class="bi bi-info-circle"></i> {% trans "Details" %}</a>
                 </div>
             </div>

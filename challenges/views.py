@@ -228,7 +228,7 @@ class ChallengeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return is_org_quiz_manager(self.request.user, self.get_object().organization) or is_platform_admin(self.request.user)
 
 
-
+# TODO: Condition for deletion should be here
 class ChallengeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = e_Challenge
     template_name = 'challenges/challenge_confirm_delete.html'

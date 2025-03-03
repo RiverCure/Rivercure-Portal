@@ -117,7 +117,7 @@ class e_Context(models.Model):
 class ContextMembership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     context = models.ForeignKey(e_Context, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=80, choices=Permissions, null=True)
+    permission = models.CharField(max_length=80, choices=Permissions, null=True) # TODO: Shouldnt be null?
     grant_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

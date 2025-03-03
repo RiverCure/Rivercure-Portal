@@ -64,7 +64,7 @@
 <hr>
 <!-- Bottom Buttons -->
 <div class="d-flex justify-content-between align-items-center flex-wrap my-2">
-    <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}">{% trans "Back to Context" %}</a>
+    <a class="btn btn-secondary" href="{% url 'context-detail' context.code %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Context" %}</a>
     
     <!-- Pagination -->
     {% if is_paginated %}

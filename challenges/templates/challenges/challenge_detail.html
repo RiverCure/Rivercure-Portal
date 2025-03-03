@@ -40,8 +40,8 @@
             <h4 class="font-weight-light mb-3"><strong>{% trans "Difficulty" %}:</strong> <span class="text-info">{{ challenge.get_difficulty_level_display }}</span></h4>
             <h4 class="font-weight-light"><strong>{% trans "Max Score" %}:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
             <hr>
-            {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform" %}{% else %}{% trans "Organization" %}{% endif %} </p>{% endif %}
-            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Quiz last opened by Manager on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
+            {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform (all users)" %}{% else %}{% trans "Organization (only members)" %}{% endif %} </p>{% endif %}
+            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Quiz last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}</p>{% endif %}
             {% comment %} {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Automatically closes on" %} {{ challenge.automatic_close_datetime }}.</p>{% endif %} {% endcomment %}
             {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Quiz is closed." %}</p>{% endif %}
         </div>
@@ -79,7 +79,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-3">
                                 <p class="justify">
                                     {% blocktrans %}Are you sure you want to <span class="text-success">publish</span> this Quiz? Once published, it will be available for <span class='font-weight-bold'>everyone</span> to see!{% endblocktrans %}
                                 </p>
@@ -112,7 +112,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-3">
                                 <p class="justify">
                                     {% blocktrans %}Are you sure you want to <span class="text-primary">close</span> this Quiz? The Quiz will remain <span class='font-weight-bold'>visible</span> to users, but they can <span class='font-weight-bold'>no longer participate</span> in it.{% endblocktrans %}
                                 </p>
@@ -145,7 +145,7 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-3">
                                 <p class="justify">
                                     {% blocktrans %}Are you sure you want to <span class="text-primary">open</span> this Quiz? Users will be able to <span class='font-weight-bold'>participate</span> in it.{% endblocktrans %}
                                 </p>
@@ -178,9 +178,9 @@
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-3">
                                 <p class="justify">
-                                    {% blocktrans %}Are you sure you want to <span class="text-warning">archive</span> this Quiz? Once archived, the Challenge will <span class='font-weight-bold'>no longer be available</span> to users.{% endblocktrans %}
+                                    {% blocktrans %}Are you sure you want to <span class="text-warning">archive</span> this Quiz? Once archived, the Quiz will <span class='font-weight-bold'>no longer be available</span> to users.{% endblocktrans %}
                                 </p>
                                 <p class="justify">
                                     {% trans "To read more about Quizzes, please visit the" %} <a href="https://rivercure.notion.site/16c3e86b02a24ce093567de41fb6b6d7" target="_blank">Wiki</a>.
@@ -280,13 +280,13 @@
     {% comment %} <a class="btn btn-secondary my-3" href="javascript:window.history.back()">Back</a> {% endcomment %}
     <div>
         {% if belongs_to_org %}
-            <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}">{% trans "See Organization Challenges" %}</a>
+            <a class="btn btn-secondary" href="{% url 'org-challenge-list' challenge.organization.code %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Organization Quizzes" %}</a>
         {% endif %}
-        <a class="btn btn-secondary" href="{% url 'public-challenge-list' %}">{% trans "See Public Challenges" %}</a>
+        <a class="btn btn-secondary" href="{% url 'public-challenge-list' %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Public Quizzes" %}</a>
     </div>
     {% if challenge.event %}
         <!-- See Event -->
-        <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}">{% trans "See Event" %}</a>
+        <a class="btn btn-secondary" href="{% url 'event-detail' challenge.event.context.code challenge.event.id %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Event" %}</a>
     {% endif %}
 </div>
 

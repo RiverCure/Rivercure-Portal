@@ -88,10 +88,10 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap my-contribution-detail-meta-info-card my-contribution-detail-footer my-2 p-3">
         <!-- See Challenge -->
-        <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}">{% trans "See Quiz" %}</a>
+        <a class="btn btn-secondary" href="{% url 'challenge-detail' challenge.id %}"><i class="bi bi-arrow-return-left"></i> {% trans "Back to Quiz" %}</a>
 
         <!-- Submit -->
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#confirmModal">{% trans "Submit" %}</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#confirmModal"><i class="bi bi-arrow-bar-up"></i> {% trans "Submit" %}</button>
     </div>
 </form>
 
@@ -105,8 +105,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <p class="justify">
+            <div class="modal-body p-3">
+                <p class="justify m-0">
                     {% trans "Are you sure you want to submit?" %}
                 </p>
             </div>
