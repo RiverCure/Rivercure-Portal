@@ -136,7 +136,7 @@
 
             {% timezone contribution.user_timezone %}
             <p class="font-weight-light"><strong>{% trans "Submission Date" %}:</strong></p>
-            <p class="font-weight-light">{{ contribution.creationDateTime }} ({{contribution.createdBy}}'s timezone was <span class="font-italic">{{contribution.user_timezone}}</span>)</p>
+            <p class="font-weight-light">{% blocktrans with creationDateTime=contribution.creationDateTime createdBy=contribution.createdBy user_timezone=contribution.user_timezone%}{{ creationDateTime }} ({{createdBy}}'s timezone was <span class="font-italic">{{user_timezone}}</span>){% endblocktrans %}</p>
             {% endtimezone %}
             <p class="font-weight-light">{{ contribution.creationDateTime }} (<span class="font-italic">UTC</span>)</p>
             
