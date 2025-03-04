@@ -31,6 +31,8 @@ class ContributionInitialForm(forms.ModelForm):
     observationDate = forms.DateTimeField(widget=forms.DateInput(attrs={'type': 'date'}),
                                               help_text=_('Date in which you have made your observation.'),
                                               label=_('Observation Date'))
+    user_timezone = forms.CharField(widget=forms.HiddenInput(),
+                                    required=False)
     observationDescription = forms.CharField(widget=forms.Textarea(attrs={'placeholder': _('Enter a description of what you observed. Example: The water level reached 2 meters.')}),
                                              help_text=_('Text description of the observation you made.'),
                                              label=_('Description'))

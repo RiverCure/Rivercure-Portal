@@ -73,6 +73,7 @@ class ContributionCreateView(LoginRequiredMixin, CreateView):
         new_contribution.context = _context
         new_contribution.creationDateTime = datetime.datetime.now()
         new_contribution.observationPlace = Point(long, lat)
+        new_contribution.user_timezone  = self.request.POST.get('user_timezone', 'UTC')  # Default to UTC if not provided
 
         # Set extra data
         if (new_contribution.situationObserved == SituationChoices.FLOOD):

@@ -186,6 +186,13 @@
             L.control.CenterContext({ position: 'topleft' }).addTo(map);
 
         });
+
+        // Get the user's timezone using JavaScript
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log(userTimezone);
+        // Set the hidden input field value
+        document.getElementById("id_user_timezone").value = userTimezone;
+
     });
 
 </script>

@@ -62,6 +62,7 @@ class e_ContextContribution(models.Model):
     #id = models.CharField(primary_key=True, max_length=100, unique=True)
     createdBy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     creationDateTime = models.DateTimeField(auto_now_add=True) # Date and time of creation of contribution
+    user_timezone = models.CharField(max_length=50, blank=True, null=True) # Keeping the timezone of the user because it might be relevant
     context = models.ForeignKey('context.e_Context', on_delete=models.SET_NULL, null=True)
     contextEvent = models.ForeignKey('context.e_ContextEvent', on_delete=models.SET_NULL, null=True, blank=True)
     total_file_size = models.FloatField(default=0.000)
