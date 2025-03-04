@@ -62,8 +62,8 @@
                         <p class="mb-2 font-italic">{% trans "Select one or more options." %}</p>
                         {% for mc_option in question.multiple_choice_option_question.all %}
                             <div class="form-check my-2">
-                                <input class="form-check-input" type="checkbox" id="answer-{{mc_option.id}}" name="question-{{question.id}}-answer" value="{{mc_option.id}}">
-                                <label class="form-check-label" for="answer-{{mc_option.id}}">{{mc_option.content}}</label>
+                                <input class="form-check-input" type="checkbox" id="question-{{question.id}}-answer-{{mc_option.id}}" name="question-{{question.id}}-answer" value="{{mc_option.id}}">
+                                <label class="form-check-label" for="question-{{question.id}}-answer-{{mc_option.id}}">{{mc_option.content}}</label>
                             </div>
                         {% endfor %}
                     </div>
@@ -75,8 +75,8 @@
                         <p class="mb-2 font-italic">{% trans "Select which options are true." %}</p>
                         {% for tf_option in question.true_false_question.all %}
                             <div class="form-check my-2">
-                                <input class="form-check-input" type="checkbox" id="answer-{{tf_option.id}}" name="question-{{question.id}}-answer" value="{{tf_option.id}}">
-                                <label class="form-check-label" for="answer-{{tf_option.id}}">{{tf_option.content}}</label>
+                                <input class="form-check-input" type="checkbox" id="question-{{question.id}}-answer-{{tf_option.id}}" name="question-{{question.id}}-answer" value="{{tf_option.id}}">
+                                <label class="form-check-label" for="question-{{question.id}}-answer-{{tf_option.id}}">{{tf_option.content}}</label>
                             </div>
                         {% endfor %}
                     </div>
