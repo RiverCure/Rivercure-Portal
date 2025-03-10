@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 17:37+0000\n"
+"POT-Creation-Date: 2025-03-10 14:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,7 +86,7 @@ msgstr "Nível de Dificuldade"
 #: contributions/templates/contributions/contribution_detail.html:104
 #: contributions/templates/contributions/contribution_form.html:208
 #: contributions/templates/contributions/contribution_list.html:19
-#: rivercureportal/templates/rivercureportal/base.html:66
+#: rivercureportal/templates/rivercureportal/base.html:71
 msgid "Organization"
 msgstr "Organização"
 
@@ -218,7 +218,7 @@ msgstr "Verdadeiro ou Falso"
 #: challenges/templates/challenges/challenge_detail.html:202
 #: challenges/templates/challenges/challenge_manage.html:71
 #: challenges/templates/challenges/question_update_form.html:76
-#: contributions/templates/contributions/contribution_detail.html:246
+#: contributions/templates/contributions/contribution_detail.html:252
 msgid "Delete"
 msgstr "Apagar"
 
@@ -247,9 +247,9 @@ msgstr "Sim, apagar"
 #: challenges/templates/challenges/question_form.html:191
 #: challenges/templates/challenges/question_update_form.html:85
 #: contributions/templates/contributions/contribution_confirm_delete.html:30
-#: contributions/templates/contributions/contribution_detail.html:197
-#: contributions/templates/contributions/contribution_detail.html:230
-#: contributions/templates/contributions/contribution_detail.html:562
+#: contributions/templates/contributions/contribution_detail.html:203
+#: contributions/templates/contributions/contribution_detail.html:236
+#: contributions/templates/contributions/contribution_detail.html:568
 #: contributions/templates/contributions/contribution_form.html:231
 #: contributions/templates/contributions/contribution_form.html:256
 msgid "Cancel"
@@ -338,16 +338,16 @@ msgstr "Para ler mais sobre Quizzes, por favor visite a"
 #: challenges/templates/challenges/challenge_detail.html:192
 #: challenges/templates/challenges/challenge_form.html:75
 #: challenges/templates/challenges/challenge_participate.html:115
-#: contributions/templates/contributions/contribution_detail.html:198
-#: contributions/templates/contributions/contribution_detail.html:232
-#: contributions/templates/contributions/contribution_detail.html:564
+#: contributions/templates/contributions/contribution_detail.html:204
+#: contributions/templates/contributions/contribution_detail.html:238
+#: contributions/templates/contributions/contribution_detail.html:570
 #: contributions/templates/contributions/contribution_form.html:257
 msgid "Confirm"
 msgstr "Confirmar"
 
 #: challenges/templates/challenges/challenge_detail.html:104
-#: contributions/templates/contributions/contribution_detail.html:633
-#: contributions/templates/contributions/contribution_detail.html:689
+#: contributions/templates/contributions/contribution_detail.html:639
+#: contributions/templates/contributions/contribution_detail.html:695
 msgid "Close"
 msgstr "Fechar"
 
@@ -401,8 +401,8 @@ msgid ""
 "be available</span> to users."
 msgstr ""
 "Tem a certeza de que deseja <span class=\"text-warning\">arquivar</span> "
-"este Quiz? Uma vez arquivado, o Quiz <span class='font-weight-"
-"bold'>deixará</span> de estar disponível para os utilizadores."
+"este Quiz? Uma vez arquivado, o Quiz <span class='font-weight-bold'>deixará</"
+"span> de estar disponível para os utilizadores."
 
 #: challenges/templates/challenges/challenge_detail.html:221
 msgid "Participations Left"
@@ -670,7 +670,7 @@ msgid "There are no Quizzes."
 msgstr "Não existem Quizzes."
 
 #: challenges/templates/challenges/public_challenges_list.html:3
-#: rivercureportal/templates/rivercureportal/base.html:86
+#: rivercureportal/templates/rivercureportal/base.html:91
 msgid "Public Quizzes"
 msgstr "Quizzes Públicos"
 
@@ -844,7 +844,7 @@ msgstr "Procurar por nome do Contexto..."
 #: context/filters.py:109
 #: context/templates/context/moderator/moderator_context_contribution_list.html:89
 #: context/templates/context/moderator/moderator_context_contribution_list.html:123
-#: contributions/templates/contributions/contribution_detail.html:154
+#: contributions/templates/contributions/contribution_detail.html:160
 msgid "State"
 msgstr "Estado"
 
@@ -871,7 +871,7 @@ msgstr ""
 
 #: context/filters.py:116 contributions/filters.py:16
 #: contributions/filters.py:33
-#: contributions/templates/contributions/contribution_detail.html:140
+#: contributions/templates/contributions/contribution_detail.html:147
 msgid "Submission Date"
 msgstr "Data de Submissão"
 
@@ -892,7 +892,7 @@ msgstr ""
 msgid "Author"
 msgstr "Autor"
 
-#: context/models.py:39 rivercureportal/templates/rivercureportal/base.html:74
+#: context/models.py:39 rivercureportal/templates/rivercureportal/base.html:79
 msgid "Moderator"
 msgstr "Moderador"
 
@@ -905,8 +905,8 @@ msgstr "Contribuir"
 #: context/templates/context/context/citizen_home2.html:125
 #: context/templates/context/context/citizen_home2.html:243
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:81
-#: contributions/templates/contributions/contribution_detail.html:397
-#: contributions/templates/contributions/contribution_detail.html:498
+#: contributions/templates/contributions/contribution_detail.html:403
+#: contributions/templates/contributions/contribution_detail.html:504
 msgid "Details"
 msgstr "Detalhes"
 
@@ -943,8 +943,8 @@ msgstr "Mais Detalhes"
 #: context/templates/context/moderator/moderator_context_contribution_list.html:4
 #: context/templates/context/moderator/moderator_context_contribution_list.html:39
 #: contributions/templates/contributions/contribution_list.html:3
-#: rivercureportal/templates/rivercureportal/about.html:87
-#: rivercureportal/templates/rivercureportal/about.html:237
+#: rivercureportal/templates/rivercureportal/about.html:90
+#: rivercureportal/templates/rivercureportal/about.html:257
 msgid "Contributions"
 msgstr "Contribuições"
 
@@ -963,7 +963,7 @@ msgstr ""
 #: context/templates/context/context/public_context_detail.html:78
 #: context/templates/context/context/public_context_detail.html:112
 #: context/templates/context/event/detail.html:132
-#: contributions/templates/contributions/contribution_detail.html:325
+#: contributions/templates/contributions/contribution_detail.html:331
 msgid "Scroll horizontally to see more"
 msgstr "Arraste horizontalmente para ver mais"
 
@@ -1004,7 +1004,7 @@ msgstr "Não existem Quizzes publicados para este Contexto."
 #: context/templates/context/event/detail.html:139
 #: context/templates/context/event/list.html:81
 #: context/templates/context/moderator/moderator_list.html:67
-#: contributions/templates/contributions/contribution_detail.html:524
+#: contributions/templates/contributions/contribution_detail.html:530
 #: contributions/templates/contributions/contribution_list.html:60
 msgid "Back to Context"
 msgstr "Voltar a Contexto"
@@ -1163,7 +1163,7 @@ msgstr "Não existem Moderadores."
 #: context/templates/context/moderator/moderator_my_context_list.html:3
 #: context/templates/context/moderator/moderator_my_context_list.html:28
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:29
-#: rivercureportal/templates/rivercureportal/base.html:75
+#: rivercureportal/templates/rivercureportal/base.html:80
 msgid "My Contexts"
 msgstr "Os Meus Contextos"
 
@@ -1205,7 +1205,7 @@ msgstr ""
 "favor visite a"
 
 #: context/templates/context/quiz/quiz_manager_my_context_list.html:80
-#: rivercureportal/templates/rivercureportal/base.html:70
+#: rivercureportal/templates/rivercureportal/base.html:75
 msgid "Quizzes"
 msgstr ""
 
@@ -1248,8 +1248,8 @@ msgid "Text description of the observation you made."
 msgstr "Descrição textual da observação que fez."
 
 #: contributions/forms.py:38
-#: contributions/templates/contributions/contribution_detail.html:356
-#: contributions/templates/contributions/contribution_detail.html:431
+#: contributions/templates/contributions/contribution_detail.html:362
+#: contributions/templates/contributions/contribution_detail.html:437
 msgid "Description"
 msgstr "Descrição"
 
@@ -1271,8 +1271,8 @@ msgid "Images and videos"
 msgstr "Imagens e vídeos"
 
 #: contributions/forms.py:47
-#: contributions/templates/contributions/contribution_detail.html:361
-#: contributions/templates/contributions/contribution_detail.html:437
+#: contributions/templates/contributions/contribution_detail.html:367
+#: contributions/templates/contributions/contribution_detail.html:443
 msgid "Transit Time of Floating Objects"
 msgstr "Tempo de Trânsito de Objetos Flutuantes"
 
@@ -1285,8 +1285,8 @@ msgstr ""
 "escrever 00:01:30 ou 90 é o mesmo (ambos significam 90 segundos)."
 
 #: contributions/forms.py:51
-#: contributions/templates/contributions/contribution_detail.html:362
-#: contributions/templates/contributions/contribution_detail.html:439
+#: contributions/templates/contributions/contribution_detail.html:368
+#: contributions/templates/contributions/contribution_detail.html:445
 msgid "Water Height"
 msgstr "Altura da Água"
 
@@ -1295,8 +1295,8 @@ msgid "Height in meters."
 msgstr "Altura em metros."
 
 #: contributions/forms.py:54
-#: contributions/templates/contributions/contribution_detail.html:365
-#: contributions/templates/contributions/contribution_detail.html:443
+#: contributions/templates/contributions/contribution_detail.html:371
+#: contributions/templates/contributions/contribution_detail.html:449
 msgid "Velocity"
 msgstr "Velocidade"
 
@@ -1305,8 +1305,8 @@ msgid "Velocity in km/h."
 msgstr "Velocidade em km/h."
 
 #: contributions/forms.py:58
-#: contributions/templates/contributions/contribution_detail.html:366
-#: contributions/templates/contributions/contribution_detail.html:445
+#: contributions/templates/contributions/contribution_detail.html:372
+#: contributions/templates/contributions/contribution_detail.html:451
 msgid "Tornado Type"
 msgstr "Tipo de Tornado"
 
@@ -1347,12 +1347,12 @@ msgid "Pending"
 msgstr "Pendente"
 
 #: contributions/models.py:19
-#: contributions/templates/contributions/contribution_detail.html:191
+#: contributions/templates/contributions/contribution_detail.html:197
 msgid "Accepted"
 msgstr "Aceite"
 
 #: contributions/models.py:20
-#: contributions/templates/contributions/contribution_detail.html:221
+#: contributions/templates/contributions/contribution_detail.html:227
 msgid "Rejected"
 msgstr "Rejeitada"
 
@@ -1415,90 +1415,91 @@ msgstr "Tem a certeza de que pretende apagar esta Contribuição?"
 
 #: contributions/templates/contributions/contribution_detail.html:5
 #: contributions/templates/contributions/contribution_detail.html:130
-#: contributions/templates/contributions/contribution_detail.html:616
+#: contributions/templates/contributions/contribution_detail.html:622
 msgid "Contribution"
 msgstr "Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:141
-#, python-format
+#: contributions/templates/contributions/contribution_detail.html:149
 msgid ""
-"%(creationDateTime)s (%(createdBy)s's timezone was <span class=\"font-"
-"italic\">%(user_timezone)s</span>)"
-msgstr "%(creationDateTime)s (timezone de %(createdBy)s era <span class=\"font-italic\">%(user_timezone)s</span>)"
+"%(creationDateTime)s (In your time zone - <span class=\"font-"
+"italic\">%(TIME_ZONE)s</span>)"
+msgstr ""
+"%(creationDateTime)s (Na sua time zone - <span class=\"font-"
+"italic\">%(TIME_ZONE)s</span>)"
 
-#: contributions/templates/contributions/contribution_detail.html:167
+#: contributions/templates/contributions/contribution_detail.html:173
 msgid ""
 "Last <span class=\"text-%(state_color)s\">%(state)s</span> on "
-"%(last_validation_datetime)s (<span class=\"font-italic\">UTC</span>) by "
-"<span class=\"text-info\">%(last_validated_by)s</span>"
+"%(last_validation_datetime)s   by <span class=\"text-"
+"info\">%(last_validated_by)s</span>"
 msgstr ""
 "<span class=\"text-%(state_color)s\">%(state)s</span> pela última vez a "
-"%(last_validation_datetime)s (<span class=\"font-italic\">UTC</span>) por <span class=\"text-"
-"info\">%(last_validated_by)s</span>"
+"%(last_validation_datetime)s por "
+"<span class=\"text-info\">%(last_validated_by)s</span>"
 
-#: contributions/templates/contributions/contribution_detail.html:168
-#: contributions/templates/contributions/contribution_detail.html:628
+#: contributions/templates/contributions/contribution_detail.html:174
+#: contributions/templates/contributions/contribution_detail.html:634
 msgid "Rejection reason"
 msgstr "Razão de Rejeição"
 
-#: contributions/templates/contributions/contribution_detail.html:174
+#: contributions/templates/contributions/contribution_detail.html:180
 msgid "Back to Contribution list"
 msgstr "Voltar à lista de Contribuições"
 
-#: contributions/templates/contributions/contribution_detail.html:178
+#: contributions/templates/contributions/contribution_detail.html:184
 msgid "Accept"
 msgstr "Aceitar"
 
-#: contributions/templates/contributions/contribution_detail.html:185
+#: contributions/templates/contributions/contribution_detail.html:191
 msgid "Accept Contribution"
 msgstr "Aceitar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:191
-#: contributions/templates/contributions/contribution_detail.html:221
+#: contributions/templates/contributions/contribution_detail.html:197
+#: contributions/templates/contributions/contribution_detail.html:227
 msgid "Are you sure you want to mark this Contribution as"
 msgstr "Tem a certeza que pretende marcar esta Contribuição como"
 
-#: contributions/templates/contributions/contribution_detail.html:193
-#: contributions/templates/contributions/contribution_detail.html:223
+#: contributions/templates/contributions/contribution_detail.html:199
+#: contributions/templates/contributions/contribution_detail.html:229
 msgid ""
 "To read more about Contributions and the Moderation process, please visit the"
 msgstr ""
 "Para ler mais sobre Contribuições e o processo de Moderação, por favor "
 "visite a"
 
-#: contributions/templates/contributions/contribution_detail.html:207
+#: contributions/templates/contributions/contribution_detail.html:213
 msgid "Reject"
 msgstr "Rejeitar"
 
-#: contributions/templates/contributions/contribution_detail.html:215
+#: contributions/templates/contributions/contribution_detail.html:221
 msgid "Reject Contribution"
 msgstr "Rejeitar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:240
+#: contributions/templates/contributions/contribution_detail.html:246
 msgid "Validate Next Contribution"
 msgstr "Validar Próxima Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:259
+#: contributions/templates/contributions/contribution_detail.html:265
 msgid "Uploaded Media"
 msgstr "Ficheiros Carregados"
 
-#: contributions/templates/contributions/contribution_detail.html:343
-#: contributions/templates/contributions/contribution_detail.html:418
+#: contributions/templates/contributions/contribution_detail.html:349
+#: contributions/templates/contributions/contribution_detail.html:424
 msgid "Observation Details"
 msgstr "Detalhes da Observação"
 
-#: contributions/templates/contributions/contribution_detail.html:362
-#: contributions/templates/contributions/contribution_detail.html:439
+#: contributions/templates/contributions/contribution_detail.html:368
+#: contributions/templates/contributions/contribution_detail.html:445
 msgid "meters"
 msgstr "metros"
 
-#: contributions/templates/contributions/contribution_detail.html:377
-#: contributions/templates/contributions/contribution_detail.html:489
+#: contributions/templates/contributions/contribution_detail.html:383
+#: contributions/templates/contributions/contribution_detail.html:495
 msgid "Observed on"
 msgstr "Observado a"
 
-#: contributions/templates/contributions/contribution_detail.html:395
-#: contributions/templates/contributions/contribution_detail.html:496
+#: contributions/templates/contributions/contribution_detail.html:401
+#: contributions/templates/contributions/contribution_detail.html:502
 msgid ""
 "Address will be available shortly after Contribution is accepted. In the "
 "meantime, see coordinates in details."
@@ -1506,29 +1507,29 @@ msgstr ""
 "O endereço estará disponível após a Contribuição ser aceite. Até lá, "
 "consulte as coordenadas nos detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:400
-#: contributions/templates/contributions/contribution_detail.html:501
+#: contributions/templates/contributions/contribution_detail.html:406
+#: contributions/templates/contributions/contribution_detail.html:507
 msgid "Latitude"
 msgstr "Latitude"
 
-#: contributions/templates/contributions/contribution_detail.html:403
-#: contributions/templates/contributions/contribution_detail.html:504
+#: contributions/templates/contributions/contribution_detail.html:409
+#: contributions/templates/contributions/contribution_detail.html:510
 msgid "Longitude"
 msgstr "Longitude"
 
-#: contributions/templates/contributions/contribution_detail.html:496
+#: contributions/templates/contributions/contribution_detail.html:502
 msgid "Search by LocationIQ.com"
 msgstr "Procura por LocationIQ.com"
 
-#: contributions/templates/contributions/contribution_detail.html:530
+#: contributions/templates/contributions/contribution_detail.html:536
 msgid "Report"
 msgstr "Reportar"
 
-#: contributions/templates/contributions/contribution_detail.html:538
+#: contributions/templates/contributions/contribution_detail.html:544
 msgid "Report Contribution"
 msgstr "Reportar Contribuição"
 
-#: contributions/templates/contributions/contribution_detail.html:544
+#: contributions/templates/contributions/contribution_detail.html:550
 msgid ""
 "Are you sure you want to <span class='text-danger'>report</span> this "
 "Contribution?"
@@ -1536,15 +1537,15 @@ msgstr ""
 "Tem a certeza de que deseja <span class='text-danger'>reportar</span> esta "
 "Contribuição?"
 
-#: contributions/templates/contributions/contribution_detail.html:545
+#: contributions/templates/contributions/contribution_detail.html:551
 msgid "Make sure you are following the"
 msgstr "Certifique-se de que está a seguir as"
 
-#: contributions/templates/contributions/contribution_detail.html:545
+#: contributions/templates/contributions/contribution_detail.html:551
 msgid "Platform Guidelines"
 msgstr "Diretrizes da Plataforma"
 
-#: contributions/templates/contributions/contribution_detail.html:547
+#: contributions/templates/contributions/contribution_detail.html:553
 msgid ""
 "To read more about reporting Contributions and the Moderation process, "
 "please visit the"
@@ -1552,7 +1553,7 @@ msgstr ""
 "Para ler mais sobre Contribuições e o processo de Moderação, por favor "
 "visite a"
 
-#: contributions/templates/contributions/contribution_detail.html:555
+#: contributions/templates/contributions/contribution_detail.html:561
 msgid ""
 "Please write the <span class='font-weight-bold'>reason</span> for reporting "
 "this Contribution."
@@ -1560,11 +1561,11 @@ msgstr ""
 "Por favor, escreva a <span class='font-weight-bold'>razão</span> para "
 "reportar esta Contribuição."
 
-#: contributions/templates/contributions/contribution_detail.html:580
+#: contributions/templates/contributions/contribution_detail.html:586
 msgid "Validation History"
 msgstr "Histórico de Validação"
 
-#: contributions/templates/contributions/contribution_detail.html:581
+#: contributions/templates/contributions/contribution_detail.html:587
 msgid ""
 "This is the history of the states this Contribution has been in, from most "
 "recent to oldest. Scroll to see more, and click on one to see details."
@@ -1573,40 +1574,40 @@ msgstr ""
 "recente ao mais antigo. Arraste horizontalmente para ver mais, e clique em "
 "um para ver os detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:602
+#: contributions/templates/contributions/contribution_detail.html:608
 msgid "Latest Validation"
 msgstr "Última Validação"
 
-#: contributions/templates/contributions/contribution_detail.html:605
+#: contributions/templates/contributions/contribution_detail.html:611
 msgid "User Submission"
 msgstr "Submissão do Utilizador"
 
-#: contributions/templates/contributions/contribution_detail.html:623
+#: contributions/templates/contributions/contribution_detail.html:629
 msgid "Validated on"
 msgstr "Validado a"
 
-#: contributions/templates/contributions/contribution_detail.html:624
+#: contributions/templates/contributions/contribution_detail.html:630
 msgid "Validated by"
 msgstr "Validado por"
 
-#: contributions/templates/contributions/contribution_detail.html:654
+#: contributions/templates/contributions/contribution_detail.html:660
 msgid ""
 "Reports made by users. Scroll to see more, and click on one to see details."
 msgstr ""
 "Alertas feitos pelos utilizadores. Arraste horizontalmente para ver mais, e "
 "clique em um para ver os detalhes."
 
-#: contributions/templates/contributions/contribution_detail.html:666
-#: contributions/templates/contributions/contribution_detail.html:679
+#: contributions/templates/contributions/contribution_detail.html:672
+#: contributions/templates/contributions/contribution_detail.html:685
 msgid "Reported by"
 msgstr "Reportado por"
 
-#: contributions/templates/contributions/contribution_detail.html:667
-#: contributions/templates/contributions/contribution_detail.html:686
+#: contributions/templates/contributions/contribution_detail.html:673
+#: contributions/templates/contributions/contribution_detail.html:692
 msgid "Reported on"
 msgstr "Reportado a"
 
-#: contributions/templates/contributions/contribution_detail.html:668
+#: contributions/templates/contributions/contribution_detail.html:674
 msgid "Read"
 msgstr "Ler"
 
@@ -1691,7 +1692,7 @@ msgstr "para este Contexto?"
 
 #: contributions/templates/contributions/my_contributions_list.html:7
 #: contributions/templates/contributions/my_contributions_list.html:19
-#: rivercureportal/templates/rivercureportal/base.html:58
+#: rivercureportal/templates/rivercureportal/base.html:63
 msgid "My Contributions"
 msgstr "Minhas Contribuições"
 
@@ -1743,8 +1744,8 @@ msgstr "O seu endereço de email"
 msgid "Your message"
 msgstr "A sua mensagem"
 
-#: rivercureportal/templates/rivercureportal/about.html:73
-#: rivercureportal/templates/rivercureportal/about.html:221
+#: rivercureportal/templates/rivercureportal/about.html:76
+#: rivercureportal/templates/rivercureportal/about.html:241
 msgid ""
 "The RiverCure Portal (RCP) combines geographic data, sensors and "
 "hydrodynamic modeling tools to manage flood risk. The RCP utilizes both "
@@ -1756,8 +1757,8 @@ msgstr ""
 "tanto dados provenientes de crowdsourcing como dados oficiais, incluindo de "
 "sensores e fontes de dados virtuais."
 
-#: rivercureportal/templates/rivercureportal/about.html:78
-#: rivercureportal/templates/rivercureportal/about.html:226
+#: rivercureportal/templates/rivercureportal/about.html:81
+#: rivercureportal/templates/rivercureportal/about.html:246
 msgid ""
 "RiverCure reduces uncertainty and improves forecasting in flood simulation, "
 "water management, and habitat protection models."
@@ -1765,35 +1766,35 @@ msgstr ""
 "O RiverCure reduz a incerteza e melhora as previsões em simulações de "
 "cheias, gestão da água e modelos de proteção de habitats."
 
-#: rivercureportal/templates/rivercureportal/about.html:93
-#: rivercureportal/templates/rivercureportal/about.html:243
+#: rivercureportal/templates/rivercureportal/about.html:96
+#: rivercureportal/templates/rivercureportal/about.html:263
 msgid "Public Contexts"
 msgstr "Contextos Públicos"
 
-#: rivercureportal/templates/rivercureportal/about.html:99
-#: rivercureportal/templates/rivercureportal/about.html:249
-#: rivercureportal/templates/rivercureportal/base.html:171
+#: rivercureportal/templates/rivercureportal/about.html:102
+#: rivercureportal/templates/rivercureportal/about.html:269
+#: rivercureportal/templates/rivercureportal/base.html:176
 msgid "Users"
 msgstr "Utilizadores"
 
-#: rivercureportal/templates/rivercureportal/about.html:105
-#: rivercureportal/templates/rivercureportal/about.html:255
-#: rivercureportal/templates/rivercureportal/base.html:85
+#: rivercureportal/templates/rivercureportal/about.html:108
+#: rivercureportal/templates/rivercureportal/about.html:275
+#: rivercureportal/templates/rivercureportal/base.html:90
 msgid "Organizations"
 msgstr "Organizações"
 
-#: rivercureportal/templates/rivercureportal/about.html:111
-#: rivercureportal/templates/rivercureportal/about.html:264
+#: rivercureportal/templates/rivercureportal/about.html:114
+#: rivercureportal/templates/rivercureportal/about.html:284
 msgid "How does it work?"
 msgstr "Como funciona?"
 
-#: rivercureportal/templates/rivercureportal/about.html:131
-#: rivercureportal/templates/rivercureportal/about.html:279
+#: rivercureportal/templates/rivercureportal/about.html:134
+#: rivercureportal/templates/rivercureportal/about.html:299
 msgid "What is a Context?"
 msgstr "O que é um Contexto?"
 
-#: rivercureportal/templates/rivercureportal/about.html:137
-#: rivercureportal/templates/rivercureportal/about.html:285
+#: rivercureportal/templates/rivercureportal/about.html:140
+#: rivercureportal/templates/rivercureportal/about.html:305
 msgid ""
 "A Context, or geographic Context, refers to a specific geographic area, "
 "relevant to modeling and analyzing flood events. Each Context is defined by "
@@ -1804,13 +1805,13 @@ msgstr ""
 "Cada Contexto é definido por um nome, sensores e um conjunto de "
 "características geográficas."
 
-#: rivercureportal/templates/rivercureportal/about.html:147
-#: rivercureportal/templates/rivercureportal/about.html:295
+#: rivercureportal/templates/rivercureportal/about.html:150
+#: rivercureportal/templates/rivercureportal/about.html:315
 msgid "What is a Contribution?"
 msgstr "O que é uma Contribuição?"
 
-#: rivercureportal/templates/rivercureportal/about.html:153
-#: rivercureportal/templates/rivercureportal/about.html:301
+#: rivercureportal/templates/rivercureportal/about.html:156
+#: rivercureportal/templates/rivercureportal/about.html:321
 msgid ""
 "A Contribution is a set of information contributed by the user, regarding a "
 "real-life situation they have observed."
@@ -1818,13 +1819,13 @@ msgstr ""
 "Uma Contribuição é um conjunto de informações fornecidas pelo utilizador, "
 "relativas a uma situação real que este terá observado."
 
-#: rivercureportal/templates/rivercureportal/about.html:163
-#: rivercureportal/templates/rivercureportal/about.html:311
+#: rivercureportal/templates/rivercureportal/about.html:166
+#: rivercureportal/templates/rivercureportal/about.html:331
 msgid "What is an Event?"
 msgstr "O que é um Evento?"
 
-#: rivercureportal/templates/rivercureportal/about.html:169
-#: rivercureportal/templates/rivercureportal/about.html:317
+#: rivercureportal/templates/rivercureportal/about.html:172
+#: rivercureportal/templates/rivercureportal/about.html:337
 msgid ""
 "An Event is a real or simulated set of occurrences, taken place during a "
 "given period, in a given geographic area."
@@ -1832,13 +1833,13 @@ msgstr ""
 "Um Evento é um conjunto de ocorrências reais ou simuladas, que acontecem "
 "durante um determinado período, numa área geográfica específica."
 
-#: rivercureportal/templates/rivercureportal/about.html:179
-#: rivercureportal/templates/rivercureportal/about.html:327
+#: rivercureportal/templates/rivercureportal/about.html:182
+#: rivercureportal/templates/rivercureportal/about.html:347
 msgid "What is a Quiz?"
 msgstr "O que é um Quiz?"
 
-#: rivercureportal/templates/rivercureportal/about.html:185
-#: rivercureportal/templates/rivercureportal/about.html:333
+#: rivercureportal/templates/rivercureportal/about.html:188
+#: rivercureportal/templates/rivercureportal/about.html:353
 msgid ""
 "A Quiz is a set of questions that can be answered by the user. Quizzes can "
 "be available only to the members of the Organization that created it, or to "
@@ -1848,8 +1849,8 @@ msgstr ""
 "Os Quizzes podem estar disponíveis apenas para os membros da Organização que "
 "os criaram, ou para todos os membros da comunidade RCP (Quizzes Públicos)"
 
-#: rivercureportal/templates/rivercureportal/about.html:195
-#: rivercureportal/templates/rivercureportal/about.html:343
+#: rivercureportal/templates/rivercureportal/about.html:198
+#: rivercureportal/templates/rivercureportal/about.html:363
 msgid ""
 "I want to contribute to a Context that does not exist in the RiverCure "
 "Portal. What should I do?"
@@ -1857,8 +1858,8 @@ msgstr ""
 "Quero contribuir para um Contexto que não existe no RiverCure Portal. Como "
 "devo proceder?"
 
-#: rivercureportal/templates/rivercureportal/about.html:202
-#: rivercureportal/templates/rivercureportal/about.html:350
+#: rivercureportal/templates/rivercureportal/about.html:205
+#: rivercureportal/templates/rivercureportal/about.html:370
 #, python-format
 msgid ""
 "If you wish to contribute to a Context that is not currently defined in the "
@@ -1871,51 +1872,79 @@ msgstr ""
 "página de %(contact)s. A nossa equipa avaliará o seu pedido e responderá o "
 "mais rapidamente possível."
 
-#: rivercureportal/templates/rivercureportal/base.html:63
+#: rivercureportal/templates/rivercureportal/about.html:215
+#: rivercureportal/templates/rivercureportal/about.html:380
+msgid "What is the time zone of the times shown throughout the Portal?"
+msgstr "Qual é o fuso horário das horas mostradas no Portal?"
+
+#: rivercureportal/templates/rivercureportal/about.html:221
+#: rivercureportal/templates/rivercureportal/about.html:386
+#, python-format
+msgid ""
+"By default, all times are shown according to your current time zone. For "
+"instance, since you are currently in the time zone %(timezone)s, all times "
+"will be automatically converted from the original (Europe/Lisbon) to "
+"%(timezone)s."
+msgstr ""
+"Por defeito, todas as horas são mostradas de acordo com o seu fuso horário "
+"atual. Por exemplo, dado que está atualmente no fuso horário %(timezone)s, "
+"todas as horas serão automaticamente convertidas do original (Europe/Lisbon) "
+"para %(timezone)s."
+
+#: rivercureportal/templates/rivercureportal/about.html:222
+#: rivercureportal/templates/rivercureportal/about.html:387
+msgid ""
+"Occasionally, times are displayed in Coordinated Universal Time (UTC) or in "
+"Europe/Lisbon, but that is explicitly stated."
+msgstr ""
+"Ocasionalmente, as horas são mostradas em Tempo Universal Coordenado (UTC) "
+"ou Europe/Lisbon, mas isso é explicitamente indicado."
+
+#: rivercureportal/templates/rivercureportal/base.html:68
 msgid "Management"
 msgstr "Gestão"
 
-#: rivercureportal/templates/rivercureportal/base.html:67
+#: rivercureportal/templates/rivercureportal/base.html:72
 msgid "Contexts"
 msgstr "Contextos"
 
-#: rivercureportal/templates/rivercureportal/base.html:68
+#: rivercureportal/templates/rivercureportal/base.html:73
 msgid "Sensors"
 msgstr "Sensores"
 
-#: rivercureportal/templates/rivercureportal/base.html:95
+#: rivercureportal/templates/rivercureportal/base.html:100
 #: rivercureportal/templates/rivercureportal/contact.html:23
 msgid "Contact"
 msgstr "Contacto"
 
-#: rivercureportal/templates/rivercureportal/base.html:98
+#: rivercureportal/templates/rivercureportal/base.html:103
 msgid "About"
 msgstr "Sobre"
 
-#: rivercureportal/templates/rivercureportal/base.html:124
-#: rivercureportal/templates/rivercureportal/base.html:130
+#: rivercureportal/templates/rivercureportal/base.html:129
 #: rivercureportal/templates/rivercureportal/base.html:135
-#: rivercureportal/templates/rivercureportal/base.html:141
+#: rivercureportal/templates/rivercureportal/base.html:140
+#: rivercureportal/templates/rivercureportal/base.html:146
 msgid "ago"
 msgstr "atrás"
 
-#: rivercureportal/templates/rivercureportal/base.html:150
+#: rivercureportal/templates/rivercureportal/base.html:155
 msgid "See all notifications"
 msgstr "Ver todas as notificações"
 
-#: rivercureportal/templates/rivercureportal/base.html:153
+#: rivercureportal/templates/rivercureportal/base.html:158
 msgid "Clear all notifications"
 msgstr "Limpar todas as notificações"
 
-#: rivercureportal/templates/rivercureportal/base.html:179
+#: rivercureportal/templates/rivercureportal/base.html:184
 msgid "Edit Profile"
 msgstr "Editar Perfil"
 
-#: rivercureportal/templates/rivercureportal/base.html:180
+#: rivercureportal/templates/rivercureportal/base.html:185
 msgid "Set Current Organization"
 msgstr "Definir Organização Atual"
 
-#: rivercureportal/templates/rivercureportal/base.html:186
+#: rivercureportal/templates/rivercureportal/base.html:191
 msgid "Register"
 msgstr "Registar"
 

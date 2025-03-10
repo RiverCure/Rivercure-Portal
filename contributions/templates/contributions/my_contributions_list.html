@@ -43,7 +43,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ contribution.get_situationObserved_display }}</h5>
                     <h6 class="font-weight-light"> <span class="badge badge-{{contribution.state|get_state_color}}"><i class="bi bi-{{contribution.state|get_state_icon}}"></i> {{ contribution.get_state_display }}</span></h6>
-                    <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }} (<span class="font-italic">UTC</span>)</small>
+                    <small class="text-body-secondary card-contributions text-muted">{% trans "Submitted on" %} {{ contribution.creationDateTime }}  </small>
                 </div>
             </div>
         </a>

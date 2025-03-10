@@ -115,7 +115,7 @@
     {% endfor %}
 {% endif %}
 
-
+{% get_current_timezone as TIME_ZONE %}
 
 <!-- Meta-data -->
 <div class="my-3">
@@ -134,12 +134,17 @@
             {% endtimezone %}
             <p class="font-weight-light"><strong>{% trans "Submitted on" %}:</strong> {{ contribution.creationDateTime }} (UTC)</p> {% endcomment %}
 
-            {% timezone contribution.user_timezone %}
+
+            {% comment %} {% timezone contribution.user_timezone %}
             <p class="font-weight-light"><strong>{% trans "Submission Date" %}:</strong></p>
             <p class="font-weight-light">{% blocktrans with creationDateTime=contribution.creationDateTime createdBy=contribution.createdBy user_timezone=contribution.user_timezone%}{{ creationDateTime }} ({{createdBy}}'s timezone was <span class="font-italic">{{user_timezone}}</span>){% endblocktrans %}</p>
             {% endtimezone %}
-            <p class="font-weight-light">{{ contribution.creationDateTime }} (<span class="font-italic">UTC</span>)</p>
+            <p class="font-weight-light">{{ contribution.creationDateTime }} (<span class="font-italic">UTC</span>)</p> {% endcomment %}
             
+            <p class="font-weight-light"><strong>{% trans "Submission Date" %}:</strong></p>
+            <p class="font-weight-light">{{ contribution.creationDateTime|utc }} (<span class="font-italic">UTC</span>)</p>
+            <p class="font-weight-light">{% blocktrans with creationDateTime=contribution.creationDateTime%}{{ creationDateTime }} (In your time zone - <span class="font-italic">{{TIME_ZONE}}</span>){% endblocktrans %}</p>
+
             
             {% comment %} <p class="font-weight-light"><strong>{% trans "Submission Date" %}:</strong></p>
             <p class="font-weight-light">{% timezone contribution.user_timezone %}{{ contribution.creationDateTime }} (<span class="font-italic">{{contribution.user_timezone}}</span>){% endtimezone %} / {{ contribution.creationDateTime }} (UTC)</p> {% endcomment %}
@@ -160,7 +165,7 @@
     {% if user == contribution.createdBy or user.is_superuser or user|has_group:"Admin" or isContextOrOrgManager or isMod %}
         <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
             <!-- Validation info -->
-            {% if contribution.last_validation_datetime %}<p class="font-weight-light justify mt-2"> {% blocktrans with state_color=contribution.state|get_state_color state=contribution.get_state_display last_validation_datetime=contribution.last_validation_datetime last_validated_by=contribution.last_validated_by %}Last <span class="text-{{state_color}}">{{state}}</span> on {{last_validation_datetime}} (<span class="font-italic">UTC</span>) by <span class="text-info">{{last_validated_by}}</span>{% endblocktrans %}</p>{% endif %}
+            {% if contribution.last_validation_datetime %}<p class="font-weight-light justify mt-2"> {% blocktrans with state_color=contribution.state|get_state_color state=contribution.get_state_display last_validation_datetime=contribution.last_validation_datetime last_validated_by=contribution.last_validated_by %}Last <span class="text-{{state_color}}">{{state}}</span> on {{last_validation_datetime}}   by <span class="text-info">{{last_validated_by}}</span>{% endblocktrans %}</p>{% endif %}
             {% if contribution.last_rejection_reason %}<p class="font-weight-light"><strong>{% trans "Rejection reason" %}:</strong> {{ contribution.last_rejection_reason }}</p>{% endif %}
             {% if contribution.last_validation_datetime %}<hr>{% endif %}
         
@@ -370,7 +375,7 @@
     <div class="col d-flex flex-column justify-content-center p-0 border-right my-contribution-detail-footer my-border-radius-bottom my-contribution-detail-meta-info-card-footer-left">
         <!-- Observation date / Footer -->
         <div class="my-border-radius-bottom-left">
-            <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }}</p>
+            <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }} (<span class="font-italic">Europe/Lisbon</span>)</p>
         </div>
     </div>
 </div>
@@ -480,7 +485,7 @@
     <div class="col d-flex flex-column justify-content-center p-0 border-right my-contribution-detail-footer my-border-radius-bottom-left my-contribution-detail-meta-info-card-footer-left">
         <!-- Observation date / Footer -->
         <div class="my-border-radius-bottom-left">
-            <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }}</p>
+            <p class="font-weight-light mx-3 my-2"><strong>{% trans "Observed on" %}:</strong> {{ contribution.observationDate }} (<span class="font-italic">Europe/Lisbon</span>)</p>
         </div>
     </div>
 
@@ -591,7 +596,7 @@
                                             <span>&#10539;</span>
                                         {% endif %}
                                     </button>
-                                    <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }} (<span class="font-italic">UTC</span>)</small></p>
+                                    <p class="card-text mx-auto mt-2"><small class="text-muted">{{ validation.validation_datetime }}  </small></p>
                                     {% if forloop.first and validations.count > 1%}
                                         <p class="card-text mx-auto mt-2 font-weight-bold">{% trans "Latest Validation" %}</p>
                                     {% endif %}
@@ -614,7 +619,7 @@
                                     </div>
                                     <div class="modal-body my-report-modal-body">
                                         {% if not validation.state == 'PENDING' %}
-                                            <p class="font-weight-light"><strong>{% trans "Validated on" %}:</strong> {{ validation.validation_datetime }} (<span class="font-italic">UTC</span>)</p>
+                                            <p class="font-weight-light"><strong>{% trans "Validated on" %}:</strong> {{ validation.validation_datetime }}  </p>
                                             <p class="font-weight-light"><strong>{% trans "Validated by" %}:</strong> {{ validation.validated_by }}</p>
                                         {% endif %}
                                         {% if validation.rejection_reason %}
@@ -658,7 +663,7 @@
                                     <p class="card-text">{{ report.reason|slice:":100" }} {% if report.reason|length > 100 %}...{% endif %}</p>
                                     <div class="mt-auto">
                                         <p class="card-text"><small class="text-muted">{% trans "Reported by" %} {{ report.reported_by }}</small></p>
-                                        <p class="card-text"><small class="text-muted">{% trans "Reported on" %} {{ report.report_datetime }} (<span class="font-italic">UTC</span>)</small></p>
+                                        <p class="card-text"><small class="text-muted">{% trans "Reported on" %} {{ report.report_datetime }}  </small></p>
                                         <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#readReportModal">{% trans "Read" %}</button>
                                     </div>
                                 </div>
@@ -677,7 +682,7 @@
                                     </div>
                                     <div class="modal-body my-report-modal-body">
                                         <p class="justify">{{report.reason}}</p>
-                                        <p class="card-text"><small class="text-muted">{% trans "Reported on" %} {{ report.report_datetime }} (<span class="font-italic">UTC</span>)</small></p>
+                                        <p class="card-text"><small class="text-muted">{% trans "Reported on" %} {{ report.report_datetime }}  </small></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary my-3 mr-3" data-dismiss="modal">{% trans "Close" %}</button>

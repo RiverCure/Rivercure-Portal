@@ -41,7 +41,7 @@
             <h4 class="font-weight-light"><strong>{% trans "Max Score" %}:</strong> <span class="text-info">{{ challenge.max_score }}</span></h4>
             <hr>
             {% if canManage %}<p class="font-weight-light"><strong>{% trans "Visibility" %}:</strong> {% if challenge.is_public %}{% trans "Platform (all users)" %}{% else %}{% trans "Organization (only members)" %}{% endif %} </p>{% endif %}
-            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Quiz last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %} (<span class="font-italic">UTC</span>)</p>{% endif %}
+            {% if challenge.open_datetime %}<p class="font-weight-light"><i class="bi bi-calendar-week"></i> {%trans "Quiz last opened on" %} {{ challenge.open_datetime }}{% if challenge.close_datetime %} {% trans "and closed on" %} {{challenge.close_datetime}}{% endif %}  </p>{% endif %}
             {% comment %} {% if challenge.automatic_close_datetime %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Automatically closes on" %} {{ challenge.automatic_close_datetime }}.</p>{% endif %} {% endcomment %}
             {% if challenge.when_close_show_correct_answers %}<p class="font-weight-light"><i class="bi bi-exclamation-triangle"></i> {% trans "Correct answers will only be published when Quiz is closed." %}</p>{% endif %}
         </div>
@@ -53,7 +53,7 @@
         <div class="py-2 px-4 my-contribution-detail-footer my-contribution-detail-bottom">
             <!-- Buttons about Challenge -->
             <!-- Information -->
-            <p class="font-weight-light justify mt-2">{% trans "Created on" %} {{ challenge.creation_datetime }} (<span class="font-italic">UTC</span>) {% trans "by" %} <span class="text-info">{{ challenge.created_by }}</span></p>
+            <p class="font-weight-light justify mt-2">{% trans "Created on" %} {{ challenge.creation_datetime }}   {% trans "by" %} <span class="text-info">{{ challenge.created_by }}</span></p>
             <hr>
 
 
@@ -246,7 +246,7 @@
                             <div class="text-center mx-4">
                                 <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                                 <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
-                                <p class="font-weight-lighter m-0"> {% trans "On" %} {{latest_challenge.creation_datetime}} (<span class="font-italic">UTC</span>)</p>
+                                <p class="font-weight-lighter m-0"> {% trans "On" %} {{latest_challenge.creation_datetime}}  </p>
                             </div>
                         {% endfor %}
                     </div>
@@ -257,7 +257,7 @@
                             <div class="text-center mx-4">
                                 <img src="{{MEDIA_URL}}{{latest_challenge.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">
                                 <p class="font-weight-light pt-2 mb-2"> {{ latest_challenge.created_by }}</p>
-                                <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}} (<span class="font-italic">UTC</span>)</p>
+                                <p class="font-weight-lighter m-0"> On {{latest_challenge.creation_datetime}}  </p>
                             </div>
                         {% endfor %}
                     </div>

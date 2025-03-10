@@ -27,7 +27,7 @@
         <div class="col">
             <h2 class="mt-3">Quiz "{{ participation.challenge.title|title }}" - {% trans "Participation" %}</h2>
             <hr>
-            <p class="font-weight-light"><strong>{% trans "Submitted on" %}:</strong> {{ participation.creation_datetime }} (<span class="font-italic">UTC</span>)</p>
+            <p class="font-weight-light"><strong>{% trans "Submitted on" %}:</strong> {{ participation.creation_datetime }}  </p>
         </div>
         <div class="col-md-auto text-center">
             <img src="{{MEDIA_URL}}{{participation.created_by.profile.image}}" class="my-contribution-detail-user-img mt-3" alt="User profile image">

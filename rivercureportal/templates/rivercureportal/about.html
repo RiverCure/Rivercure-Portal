@@ -2,6 +2,7 @@
 {% block title %} About {% endblock %}
 {% load auth_extras %}
 {% load i18n %}
+{% load tz %}
 {% load static %}
 
 {% block content %}
@@ -60,6 +61,8 @@
         models for flood simulation, water resources management and habitat protection.
     </p>
 </div> {% endcomment %}
+
+{% get_current_timezone as TIME_ZONE %}
 
 <!-- MOBILE -->
 {% if is_mobile %}
@@ -197,6 +200,23 @@
           <div class="card-body">
               {% url 'contact' as contact_url %}
               {% blocktrans with contact='<a href="'|add:contact_url|add:'">Contact</a>'|safe %}If you wish to contribute to a Context that is not currently defined in the RiverCure Portal, we encourage you to reach out to us through our {{contact}} page. Our team will evaluate your request and respond in a timely manner.{% endblocktrans %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Q -->
+      <div class="card">
+        <div class="card-header" id="headingSix">
+          <h2 class="mb-0">
+            <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+              <i class="bi bi-chevron-down"></i> {% trans "What is the time zone of the times shown throughout the Portal?" %}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionFAQ">
+          <div class="card-body">
+            {% blocktrans with timezone=TIME_ZONE%}By default, all times are shown according to your current time zone. For instance, since you are currently in the time zone {{timezone}}, all times will be automatically converted from the original (Europe/Lisbon) to {{timezone}}.{% endblocktrans %}
+            {% trans "Occasionally, times are displayed in Coordinated Universal Time (UTC) or in Europe/Lisbon, but that is explicitly stated." %}
           </div>
         </div>
       </div>
@@ -343,6 +363,23 @@
           <div class="card-body">
               {% url 'contact' as contact_url %}
               {% blocktrans with contact='<a href="'|add:contact_url|add:'">Contact</a>'|safe %}If you wish to contribute to a Context that is not currently defined in the RiverCure Portal, we encourage you to reach out to us through our {{contact}} page. Our team will evaluate your request and respond in a timely manner.{% endblocktrans %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Q -->
+      <div class="card">
+        <div class="card-header" id="headingSix">
+          <h2 class="mb-0">
+            <button class="btn btn-link text-decoration-none collapsed text-dark" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+              <i class="bi bi-chevron-down"></i> {% trans "What is the time zone of the times shown throughout the Portal?" %}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionFAQ">
+          <div class="card-body">
+            {% blocktrans with timezone=TIME_ZONE%}By default, all times are shown according to your current time zone. For instance, since you are currently in the time zone {{timezone}}, all times will be automatically converted from the original (Europe/Lisbon) to {{timezone}}.{% endblocktrans %}
+            {% trans "Occasionally, times are displayed in Coordinated Universal Time (UTC) or in Europe/Lisbon, but that is explicitly stated." %}
           </div>
         </div>
       </div>
