@@ -10248,6 +10248,14 @@ form .row:first-child .floating-label-form-group {
   color: #fff;
 }
 
+.footer-logo {
+  max-height: 3.5vh; /* 3.5% of the viewport height */
+  width: auto;
+  max-width: 100%;
+  object-fit: contain; /* ensures the image stays inside the box */
+}
+
+
 .copyright {
   background-color: #1a252f;
 }
